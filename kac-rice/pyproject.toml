@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kacrice"
+version = "0.1.0"
+description = "Kac-Rice level-crossing density as a spatial-domain high-frequency loss for INRs"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "imageio",
+    "tqdm",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

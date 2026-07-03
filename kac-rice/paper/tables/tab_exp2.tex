@@ -1,0 +1,20 @@
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{blobs} & \multicolumn{2}{c}{ramp} & \multicolumn{2}{c}{uniform} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+Config & PSNR & HF-PSNR & PSNR & HF-PSNR & PSNR & HF-PSNR \\
+\midrule
+griddata interp.\ (input) & 21.84 $\pm$ 0.10 & 25.27 $\pm$ 0.01 & 22.85 $\pm$ 0.10 & 25.70 $\pm$ 0.06 & 23.11 $\pm$ 0.10 & 25.84 $\pm$ 0.08 \\
+\midrule
+MSE only & 18.88 $\pm$ 0.12 & 22.76 $\pm$ 0.02 & 19.73 $\pm$ 0.09 & 22.89 $\pm$ 0.07 & 20.18 $\pm$ 0.07 & 23.19 $\pm$ 0.05 \\
+$+$ FFL (interp.) & 21.62 $\pm$ 0.12 & 25.01 $\pm$ 0.05 & 22.48 $\pm$ 0.12 & 25.31 $\pm$ 0.09 & 22.73 $\pm$ 0.11 & 25.46 $\pm$ 0.09 \\
+$+$ Sobolev (est. grad) & 21.59 $\pm$ 0.15 & 25.07 $\pm$ 0.09 & 22.74 $\pm$ 0.07 & 25.59 $\pm$ 0.05 & 23.02 $\pm$ 0.08 & 25.75 $\pm$ 0.05 \\
+$+$ Kac-Rice (est. grad, ours) & 21.14 $\pm$ 0.17 & 24.71 $\pm$ 0.07 & 22.31 $\pm$ 0.15 & 25.25 $\pm$ 0.12 & 22.53 $\pm$ 0.15 & 25.36 $\pm$ 0.13 \\
+$+$ Sobolev (oracle grad) & 21.80 $\pm$ 0.21 & 25.36 $\pm$ 0.13 & -- & -- & -- & -- \\
+$+$ Kac-Rice (oracle grad) & 20.86 $\pm$ 0.20 & 24.50 $\pm$ 0.08 & -- & -- & -- & -- \\
+SIREN (MSE) & 20.10 $\pm$ 0.20 & 23.97 $\pm$ 0.15 & -- & -- & -- & -- \\
+SIREN $+$ FFL (interp.) & 21.92 $\pm$ 0.11 & 25.38 $\pm$ 0.03 & -- & -- & -- & -- \\
+SIREN $+$ Sobolev (est. grad) & 21.50 $\pm$ 0.14 & 25.06 $\pm$ 0.10 & -- & -- & -- & -- \\
+SIREN $+$ Kac-Rice (ours) & 21.59 $\pm$ 0.10 & 25.14 $\pm$ 0.05 & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}

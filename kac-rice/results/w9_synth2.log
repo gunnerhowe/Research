@@ -1,0 +1,6 @@
+device=cpu threads=4 seeds=[2] iters=3000/2000/1000
+exp2_2d synthetic blobs mse seed2: psnr=23.59 hf=18.66 (668s)
+exp2_2d synthetic blobs ffl_interp seed2: psnr=26.40 hf=21.79 (1901s)
+exp2_2d synthetic blobs sobolev_est seed2: psnr=27.16 hf=22.50 (1056s)
+exp2_2d synthetic blobs kacrice_est seed2: psnr=26.76 hf=22.13 (1120s)
+ALL DONE in 79.2 min

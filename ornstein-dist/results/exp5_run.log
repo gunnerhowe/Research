@@ -1,0 +1,16 @@
+data ready (1s); truth h = 0.2212 bits/sym
+rho=0.60 seed=0  nrmse=1.50e-05  status=ok         W1=0.1157(f0.1265)  d̄sep=-0.0039  h=0.2214  [45s]
+rho=0.60 seed=1  nrmse=1.24e-05  status=ok         W1=0.1264(f0.1376)  d̄sep=0.0001  h=0.2221  [44s]
+rho=0.80 seed=0  nrmse=1.21e-04  status=ok         W1=0.1224(f0.1265)  d̄sep=-0.0082  h=0.2219  [50s]
+rho=0.80 seed=1  nrmse=9.47e-05  status=ok         W1=0.1347(f0.1376)  d̄sep=-0.0050  h=0.2214  [45s]
+rho=0.90 seed=0  nrmse=3.19e-04  status=ok         W1=0.1269(f0.1265)  d̄sep=-0.0033  h=0.2216  [44s]
+rho=0.90 seed=1  nrmse=2.56e-04  status=ok         W1=0.1301(f0.1376)  d̄sep=-0.0010  h=0.2217  [49s]
+rho=1.00 seed=0  nrmse=7.42e-04  status=ok         W1=0.1298(f0.1265)  d̄sep=-0.0042  h=0.2221  [43s]
+rho=1.00 seed=1  nrmse=6.71e-04  status=ok         W1=0.1378(f0.1376)  d̄sep=-0.0023  h=0.2220  [34s]
+rho=1.10 seed=0  nrmse=1.64e-03  status=ok         W1=0.1249(f0.1265)  d̄sep=-0.0041  h=0.2209  [39s]
+rho=1.10 seed=1  nrmse=1.55e-03  status=ok         W1=0.1374(f0.1376)  d̄sep=-0.0070  h=0.2219  [37s]
+rho=1.25 seed=0  nrmse=4.68e-03  status=ok         W1=0.1331(f0.1265)  d̄sep=0.0002  h=0.2221  [31s]
+rho=1.25 seed=1  nrmse=5.09e-03  status=ok         W1=0.1336(f0.1376)  d̄sep=-0.0006  h=0.2219  [29s]
+rho=1.40 seed=0  nrmse=1.22e-02  status=ok         W1=0.1190(f0.1265)  d̄sep=-0.0008  h=0.2244  [30s]
+rho=1.40 seed=1  nrmse=1.51e-02  status=ok         W1=1.8392(f0.1376)  d̄sep=0.3898  h=0.0197  [30s]
+wrote results/exp5_esn.json (552s)

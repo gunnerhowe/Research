@@ -1,0 +1,20 @@
+Generating datasets (N=1000000) ...
+  done in 49.5s
+
+=== metric x surrogate matrix (sign(x), tau=0.1) ===
+truth2    W1x=0.0013 W3d=0.1348 Wdel=0.0978(f0.1011) PSD=0.29dB ACF=0.0025 | d̄=0.0020(f0.0032,n=32) FanoLB=0.0000  [11s]
+iaaft     W1x=0.0013 W3d=  n/a  Wdel=0.3646(f0.1011) PSD=0.29dB ACF=0.0025 | d̄=0.1077(f0.0020,n=8) FanoLB=0.0631  [22s]
+speed2    W1x=0.0068 W3d=0.1243 Wdel=0.6298(f0.1011) PSD=10.55dB ACF=0.0404 | d̄=0.1122(f0.0020,n=16) FanoLB=0.0195  [14s]
+reversed  W1x=0.0013 W3d=0.1236 Wdel=0.2153(f0.1011) PSD=0.28dB ACF=0.0025 | d̄=0.0043(f0.0032,n=32) FanoLB=0.0000  [10s]
+rho32     W1x=0.0810 W3d=0.5145 Wdel=0.1717(f0.1011) PSD=1.94dB ACF=0.0066 | d̄=0.0412(f0.0053,n=32) FanoLB=0.0020  [10s]
+
+=== partition sensitivity (tau=0.1) ===
+  sign(x) m=2        truth2:sep=-0.0012  iaaft:sep=0.1057  speed2:sep=0.1102
+  quantile4(x) m=4   truth2:sep=-0.0021  iaaft:sep=0.1660  speed2:sep=0.3200
+  box(x,z) m=6       truth2:sep=0.0004  speed2:sep=0.3943
+
+=== tau sensitivity (sign(x)) ===
+  tau=0.05: truth2:sep=-0.0099  iaaft:sep=0.0896  speed2:sep=0.1023
+  tau=0.25: truth2:sep=-0.0001  iaaft:sep=0.1149  speed2:sep=0.0952
+
+wrote results/exp2_decisive.json + exp2_matrix.png (362.0s total)

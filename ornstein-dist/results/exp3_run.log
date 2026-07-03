@@ -1,0 +1,17 @@
+seed 0: 56s  truth2:d̄sep=0.0000  iaaft:d̄sep=0.1052  speed2:d̄sep=0.1097  reversed:d̄sep=0.0007  rho32:d̄sep=0.0385
+seed 1: 55s  truth2:d̄sep=-0.0048  iaaft:d̄sep=0.1006  speed2:d̄sep=0.1061  reversed:d̄sep=-0.0026  rho32:d̄sep=0.0346
+seed 2: 58s  truth2:d̄sep=0.0010  iaaft:d̄sep=0.1047  speed2:d̄sep=0.1087  reversed:d̄sep=0.0010  rho32:d̄sep=0.0347
+seed 3: 72s  truth2:d̄sep=-0.0005  iaaft:d̄sep=0.1051  speed2:d̄sep=0.1107  reversed:d̄sep=0.0009  rho32:d̄sep=0.0399
+seed 4: 78s  truth2:d̄sep=-0.0024  iaaft:d̄sep=0.1056  speed2:d̄sep=0.1046  reversed:d̄sep=-0.0009  rho32:d̄sep=0.0361
+seed 5: 65s  truth2:d̄sep=-0.0023  iaaft:d̄sep=0.1030  speed2:d̄sep=0.1057  reversed:d̄sep=-0.0004  rho32:d̄sep=0.0379
+seed 6: 78s  truth2:d̄sep=-0.0025  iaaft:d̄sep=0.1045  speed2:d̄sep=0.1067  reversed:d̄sep=-0.0003  rho32:d̄sep=0.0368
+seed 7: 56s  truth2:d̄sep=0.0048  iaaft:d̄sep=0.1070  speed2:d̄sep=0.1071  reversed:d̄sep=0.0048  rho32:d̄sep=0.0370
+
+=== aggregate (mean ± std over 8 seeds) ===
+truth2    d̄sep=-0.0008±0.0027  W3d=0.1289  Wdel=0.0937  PSD=0.40dB  λ1=1.194(r2=0.98)  FanoLB=0.0001
+iaaft     d̄sep=0.1045±0.0018  W3d=nan  Wdel=0.3657  PSD=0.40dB  λ1=0.778(r2=0.65)  FanoLB=0.0619
+speed2    d̄sep=0.1074±0.0020  W3d=0.1278  Wdel=0.6345  PSD=10.56dB  λ1=1.804(r2=1.00)  FanoLB=0.0195
+reversed  d̄sep=0.0004±0.0020  W3d=0.1286  Wdel=0.2233  PSD=0.40dB  λ1=3.051(r2=0.97)  FanoLB=0.0001
+rho32     d̄sep=0.0369±0.0017  W3d=0.4959  Wdel=0.1852  PSD=1.97dB  λ1=1.177(r2=0.98)  FanoLB=0.0020
+truth: h=0.2214±0.0003 bits, λ1=1.189±0.020 nats/t (lit: 0.906)
+wrote results/exp3_multiseed.json (517s)

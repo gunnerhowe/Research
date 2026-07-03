@@ -1,0 +1,669 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{xcolor}
+
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+
+\newcommand{\dbar}{\bar d}
+\newcommand{\Hb}{H_{\mathrm b}}
+\newcommand{\E}{\mathbb E}
+\newcommand{\R}{\mathbb R}
+\newcommand{\A}{\mathcal A}
+
+\input{numbers}
+\input{esn_text}
+
+\title{Beyond the Invariant Measure: Ornstein's $\dbar$-Distance as a\\
+Dynamical-Fidelity Metric for Surrogate Models of Chaotic Systems}
+\author{Gunner Levi Howe\\
+\small\texttt{gunnerlevihowe@gmail.com}}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Learned surrogates of chaotic systems cannot be judged by pointwise trajectory error,
+because nearby trajectories separate exponentially. The de facto replacement is to
+compare \emph{invariant measures} --- where the system spends its time --- via
+Wasserstein-type distances. But the invariant measure is a static object: two systems
+can share it exactly while disagreeing about every dynamical property (mixing, entropy
+production, temporal ordering). We import \emph{Ornstein's $\dbar$-distance} from
+ergodic theory --- a metric on stationary processes that metrizes dynamical, not merely
+distributional, equivalence --- and turn it into a practical evaluation metric for
+chaotic surrogates. Our estimator computes exact optimal transport between empirical
+$n$-block distributions of symbolized trajectories under Hamming cost; every computed
+value is a statistically certified \emph{lower} bound on $\dbar$, is reported against a
+same-process noise floor, and is complemented by an independent entropy-rate certificate
+obtained from a Fano-type inequality. On Lorenz-63 and the Kuramoto--Sivashinsky
+equation, surrogates constructed to match the invariant measure --- IAAFT surrogates
+(exact marginal, matched spectrum) and time-rescaled flows (\emph{exactly} the same
+invariant measure) --- are invisible to measure- and spectrum-based baselines yet are
+separated from truth by $\dbar$ at more than $20\times$ the noise floor over 8 seeds
+(and remain detectable with as few as $10^4$ samples). On a family of trained
+echo-state-network surrogates, $\dbar$ resolves
+dynamical failures that state-space Wasserstein cannot. We also report what the metric
+does \emph{not} see (time reversal, at binary partitions), and release code.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+Data-driven surrogates of chaotic dynamics --- neural operators, neural ODEs, reservoir
+computers --- are now standard tools for emulating turbulence, climate, and other
+nonlinear systems. Evaluating them is not standard at all. Because chaotic systems have
+positive Lyapunov exponents, any pointwise comparison of trajectories becomes
+meaningless after a few Lyapunov times: a surrogate can be nearly perfect and still have
+large mean-squared error, and a surrogate frozen at the attractor's mean can beat it.
+The community's response has been to evaluate (and increasingly to train)
+surrogates against \emph{long-run statistics}: compare the surrogate's invariant measure
+to the truth's, typically with Wasserstein or kernel distances on attractor samples
+\citep{schiff2024dyslim,jiang2023training,melo2026learning,fumagalli2025data}.
+
+This paper starts from a structural observation: \textbf{the invariant measure is not
+the dynamics}. It records \emph{where} the state spends time, not \emph{how} it moves.
+The point is not a technicality (Fig.~\ref{fig:concept}). Run Lorenz-63 at double speed
+($\dot x = 2f(x)$): the attractor, and with it the invariant measure, is \emph{exactly}
+unchanged, while every temporal property --- decorrelation, mixing rate, entropy
+production per unit time --- changes by a factor of two. Apply an amplitude-adjusted
+Fourier-transform surrogate \citep{schreiber1996improved} to a Lorenz coordinate: the
+marginal distribution is preserved \emph{exactly} and the power spectrum almost
+exactly, while the higher-order temporal structure that makes the signal deterministic
+chaos rather than colored noise is destroyed. A metric on invariant measures certifies
+both as perfect.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_concept.pdf}
+\caption{The failure mode this paper measures. \emph{Top:} segments of the Lorenz-63
+$x$ coordinate for the true system, its IAAFT surrogate (identical marginal, matched
+spectrum), and the time-rescaled system $\dot x=2f(x)$ (identical attractor). \emph{Bottom:}
+the corresponding state-space densities are indistinguishable where defined ---
+invariant-measure metrics certify all three as equivalent --- yet the three processes
+are dynamically distinct, and $\dbar$ separates them (Table~\ref{tab:lorenz}).}
+\label{fig:concept}
+\end{figure}
+
+Ergodic theory has owned the right abstraction for half a century. Ornstein's
+$\dbar$-distance \citep{ornstein1970bernoulli,gray1975generalization} is a metric on
+\emph{stationary processes} --- laws of trajectories, not snapshots --- under which two
+processes are close when their entire joint temporal structure can be aligned by a
+stationary coupling with small per-symbol disagreement. It is the metric of the Ornstein
+isomorphism theory: within the Bernoulli class, entropy is a complete invariant, and
+$\dbar$-limits preserve the dynamical properties (mixing, entropy) that static
+distributions do not determine. To our knowledge it has never been used to evaluate
+learned surrogates of chaotic systems.
+
+\paragraph{Contributions.}
+\begin{enumerate}\itemsep2pt
+\item \textbf{A practical estimator} (\S\ref{sec:method}). We symbolize both systems with
+a common partition and compute exact optimal transport between empirical $n$-block
+distributions under normalized Hamming cost, for doubling block lengths $n$. Theory
+guarantees these values increase to $\dbar$ (Prop.~\ref{prop:blocks}), so each is a
+certified lower bound; a same-process noise floor computed with the identical budget
+makes finite-sample bias visible rather than deniable.
+\item \textbf{An independent certificate} (\S\ref{sec:fano}). A Fano-type inequality
+bounds $\dbar$ from below by an explicit function of the symbolic block-entropy gap ---
+a one-hour pre-check that needs no transport computation. We state and use the
+finite-$n$ form, which requires no entropy-rate limits.
+\item \textbf{Validation on solvable processes} (\S\ref{sec:validation}): the estimator
+reproduces exact $\dbar_n$ values to four decimals, including a minimal pair of
+processes with identical marginals and maximally different dynamics.
+\item \textbf{Decisive experiments} (\S\ref{sec:lorenz}--\S\ref{sec:ks}). On Lorenz-63
+and Kuramoto--Sivashinsky, measure-matched adversarial surrogates are invisible to
+invariant-measure Wasserstein, spectrum, autocorrelation, and (for IAAFT) data-driven
+Lyapunov baselines, while $\dbar$ separates them from truth by more than an order of
+magnitude above the noise floor --- stably across 8 seeds, three partitions, three
+sampling rates, and sample sizes down to $10^4$.
+\item \textbf{Learned surrogates} (\S\ref{sec:esn}): across an echo-state-network family,
+$\dbar$ resolves dynamical-fidelity differences among models that measure-based metrics
+rank as equally good, and agrees with all metrics when the surrogate is genuinely faithful.
+\item \textbf{Honest negative results} (\S\ref{sec:limits}): time reversal --- which
+preserves measure, spectrum, \emph{and} entropy --- is invisible to our estimator at
+binary partitions and reachable block lengths; we explain why (a structural symmetry of
+binary $2$-blocks) and delimit what $\dbar$ adds relative to delay-embedded transport
+distances.
+\end{enumerate}
+
+\section{Background: processes, joinings, and $\dbar$}\label{sec:background}
+
+Let $X=(X_i)_{i\in\mathbb Z}$ and $Y=(Y_i)$ be stationary ergodic processes on a finite
+alphabet $\A$, with laws $\mu,\nu$ on $\A^{\mathbb Z}$. In our setting these arise by
+sampling a flow at interval $\tau$ and applying a partition
+$\pi:\R^d\to\A$ to the state (\S\ref{sec:method}); the process law encodes the full
+temporal structure of the symbolized dynamics.
+
+\begin{definition}[Joining; $\dbar$]
+A \emph{joining} $\lambda$ of $(\mu,\nu)$ is a shift-invariant probability measure on
+$(\A\times\A)^{\mathbb Z}$ with marginals $\mu$ and $\nu$. Ornstein's distance is
+\[
+\dbar(\mu,\nu) \;=\; \inf_{\lambda\ \mathrm{joining}} \; \lambda\!\left(x_0 \neq y_0\right).
+\]
+\end{definition}
+
+Equivalently, $\dbar$ is the Wasserstein-1 distance between process laws under the
+normalized Hamming metric on sequences \citep{gray1975generalization}: the minimal
+asymptotic fraction of time at which the two processes must disagree, over all ways of
+running them jointly while preserving each one's statistics. $\dbar(\mu,\nu)=0$ iff
+$\mu=\nu$; two surrogates with the same invariant measure but different temporal laws
+are at positive $\dbar$.
+
+For $n\ge 1$ let $P_n,Q_n$ denote the $n$-block marginals of $\mu,\nu$ on $\A^n$, and
+\[
+\dbar_n(\mu,\nu) \;=\; W_1^{\mathrm{Ham}}(P_n, Q_n)
+ \;=\; \min_{\gamma\in\Gamma(P_n,Q_n)} \E_{(a,b)\sim\gamma}\Big[\tfrac1n \textstyle\sum_{i=1}^n
+ \mathbf 1\{a_i\neq b_i\}\Big],
+\]
+a finite optimal-transport problem.
+
+\begin{proposition}[$n$-block characterization]\label{prop:blocks}
+For stationary $\mu,\nu$: (i) $\dbar_n(\mu,\nu)\le\dbar(\mu,\nu)$ for every $n$;
+(ii) $n\,\dbar_n$ is superadditive, hence $\dbar_{2n}\ge\dbar_n$ and
+(iii) $\dbar_n\to\sup_m \dbar_m = \dbar$ as $n\to\infty$
+\citep{gray1975generalization}.
+\end{proposition}
+
+Proofs of the finite-$n$ statements are elementary and given in
+Appendix~\ref{app:proofs}. Three consequences shape the method. First, every computed
+$\dbar_n$ is a \emph{certified lower bound} on $\dbar$: plateau values understate, never
+overstate, the distance. Second, along the doubling schedule $n=1,2,4,\dots$ the true
+values are monotone, so a rising-then-flat empirical curve is the theoretically expected
+signature. Third, $\dbar_1$ is exactly the total-variation distance between the
+$1$-symbol marginals --- i.e.\ the invariant measure comparison at partition resolution
+--- so the decomposition of $\dbar_n$ over $n$ makes ``static vs.\ dynamical''
+quantitative: a measure-matched surrogate has $\dbar_1\approx0$, and everything it gets
+wrong appears at $n\ge2$.
+
+\subsection{Entropy is $\dbar$-continuous: a free certificate}\label{sec:fano}
+
+Write $H_n(\mu)$ for the Shannon entropy (bits) of $P_n$ and
+$h(\mu)=\lim_n H_n(\mu)/n$ for the entropy rate. Entropy rate is continuous with
+respect to $\dbar$ (\citealp[\S I.9]{shields1996ergodic}; see also
+\citealp{marton1996bounding}), and the modulus is explicit:
+
+\begin{proposition}[Fano-type bound, finite-$n$ form]\label{prop:fano}
+Let $g(\delta)=\Hb(\delta)+\delta\log_2(|\A|-1)$, with $\Hb$ the binary entropy
+function. For every $n$,
+\[
+\frac{|H_n(\mu)-H_n(\nu)|}{n} \;\le\; g\big(\dbar_n(\mu,\nu)\big) \;\le\; g\big(\dbar(\mu,\nu)\big),
+\qquad\text{hence}\qquad
+\dbar \;\ge\; g^{-1}\!\left(\frac{|H_n(\mu)-H_n(\nu)|}{n}\right).
+\]
+\end{proposition}
+
+Block entropies are estimable by counting; the bound therefore converts an entropy gap
+into a certified lower bound on $\dbar$ \emph{without solving any transport problem}.
+We use it in two roles: as a cheap go/no-go pre-check, and as an independent pipeline
+whose agreement with the transport estimator (estimate $\ge$ certificate) is a
+consistency test of both. We emphasize the finite-$n$ form because it avoids estimating
+entropy-rate limits; the commonly quoted form $\dbar\ge|h(\mu)-h(\nu)|$ is \emph{not}
+correct as stated --- inverting $g$ is necessary.\footnote{For binary alphabets
+$g=\Hb$, and $g^{-1}(x)\le x$ with equality only at $0$: e.g.\ an entropy gap of $1$
+bit certifies only $\dbar\ge\tfrac12$, which is sharp (Appendix~\ref{app:proofs}).}
+
+\subsection{What can and cannot be estimated}\label{sec:estimability}
+
+A subtlety deserves daylight. Ornstein and Weiss \citep{ornstein1990sampling} proved
+that universal consistent estimation of a process in $\dbar$ from samples is possible
+on the class of B-processes and, in a precise sense, on no larger class. We therefore
+do \emph{not} claim a universal consistent estimator of $\dbar$ itself. Our claims are
+weaker and safe: each $\dbar_n$ is a functional of the $n$-dimensional marginals and is
+consistently estimable for stationary ergodic data (the empirical $n$-block
+distribution converges by the ergodic theorem, and $W_1^{\mathrm{Ham}}$ is continuous on
+the finite simplex); by Prop.~\ref{prop:blocks} the reported
+$\max_{n\in\mathcal N}\dbar_n$ is a lower bound on $\dbar$ whose tightness increases
+with $n$, with no uniform rate over process pairs. For an evaluation metric this is the
+right shape: detections are certified, and non-detections are explicitly inconclusive.
+
+\section{The estimator}\label{sec:method}
+
+\paragraph{Symbolization.} Choose a partition $\pi:\R^d\to\A$ and a sampling interval
+$\tau$; both systems are symbolized with the \emph{same} $\pi$ (fit on truth data where
+data-dependent, e.g.\ quantile edges) --- the partition is part of the metric, and using
+different partitions per system would confound the comparison. Defaults in this paper:
+$\pi=\operatorname{sign}(x)$ (which lobe of the Lorenz attractor; median split for KS),
+$\tau=0.1$ (Lorenz), $1.0$ (KS). Sensitivity to both choices is quantified in
+\S\ref{sec:sensitivity}.
+
+\paragraph{Transport on $n$-blocks.} From symbol streams of length $N$ we form all
+overlapping $n$-blocks, encode them as integers, and deduplicate into weighted supports.
+When both supports have size $\le 4096$ we solve the exact transport problem between the
+full empirical distributions (network simplex, POT \citep{flamary2021pot}); otherwise we
+draw a fixed budget of $B$ random blocks per side (point-cloud OT, here $B\in\{2000,4000\}$).
+The Hamming cost matrix is computed by XOR/popcount on bit-packed blocks. We evaluate
+$n\in\{1,2,4,8,16,32\}$; a curve costs seconds to tens of seconds on one CPU core.
+
+\paragraph{Noise floors, not error bars alone.} The empirical OT distance between two
+independent samples of the \emph{same} process is strictly positive at finite $N$
+(empirical measures never coincide), and this bias grows with $n$ in the sampled
+regime. We therefore report, for every pair and every $n$, the same-process distances
+(truth-vs-truth and surrogate-vs-surrogate on disjoint data halves) computed with the
+identical regime and budget. Only separation above the floor counts as signal; the
+floor makes the estimator's finite-sample resolution an explicit, published quantity.
+
+\paragraph{Entropy pipeline.} Block entropies $H_n$ with Miller--Madow correction and
+an undersampling guard (trust $n$ only while observed support $\le 0.02\times$ window
+count), conditional entropies $h_n=H_n-H_{n-1}$, and an independent LZ78 estimate
+\citep{ziv1978compression,lempel1976complexity} as a cross-check; certificates via
+Prop.~\ref{prop:fano}.
+
+\section{Validation on exactly solvable processes}\label{sec:validation}
+
+Three families with known answers (details and proofs in Appendix~\ref{app:proofs};
+figure~\ref{fig:validation}):
+
+\begin{enumerate}\itemsep2pt
+\item \textbf{iid Bernoulli($p$) vs iid Bernoulli($q$):} $\dbar_n=|p-q|$ exactly, for
+every $n$. With $p,q=(0.3,0.5)$, $N=10^6$: full-regime estimates match to
+$<\!5\times10^{-4}$; sampled-regime estimates match within their published floors.
+\item \textbf{iid($\tfrac12$) vs period-2 alternation} (random phase): identical
+$1$-marginals, so $\dbar_1=0$ --- a static metric sees nothing --- while
+$\dbar_n=\E[\min(k,n-k)]/n$, $k\sim\mathrm{Bin}(n,\tfrac12)$, rising to
+$\dbar=\tfrac12$ (Prop.~\ref{prop:alt}). The estimator reproduces
+$0.25,\,0.3125,\,0.3633,\dots$ to four decimals. The Fano certificate independently
+forces $\dbar\ge\Hb^{-1}(1\,\mathrm{bit})=\tfrac12$: both pipelines agree, and the
+example is the minimal instance of the failure mode this paper is about.
+\item \textbf{Markov chains:} estimated $\dbar$ plateau $\ge$ Fano certificate holds
+(consistency), and entropy estimators hit $\Hb(0.1)$ within $0.007$ bits.
+\end{enumerate}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.78\textwidth]{figs/fig_validation.pdf}
+\caption{Estimator validation against closed forms ($N=10^6$). \emph{Left:} iid($\tfrac12$)
+vs.\ period-2 alternation --- identical marginals ($\dbar_1=0$), exact
+$\dbar_n=\E[\min(k,n-k)]/n$ (line) vs.\ estimates (points). \emph{Right:} iid
+Bernoulli$(0.3)$ vs.\ $(0.5)$ --- exact $\dbar_n=0.2$ at every $n$; grey: same-process
+noise floor at the identical budget (the visible large-$n$ inflation of the raw
+estimate is exactly what the floor protocol quantifies).}
+\label{fig:validation}
+\end{figure}
+
+\section{Lorenz-63: constructed adversaries}\label{sec:lorenz}
+
+\paragraph{Setup.} Lorenz-63 \citep{lorenz1963deterministic}
+($\sigma,\rho,\beta = 10,28,8/3$; RK4, $dt=0.005$; sampled at $\tau=0.1$;
+$N=5\times10^5$ per run). All results: mean $\pm$ std over \textbf{8 independent
+realizations} (independent truth run \emph{and} independently constructed surrogates
+per seed). Symbolic truth entropy: $\lorTruthH$ bits/symbol. The Rosenstein divergence-rate
+diagnostic reads $\lambda_1=\lorTruthLam$ nats/unit time under our fixed protocol
+(literature $\lambda_1=0.906$ \citep{rosenstein1993practical,eckmann1985ergodic}; the
+absolute value is fit-window dependent, Appendix~\ref{app:impl} --- we use it only
+comparatively, under one frozen protocol for all systems).
+
+\paragraph{Surrogate zoo.} Each construction defeats a specific baseline family
+\emph{by design}, with zero training:
+\begin{itemize}\itemsep2pt
+\item \textbf{independent truth} --- negative control; every metric should read zero/floor.
+\item \textbf{IAAFT} \citep{schreiber1996improved,theiler1992testing} of $x(t)$:
+\emph{exactly} the truth marginal, matched power spectrum, scrambled higher-order
+temporal structure. (Surrogate-data methods usually construct null models to test data
+for nonlinearity; we repurpose them as adversaries to test \emph{metrics}.)
+\item \textbf{speed$\times2$}: integrate $\dot x=2f(x)$ --- \emph{exactly} the truth
+attractor and invariant measure, twice the entropy production per unit time.
+\item \textbf{time-reversed}: identical measure, identical spectrum (ACF is even),
+identical entropy rate --- hard mode: only genuinely temporal-order-sensitive metrics
+can see it.
+\item \textbf{$\rho=32$}: a genuinely different attractor --- positive control.
+\end{itemize}
+
+\begin{table}[t]
+\centering\small
+\caption{Lorenz-63, mean$\,\pm\,$std over 8 seeds. \emph{Top:} static and linear
+baselines (Wasserstein distances normalized by attractor scale; parentheses:
+same-vs-same floor). \emph{Bottom:} dynamical metrics ($\lambda_1$ in nats per unit
+time with linear-fit $r^2$; $h$ = symbolic entropy, bits/symbol; Fano LB and $\dbar$
+separation as defined in \S\ref{sec:method}). Truth reference:
+$h=\lorTruthH$, $\lambda_1=\lorTruthLam$.}
+\label{tab:lorenz}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+ & $W_1$ marginal & $W_1$ state (3D) & $W_1$ delay & PSD (dB) & ACF \\
+\midrule
+\lorTableRowsA
+\bottomrule
+\end{tabular}}
+
+\vspace{5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+ & $\lambda_1$ [$r^2$] & $h$ (bits/sym) & Fano LB on $\dbar$ & $\dbar$ (floor) & $\dbar$ sep \\
+\midrule
+\lorTableRowsB
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_lorenz_curves.pdf}
+\caption{$\dbar_n$ convergence curves (mean over 8 seeds; bands: $\pm$1 std; grey:
+same-process noise floor at identical budget). Curves rise monotonically along doubling
+$n$ and flatten, as Prop.~\ref{prop:blocks} predicts. $\dbar_1\approx0$ for every
+measure-matched surrogate: all discrimination lives in temporal structure.}
+\label{fig:curves}
+\end{figure}
+
+\paragraph{Results} (Table~\ref{tab:lorenz}, Fig.~\ref{fig:curves}). The pattern the
+paper exists to demonstrate:
+\begin{itemize}\itemsep2pt
+\item \textbf{IAAFT defeats every standard baseline at once}: $W_1$ marginal
+$=\lorIaaftWmarg$ (negative control: $\lorTiiWmarg$), PSD distance $\lorIaaftPsd$\,dB
+(control: $\lorTiiPsd$), ACF distance at control level; the Rosenstein $\lambda_1$ fit
+degenerates (low $r^2$) because there is no deterministic divergence to fit ---
+data-driven Lyapunov estimation presupposes determinism. Meanwhile
+$\dbar$ separation is $\lorIaaftDbarSep$, i.e.\ ${\sim}\lorIaaftRatio\times$ the noise
+floor, and the entropy certificate independently guarantees $\dbar\ge\lorIaaftFano$.
+\item \textbf{speed$\times2$ is certified perfect by the invariant-measure metric}
+($W_1$ state $=\lorSpdWstate$, at the same-vs-same floor $\lorSpdWstateFloor$)
+while $\dbar$ reads $\lorSpdDbarSep$. The divergence-rate diagnostic rises sharply
+(the underlying $\lambda_1$ doubles by construction; the fixed-protocol Rosenstein
+slope ratio is $\approx1.5$, compressed by fit-window saturation --- see
+Appendix~\ref{app:impl} for the window study). The spectrum does flag this surrogate
+--- which is exactly why both adversaries are needed: IAAFT kills the spectrum
+baseline, speed$\times2$ kills the measure baseline, and $\dbar$ catches both.
+\item \textbf{The positive control is caught by both families} ($W_1$ state
+$\lorRhoWstate$; $\dbar$ sep $\lorRhoDbarSep$) --- notably $\dbar$ detects it although
+its entropy gap is negligible ($\lorRhoFano$): the transport estimator carries
+information beyond the entropy certificate.
+\item \textbf{The negative control is clean} on every metric, and $\dbar$'s floor
+protocol reads it as exactly ``no signal'' ($\lorTiiDbarSep$).
+\item \textbf{Time reversal is invisible to $\dbar$ at this partition}
+($\lorRevDbarSep$) --- see \S\ref{sec:limits} for why, and for what does see it.
+\end{itemize}
+
+\paragraph{Sample efficiency.} Repeating the IAAFT and speed$\times2$ comparisons at
+$N=10^4,10^5,10^6$ gives peak separations of $\scalIaaftA/\scalIaaftB/\scalIaaftC$ and
+$\scalSpdA/\scalSpdB/\scalSpdC$ respectively: the estimate is stable two orders of
+magnitude below the data sizes typical of surrogate evaluation.
+
+\subsection{Partition and timescale sensitivity}\label{sec:sensitivity}
+
+The partition is the estimator's main free parameter (a known confound: generating
+partitions are unknown for general systems \citep{daw2003review,kantz2004nonlinear}).
+Table~\ref{tab:sens} repeats the core comparison under three partitions and three
+sampling intervals (single realization; the multi-seed variation in
+Table~\ref{tab:lorenz} calibrates noise). Rankings never flip; refinement
+\emph{increases} separation. Conclusions do not depend on the partition within the
+tested family.
+
+\begin{table}[t]
+\centering\small
+\caption{Floor-adjusted $\dbar$ separation under partition and sampling variations
+(Lorenz-63, single seed).}
+\label{tab:sens}
+\begin{tabular}{lccc}
+\toprule
+variation & neg.\ control & IAAFT & speed$\times2$ \\
+\midrule
+\sensTableRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Kuramoto--Sivashinsky: spatiotemporal chaos}\label{sec:ks}
+
+To test that nothing here is Lorenz-specific, we repeat the construction on the
+Kuramoto--Sivashinsky equation
+\citep{kuramoto1978diffusion,sivashinsky1977nonlinear},
+$u_t=-uu_x-u_{xx}-u_{xxxx}$ on $[0,L]$ periodic, at the standard chaotic size $L=22$
+\citep{cvitanovic2010state} (ETDRK4 \citep{kassam2005fourth}, $N=64$ modes, $dt=0.25$,
+sampled at $\tau=1.0$; $2\times10^5$ samples; 4 seeds).
+
+KS adds a methodological wrinkle worth recording: the equation has $O(2)$ symmetry and
+its spatial phase diffuses slowly, so \emph{non}-invariant observables confound
+dynamics with phase position. Working with raw states and the pointwise observable
+$u(x_0,t)$, the same-process floors correctly flagged this --- two \emph{independent
+truth} runs showed a 64-dimensional state $W_1$ of $\approx2.3$ (attractor-scale
+units) purely from phase, and elevated, seed-dependent symbol floors from slow drift
+(archived in the repository). The remedy is standard symmetry reduction: we compare
+states through translation-invariant coordinates (leading Fourier magnitudes
+$|\hat u_1|,\dots,|\hat u_{10}|$) and symbolize the scalar observable $|\hat u_1|(t)$
+with a median split. For systems with continuous symmetries this should be considered
+part of the partition choice. Surrogates: independent truth, IAAFT of the observable,
+and the time-rescaled PDE $u_t=2(\cdot)$ --- again \emph{exactly} the same invariant
+measure. Truth symbolic entropy: $\ksTruthH$ bits/symbol.
+
+\begin{table}[t]
+\centering\small
+\caption{Kuramoto--Sivashinsky ($L=22$), mean$\,\pm\,$std over 4 seeds. $W_1$ state is
+computed between point clouds of translation-invariant Fourier-magnitude coordinates
+(floor in parentheses); marginal, PSD and symbols use the observable $|\hat u_1|(t)$.}
+\label{tab:ks}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+ & $W_1$ marginal & $W_1$ state (sym.\ red.) & PSD (dB) & $h$ (bits/sym) & Fano LB & $\dbar$ sep \\
+\midrule
+\ksTableRows
+\bottomrule
+\end{tabular}}
+\end{table}
+
+The pattern replicates (Table~\ref{tab:ks}): the time-rescaled PDE is statistically
+indistinguishable from the same-vs-same floor on the symmetry-reduced state $W_1$ ---
+indeed \emph{below} the independent-truth control --- while $\dbar$ separates it by
+$\ksSpdDbarSep$, $\approx\ksSpdRatio\times$ its same-process floor (the negative
+control reads $\ksNegSep$); IAAFT matches the marginal and the spectrum of the
+observable to control level while $\dbar$ separates it ($\ksIaaftDbarSep$); the
+negative control is clean. Both detections peak at $n=16$ in
+the exact-support regime. The metric transfers to spatiotemporal chaos without
+modification.
+
+\section{Learned surrogates: an echo-state-network family}\label{sec:esn}
+
+Constructed adversaries prove discrimination; reviewers of surrogate models rightly ask
+about \emph{trained} ones. We train echo state networks
+\citep{jaeger2004harnessing,pathak2018model} on Lorenz-63 ($400$-unit reservoir,
+$[r;r^2]$ readout features, ridge regression, $10^5$ training samples at $\tau=0.1$),
+sweep the reservoir spectral radius $\rho_s\in[0.6,1.4]$ (two reservoir seeds each),
+and evaluate $3\times10^5$-step \emph{autonomous} rollouts against an independent truth
+run.
+
+\esnSectionBody
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\textwidth]{figs/fig_esn.pdf}
+\caption{ESN family: invariant-measure fidelity ($W_1$ state, $x$-axis; grey band:
+same-vs-same floor) vs.\ dynamical fidelity ($\dbar$ separation, $y$-axis), colored by
+spectral radius. \esnFigCaptionTail}
+\label{fig:esn}
+\end{figure}
+
+\begin{table}[t]
+\centering\small
+\caption{ESN surrogates of Lorenz-63 (each row: mean over 2 reservoir seeds).
+One-step NRMSE is teacher-forced on held-out data; remaining metrics evaluate the
+autonomous rollout. \emph{div/col} = diverged or collapsed before $5\times10^4$ steps.}
+\label{tab:esn}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+model & 1-step NRMSE & status & $W_1$ state (floor) & $h$ (bits/sym) & Fano LB & $\dbar$ sep \\
+\midrule
+\esnTableRows
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Invariant-measure training and evaluation.} DySLIM \citep{schiff2024dyslim}
+regularizes training toward the invariant measure; \citet{jiang2023training} match
+invariant measures of neural operators with optimal-transport and contrastive losses;
+\citet{melo2026learning} use adversarial OT objectives on attractor statistics;
+\citet{fumagalli2025data} build evaluation measures from correlation integrals and
+attractor densities. All compare static objects; the present work is complementary ---
+it metrizes the process.
+
+\paragraph{Dynamical diagnostics.} Lyapunov spectra
+\citep{eckmann1985ergodic,rosenstein1993practical}, entropy production
+\citep{pesin1977characteristic,grassberger1988finite}, and spectra/ACF are classical
+per-system invariants; matching them is necessary but not sufficient for process
+equivalence, and estimating them from surrogate \emph{output} presumes determinism
+(our IAAFT results make that concrete). \citet{herz2026dynamic} document, in the
+probabilistic-forecasting setting, the same tension between finite-horizon objectives
+and dynamical invariants that motivates us; their response is a training framework,
+ours an evaluation metric with certificates. Long-run climate statistics of reservoir
+computers are studied in \citep{pathak2018model,vlachas2020backpropagation}. A parallel
+motivation appears in neuroscience: Dynamical Similarity Analysis
+\citep{ostrow2023beyond} compares two systems by the temporal structure of their
+computation --- via a Koopman/Procrustes alignment of learned linear embeddings ---
+rather than the geometry of their states, drawing the same distributional-versus-dynamical
+distinction we do, in a different domain and with different machinery ($\dbar$ is a
+metric on symbolic processes with certified bounds, not an embedding alignment).
+
+\paragraph{Ergodic-theoretic tools.} $\dbar$ originates in the isomorphism theory of
+Bernoulli shifts \citep{ornstein1970bernoulli}; \citet{gray1975generalization}
+generalized it and connected it to information theory; entropy's $\dbar$-continuity
+and the block characterizations are classical \citep{shields1996ergodic}. Estimability
+limits are due to \citet{ornstein1990sampling}. Symbolic dynamics as a data-analysis
+device is reviewed in \citep{daw2003review}. Our contribution is the transfer of this
+machinery to surrogate evaluation, with a floor-calibrated, certificate-carrying
+estimator.
+
+\section{Limitations and outlook}\label{sec:limits}
+
+\paragraph{What the metric does not see.} Time reversal preserves the invariant
+measure, the power spectrum, and the entropy rate; at a binary partition it also
+preserves all $2$-block statistics \emph{exactly} (for any stationary binary process,
+$P(01)=P(10)$ by transition counting), so detection must come from $n\ge3$ asymmetries,
+which are evidently below our floors here. The delay-embedded $W_1$ --- itself a
+temporal object, not an invariant-measure metric --- does detect reversal and IAAFT,
+and is the strongest baseline in our matrix; it lacks, however, $\dbar$'s block-length
+decomposition, certified lower bounds, and clean null behavior. A finer partition
+and/or larger $n$ (with the attendant sample cost) is the principled route to
+reversibility within $\dbar$.
+
+\paragraph{Partition choice.} All statements are relative to the chosen partition:
+$\dbar$ on symbols is a lower bound on dynamical discrepancy, and a coarse partition
+can hide real differences (reversal, above). Our sensitivity protocol (fit partition on
+truth, apply to both, vary the family, report all) is a mitigation, not a solution;
+partition learning is an obvious next step.
+
+\paragraph{Estimation.} Universal rates are impossible (\S\ref{sec:estimability});
+floors grow with $n$ in the sampled regime, capping usable block lengths at fixed
+budgets. All our detections occur already in the exact-support regime (at $n\le16$
+for every measure-matched adversary; $n=32$ for the $\rho$-perturbed control).
+
+\paragraph{Outlook.} The Sinkhorn relaxation of the $n$-block transport problem is
+differentiable in the underlying trajectory through soft symbolization
+\citep{cuturi2013sinkhorn}, making $\dbar$ a candidate \emph{training} signal ---
+a DySLIM-style regularizer that targets the process rather than the measure. Our
+results suggest that is the right object to optimize; building it is future work.
+
+\paragraph{Reproducibility.} All experiments run on CPU in minutes-to-tens-of-minutes.
+Code, seeds, raw results, and the exact scripts that generate every number and figure
+in this paper are archived at \url{https://doi.org/10.5281/zenodo.21168867}.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+
+\section{Proofs}\label{app:proofs}
+
+\subsection{Proposition~\ref{prop:blocks}}
+\emph{(i)} A joining $\lambda$ with $\lambda(x_0\ne y_0)=\dbar$ has, by shift
+invariance, per-coordinate disagreement $\dbar$ at every coordinate; its restriction to
+coordinates $1..n$ is a coupling of $(P_n,Q_n)$ with normalized Hamming cost $\dbar$.
+Hence $\dbar_n\le\dbar$.
+\emph{(ii)} Let $\gamma$ be an optimal coupling for $\dbar_{n+m}$ and let $\delta_i$ be
+its disagreement probability at coordinate $i$. Restrictions to coordinates $1..n$ and
+$n{+}1..n{+}m$ are couplings of $(P_n,Q_n)$ and $(P_m,Q_m)$ (stationarity), so
+$(n+m)\,\dbar_{n+m}=\sum_{i\le n}\delta_i+\sum_{i>n}\delta_i\ge n\,\dbar_n+m\,\dbar_m$.
+Superadditivity gives $\dbar_{2n}\ge\dbar_n$ and, by Fekete's lemma,
+$\lim_n\dbar_n=\sup_n\dbar_n\le\dbar$.
+\emph{(iii)} Equality of the limit with $\dbar$ is the process-level identity of
+\citet{gray1975generalization}: optimal $n$-block couplings have subsequential weak
+limits that are joinings (a diagonal/averaging argument restores shift invariance),
+with cost $\lim_n\dbar_n$. \qed
+
+\subsection{Proposition~\ref{prop:fano}}
+Let $\gamma$ be an optimal coupling of $(P_n,Q_n)$ with per-coordinate disagreements
+$\delta_i$, $\frac1n\sum\delta_i=\dbar_n$. Then
+$H(X^n)\le H(Y^n)+H(X^n\mid Y^n)\le H(Y^n)+\sum_i H(X_i\mid Y^n)
+\le H(Y^n)+\sum_i H(X_i\mid Y_i)$,
+and Fano's inequality gives $H(X_i\mid Y_i)\le \Hb(\delta_i)+\delta_i\log_2(|\A|-1)$.
+Concavity of $g$ and Jensen yield $\frac1n\sum_i g(\delta_i)\le g(\dbar_n)$. Symmetrize
+in $(\mu,\nu)$ and use monotonicity of $g$ on $[0,1-1/|\A|]$ with
+$\dbar_n\le\dbar$. \qed
+
+\subsection{iid Bernoulli pairs}
+For product measures with per-coordinate marginals $p,q$: any coupling of $(P_n,Q_n)$
+has $P(x_i\ne y_i)\ge \mathrm{TV}(\mathrm{Bern}(p),\mathrm{Bern}(q))=|p-q|$ at each
+$i$, so $\dbar_n\ge|p-q|$; the product of per-coordinate monotone couplings achieves
+it. Hence $\dbar_n=|p-q|$ for all $n$, and $\dbar=|p-q|$. \qed
+
+\subsection{iid($\tfrac12$) vs.\ period-2 alternation}\label{app:alt}
+\begin{proposition}\label{prop:alt}
+Let $\mu$ be iid Bernoulli($\tfrac12$) and $\nu$ the two-point stationary process
+supported on the alternating sequences. Then
+$\dbar_n(\mu,\nu)=\E[\min(k,n-k)]/n$ with $k\sim\mathrm{Bin}(n,\tfrac12)$, and
+$\dbar(\mu,\nu)=\tfrac12$.
+\end{proposition}
+\begin{proof}
+$Q_n$ is uniform on the two alternating $n$-blocks $a,\bar a$ (bitwise complements);
+$P_n$ is uniform on $\{0,1\}^n$. For any block $b$ with $k=d_H(b,a)$ mismatches to $a$,
+its distance to $\bar a$ is $n-k$, so the transport cost from $b$ is at least
+$\min(k,n-k)/n$; hence $\dbar_n\ge\E[\min(k,n-k)]/n$. Assigning each $b$ to its nearer
+target and splitting complement pairs $\{b,\bar b\}$ across the two targets balances
+the demands ($\tfrac12$ each) exactly, achieving the bound. Monotone convergence of
+$\E[\min(k,n-k)]/n\to\tfrac12$ follows from $k/n\to\tfrac12$; alternatively,
+$h(\mu)-h(\nu)=1$ bit and Prop.~\ref{prop:fano} force $\dbar\ge\Hb^{-1}(1)=\tfrac12$,
+while $\dbar\le\tfrac12$ holds because independent coupling of $\mu$ with any binary
+process has cost $\tfrac12$.
+\end{proof}
+
+\section{Implementation details}\label{app:impl}
+
+\paragraph{Integrators.} Lorenz-63: fixed-step RK4, $dt=0.005$, transient $100$ time
+units discarded, seeded random initial conditions. KS: ETDRK4 \citep{kassam2005fourth}
+in rfft space, $N=64$, $L=22$, $dt=0.25$ ($0.125$ for the speed$\times2$ system),
+2/3-rule dealiasing, transient $1000$ time units.
+
+\paragraph{IAAFT.} Up to 200 iterations, alternating exact rank-remap to the reference
+amplitude distribution with spectral amplitude replacement; convergence tolerance
+$10^{-8}$ on relative spectral error \citep{schreiber1996improved}.
+
+\paragraph{$\dbar$ estimator.} Exact network-simplex OT (POT \citep{flamary2021pot});
+full-distribution regime when both supports $\le4096$, else fixed budgets of $2000$
+(multi-seed and KS runs) or $4000$ (single-seed convergence study) blocks per side;
+floors and repeats computed under the identical regime and budget. Block encoding is
+exact for $|\A|^n<2^{53}$.
+
+\paragraph{Entropy.} Plug-in block entropies with Miller--Madow correction; guard:
+trust $n$ only if observed support $\le 0.02\times$ windows. LZ78 cross-check.
+
+\paragraph{Rosenstein $\lambda_1$ protocol and its fragility.} Delay dim.\ 3, lag 2,
+Theiler window 50, fit over steps 1--15 of the mean log-divergence, $r^2$ of the fit
+reported; identical protocol for every system. A window study on Lorenz truth
+(4 seeds, $2\times10^5$ samples, $\tau=0.1$) gives $\lambda_1 = 1.195/1.573/1.425/1.683$
+nats/t for windows $(1,15)/(1,8)/(2,10)/(1,5)$ (literature $0.906$), and
+speed$\times2$/truth slope ratios of $1.50/1.28/1.34/1.26$ against the constructed
+value $2$: early-lag transients inflate short windows, saturation compresses long
+ones, and no window fixes both. This calibration sensitivity --- on the system where
+the answer is known --- is why we treat data-driven Lyapunov estimates as a
+comparative diagnostic rather than a metric, and it illustrates the practical appeal
+of certified, protocol-frozen lower bounds like Prop.~\ref{prop:fano}.
+
+\paragraph{ESN.} Reservoir $400$, density $0.02$, spectral radius as stated, input
+scale $0.5$, bias $\mathcal U(-0.2,0.2)$, features $[r;r^2]$, ridge $10^{-6}$, washout
+$10^3$; training/eval data disjoint and independently seeded.
+
+\paragraph{Compute.} Every experiment in this paper runs on a desktop CPU; the complete
+set reproduces in under two hours single-threaded.
+
+\end{document}

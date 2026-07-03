@@ -1,0 +1,13 @@
+# virtual environments & caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# regenerable data caches (enwik8 etc.)
+data_cache/
+
+# bulk experiment artifacts too large for GitHub (2.9 GB of activation dumps;
+# regenerable from mem-gen-delay/scripts — use git-lfs or a release asset if
+# these ever need to be versioned)
+mem-gen-delay/runs/**/*.npz

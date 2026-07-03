@@ -1,0 +1,29 @@
+% ESN section body and figure caption tail (prose written against generated macros).
+\newcommand{\esnSectionBody}{%
+Results (Table~\ref{tab:esn}, Fig.~\ref{fig:esn}) split into three regimes.
+\emph{First, no false alarms:} across the healthy sweep, every rollout that
+reproduces the invariant measure ($W_1$ at its same-vs-same floor) also gets the
+dynamics right, and $\dbar$ agrees --- its separation stays within
+$\pm\esnHealthyMaxAbsDbar$ of zero, i.e.\ within floor noise. A dynamical metric that
+fired on healthy surrogates would be useless; this one does not.
+\emph{Second, gross failures are caught by everything:} one $\rho_s=1.4$ rollout
+leaves the attractor for a low-entropy orbit ($W_1=\esnBadW$, $\dbar$ sep
+$=\esnBadDbar$, symbolic entropy $\esnBadH$ vs.\ truth $0.221$), and the tiny
+reservoir either diverges or collapses; measure- and process-level metrics agree.
+\emph{Third --- the regime that matters --- subtle dynamical corruption dissociates
+the metrics:} removing the $[r;r^2]$ readout's quadratic half (the standard device for
+handling the Lorenz symmetry \citep{pathak2018model}) yields rollouts with excellent
+one-step error ($\sim\!2\times10^{-3}$) whose invariant-measure distance is marginal
+--- $W_1=\esnLinWa$ against a floor of $\esnLinWaFloor$ for one reservoir seed ---
+while $\dbar$ separates both seeds ($\esnLinDbarA$ and $\esnLinDbarB$, i.e.\
+$\esnLinRatioLo$--$\esnLinRatioHi\times$ their $\dbar$ floor of $\esnLinDbarFloor$),
+clearly outside the healthy band in which every model sat within $\pm$one floor of
+zero, and the entropy certificate moves in agreement ($h=\esnLinHa,\esnLinHb$ vs.\
+truth $0.221$). The undertrained and
+over-regularized controls remain faithful on both axes --- degradation per se is not
+what $\dbar$ detects; \emph{dynamical} degradation is.}
+
+\newcommand{\esnFigCaptionTail}{Healthy models cluster at the origin (measure-faithful
+\emph{and} dynamics-faithful); gross failures leave along both axes; the
+linear-readout models (red squares) separate vertically: wrong dynamics at
+near-floor invariant-measure distance.}

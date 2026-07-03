@@ -1,0 +1,202 @@
+% Single source of truth for numeric claims in the paper.
+% Filled from results/ (see scripts/analyze.py output and results/*.csv).
+% Char-LM numbers final (2026-07-02); synthetic prose updated after the sweep.
+
+\newcommand{\resSynthSeeds}{three}
+\newcommand{\resCharlmSeeds}{two}
+\newcommand{\resCharlmParams}{11M}
+\newcommand{\resSemrfOverhead}{2\%}
+
+% ---------------------------------------------------------------- abstract --
+\newcommand{\resAbstractFindings}{%
+On enwik8, SemRF attains the best test bits-per-character of all eight schemes
+at the training context (1.4246 vs.\ 1.4276 for RoPE, 1.4348 for ALiBi, and
+1.4409 for CABLE) and, unlike rotary and absolute schemes---whose loss degrades
+severely beyond the training length---its bpc \emph{continues to improve} with
+longer evaluation contexts, reaching 1.340 at $8\times$ the training length,
+ahead of CABLE (1.352) and ALiBi (1.356) with a margin that widens as context
+grows. On the diagnostics, SemRF is the \emph{only} scheme that solves all
+three tasks at the training length: RoPE and the absolute schemes fail
+associative recall, ALiBi forms its retrieval circuit in only two of three
+seeds, and CABLE---while excellent on recall---fails selective copying
+outright. Ablations attribute SemRF's recency and recall behaviour causally to
+the frame-conditioned temporal decay, while the comparison with CABLE
+delineates an honest trade-off between structured and unstructured
+content-conditioned biases on tasks requiring scale-free retrieval across
+arbitrary gaps.}
+
+% ----------------------------------------------------------------- results --
+\newcommand{\resResultsProse}{%
+\paragraph{Character-level language modeling.}
+Table~\ref{tab:charlm} reports test bpc at the training context length (512).
+SemRF achieves the best bpc of all eight schemes ($1.4246 \pm 0.0006$ over
+\resCharlmSeeds{} seeds), ahead of RoPE ($1.4276 \pm 0.0039$), ALiBi
+($1.4348 \pm 0.0004$), and CABLE ($1.4409 \pm 0.0019$), at a parameter
+overhead of only 1.7\% and identical backbones. The ordering is consistent
+across seeds.
+
+\paragraph{Length extrapolation on enwik8.}
+Figure~\ref{fig:charlm-extrap} shows test bpc as the evaluation context grows
+from 256 to 4096 with no retraining. The absolute schemes fail catastrophically
+(sinusoidal reaches 35 bpc at 4096; learned-absolute 4.1), and RoPE more than
+triples its loss (1.43$\,\to\,$4.62). The T5 bucketed bias holds up to
+$2\times$ before degrading. The three decay-based biases improve
+monotonically with context: ALiBi from 1.435 to 1.356, CABLE from 1.441 to
+1.352, and SemRF from 1.425 to \textbf{1.340} (means over seeds)---SemRF is
+best at every evaluated length. Notably, SemRF's advantage over ALiBi
+\emph{widens} with context length ($-0.010$ bpc at 512 and 1024, $-0.013$ at
+2048, $-0.016$ at 4096): both content-conditioned biases (CABLE and SemRF)
+out-extrapolate ALiBi's fixed slopes, and SemRF's structured
+frame-conditioning outperforms CABLE's unstructured per-token conditioning
+throughout.
+
+\paragraph{Diagnostics: temporal recency.}
+On the time-sensitive task (Table~\ref{tab:synth}, Figure~\ref{fig:synth-extrap}
+left), only the decay-based biases are reliable: SemRF, ALiBi, and CABLE all
+reach perfect accuracy on the training distribution ($1.000 \pm 0.000$ over
+three seeds) \emph{and remain perfect at $4\times$ longer streams}.
+Learned-absolute embeddings also solve the training length ($1.000$) but
+collapse under extrapolation ($0.66$ at $2\times$, $0.36$ at $4\times$)---the
+canonical absolute-position saturation failure. RoPE is bistable across seeds
+($0.60 \pm 0.28$ at train length; one of three seeds solves the task), and
+sinusoidal never learns the recency rule ($0.39$). The task thus isolates
+exactly the behaviour decay-based biases provide: preferring the \emph{most
+recent} match requires a positional signal whose effect is relative and
+monotone in elapsed time, not an absolute index.
+
+\paragraph{Diagnostics: selective copy.}
+Ordered copying from a growing blank field (Figure~\ref{fig:synth-extrap}
+right) reverses the picture. Every scheme except sinusoidal and CABLE solves
+the training length; CABLE fails outright ($0.17 \pm 0.04$ across seeds,
+barely above the blank-guessing floor), suggesting that a purely
+content-accumulated notion of distance provides no stable ordinal position
+signal for ``emit the $k$-th data token'' routing. Under $4\times$
+extrapolation among the schemes that do train, the bucketed T5 bias is best
+(0.95), followed by NoPE (0.86); SemRF (0.73) outperforms ALiBi (0.70), while
+RoPE and learned-absolute collapse below 0.10. Notably, SemRF \emph{without}
+its temporal term extrapolates better still on this task (0.88), showing that
+distance decay---helpful for recency---has a cost when the task requires
+attending across the entire span regardless of distance. Frame-conditioning
+recovers part of this cost relative to ALiBi's fixed slopes, consistent with
+its design.
+
+\paragraph{Diagnostics: associative recall.}
+Associative recall exposes a dimension the other tasks do not: whether the
+content-matching (induction) circuit forms \emph{at all} within a fixed budget.
+The transition is sharp and seed-dependent near our budget (Section
+\ref{sec:setup}). The two content-conditioned biases are the only reliable
+learners: SemRF and CABLE both form the circuit in every seed
+($1.000 \pm 0.000$ on the training distribution); ALiBi succeeds in two of
+three seeds ($0.75 \pm 0.35$), and \emph{no other scheme ever escapes the
+value-guessing plateau} ($\approx 0.26$) within 15k steps. The ablation is
+decisive about the mechanism: removing SemRF's temporal term drops training
+accuracy to $0.33$---content-conditioned decay is what enables reliable
+circuit formation, likely by concentrating early attention locally and
+breaking the symmetry among candidate key--value bindings. Under gap
+extrapolation, CABLE is strongest: its accumulated ``distance'' assigns
+near-zero increments to filler tokens, so retrieval is unaffected by gap
+length (accuracy $1.000$ at every gap)---the clearest empirical advantage of
+its cumulative-sum design, and one SemRF does not match. ALiBi's fixed slopes
+are likewise scale-free and hold near-perfect accuracy when its circuit
+forms, whereas SemRF's \emph{learned} temporal parameters adapt to the
+training gap scale and over-decay at $20$--$40\times$ longer retrieval
+distances ($0.87$ at gap 64, $0.39$ beyond); the hard-assignment variant
+retains more ($0.80$ at gap 160 in its best seed). We report this
+trade-off---SemRF's frame-level decay buys formation reliability,
+language-modeling accuracy, and ordinal-position competence (selective copy,
+where CABLE fails), at the price of gap-scale adaptation on pure
+content-keyed retrieval, where CABLE's token-level accumulation excels---as a
+limitation and a target for future work (e.g., parameterizing frame decay in
+accumulated content rather than raw distance). In a harder training regime
+(gap jitter up to 32), no baseline then evaluated solved the training
+distribution in any seed, while SemRF succeeded in one of three
+(Appendix~\ref{app:hard}).}
+
+% --------------------------------------------------------------- ablations --
+\newcommand{\resAblationProse}{%
+Figure~\ref{fig:ablation} ablates each SemRF term, the soft assignment, and the
+anchor count $K$. The clearest causal result concerns the temporal term: on
+temporal recency, removing it leaves training-length accuracy intact
+($0.997$) but destroys extrapolation ($0.86$ at $2\times$, $0.55$ at
+$4\times$, versus $1.000$ at all lengths for the full model)---the
+frame-conditioned decay is directly responsible for length-robust
+time-sensitivity, not merely correlated with it. Conversely, on selective copy
+the no-time variant extrapolates best ($0.88$ vs.\ $0.73$ at $4\times$),
+quantifying the trade-off discussed above. Dropping the anchor-affinity or
+residual terms changes selective-copy extrapolation by at most $0.03$,
+indicating the content terms matter more for language modeling (where SemRF
+beats ALiBi at the training length) than for these purely mechanistic tasks.
+Hard (straight-through) assignment matches soft assignment on temporal recency
+($1.000$) and costs a little on selective copy ($0.68$ vs.\ $0.73$); accuracy
+is stable across $K \in \{8, 16, 64\}$, with mild gains at larger $K$ on
+selective copy.}
+
+% ---------------------------------------------------------------- analysis --
+\newcommand{\resAnalysisProse}{%
+We inspect the SemRF module of an enwik8 model (seed 0) after training.
+\textbf{Anchors discover character classes.} Of $K{=}32$ anchors, 12 are used
+by the 98 byte values that occur in the corpus, and the induced hard clusters
+align with interpretable classes (Figure~\ref{fig:anchors}): the bulk of
+lowercase letters share one frame; digits split across dedicated frames;
+uppercase letters, whitespace/control characters, and punctuation each form
+their own groups; and the wiki-markup delimiter \texttt{|} occupies a
+singleton frame. None of this structure is supervised---it emerges from the
+language-modeling objective alone.
+\textbf{Frames acquire distinct time constants.} The learned per-frame decay
+slopes (Figure~\ref{fig:anchors}, right) vary substantially \emph{within} each
+attention head: the within-head spread between the slowest and fastest frame
+reaches 88\% of the head's mean slope. The ordering is semantically coherent:
+the slowest-decaying frames---those whose queries retain the longest
+context---contain the structural markup tokens (\texttt{|}, punctuation,
+whitespace/newline), while the fastest-decaying frames contain lowercase
+letters, whose next-token prediction is dominated by word-local context. The
+model thus learns, without supervision, that \emph{structure is long-range and
+orthography is local}---precisely the decoupling of ``what'' from ``when'' that
+motivates SemRF.}
+
+% -------------------------------------------------------------- conclusion --
+\newcommand{\resConclusionClaim}{%
+delivers the best character-level perplexity of eight positional schemes at
+the training length, extrapolates to $8\times$ longer contexts with
+monotonically improving loss where rotary and absolute schemes degrade or
+diverge, and is the only scheme---including the content-conditioned CABLE
+baseline---to solve all three diagnostics at the training length, with
+ablations attributing its recency and recall behaviour to the
+frame-conditioned temporal decay.}
+
+% ---------------------------------------------------------------- appendix --
+\newcommand{\resAppendixProse}{%
+\textbf{Synthetic tasks.} Associative recall: 16 keys / 16 values, 8 pairs,
+8 queries, filler gap sampled uniformly in $[0,8]$ at training time; models
+$d{=}256$, 4 layers, 8 heads, $d_{\mathrm{ff}}{=}1024$; AdamW, lr $10^{-3}$
+(cosine, warmup $=$ steps$/20$), batch 64, 15{,}000 steps. Temporal recency: 4
+variables, 16 values, stream length 96, query probability 0.5, 10{,}000 steps.
+Selective copy: 16 data tokens in a 128-token field, 5{,}000 steps. Baselines
+use three seeds and SemRF ablations two; we report mean $\pm$ population std
+and, for headline comparisons, paired $t$-tests across seeds (with $n{\le}3$
+these are indicative rather than conclusive; the qualitative separations in
+Figure~\ref{fig:synth-extrap} do not depend on them). We verified in
+preliminary probes that the content-matching circuit does not form reliably in
+smaller or shorter-trained models (a sharp transition between 6k and 15k steps
+at $d{=}256$ for associative recall), consistent with capacity effects
+reported for MQAR-style tasks; near this transition, circuit formation is
+seed- and hyperparameter-sensitive for \emph{all} methods, which is itself one
+of our observations.
+\textbf{enwik8.} Byte-level (vocab 256), 90M/5M/5M split; $d{=}384$, 6 layers,
+6 heads, $d_{\mathrm{ff}}{=}1536$, dropout 0.1, weight tying; AdamW, lr
+$6{\times}10^{-4}$ (cosine, 400-step warmup), batch 16, context 512, 10{,}000
+steps ($\approx$82M tokens); bf16 autocast; evaluation over non-overlapping
+windows on 500k test bytes per context length. SemRF: $K{=}32$ anchors,
+residual dim 32, $\tau{=}1$, shared content terms, per-head frame slopes.
+\textbf{CABLE.} We follow the authors' reference implementation
+(\texttt{github.com/axiomlab/cable}, \texttt{pos\_methods/cable.py}, class
+\texttt{CABLE}, which their GPT experiments use): each layer owns a
+$\mathrm{Linear}(d \to H)$; per-token increments $-\mathrm{softplus}(\cdot)$
+are cumulatively summed into $S$ and the additive bias is $S_i - S_j$,
+recomputed at every layer from that layer's LayerNormed attention input; the
+projection keeps PyTorch's default initialization, as in the reference. The
+released reference omits the separate amplitude weighting $g_\theta$ of the
+paper's Eq.~7, and we match the released code.
+Training cost: SemRF $\approx$1.55$\times$ the per-step time of RoPE at the
+training context in our implementation (additive-bias schemes use PyTorch's
+math attention path rather than the fused kernel).}

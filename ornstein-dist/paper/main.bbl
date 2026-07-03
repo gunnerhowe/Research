@@ -1,0 +1,225 @@
+\begin{thebibliography}{31}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Cuturi(2013)]{cuturi2013sinkhorn}
+Marco Cuturi.
+\newblock Sinkhorn distances: lightspeed computation of optimal transport.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~26, 2013.
+
+\bibitem[Cvitanovi{\'c} et~al.(2010)Cvitanovi{\'c}, Davidchack, and
+  Siminos]{cvitanovic2010state}
+Predrag Cvitanovi{\'c}, Ruslan~L. Davidchack, and Evangelos Siminos.
+\newblock On the state space geometry of the {K}uramoto--{S}ivashinsky flow in
+  a periodic domain.
+\newblock \emph{SIAM Journal on Applied Dynamical Systems}, 9\penalty0
+  (1):\penalty0 1--33, 2010.
+
+\bibitem[Daw et~al.(2003)Daw, Finney, and Tracy]{daw2003review}
+C.~Stuart Daw, Charles E.~A. Finney, and Eugene~R. Tracy.
+\newblock A review of symbolic analysis of experimental data.
+\newblock \emph{Review of Scientific Instruments}, 74\penalty0 (2):\penalty0
+  915--930, 2003.
+
+\bibitem[Eckmann and Ruelle(1985)]{eckmann1985ergodic}
+Jean-Pierre Eckmann and David Ruelle.
+\newblock Ergodic theory of chaos and strange attractors.
+\newblock \emph{Reviews of Modern Physics}, 57\penalty0 (3):\penalty0 617--656,
+  1985.
+
+\bibitem[Flamary et~al.(2021)Flamary, Courty, Gramfort, Alaya, Boisbunon,
+  Chambon, Chapel, Corenflos, Fatras, Fournier, Gautheron, Gayraud, Janati,
+  Rakotomamonjy, Redko, Rolet, Schutz, Seguy, Sutherland, Tavenard, Tong, and
+  Vayer]{flamary2021pot}
+R{\'e}mi Flamary, Nicolas Courty, Alexandre Gramfort, Mokhtar~Z. Alaya,
+  Aur{\'e}lie Boisbunon, Stanislas Chambon, Laetitia Chapel, Adrien Corenflos,
+  Kilian Fatras, Nemo Fournier, L{\'e}o Gautheron, Nathalie~T.H. Gayraud,
+  Hicham Janati, Alain Rakotomamonjy, Ievgen Redko, Antoine Rolet, Antony
+  Schutz, Vivien Seguy, Danica~J. Sutherland, Romain Tavenard, Alexander Tong,
+  and Titouan Vayer.
+\newblock {POT}: {P}ython optimal transport.
+\newblock \emph{Journal of Machine Learning Research}, 22\penalty0
+  (78):\penalty0 1--8, 2021.
+
+\bibitem[Fumagalli et~al.(2025)Fumagalli, L{\"u}dge, de~Wiljes, Haario, and
+  Jaurigue]{fumagalli2025data}
+Luci Fumagalli, Kathy L{\"u}dge, Jana de~Wiljes, Heikki Haario, and Lina
+  Jaurigue.
+\newblock Data-driven performance measures using global properties of
+  attractors for black-box surrogate models of chaotic systems.
+\newblock \emph{arXiv preprint arXiv:2506.09546}, 2025.
+
+\bibitem[Grassberger(1988)]{grassberger1988finite}
+Peter Grassberger.
+\newblock Finite sample corrections to entropy and dimension estimates.
+\newblock \emph{Physics Letters A}, 128\penalty0 (6--7):\penalty0 369--373,
+  1988.
+
+\bibitem[Gray et~al.(1975)Gray, Neuhoff, and Shields]{gray1975generalization}
+Robert~M. Gray, David~L. Neuhoff, and Paul~C. Shields.
+\newblock A generalization of {O}rnstein's $\bar d$ distance with applications
+  to information theory.
+\newblock \emph{The Annals of Probability}, 3\penalty0 (2):\penalty0 315--328,
+  1975.
+
+\bibitem[Herz et~al.(2026)Herz, Pals, Durstewitz, and Koppe]{herz2026dynamic}
+Andre Herz, Matthijs Pals, Daniel Durstewitz, and Georgia Koppe.
+\newblock The dynamic-probabilistic consistency gap in chaotic surrogate
+  modeling.
+\newblock \emph{arXiv preprint arXiv:2605.31547}, 2026.
+
+\bibitem[Jaeger and Haas(2004)]{jaeger2004harnessing}
+Herbert Jaeger and Harald Haas.
+\newblock Harnessing nonlinearity: predicting chaotic systems and saving energy
+  in wireless communication.
+\newblock \emph{Science}, 304\penalty0 (5667):\penalty0 78--80, 2004.
+
+\bibitem[Jiang et~al.(2023)Jiang, Lu, Orlova, and Willett]{jiang2023training}
+Ruoxi Jiang, Peter~Y. Lu, Elena Orlova, and Rebecca Willett.
+\newblock Training neural operators to preserve invariant measures of chaotic
+  attractors.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~36, 2023.
+\newblock arXiv:2306.01187.
+
+\bibitem[Kantz and Schreiber(2004)]{kantz2004nonlinear}
+Holger Kantz and Thomas Schreiber.
+\newblock Nonlinear time series analysis.
+\newblock \emph{Cambridge University Press, 2nd edition}, 2004.
+
+\bibitem[Kassam and Trefethen(2005)]{kassam2005fourth}
+Aly-Khan Kassam and Lloyd~N. Trefethen.
+\newblock Fourth-order time-stepping for stiff {PDE}s.
+\newblock \emph{SIAM Journal on Scientific Computing}, 26\penalty0
+  (4):\penalty0 1214--1233, 2005.
+
+\bibitem[Kuramoto(1978)]{kuramoto1978diffusion}
+Yoshiki Kuramoto.
+\newblock Diffusion-induced chaos in reaction systems.
+\newblock \emph{Progress of Theoretical Physics Supplement}, 64:\penalty0
+  346--367, 1978.
+
+\bibitem[Lempel and Ziv(1976)]{lempel1976complexity}
+Abraham Lempel and Jacob Ziv.
+\newblock On the complexity of finite sequences.
+\newblock \emph{IEEE Transactions on Information Theory}, 22\penalty0
+  (1):\penalty0 75--81, 1976.
+
+\bibitem[Lorenz(1963)]{lorenz1963deterministic}
+Edward~N. Lorenz.
+\newblock Deterministic nonperiodic flow.
+\newblock \emph{Journal of the Atmospheric Sciences}, 20\penalty0 (2):\penalty0
+  130--141, 1963.
+
+\bibitem[Marton(1996)]{marton1996bounding}
+Katalin Marton.
+\newblock Bounding $\bar d$-distance by informational divergence: a method to
+  prove measure concentration.
+\newblock \emph{The Annals of Probability}, 24\penalty0 (2):\penalty0 857--866,
+  1996.
+
+\bibitem[Melo et~al.(2026)Melo, Santiago, and Lu]{melo2026learning}
+Gabriel Melo, Leonardo Santiago, and Peter~Y. Lu.
+\newblock Learning to emulate chaos: Adversarial optimal transport
+  regularization.
+\newblock \emph{arXiv preprint arXiv:2604.21097}, 2026.
+
+\bibitem[Ornstein(1970)]{ornstein1970bernoulli}
+Donald~S. Ornstein.
+\newblock Bernoulli shifts with the same entropy are isomorphic.
+\newblock \emph{Advances in Mathematics}, 4\penalty0 (3):\penalty0 337--352,
+  1970.
+
+\bibitem[Ornstein and Weiss(1990)]{ornstein1990sampling}
+Donald~S. Ornstein and Benjamin Weiss.
+\newblock How sampling reveals a process.
+\newblock \emph{The Annals of Probability}, 18\penalty0 (3):\penalty0 905--930,
+  1990.
+
+\bibitem[Ostrow et~al.(2023)Ostrow, Eisen, Kozachkov, and
+  Fiete]{ostrow2023beyond}
+Mitchell Ostrow, Adam Eisen, Leo Kozachkov, and Ila Fiete.
+\newblock Beyond geometry: Comparing the temporal structure of computation in
+  neural circuits with dynamical similarity analysis.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~36, 2023.
+\newblock arXiv:2306.10168.
+
+\bibitem[Pathak et~al.(2018)Pathak, Hunt, Girvan, Lu, and Ott]{pathak2018model}
+Jaideep Pathak, Brian Hunt, Michelle Girvan, Zhixin Lu, and Edward Ott.
+\newblock Model-free prediction of large spatiotemporally chaotic systems from
+  data: a reservoir computing approach.
+\newblock \emph{Physical Review Letters}, 120\penalty0 (2):\penalty0 024102,
+  2018.
+
+\bibitem[Pesin(1977)]{pesin1977characteristic}
+Yakov~B. Pesin.
+\newblock Characteristic {L}yapunov exponents and smooth ergodic theory.
+\newblock \emph{Russian Mathematical Surveys}, 32\penalty0 (4):\penalty0
+  55--114, 1977.
+
+\bibitem[Rosenstein et~al.(1993)Rosenstein, Collins, and
+  De~Luca]{rosenstein1993practical}
+Michael~T. Rosenstein, James~J. Collins, and Carlo~J. De~Luca.
+\newblock A practical method for calculating largest {L}yapunov exponents from
+  small data sets.
+\newblock \emph{Physica D: Nonlinear Phenomena}, 65\penalty0 (1--2):\penalty0
+  117--134, 1993.
+
+\bibitem[Schiff et~al.(2024)Schiff, Wan, Parker, Hoyer, Kuleshov, Sha, and
+  Zepeda-N{\'u}{\~n}ez]{schiff2024dyslim}
+Yair Schiff, Zhong~Yi Wan, Jeffrey~B. Parker, Stephan Hoyer, Volodymyr
+  Kuleshov, Fei Sha, and Leonardo Zepeda-N{\'u}{\~n}ez.
+\newblock {DySLIM}: Dynamics stable learning by invariant measure for chaotic
+  systems.
+\newblock In \emph{Proceedings of the 41st International Conference on Machine
+  Learning (ICML)}, 2024.
+\newblock arXiv:2402.04467.
+
+\bibitem[Schreiber and Schmitz(1996)]{schreiber1996improved}
+Thomas Schreiber and Andreas Schmitz.
+\newblock Improved surrogate data for nonlinearity tests.
+\newblock \emph{Physical Review Letters}, 77\penalty0 (4):\penalty0 635--638,
+  1996.
+
+\bibitem[Shields(1996)]{shields1996ergodic}
+Paul~C. Shields.
+\newblock \emph{The Ergodic Theory of Discrete Sample Paths}, volume~13 of
+  \emph{Graduate Studies in Mathematics}.
+\newblock American Mathematical Society, 1996.
+
+\bibitem[Sivashinsky(1977)]{sivashinsky1977nonlinear}
+Gregory~I. Sivashinsky.
+\newblock Nonlinear analysis of hydrodynamic instability in laminar flames ---
+  {I}. {D}erivation of basic equations.
+\newblock \emph{Acta Astronautica}, 4\penalty0 (11--12):\penalty0 1177--1206,
+  1977.
+
+\bibitem[Theiler et~al.(1992)Theiler, Eubank, Longtin, Galdrikian, and
+  Farmer]{theiler1992testing}
+James Theiler, Stephen Eubank, Andr{\'e} Longtin, Bryan Galdrikian, and
+  J.~Doyne Farmer.
+\newblock Testing for nonlinearity in time series: the method of surrogate
+  data.
+\newblock \emph{Physica D: Nonlinear Phenomena}, 58\penalty0 (1--4):\penalty0
+  77--94, 1992.
+
+\bibitem[Vlachas et~al.(2020)Vlachas, Pathak, Hunt, Sapsis, Girvan, Ott, and
+  Koumoutsakos]{vlachas2020backpropagation}
+Pantelis~R. Vlachas, Jaideep Pathak, Brian~R. Hunt, Themistoklis~P. Sapsis,
+  Michelle Girvan, Edward Ott, and Petros Koumoutsakos.
+\newblock Backpropagation algorithms and reservoir computing in recurrent
+  neural networks for the forecasting of complex spatiotemporal dynamics.
+\newblock \emph{Neural Networks}, 126:\penalty0 191--217, 2020.
+
+\bibitem[Ziv and Lempel(1978)]{ziv1978compression}
+Jacob Ziv and Abraham Lempel.
+\newblock Compression of individual sequences via variable-rate coding.
+\newblock \emph{IEEE Transactions on Information Theory}, 24\penalty0
+  (5):\penalty0 530--536, 1978.
+
+\end{thebibliography}

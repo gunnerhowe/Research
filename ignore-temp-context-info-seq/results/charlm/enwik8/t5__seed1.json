@@ -1,0 +1,97 @@
+{
+  "corpus": "enwik8",
+  "variant": "t5",
+  "position": "t5",
+  "seed": 1,
+  "n_params": 10736832,
+  "train_time_s": 1304.043954372406,
+  "model_cfg": {
+    "vocab_size": 256,
+    "d_model": 384,
+    "n_layers": 6,
+    "n_heads": 6,
+    "d_ff": 1536,
+    "dropout": 0.1,
+    "max_seq_len": 4096,
+    "tie_embeddings": true,
+    "position": "t5",
+    "rope_base": 10000.0,
+    "t5_num_buckets": 32,
+    "t5_max_distance": 128,
+    "semrf_num_anchors": 32,
+    "semrf_anchor_dim": null,
+    "semrf_res_dim": 32,
+    "semrf_tau": 1.0,
+    "semrf_use_sem": true,
+    "semrf_use_res": true,
+    "semrf_use_time": true,
+    "semrf_hard": false,
+    "semrf_per_head_content": false
+  },
+  "train_cfg": {
+    "steps": 10000,
+    "batch_size": 16,
+    "lr": 0.0006,
+    "min_lr_ratio": 0.1,
+    "warmup_steps": 400,
+    "weight_decay": 0.1,
+    "grad_clip": 1.0,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "eval_every": 1666,
+    "eval_batches": 0,
+    "amp": true,
+    "amp_dtype": "bfloat16",
+    "seed": 1,
+    "device": "cuda",
+    "log_every": 200,
+    "compile": false
+  },
+  "test_bpc": 1.5078,
+  "extrapolation_bpc": {
+    "256": 1.5779,
+    "512": 1.5078,
+    "1024": 1.5516,
+    "2048": 2.5294,
+    "4096": 3.4987
+  },
+  "history": [
+    {
+      "val_bpc": 2.4933,
+      "step": 1666,
+      "train_loss": 1.9376574754714966
+    },
+    {
+      "val_bpc": 1.9297,
+      "step": 3332,
+      "train_loss": 1.3877677917480469
+    },
+    {
+      "val_bpc": 1.7882,
+      "step": 4998,
+      "train_loss": 1.2151285409927368
+    },
+    {
+      "val_bpc": 1.7109,
+      "step": 6664,
+      "train_loss": 1.1893305778503418
+    },
+    {
+      "val_bpc": 1.664,
+      "step": 8330,
+      "train_loss": 1.2125366926193237
+    },
+    {
+      "val_bpc": 1.6415,
+      "step": 9996,
+      "train_loss": 1.1292716264724731
+    },
+    {
+      "val_bpc": 1.6416,
+      "step": 10000,
+      "train_loss": 1.141984224319458
+    }
+  ]
+}

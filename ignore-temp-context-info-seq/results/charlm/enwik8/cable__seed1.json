@@ -1,0 +1,97 @@
+{
+  "corpus": "enwik8",
+  "variant": "cable",
+  "position": "cable",
+  "seed": 1,
+  "n_params": 10750500,
+  "train_time_s": 958.0210525989532,
+  "model_cfg": {
+    "vocab_size": 256,
+    "d_model": 384,
+    "n_layers": 6,
+    "n_heads": 6,
+    "d_ff": 1536,
+    "dropout": 0.1,
+    "max_seq_len": 4096,
+    "tie_embeddings": true,
+    "position": "cable",
+    "rope_base": 10000.0,
+    "t5_num_buckets": 32,
+    "t5_max_distance": 128,
+    "semrf_num_anchors": 32,
+    "semrf_anchor_dim": null,
+    "semrf_res_dim": 32,
+    "semrf_tau": 1.0,
+    "semrf_use_sem": true,
+    "semrf_use_res": true,
+    "semrf_use_time": true,
+    "semrf_hard": false,
+    "semrf_per_head_content": false
+  },
+  "train_cfg": {
+    "steps": 10000,
+    "batch_size": 16,
+    "lr": 0.0006,
+    "min_lr_ratio": 0.1,
+    "warmup_steps": 400,
+    "weight_decay": 0.1,
+    "grad_clip": 1.0,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "eval_every": 1666,
+    "eval_batches": 0,
+    "amp": true,
+    "amp_dtype": "bfloat16",
+    "seed": 1,
+    "device": "cuda",
+    "log_every": 200,
+    "compile": false
+  },
+  "test_bpc": 1.4396,
+  "extrapolation_bpc": {
+    "256": 1.5072,
+    "512": 1.4396,
+    "1024": 1.3954,
+    "2048": 1.3678,
+    "4096": 1.352
+  },
+  "history": [
+    {
+      "val_bpc": 2.0562,
+      "step": 1666,
+      "train_loss": 1.6286128759384155
+    },
+    {
+      "val_bpc": 1.7909,
+      "step": 3332,
+      "train_loss": 1.2783979177474976
+    },
+    {
+      "val_bpc": 1.6809,
+      "step": 4998,
+      "train_loss": 1.1431231498718262
+    },
+    {
+      "val_bpc": 1.6193,
+      "step": 6664,
+      "train_loss": 1.126494288444519
+    },
+    {
+      "val_bpc": 1.5795,
+      "step": 8330,
+      "train_loss": 1.145491600036621
+    },
+    {
+      "val_bpc": 1.5597,
+      "step": 9996,
+      "train_loss": 1.0732824802398682
+    },
+    {
+      "val_bpc": 1.5584,
+      "step": 10000,
+      "train_loss": 1.0878559350967407
+    }
+  ]
+}

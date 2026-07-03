@@ -1,0 +1,116 @@
+{
+  "task": "selective_copy",
+  "variant": "alibi",
+  "position": "alibi",
+  "seed": 2,
+  "n_params": 3160064,
+  "train_time_s": 128.2092080116272,
+  "model_cfg": {
+    "vocab_size": 18,
+    "d_model": 256,
+    "n_layers": 4,
+    "n_heads": 8,
+    "d_ff": 1024,
+    "dropout": 0.0,
+    "max_seq_len": 530,
+    "tie_embeddings": true,
+    "position": "alibi",
+    "rope_base": 10000.0,
+    "t5_num_buckets": 32,
+    "t5_max_distance": 128,
+    "semrf_num_anchors": 16,
+    "semrf_anchor_dim": null,
+    "semrf_res_dim": 32,
+    "semrf_tau": 1.0,
+    "semrf_use_sem": true,
+    "semrf_use_res": true,
+    "semrf_use_time": true,
+    "semrf_hard": false,
+    "semrf_per_head_content": false
+  },
+  "train_cfg": {
+    "steps": 5000,
+    "batch_size": 64,
+    "lr": 0.001,
+    "min_lr_ratio": 0.1,
+    "warmup_steps": 250,
+    "weight_decay": 0.1,
+    "grad_clip": 1.0,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "eval_every": 1250,
+    "eval_batches": 20,
+    "amp": true,
+    "amp_dtype": "bfloat16",
+    "seed": 2,
+    "device": "cuda",
+    "log_every": 1250,
+    "compile": false
+  },
+  "final": {
+    "token_acc": 0.99951171875,
+    "seq_acc": 0.9921875,
+    "n_scored": 20480.0,
+    "step": 5000,
+    "train_loss": 0.0039918008260428905
+  },
+  "history": [
+    {
+      "token_acc": 0.969140625,
+      "seq_acc": 0.61640625,
+      "n_scored": 20480.0,
+      "step": 1250,
+      "train_loss": 0.12037245184183121
+    },
+    {
+      "token_acc": 0.9931640625,
+      "seq_acc": 0.89921875,
+      "n_scored": 20480.0,
+      "step": 2500,
+      "train_loss": 0.036467429250478745
+    },
+    {
+      "token_acc": 0.997265625,
+      "seq_acc": 0.95859375,
+      "n_scored": 20480.0,
+      "step": 3750,
+      "train_loss": 0.008168439380824566
+    },
+    {
+      "token_acc": 0.99951171875,
+      "seq_acc": 0.9921875,
+      "n_scored": 20480.0,
+      "step": 5000,
+      "train_loss": 0.0039918008260428905
+    }
+  ],
+  "extrapolation": [
+    {
+      "label": "L1",
+      "seq_len": 144,
+      "token_acc": 0.9994791666666667,
+      "seq_acc": 0.9916666666666667
+    },
+    {
+      "label": "L2",
+      "seq_len": 272,
+      "token_acc": 0.9716145833333333,
+      "seq_acc": 0.6708333333333333
+    },
+    {
+      "label": "L3",
+      "seq_len": 400,
+      "token_acc": 0.8489583333333334,
+      "seq_acc": 0.08541666666666667
+    },
+    {
+      "label": "L4",
+      "seq_len": 528,
+      "token_acc": 0.706640625,
+      "seq_acc": 0.00625
+    }
+  ],
+  "distance_buckets": []
+}

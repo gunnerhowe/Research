@@ -1,0 +1,189 @@
+\begin{thebibliography}{25}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Aalaila et~al.(2026)Aalaila, Gro{\ss}mann, and
+  Vollmer]{aalaila2026seahorse}
+Yahya Aalaila, Gerrit Gro{\ss}mann, and Sebastian Vollmer.
+\newblock Seahorse: A unified benchmarking framework for spatiotemporal event
+  modeling.
+\newblock \emph{arXiv preprint arXiv:2607.01022}, 2026.
+
+\bibitem[Black et~al.(2024)Black, Janner, Du, Kostrikov, and
+  Levine]{black2024ddpo}
+Kevin Black, Michael Janner, Yilun Du, Ilya Kostrikov, and Sergey Levine.
+\newblock Training diffusion models with reinforcement learning.
+\newblock In \emph{International Conference on Learning Representations}, 2024.
+
+\bibitem[Brandstetter et~al.(2022)Brandstetter, Worrall, and
+  Welling]{brandstetter2022message}
+Johannes Brandstetter, Daniel Worrall, and Max Welling.
+\newblock Message passing neural {PDE} solvers.
+\newblock In \emph{International Conference on Learning Representations}, 2022.
+
+\bibitem[Chakraborty et~al.(2026)Chakraborty, Mohan, and
+  Maulik]{chakraborty2026binned}
+Dibyajyoti Chakraborty, Arvind~T. Mohan, and Romit Maulik.
+\newblock Binned spectral power loss for improved prediction of chaotic
+  systems.
+\newblock \emph{Journal of Computational Physics}, 558:\penalty0 114866, 2026.
+\newblock \doi{10.1016/j.jcp.2026.114866}.
+
+\bibitem[Daley and Vere-Jones(2003)]{daley2003introduction}
+Daryl~J. Daley and David Vere-Jones.
+\newblock \emph{An Introduction to the Theory of Point Processes: Volume I:
+  Elementary Theory and Methods}.
+\newblock Springer, 2003.
+
+\bibitem[Jiang et~al.(2023)Jiang, Lu, Orlova, and Willett]{jiang2023training}
+Ruoxi Jiang, Peter~Y. Lu, Elena Orlova, and Rebecca Willett.
+\newblock Training neural operators to preserve invariant measures of chaotic
+  attractors.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36, 2023.
+
+\bibitem[Kassam and Trefethen(2005)]{kassam2005fourth}
+Aly-Khan Kassam and Lloyd~N. Trefethen.
+\newblock Fourth-order time-stepping for stiff {PDE}s.
+\newblock \emph{SIAM Journal on Scientific Computing}, 26\penalty0
+  (4):\penalty0 1214--1233, 2005.
+
+\bibitem[Kochkov et~al.(2024)Kochkov, Yuval, Langmore, Norgaard, Smith, Mooers,
+  Kl{\"o}wer, Lottes, Rasp, D{\"u}ben, Hatfield, Battaglia, Sanchez-Gonzalez,
+  Willson, Brenner, and Hoyer]{kochkov2024neural}
+Dmitrii Kochkov, Janni Yuval, Ian Langmore, Peter Norgaard, Jamie Smith,
+  Griffin Mooers, Milan Kl{\"o}wer, James Lottes, Stephan Rasp, Peter
+  D{\"u}ben, Sam Hatfield, Peter Battaglia, Alvaro Sanchez-Gonzalez, Matthew
+  Willson, Michael~P. Brenner, and Stephan Hoyer.
+\newblock Neural general circulation models for weather and climate.
+\newblock \emph{Nature}, 632:\penalty0 1060--1066, 2024.
+\newblock \doi{10.1038/s41586-024-07744-y}.
+
+\bibitem[Lipman et~al.(2023)Lipman, Chen, Ben-Hamu, Nickel, and
+  Le]{lipman2023flow}
+Yaron Lipman, Ricky T.~Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matthew
+  Le.
+\newblock Flow matching for generative modeling.
+\newblock In \emph{International Conference on Learning Representations}, 2023.
+
+\bibitem[Liu et~al.(2026)Liu, Zanna, and Bruna]{liu2026selfrefining}
+Qi~Liu, Laure Zanna, and Joan Bruna.
+\newblock Towards infinitely long neural simulations: Self-refining neural
+  surrogate models for dynamical systems.
+\newblock \emph{arXiv preprint arXiv:2603.17750}, 2026.
+
+\bibitem[Lorenz(1996)]{lorenz1996predictability}
+Edward~N. Lorenz.
+\newblock Predictability: A problem partly solved.
+\newblock In \emph{Proc. Seminar on Predictability}, volume~1. ECMWF, 1996.
+
+\bibitem[Luo et~al.(2023)Luo, Hu, Zhang, Sun, Li, and
+  Zhang]{luo2023diffinstruct}
+Weijian Luo, Tianyang Hu, Shifeng Zhang, Jiacheng Sun, Zhenguo Li, and Zhihua
+  Zhang.
+\newblock Diff-{I}nstruct: A universal approach for transferring knowledge from
+  pre-trained diffusion models.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36, 2023.
+
+\bibitem[Manshausen et~al.(2026)Manshausen, Brenowitz, Berner, Kashinath, and
+  Pritchard]{manshausen2026accurate}
+Peter Manshausen, Noah Brenowitz, Jan Berner, Karthik Kashinath, and Michael
+  Pritchard.
+\newblock Towards accurate extreme event likelihoods from diffusion model
+  climate emulators.
+\newblock \emph{arXiv preprint arXiv:2605.03802}, 2026.
+
+\bibitem[Mei and Eisner(2017)]{mei2017neural}
+Hongyuan Mei and Jason Eisner.
+\newblock The neural {H}awkes process: A neurally self-modulating multivariate
+  point process.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~30, 2017.
+
+\bibitem[Melo et~al.(2026)Melo, Santiago, and Lu]{melo2026learning}
+Andr{\'e} Melo, Luis Santiago, and Peter Lu.
+\newblock Learning to emulate chaos: Adversarial optimal transport
+  regularization.
+\newblock \emph{arXiv preprint arXiv:2604.21097}, 2026.
+
+\bibitem[Nie and Suzuki(2026)]{nie2026jaws}
+Fengxiang Nie and Yasuhiro Suzuki.
+\newblock Jacobian-adaptive weighting for stability: Enhancing long-term
+  rollout of neural partial differential equation solvers via
+  spatially-adaptive regularization.
+\newblock \emph{arXiv preprint arXiv:2603.05538}, 2026.
+
+\bibitem[Pedersen et~al.(2025)Pedersen, Zanna, and
+  Bruna]{pedersen2025thermalizer}
+Chris Pedersen, Laure Zanna, and Joan Bruna.
+\newblock Thermalizer: Stable autoregressive neural emulation of spatiotemporal
+  chaos.
+\newblock In \emph{International Conference on Machine Learning}, 2025.
+\newblock arXiv:2503.18731.
+
+\bibitem[Price et~al.(2025)Price, Sanchez-Gonzalez, Alet, Andersson, El-Kadi,
+  Masters, Ewalds, Stott, Mohamed, Battaglia, Lam, and
+  Willson]{price2025probabilistic}
+Ilan Price, Alvaro Sanchez-Gonzalez, Ferran Alet, Tom~R. Andersson, Andrew
+  El-Kadi, Dominic Masters, Timo Ewalds, Jacklynn Stott, Shakir Mohamed, Peter
+  Battaglia, Remi Lam, and Matthew Willson.
+\newblock Probabilistic weather forecasting with machine learning.
+\newblock \emph{Nature}, 637:\penalty0 84--90, 2025.
+\newblock \doi{10.1038/s41586-024-08252-9}.
+
+\bibitem[Raeth and Ludwig(2026)]{raeth2026decision}
+Kornelius Raeth and Nicole Ludwig.
+\newblock Decision-aware training for sample-based generative models.
+\newblock \emph{arXiv preprint arXiv:2607.01171}, 2026.
+
+\bibitem[Schiff et~al.(2024)Schiff, Wan, Parker, Hoyer, Kuleshov, Sha, and
+  Zepeda-N{\'u}{\~n}ez]{schiff2024dyslim}
+Yair Schiff, Zhong~Yi Wan, Jeffrey~B. Parker, Stephan Hoyer, Volodymyr
+  Kuleshov, Fei Sha, and Leonardo Zepeda-N{\'u}{\~n}ez.
+\newblock {DySLIM}: Dynamics stable learning by invariant measure for chaotic
+  systems.
+\newblock \emph{arXiv preprint arXiv:2402.04467}, 2024.
+\newblock ICML 2024.
+
+\bibitem[Shchur et~al.(2020)Shchur, Bilo{\v{s}}, and
+  G{\"u}nnemann]{shchur2020intensity}
+Oleksandr Shchur, Marin Bilo{\v{s}}, and Stephan G{\"u}nnemann.
+\newblock Intensity-free learning of temporal point processes.
+\newblock In \emph{International Conference on Learning Representations}, 2020.
+
+\bibitem[Stamatelopoulos and Sapsis(2025)]{stamatelopoulos2025diffusion}
+Stamatis Stamatelopoulos and Themistoklis~P. Sapsis.
+\newblock Can diffusion models capture extreme event statistics?
+\newblock \emph{Computer Methods in Applied Mechanics and Engineering},
+  435:\penalty0 117589, 2025.
+\newblock \doi{10.1016/j.cma.2024.117589}.
+
+\bibitem[Wang et~al.(2023)Wang, Lu, Wang, Bao, Li, Su, and
+  Zhu]{wang2023prolificdreamer}
+Zhengyi Wang, Cheng Lu, Yikai Wang, Fan Bao, Chongxuan Li, Hang Su, and Jun
+  Zhu.
+\newblock {ProlificDreamer}: High-fidelity and diverse text-to-{3D} generation
+  with variational score distillation.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36, 2023.
+
+\bibitem[Watt-Meyer et~al.(2025)Watt-Meyer, Henn, McGibbon, Clark, Kwa,
+  Perkins, Wu, Harris, and Bretherton]{wattmeyer2025ace2}
+Oliver Watt-Meyer, Brian Henn, Jeremy McGibbon, Spencer~K. Clark, Anna Kwa,
+  W.~Andre Perkins, Elynn Wu, Lucas Harris, and Christopher~S. Bretherton.
+\newblock {ACE2}: accurately learning subseasonal to decadal atmospheric
+  variability and forced responses.
+\newblock \emph{npj Climate and Atmospheric Science}, 8:\penalty0 205, 2025.
+\newblock \doi{10.1038/s41612-025-01090-0}.
+
+\bibitem[Wilks(2005)]{wilks2005effects}
+Daniel~S. Wilks.
+\newblock Effects of stochastic parametrizations in the {L}orenz '96 system.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  131\penalty0 (606):\penalty0 389--407, 2005.
+
+\end{thebibliography}

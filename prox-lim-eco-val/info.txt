@@ -1,0 +1,75 @@
+ml-general -> diffusion-generative
+
+Title: Pointwise Surrogates Fail Long-Time Statistics
+
+Where this came from: borrow Neural Point Process Models from ml-general
+
+Description: Train a neural temporal point process (TPP) on the timing of
+threshold-crossing/extreme events extracted from ground-truth trajectories of a
+chaotic system, then use its log-likelihood on events extracted from a diffusion
+surrogate's rollouts as an auxiliary training signal — and measure whether the
+surrogate's long-horizon rollouts recover the TEMPORAL statistics of extremes
+(inter-event times, clustering, return periods) that pointwise and
+marginal-statistics training provably miss.
+
+Hopefully outcome: A surrogate whose long rollouts get the temporal structure of
+extreme events right — the statistics that invariant-measure matching cannot see,
+because it only constrains time-marginals — plus a clean dissociation showing
+event-timing structure is a distinct, controllable axis of surrogate quality.
+Directly relevant to climate/weather emulators, which are evaluated on extremes
+but never trained on their timing.
+
+Goal: Publish findings on arXiv, so build this out, test it properly and gather
+all necessary evidence with the proper rigor that the scientific community
+requires with proper formatting and any citations and such. So the output should
+be a ready to publish paper on this experiment.
+
+
+Working title-shape: "Event-Timing Priors: Temporal Point Process Likelihoods
+Correct the Long-Horizon Extreme-Event Statistics of Generative Surrogates"
+
+Design (the conditions that make it a paper, not a trick — mirror the grokking
+paper's control logic, it's what made that one work):
+
+1. Ground truth — Lorenz-96 (primary, K=40) + Kuramoto–Sivashinsky (secondary),
+   long trajectories; events = threshold crossings of a fixed observable (e.g.
+   site energy above its 0.98 quantile), yielding ground-truth event-time series.
+2. Baseline surrogate — score-based/diffusion next-step (or next-chunk) emulator,
+   standard training; plus a deterministic autoregressive baseline for reference.
+3. TPP-aux — the intervention: neural TPP (neural-Hawkes or intensity-free) fit
+   on ground-truth event times; auxiliary term = negative TPP log-likelihood of
+   events extracted from short surrogate rollouts during training.
+   DECIDE IN WEEK 1 (gates everything): how the TPP likelihood reaches the
+   surrogate's weights — (a) truncated/pushforward-style rollout training
+   [prototype this first], (b) DDPO-style fine-tuning with TPP-likelihood as
+   reward, (c) inference-time guidance.
+4. Marginal-statistics control — same setup with an invariant-measure /
+   moment-matching auxiliary (Jiang et al. 2023 style) <- proves marginal
+   matching does NOT fix event timing. The contribution lives here.
+5. Shuffled-timing control — TPP trained on shuffled/Poissonized event times
+   (identical loss form and strength, wrong temporal structure) <- the analog of
+   the shuffled-structure control; content-specificity of the temporal prior.
+6. Structure-agnostic stability baseline — pushforward-trick / noise-injection
+   rollout stabilization.
+
+Metrics: inter-event-time distribution (KS/Wasserstein), event clustering (Fano
+factor across window sizes, Ripley's K or fitted branching ratio), return-period /
+return-level curves — PLUS standard marginal PDFs, spectra, autocorrelation, and
+short-horizon RMSE to show the aux loss doesn't regress ordinary skill. >=5 seeds
+per condition, paired stats, censored/diverged rollouts reported explicitly.
+
+Before writing a line of code: read and position against — (1) Jiang et al.,
+NeurIPS 2023, "Training Neural Operators to Preserve Invariant Measures of
+Chaotic Attractors" — THE adjacent line; they fix time-marginals, we fix temporal
+event structure; include their objective as the control. (2) The rollout-
+stability axis: pushforward trick (Brandstetter et al.), "Jacobian-Adaptive
+Weighting for Stability", "Self-Refining Neural Surrogate Models", "A comparative
+study of accuracy and rollout stability of temporal surrogate models". (3) The
+motivation: GenCast / ACE2 / NeuralGCM evaluate on extremes but never train on
+their timing. (4) TPP background: Mei & Eisner neural Hawkes; Shchur et al.
+intensity-free TPPs; eyeball "Seahorse" (2026 event-modeling benchmark) and
+"Decision-Aware Training for Sample-Based Generative Models" (Jul 1 2026) for
+adjacency while reading. Kill-check: survived-narrowed + recency-swept clean,
+2026-07-02 — the novelty claim is EVENT-TIMING structure as the training target,
+not "better statistics" generically. Full grid is 3080-scale (chaotic ODEs, small
+nets); aim for the same one-weekend execution — speed remains the last defense.

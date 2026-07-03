@@ -1,0 +1,11 @@
+ml -> transformers-llms
+
+Title: Ignoring Temporal And Context Information In Sequence Modeling
+
+Where this came from: borrow Semantic Reference Frames (SemRF) from ml
+
+Description: Fix a small set of learned semantic anchor vectors and encode each token as a residual offset from its nearest anchor, feeding the anchor-residual plus its temporal delta as an additive bias into attention, so context and time are represented relative to stable semantic reference frames rather than absolute positions.
+
+Hopefully outcome: A sequence model that retains temporal/context structure across long spans without absolute-position saturation, improving long-range and time-sensitive prediction.
+
+Goal: Publish findings on arXiv, so build this out, test it properly and gather all necessary evidence with the proper rigor that the scientific community requires with proper formatting and any citations and such. So the output should be a ready to publish paper on this experiment. 

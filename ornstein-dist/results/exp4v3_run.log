@@ -1,0 +1,15 @@
+seed 0: integration 538s
+seed 0: total 587s  truth2:d̄sep=0.0045  iaaft:d̄sep=0.0413  speed2:d̄sep=0.1406
+seed 1: integration 551s
+seed 1: total 601s  truth2:d̄sep=-0.0016  iaaft:d̄sep=0.0369  speed2:d̄sep=0.1422
+seed 2: integration 548s
+seed 2: total 602s  truth2:d̄sep=-0.0015  iaaft:d̄sep=0.0396  speed2:d̄sep=0.1433
+seed 3: integration 551s
+seed 3: total 601s  truth2:d̄sep=0.0005  iaaft:d̄sep=0.0404  speed2:d̄sep=0.1421
+
+=== KS aggregate (mean ± std over 4 seeds) ===
+truth h = 0.3479±0.0005 bits/symbol
+truth2  d̄sep=0.0005±0.0025  Wstate=0.5582  W1m=0.0066  PSD=0.64dB  h=0.3482  FanoLB=0.0002
+iaaft   d̄sep=0.0395±0.0016  Wstate=nan  W1m=0.0066  PSD=0.64dB  h=0.5002  FanoLB=0.0020
+speed2  d̄sep=0.1420±0.0010  Wstate=0.5331  W1m=0.0055  PSD=12.79dB  h=0.4364  FanoLB=0.0295
+wrote results/exp4_ks.json (2392s)

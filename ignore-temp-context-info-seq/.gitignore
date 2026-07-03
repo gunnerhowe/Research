@@ -1,0 +1,23 @@
+# data & caches
+data_cache/
+__pycache__/
+*.pyc
+
+# large binaries / tools
+tools/tectonic.exe
+tools/*.zip
+
+# model checkpoints (regenerable)
+results/**/*.ckpt.pt
+
+# latex intermediates
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/main.pdf
+
+# keep: results/*.json, results/*.csv, paper/figures/*, paper/tables/*, paper/main.tex
+!paper/figures/
+!paper/tables/

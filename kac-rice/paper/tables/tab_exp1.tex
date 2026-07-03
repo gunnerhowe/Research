@@ -1,0 +1,14 @@
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{1}{c}{1D multisine} & \multicolumn{3}{c}{2D camera $128^2$} \\
+\cmidrule(lr){2-2}\cmidrule(lr){3-5}
+Config & PSNR & PSNR & HF-PSNR & SSIM \\
+\midrule
+MSE only & 70.64 $\pm$ 0.11 & 40.52 $\pm$ 1.10 & 42.46 $\pm$ 1.10 & 0.97 $\pm$ 0.00 \\
+$+$ FFL & 69.72 $\pm$ 0.23 & 37.85 $\pm$ 0.52 & 39.80 $\pm$ 0.52 & 0.95 $\pm$ 0.00 \\
+$+$ Sobolev & 70.41 $\pm$ 0.22 & 29.30 $\pm$ 0.12 & 31.26 $\pm$ 0.12 & 0.90 $\pm$ 0.00 \\
+$+$ Kac-Rice (ours) & 70.28 $\pm$ 0.30 & 30.80 $\pm$ 1.00 & 32.79 $\pm$ 1.00 & 0.89 $\pm$ 0.02 \\
+SIREN (MSE) & 93.77 $\pm$ 1.09 & 62.41 $\pm$ 0.33 & 64.33 $\pm$ 0.33 & 1.00 $\pm$ 0.00 \\
+FINER (MSE) & 73.57 $\pm$ 7.68 & 139.72 $\pm$ 3.09 & 141.56 $\pm$ 3.04 & 1.00 $\pm$ 0.00 \\
+\bottomrule
+\end{tabular}

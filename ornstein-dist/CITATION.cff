@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software or the d-bar evaluation metric, please cite the paper below."
+type: software
+title: "ornstein-dist: Ornstein's d-bar distance as a dynamical-fidelity metric for surrogate models of chaotic systems"
+authors:
+  - family-names: Howe
+    given-names: Gunner Levi
+    email: gunnerlevihowe@gmail.com
+version: 1.0.0
+date-released: 2026-07-03
+license: MIT
+keywords:
+  - chaotic systems
+  - surrogate models
+  - Ornstein d-bar distance
+  - ergodic theory
+  - optimal transport
+  - invariant measure
+  - symbolic dynamics
+  - model evaluation
+preferred-citation:
+  type: article
+  title: "Beyond the Invariant Measure: Ornstein's d-bar-Distance as a Dynamical-Fidelity Metric for Surrogate Models of Chaotic Systems"
+  authors:
+    - family-names: Howe
+      given-names: Gunner Levi
+  year: 2026
+  # Fill in once the arXiv identifier is assigned:
+  # identifiers:
+  #   - type: other
+  #     value: "arXiv:XXXX.XXXXX"

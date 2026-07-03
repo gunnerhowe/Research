@@ -1,0 +1,443 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{authblk}
+
+% ---- result macros (single source of truth; filled from results/) ---------
+\input{results_macros}
+
+% ---- robust includes: paper compiles even before a figure/table exists ----
+\newcommand{\incfig}[2]{%
+  \IfFileExists{#1.pdf}{\includegraphics[width=#2]{#1}}%
+  {\fbox{\parbox[c][2.4cm][c]{#2}{\centering\footnotesize\ttfamily\detokenize{#1}\\(pending)}}}}
+\newcommand{\inctab}[1]{\IfFileExists{#1.tex}{\input{#1}}{\textit{(table pending)}}}
+\graphicspath{{./}}
+
+\title{\textbf{Semantic Reference Frames:\\ Representing Time and Context Relative to Learned Anchors\\ in Sequence Models}}
+\author[ ]{Gunner Howe}
+\affil[ ]{\texttt{gunnerlevihowe@gmail.com}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Transformer sequence models encode order through positional signals that are
+ultimately tied to \emph{absolute} indices: sinusoidal and learned embeddings
+address positions directly, and even relative schemes decay or rotate as a fixed
+function of the index gap. Such signals saturate over long spans and generalize
+poorly beyond the training length. We propose \textbf{Semantic Reference Frames
+(SemRF)}, an attention bias that represents context and time \emph{relative to a
+small set of learned semantic anchors} rather than to absolute positions. Each
+token is softly assigned to its nearest anchor and encoded as a residual offset
+within that frame; the attention bias between two positions combines an
+anchor--frame affinity, a within--frame residual alignment, and a
+\emph{frame--conditioned} temporal decay whose rate is a learned function of a
+token's semantic frame. SemRF strictly generalizes ALiBi \citep{press2022train}
+(recovered when the content terms are disabled and decay is frame--independent),
+so it inherits ALiBi's length--extrapolation behaviour while adding
+content--aware structure. The factorization is directly inspectable: trained on
+enwik8 without any supervision, the anchors organize bytes into recognizable
+character classes---lowercase, digits, uppercase, whitespace, punctuation,
+markup---and the frames acquire markedly different learned time constants, with
+structural tokens decaying slowest and word--internal letters fastest. The model
+discovers, from data alone, that \emph{structure is long--range and orthography
+is local}---a concrete realization of decoupling ``what'' (semantic frame) from
+``when'' (relative time). This interpretable structure comes with strong
+benchmarks: across three controlled diagnostics (associative recall, temporal
+recency, selective copying) and character--level language modeling on enwik8, we
+compare SemRF against seven positional schemes (NoPE, sinusoidal,
+learned--absolute, RoPE, ALiBi, the T5 relative bias, and CABLE) under matched
+backbones, parameter budgets, and training compute. \resAbstractFindings{}
+Code and configurations to reproduce every figure and table are released.
+\end{abstract}
+
+% ============================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Self--attention is permutation equivariant, so transformers require an explicit
+mechanism to represent order. The dominant choices tie this signal, directly or
+indirectly, to a token's \emph{absolute} position. Sinusoidal
+\citep{vaswani2017attention} and learned \citep{radford2019language} embeddings
+add a position--indexed vector to each token; rotary embeddings
+\citep{su2021roformer} rotate queries and keys by an angle proportional to the
+absolute index; and additive relative biases such as
+T5 \citep{raffel2020exploring} and ALiBi \citep{press2022train} are fixed
+functions of the index gap $i-j$. Two well--documented failure modes follow.
+First, models trained at one context length degrade sharply when evaluated on
+longer sequences---absolute encodings extrapolate worst, and even relative
+schemes vary in how gracefully they decay \citep{press2022train,kazemnejad2023impact}.
+Second, purely index--based signals conflate \emph{what} a token is with
+\emph{when} it occurs, forcing a single monotonic decay to serve tokens whose
+useful context ranges differ by orders of magnitude (a function word versus a
+named entity or a numeral).
+
+We ask whether order can instead be represented \emph{relative to stable
+semantic reference points}---transferring to position and time the
+anchor--relative representation principle that \citet{moschella2023relative}
+introduced for latent--space communication, where coordinates relative to
+anchors buy invariance to nuisance transformations of the underlying space. Our
+method, \textbf{Semantic Reference Frames (SemRF)}, maintains a small set of
+learned anchor vectors that partition the representation space into semantic
+frames. Each token is softly assigned to its
+nearest anchor and described by its residual offset within that frame. The
+attention bias between positions $i$ and $j$ is then assembled from three
+interpretable terms: (i) an \emph{anchor--frame affinity} that scores which
+semantic frames should interact, (ii) a \emph{residual alignment} that refines
+this within a frame, and (iii) a \emph{frame--conditioned temporal decay} whose
+rate depends on the querying token's semantic frame. The third term is the key
+departure from prior additive biases: ALiBi applies one slope per head to all
+tokens, whereas SemRF lets the decay rate be a learned, per--frame quantity, so
+that ``slow'' frames retain long--range information while ``fast'' frames stay
+local.
+
+\paragraph{Contributions.}
+\begin{itemize}
+  \item We introduce SemRF, a content--conditioned attention bias that encodes
+  context and time relative to learned semantic anchors, and show it strictly
+  generalizes ALiBi (Section~\ref{sec:method}).
+  \item Under matched backbones and compute, we benchmark SemRF against seven
+  positional schemes---including CABLE \citep{veisi2025cable}, the closest
+  content--conditioned bias---on three controlled diagnostics and on enwik8
+  character language modeling, with a length--extrapolation protocol throughout
+  (Sections~\ref{sec:setup}--\ref{sec:results}).
+  \item We ablate each SemRF component and the anchor count, and we analyze the
+  learned anchors, showing they form interpretable semantic frames with distinct
+  temporal decay rates (Sections~\ref{sec:ablation}--\ref{sec:analysis}).
+\end{itemize}
+
+% ============================================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Absolute position.} The original transformer adds fixed sinusoidal
+vectors \citep{vaswani2017attention}; GPT--style models learn them
+\citep{radford2019language}. Both address positions by absolute index and
+generalize poorly beyond the trained range.
+
+\paragraph{Relative position.} \citet{shaw2018self} introduced relative position
+representations; T5 \citep{raffel2020exploring} uses a learned, bucketed scalar
+bias per head; Transformer--XL \citep{dai2019transformerxl} adds relative terms
+to support recurrence. RoPE \citep{su2021roformer} encodes relative offsets
+through rotations of queries and keys and is now standard in large models.
+
+\paragraph{Additive biases and extrapolation.} ALiBi \citep{press2022train}
+biases attention by $-m_h\,|i-j|$ with fixed per--head slopes and extrapolates to
+longer contexts; KERPLE \citep{chi2022kerple} and Shortformer
+\citep{press2021shortformer} pursue related goals, and randomized positional
+encodings \citep{ruoss2023randomized} improve length generalization. SemRF's
+temporal term is exactly ALiBi when the decay is frame--independent; we add
+learned per--frame slopes and content terms.
+
+\paragraph{No positional encoding.} Causal decoders retain some order
+information even without explicit encodings \citep{haviv2022transformer}, and
+NoPE can generalize competitively on some tasks \citep{kazemnejad2023impact}. We
+include NoPE as a baseline.
+
+\paragraph{Content--conditioned position.} A growing line of work makes the
+positional signal a function of content. Contextual Position Encoding (CoPE)
+\citep{golovneva2024contextual} gates which tokens increment a positional
+counter; FIRE \citep{li2023functional} learns a functional map of relative
+positions; and, closest to our temporal term, CABLE \citep{veisi2025cable}
+learns per--token additive biases (scalar projections aggregated by cumulative
+sums) that generalize ALiBi and improve extrapolation. SemRF differs from these
+in \emph{how} content enters: rather than an unstructured per--token scalar, it
+factorizes each token through a small learned anchor vocabulary---frame
+membership, a within--frame residual, and a decay rate tied to the \emph{frame}
+rather than the token. This structure is what yields the interpretability
+results of Section~\ref{sec:analysis} (anchors align with character classes,
+and frames acquire coherent time constants), which unstructured
+content--conditioned biases do not expose. Because CABLE is the nearest prior
+mechanism, we include it as an empirical baseline in all experiments
+(Section~\ref{sec:results}). Our diagnostics build on associative
+recall and induction \citep{olsson2022context,arora2023zoology} and selective
+copying \citep{gu2023mamba}, standard probes of content--based long--range
+routing.
+
+\paragraph{Relative representations.} The principle of replacing absolute
+coordinates with coordinates \emph{relative to a set of anchors} was
+articulated by \citet{moschella2023relative} for latent--space communication:
+representing samples by their similarities to anchor samples yields
+representations invariant to isometries of the latent space, enabling zero--shot
+model stitching. SemRF transfers this principle to a different object and
+problem: we anchor \emph{positional and temporal} information in attention to
+learned semantic reference points, seeking robustness to the absolute index
+rather than to latent rotations. To our knowledge, anchor--relative
+representation has not previously been used as a positional mechanism in
+sequence models.
+
+% ============================================================================
+\section{Method: Semantic Reference Frames}
+\label{sec:method}
+
+\paragraph{Setup.} Let $x_i \in \mathbb{R}^{d}$ be the input embedding of the
+token at position $i$ (no absolute positional signal is added). SemRF produces an
+additive bias $b^{(h)}_{ij}$ that is inserted into the attention logits of head
+$h$,
+\begin{equation}
+  A^{(h)}_{ij} \;=\; \frac{q_i^{(h)}\!\cdot k_j^{(h)}}{\sqrt{d_{\mathrm{head}}}}
+  \;+\; b^{(h)}_{ij}, \qquad j \le i,
+\end{equation}
+and is computed \emph{once} from the token embeddings and shared across all
+layers, exactly as ALiBi and the T5 bias are.
+
+\paragraph{Anchors and residuals.} We keep $K$ learned anchor vectors
+$A \in \mathbb{R}^{K \times d_a}$ (the semantic reference frames) and a
+projection $W_u$. Each token is projected, softly assigned to anchors, and
+described by its residual offset from the assigned anchor centroid:
+\begin{align}
+  u_i &= W_u x_i, &
+  \alpha_i &= \mathrm{softmax}\!\big(u_i A^\top / \tau\big) \in \Delta^{K}, &
+  r_i &= u_i - \alpha_i A .
+\end{align}
+A hard variant replaces $\alpha_i$ with a straight--through one--hot assignment.
+Here $\alpha_i$ is the token's \emph{frame membership} and $r_i$ its coordinate
+\emph{within} that frame.
+
+\paragraph{Bias terms.} The bias combines three interpretable components:
+\begin{align}
+  \underbrace{\mathrm{sem}_{ij} = \alpha_i^\top B\, \alpha_j}_{\text{anchor--frame affinity}}, \quad
+  \underbrace{\mathrm{res}_{ij} = \frac{(W_q r_i)\cdot(W_k r_j)}{\sqrt{d_r}}}_{\text{within--frame residual alignment}}, \quad
+  \underbrace{\mathrm{time}^{(h)}_{ij} = -\,\sigma^{(h)}_i\,|i-j|}_{\text{frame--conditioned temporal decay}},
+\end{align}
+where $B \in \mathbb{R}^{K\times K}$ is a learned frame--interaction matrix and
+the per--token, per--head decay rate is a convex combination of learned
+per--frame slopes $s \in \mathbb{R}^{H \times K}$,
+\begin{equation}
+  \sigma^{(h)}_i \;=\; \sum_{k=1}^{K} \alpha_{ik}\,\mathrm{softplus}(s_{hk}) \;\ge\; 0 .
+\end{equation}
+The final bias is a gated sum
+\begin{equation}
+  b^{(h)}_{ij} \;=\; g_{\mathrm{sem}}\,\mathrm{sem}_{ij}
+  \;+\; g_{\mathrm{res}}\,\mathrm{res}_{ij}
+  \;+\; g_{\mathrm{time}}\,\mathrm{time}^{(h)}_{ij},
+\end{equation}
+with non--negative scalar gates $g_\bullet = \exp(\gamma_\bullet)$. By default the
+content terms ($\mathrm{sem}, \mathrm{res}$) are shared across heads and the
+temporal term is per--head.
+
+\paragraph{Relation to ALiBi.} If $g_{\mathrm{sem}}=g_{\mathrm{res}}=0$ and every
+frame shares a head's slope ($s_{hk}=s_h\,\forall k$), then
+$b^{(h)}_{ij} = -\,\mathrm{softplus}(s_h)\,|i-j|$, which is ALiBi. SemRF therefore
+\emph{strictly generalizes} ALiBi. We exploit this at initialization: we set the
+per--frame slopes to ALiBi's per--head values and initialize the content gates
+near zero ($g_{\mathrm{sem}}\!=\!g_{\mathrm{res}}\!\approx\!0.05$,
+$g_{\mathrm{time}}\!=\!1$), so training \emph{begins} at a strong,
+length--extrapolating operating point and learns semantic structure on top of it.
+
+\paragraph{Cost.} SemRF adds $W_u$, $A$, $B$, $\{W_q,W_k\}$, and the slope table
+$s$, totalling well under $\resSemrfOverhead{}$ of backbone parameters at the
+scales we study. The bias is materialized once as a $B\!\times\!H\!\times\!T\!\times\!T$
+tensor (like any additive--bias scheme) and reused across layers.
+
+% ============================================================================
+\section{Experimental Setup}
+\label{sec:setup}
+
+\paragraph{Backbone.} All methods share an identical pre--norm decoder--only
+transformer \citep{vaswani2017attention,radford2019language} with GELU MLPs
+\citep{hendrycks2016gaussian} and LayerNorm \citep{ba2016layer}; only the
+positional mechanism changes. Synthetic tasks use a $d\!=\!256$, 4--layer,
+8--head model---sized so that the content--matching (induction) circuit reliably
+forms, which we verified in preliminary capacity probes consistent with the
+recall--capacity effects reported by \citet{arora2023zoology}; enwik8 uses a
+$d\!=\!384$, 6--layer, 6--head model ($\approx\!\resCharlmParams{}$ parameters).
+We train with AdamW \citep{loshchilov2019decoupled}, a cosine schedule with
+warmup, gradient clipping, and bf16 autocast, implemented in PyTorch
+\citep{paszke2019pytorch} using its fused scaled--dot--product attention
+\citep{dao2022flashattention}. All runs use a single NVIDIA RTX 3080 (10\,GB).
+Full hyperparameters are in Appendix~\ref{app:hparams}.
+
+\paragraph{Baselines.} We compare eight positional schemes: NoPE (none),
+sinusoidal absolute, learned absolute, RoPE, ALiBi, the T5 relative bias,
+CABLE \citep{veisi2025cable}, and SemRF (ours). Our CABLE implementation
+follows the authors' reference code (per--layer $\mathrm{Linear}(d \to H)$
+projections whose $-\mathrm{softplus}$ outputs are cumulatively summed, the
+bias $S_i - S_j$ recomputed at each layer from that layer's pre--attention
+hidden state, default initialization); see Appendix~\ref{app:hparams}.
+Parameter counts per variant are reported alongside results.
+
+\paragraph{Diagnostic tasks.} (1)~\textbf{Associative recall}: store $D$
+key--value pairs, then answer queried keys; retrieval distance is recorded per
+answer. (2)~\textbf{Temporal recency}: variables are repeatedly reassigned over
+time and a query must return the \emph{most recent} value---an explicitly
+time--sensitive task. (3)~\textbf{Selective copying}: reproduce sparse data
+tokens, in order, from a field of blanks, probing position--robust routing. Each
+scores only answer positions (a task--specific loss mask); all use fresh,
+procedurally generated data.
+
+\paragraph{Language modeling.} We model enwik8
+\citep{hutter2006prize,mahoney2011text8} at the byte level (vocab 256) with the
+standard 90M/5M/5M split, reporting test \emph{bits per character} (bpc).
+
+\paragraph{Length extrapolation.} The central stress test: we train at one length
+and evaluate at increasing lengths without retraining. Crucially, for the
+diagnostics we grow the \emph{span} while holding the memory load fixed
+(associative recall: the same number of pairs separated from the queries by a
+growing filler gap, with the filler in--distribution at training time; temporal
+recency: longer streams over the same variable set; selective copying: the same
+number of data tokens in a growing blank field). This isolates \emph{positional}
+generalization from recall capacity, which would otherwise confound the
+comparison \citep{arora2023zoology}. For enwik8 we train at context $512$ and
+evaluate bpc at $\{256,512,1024,2048,4096\}$.
+
+\paragraph{Protocol.} Synthetic results use $\resSynthSeeds{}$ seeds and enwik8
+uses $\resCharlmSeeds{}$ seeds; we report mean\,$\pm$\,std and, for the headline
+extrapolation comparisons, paired significance tests across seeds
+(Section~\ref{sec:results}).
+
+% ============================================================================
+\section{Results}
+\label{sec:results}
+
+% >>> RESULTS PROSE FILLED FROM results/ AFTER RUNS <<<
+\resResultsProse{}
+
+\begin{table}[t]
+  \centering
+  \caption{Final answer--token accuracy on the diagnostic tasks at the training
+  length (mean\,$\pm$\,std over seeds).}
+  \label{tab:synth}
+  \inctab{tables/table_synthetic_final}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \incfig{figures/fig_extrapolation_synthetic}{\textwidth}
+  \caption{\textbf{Length extrapolation on the diagnostics.} Answer accuracy as
+  the evaluation sequence grows beyond the training length (dotted line); mean
+  $\pm$ std over seeds. On temporal recency, the ALiBi and CABLE curves
+  coincide with SemRF at $1.0$ and are hidden beneath it; on associative
+  recall, CABLE holds $1.0$ at every gap. Absolute schemes degrade fastest.}
+  \label{fig:synth-extrap}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \incfig{figures/fig_distance_synthetic}{0.85\textwidth}
+  \caption{\textbf{Accuracy vs.\ retrieval distance.} Per--answer accuracy as a
+  function of how far back the needed information lies.}
+  \label{fig:dist}
+\end{figure}
+
+\begin{table}[t]
+  \centering
+  \caption{enwik8 character--level language modeling: test bits per character
+  (lower is better), mean\,$\pm$\,std over seeds.}
+  \label{tab:charlm}
+  \inctab{tables/table_charlm}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \incfig{figures/fig_charlm_extrapolation}{0.7\textwidth}
+  \caption{\textbf{enwik8 length extrapolation.} Test bpc as the evaluation
+  context grows beyond the training length of 512.}
+  \label{fig:charlm-extrap}
+\end{figure}
+
+% ============================================================================
+\section{Ablations}
+\label{sec:ablation}
+
+\resAblationProse{}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.56\textwidth}
+    \incfig{figures/fig_ablation}{\textwidth}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.42\textwidth}
+    \incfig{figures/fig_ksweep}{\textwidth}
+  \end{subfigure}
+  \caption{\textbf{Ablations.} Left: removing each SemRF term or using hard
+  assignment. Right: effect of the anchor count $K$.}
+  \label{fig:ablation}
+\end{figure}
+
+% ============================================================================
+\section{Analysis: what do the anchors learn?}
+\label{sec:analysis}
+
+\resAnalysisProse{}
+
+\begin{figure}[t]
+  \centering
+  \incfig{figures/fig_anchors}{0.72\textwidth}\\[6pt]
+  \incfig{figures/fig_frame_time}{\textwidth}
+  \caption{\textbf{Learned semantic frames.} Top: token embeddings colored by
+  anchor assignment---anchors align with character classes (lowercase, digits,
+  uppercase, whitespace, punctuation, markup). Bottom: per--head, per--frame
+  temporal decay slopes (left: raw; right: relative to each head's mean);
+  frames differ substantially in their learned time sensitivity.}
+  \label{fig:anchors}
+\end{figure}
+
+% ============================================================================
+\section{Limitations}
+\label{sec:limits}
+
+Our study is deliberately small--scale: a single consumer GPU, models up to
+$\sim\!\resCharlmParams{}$ parameters, character--level LM on one corpus, and a
+few seeds. These choices enable tightly controlled, matched--compute comparisons
+but leave open how SemRF behaves at billion--parameter scale, on word/subword
+tokenization, and against retrieval or state--space architectures. The
+additive--bias schemes (ALiBi, T5, CABLE, SemRF) use PyTorch's math attention kernel
+for arbitrary biases and are therefore somewhat slower per step than the
+rotary/absolute schemes that use the fused kernel; we report throughput
+alongside accuracy. Finally, SemRF introduces a small number of hyperparameters
+(anchor count $K$, residual dimension, temperature) whose optima may be
+task--dependent.
+
+% ============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented Semantic Reference Frames, an attention bias that encodes context
+and time relative to learned semantic anchors rather than absolute positions. By
+construction SemRF generalizes ALiBi, and empirically it \resConclusionClaim{}
+The learned anchors form interpretable semantic frames with distinct temporal
+decay rates, offering a concrete mechanism for decoupling ``what'' from ``when''
+in sequence models. We hope frame--relative position proves a useful primitive
+for long--range and time--sensitive modeling.
+
+% ============================================================================
+\clearpage
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\section{Hyperparameters and Reproducibility}
+\label{app:hparams}
+\resAppendixProse{}
+All configurations, seeds, and the exact commands to regenerate every figure and
+table are provided in the released code (\texttt{README.md}). Each result file
+stores its full model and training configuration.
+
+\section{Associative recall in a harder regime}
+\label{app:hard}
+Before settling on the training gap distribution of Section~\ref{sec:setup}
+(uniform in $[0,8]$), we ran the comparison with gap jitter up to 32
+tokens. In that regime none of the schemes evaluated there escaped the
+value-guessing plateau in any of three seeds within 15{,}000 steps (NoPE
+$0.262$, learned $0.260$, RoPE $0.261$, T5 $0.284$, ALiBi $0.316$, sinusoidal
+$0.174$; CABLE was added to the study after this regime was retired and was
+not run here), while SemRF fully solved the training distribution in one of
+three seeds ($1.000$; remaining seeds $0.33$ and $0.27$). We report this both as further evidence that
+content-conditioned decay aids formation of the retrieval circuit, and as a
+caution: near the formation phase boundary, small changes to the task
+distribution move \emph{every} method's success rate, so comparisons must be
+made in a regime where at least one method solves the task reliably. Full
+per-run records are included with the released results
+(\texttt{results/synthetic/assoc\_recall\_hard/}).
+
+\end{document}

@@ -1,0 +1,8 @@
+device=cpu threads=4 seeds=[2] iters=3000/2000/1000
+exp1_2d camera pemlp_mse seed2: psnr=39.18 (1445s)
+exp1_2d camera pemlp_ffl seed2: psnr=37.47 (3017s)
+exp1_2d camera pemlp_sobolev seed2: psnr=29.22 (3183s)
+exp1_2d camera pemlp_kacrice seed2: psnr=30.20 (2608s)
+exp1_2d camera siren_mse seed2: psnr=62.20 (1303s)
+exp1_2d camera finer_mse seed2: psnr=141.93 (1796s)
+ALL DONE in 222.6 min

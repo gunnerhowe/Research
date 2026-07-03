@@ -1,0 +1,19 @@
+{
+ "config": {
+  "n_points": 16384,
+  "threads": 4,
+  "iters": 30,
+  "model": "PEMLP 256x3 nf8",
+  "device": "cpu"
+ },
+ "ms_per_iter": {
+  "mse": 223.47032999969088,
+  "sobolev": 478.752449999835,
+  "kacrice": 473.152303332851
+ },
+ "ratio_vs_mse": {
+  "mse": 1.0,
+  "sobolev": 2.1423535285444704,
+  "kacrice": 2.1172936171594032
+ }
+}

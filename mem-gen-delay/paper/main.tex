@@ -1,0 +1,470 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\ttest}{t_{\mathrm{fit}}}
+\newcommand{\tgen}{t_{\mathrm{gen}}}
+\newcommand{\supcon}{\mathrm{SupCon}}
+
+\title{Structure-Specific Representational Priors Causally Control the Grokking Delay}
+\author{Gunner Levi Howe\\ \small{\texttt{gunnerlevihowe@gmail.com}}}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Grokking --- generalization arriving long after training-set interpolation --- has recently been
+shown to be controllable by structure-agnostic interventions: gradient filtering, weight-norm
+clamping, and geometric penalties on hidden representations. Whether the delay specifically
+measures the time to form \emph{task-structured} representations has remained an observational
+claim. We test it causally. Training a one-layer transformer on modular addition, we add a
+supervised-contrastive auxiliary loss on hidden representations whose positive sets encode the
+task's true equivalence structure ($c=(a+b)\bmod p$), and compare against an exactly-matched
+control whose positive sets encode a shuffled structure of identical class-size distribution,
+loss form, strength, and geometry. The true-structure prior generalizes in 22/30 runs --- up to
+$2.75\times$ faster than baseline, the fastest transitions we observe, though the acceleration is
+dose-dependent (median per-seed speedup arises only at the strongest dose we test; weaker doses
+slow the median transition) --- while the shuffled prior generalizes in 0/20 (Fisher exact
+$p=1.3\times10^{-7}$). Because the auxiliary loss
+inflates the weight norm, and the norm alone is known to set the grokking timescale, we replay
+each intervention run's exact norm trajectory onto plain cross-entropy training: 0/15 of these
+norm-matched controls generalize, collapsing instead into logit-scale saturation --- so the
+acceleration is not norm-mediated. Representation probes (embedding Fourier concentration,
+class-cluster formation, CKA) show the true-structure prior builds class-clustered
+representations during the apparent plateau, ahead of and predictive of each run's
+generalization time. The grokking delay is, causally, the time to form the right representational
+structure: injecting that structure can collapse the delay, and injecting the wrong structure at
+equal strength prevents generalization entirely.
+\end{abstract}
+
+\section{Introduction}
+
+When a small transformer is trained on a modular arithmetic task, it memorizes the training set
+within a few hundred epochs, then sits at chance-level test accuracy for tens of thousands of
+epochs before abruptly generalizing --- the phenomenon known as grokking
+\citep{power2022grokking}. The delay between training-set interpolation and generalization has
+become a model system for studying how neural networks transition from memorization to structured
+solutions, because in this setting the endpoint is fully understood: the generalizing network
+implements a specific Fourier multiplication circuit whose components can be measured as they form
+\citep{nanda2023progress, gromov2023grokking}.
+
+A rapidly growing body of work shows that this delay is not a fixed property of the task but a
+controllable quantity. Filtering the gradient signal to amplify its slow component accelerates
+grokking by orders of magnitude \citep{lee2024grokfast, neuralgrok2025}; clamping the total weight
+norm rescales the time-to-grok along an exponential delay law \citep{weightnormdelay2026},
+plausibly mediated by logit scale \citep{logitscale2026}; and penalizing the radial component of
+hidden activations --- constraining representations to a hypersphere --- yields up to
+$6.3\times$ acceleration \citep{radialsuppression2026}. These interventions differ in the knob they
+turn (optimizer, parameter norm, representation geometry), but they share a fundamental property:
+all are \emph{structure-agnostic}. None of them tells the network anything about which structure
+the task actually requires.
+
+Meanwhile, observational accounts increasingly locate the delay in representation formation.
+\citet{twospeeds2026} decompose learning into a fast, quickly train-biased readout and a slow,
+continuously improving encoder, and argue that grokking occurs when representation quality catches
+up; \citet{circuitsync2026} find that the synchronization of Fourier sub-circuits precedes the
+accuracy jump. If these accounts are right, the delay is, mechanistically, \emph{the time it takes
+task-appropriate representational structure to form} --- and injecting that structure directly
+should collapse the delay, while injecting equally strong but wrong structure should not. This
+causal prediction has not been tested: existing accelerators cannot test it, precisely because
+they are structure-agnostic.
+
+We perform that test. We add a supervised-contrastive auxiliary loss \citep{khosla2020supervised}
+on the hidden representations of a one-layer transformer learning modular addition, and manipulate
+only the \emph{content} of its positive sets: either the task's true equivalence structure
+(examples sharing $(a+b)\bmod p$) or a shuffled control --- a fixed random partition with
+identical class-size distribution, loss form, and strength. Because auxiliary losses also perturb
+the weight-norm trajectory, and the norm alone rescales the grokking timescale
+\citep{weightnormdelay2026}, we additionally run a weight-norm-matched control that replays the
+intervention's norm trajectory onto standard training, plus a Grokfast baseline
+\citep{lee2024grokfast} as the reference optimization-side accelerator. Throughout training we
+track when representational structure forms --- Fourier concentration of the embedding
+\citep{nanda2023progress}, class-clustering of held-out representations, and CKA trajectories ---
+so that any change in the delay can be aligned against the timing of structure formation.
+
+Our contributions:
+\begin{itemize}
+\item \textbf{Structure-specificity.} Across 10 seeds and three strengths, the true-structure
+prior generalizes in 22/30 runs, up to $2.75\times$ faster than the same seed's baseline ---
+the fastest transitions in our dataset --- while the exactly-matched shuffled-structure prior
+generalizes in 0/20 (Fisher exact $p=1.3\times10^{-7}$). The content of the injected structure,
+not the presence, strength, or geometry of the auxiliary loss, controls the delay.
+\item \textbf{Not norm-mediated.} The auxiliary loss inflates the total weight norm 2--3$\times$;
+replaying each intervention run's exact norm trajectory onto plain cross-entropy training yields
+0/15 generalization, with collapse into logit-scale saturation. The structural prior generalizes
+at norms where structure-agnostic training cannot --- bounding the scope of the weight-norm delay
+law \citep{weightnormdelay2026} --- and additionally reveals a structure-agnostic anti-saturation
+channel shared by both contrastive conditions.
+\item \textbf{Representation timing.} Class-cluster formation in held-out representations rises
+during the apparent plateau, ahead of each run's accuracy jump, and its timing tracks
+generalization timing across conditions --- the interventional counterpart of observational
+representation-first accounts of grokking \citep{twospeeds2026, circuitsync2026}.
+\item \textbf{A bidirectional lever with a characterized failure mode.} The same intervention
+that produces the fastest generalization also stalls a minority of seeds (a race between injected
+structure and norm-driven saturation), and wrong structure at high strength delays even
+memorization --- grokking dynamics can be steered in both directions by representational content
+alone.
+\end{itemize}
+
+\section{Related Work}
+
+\paragraph{Grokking and its mechanisms.}
+Grokking --- generalization emerging long after the training set is interpolated --- was first
+reported by \citet{power2022grokking} in small transformers trained on modular arithmetic.
+\citet{nanda2023progress} reverse-engineered the generalizing solution for modular addition into a
+Fourier multiplication circuit and showed via progress measures that the circuit forms gradually
+during the apparent plateau, with the visible accuracy jump reflecting a later ``clean-up'' of the
+memorization component. \citet{liu2022towards} tied generalization to the formation of structured
+embeddings, \citet{gromov2023grokking} gave closed-form Fourier solutions for two-layer networks,
+\citet{liu2023omnigrok} located grokking in the mismatch between initialization scale and dataset
+size, and \citet{varma2023explaining} explained the transition through the greater parameter
+efficiency of the generalizing circuit under weight decay.
+
+\paragraph{Structure-agnostic control of the delay.}
+A rapidly growing 2026 literature shows the grokking delay is not fixed but controllable ---
+so far, exclusively through \emph{structure-agnostic} levers. On the optimization side, Grokfast
+amplifies the slow component of the gradient signal \citep{lee2024grokfast}, and NeuralGrok learns
+a gradient transformation \citep{neuralgrok2025}. On the parameter side,
+\citet{weightnormdelay2026} establish a causal delay law: clamping the total weight norm to a
+multiple $\rho$ of the critical norm rescales the time-to-grok as $T\propto e^{\alpha\rho}$
+($\alpha\!\approx\!7.5$), with \citet{logitscale2026} arguing the norm acts through logit scale
+and softmax saturation. Closest to us, on the representation side, \citet{radialsuppression2026}
+penalize the radial component of hidden activations, constraining representations to a hypersphere
+and accelerating grokking up to $6.3\times$; the intervention is purely geometric, and the authors
+note they cannot isolate which of several correlated mechanisms drives the effect. None of these
+interventions carries any information about \emph{which} structure the task requires; whether
+task-specific structural content is itself a causal lever on the delay is the question we address.
+
+\paragraph{Representation-timing accounts.}
+\citet{twospeeds2026} decompose learning into a fast readout and a slow, continuously improving
+encoder, and argue --- observationally --- that grokking occurs when representation quality
+catches up to an already train-biased readout. \citet{circuitsync2026} report that synchronization
+of Fourier sub-circuits precedes the accuracy jump, and \citet{taskintrinsic2026} show cross-entropy
+training converges to task-intrinsic cyclic geometry. \citet{capacity2026} frame grokking as a race
+between memorization and generalization speeds. These accounts collectively predict that the delay
+measures the time to form task-structured representations, but none intervenes on that timing
+directly. Our experiment is the interventional test of this prediction.
+
+\paragraph{Supervised contrastive learning.}
+SupCon \citep{khosla2020supervised} pulls together representations of same-class examples and
+pushes apart different-class examples using a temperature-scaled InfoNCE objective over normalized
+projections. We repurpose it not as an accuracy booster but as a \emph{structure-injection device}:
+its positive-set definition is a free parameter into which arbitrary equivalence structure can be
+written --- the task's true structure, or a size-matched random partition --- while holding the
+loss form, strength, and geometry fixed.
+
+\section{Method}
+
+\subsection{Task and model}
+We use the canonical grokking task: modular addition $c=(a+b)\bmod p$ with $p=97$, presented as
+token sequences $[a, b, =]$ over a vocabulary of $p{+}1$ symbols. Of the $p^2=9409$ input pairs,
+30\% form the training set and the remainder the test set. The model is a one-layer decoder-only
+transformer following \citet{nanda2023progress}: $d_{\text{model}}{=}128$, 4 attention heads,
+$d_{\text{mlp}}{=}512$ with ReLU, learned positional embeddings, no biases, and \emph{no LayerNorm}.
+Omitting LayerNorm is deliberate: \citet{weightnormdelay2026} show LayerNorm decouples the weight
+scale from network function, which would render our weight-norm-matched control (below)
+uninterpretable. The class logits are read from the final-position residual stream
+$h\in\mathbb{R}^{128}$ by a linear unembedding. Training is full-batch AdamW
+($\eta=10^{-3}$, $\beta=(0.9, 0.98)$, weight decay $1.0$), the standard configuration in which
+grokking robustly occurs.
+
+\subsection{A structure-specific representational prior}
+We augment the task loss with a supervised-contrastive term on the hidden representation:
+\begin{equation}
+\mathcal{L} \;=\; \mathcal{L}_{\mathrm{CE}} \;+\; \lambda\,
+\mathcal{L}_{\supcon}\!\left(z,\; \mathcal{S}\right), \qquad z = \mathrm{normalize}(W_p\,h),
+\end{equation}
+where $W_p\in\mathbb{R}^{64\times128}$ is a linear projection head used only by the auxiliary
+loss, and $\mathcal{L}_{\supcon}$ is the $L^{\mathrm{out}}$ variant of
+\citet{khosla2020supervised} with temperature $\tau=0.1$, computed over the full training batch:
+\begin{equation}
+\mathcal{L}_{\supcon} = \sum_{i}\frac{-1}{|P(i)|}\sum_{q\in P(i)}
+\log\frac{\exp(z_i\!\cdot\! z_q/\tau)}{\sum_{a\neq i}\exp(z_i\!\cdot\! z_a/\tau)}.
+\end{equation}
+The positive-set structure $\mathcal{S}$, which defines $P(i)$, is the experimental variable:
+\begin{itemize}
+\item \textbf{True structure}: $P(i)$ contains all training examples sharing example $i$'s label
+      $c=(a+b)\bmod p$ --- the task's real equivalence structure. This uses only the training
+      labels already supplied to the cross-entropy term: no new label information is added, only a
+      \emph{representational format} is demanded.
+\item \textbf{Shuffled structure}: $P(i)$ is defined by a fixed random permutation of the training
+      label vector, drawn once at initialization. This yields pseudo-classes with the exact
+      class-size distribution of the true structure --- identical loss form, strength, positive-set
+      cardinalities, and geometry --- but with no functional relation to the task.
+\end{itemize}
+Any difference between these two conditions is attributable to the structural \emph{content} of
+the prior, not to the presence of a contrastive term, its optimization pressure, or its geometric
+side-effects.
+
+\subsection{Baselines and controls}
+\textbf{Grokfast} \citep{lee2024grokfast}: the EMA variant ($\alpha=0.98$, $\lambda_{\mathrm{gf}}=2$)
+amplifying the slow gradient component --- the standard optimization-side accelerator.
+\textbf{Weight-norm-matched control}: because auxiliary losses perturb the weight-norm trajectory,
+and the norm causally rescales the grokking timescale \citep{weightnormdelay2026}, we record the
+per-epoch total weight norm of each true-structure run and replay it onto a pure cross-entropy run
+with identical initialization, data split, and optimizer state dynamics (per-step global rescaling
+of all base parameters; optimizer moments preserved), following the matched-counterfactual
+methodology of \citet{weightnormdelay2026}. If the auxiliary loss acted through the norm channel,
+this control would reproduce its effect on the delay.
+
+\subsection{Measurements}
+We record $\ttest$ (first epoch with train accuracy $\geq 0.99$), $\tgen$ (first epoch with test
+accuracy $\geq 0.95$ sustained over three consecutive evaluations), and the delay
+$\tgen-\ttest$. Representation timing is probed every 50 epochs: (i) the fraction of the
+number-token embedding's Fourier power in its top-8 frequencies and its Gini coefficient
+\citep{nanda2023progress}; (ii) class-clustering of held-out representations --- the Fisher ratio
+(between-/within-class variance) and the cosine gap (mean within-class minus between-class cosine
+similarity) on a fixed probe set of 1024 test examples; (iii) linear CKA \citep{kornblith2019cka}
+between representations at epoch $t$ and the final post-grokking representations; (iv) the total
+weight norm and the logit scale, the mediating variables identified by prior work
+\citep{weightnormdelay2026, logitscale2026}. Statistics use per-seed medians, bootstrap confidence
+intervals, paired per-seed contrasts, and Fisher exact tests on generalization fractions across
+$\geq 5$ seeds per condition.
+
+\section{Results}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{lccccc}
+\toprule
+Condition & $n$ & Grokked & Median $\tgen$ & Median paired ratio & First grok \\
+\midrule
+Baseline & 10 & 10/10 & 19{,}950 & --- & 5{,}500 \\
+Grokfast & 5 & 5/5 & 16{,}150 & 0.77 & 10{,}300 \\
+SupCon-true $\lambda{=}0.1$ & 10 & 8/10 & 28{,}725 & 1.17 & 5{,}100 \\
+SupCon-true $\lambda{=}0.3$ & 10 & 6/10 & 33{,}325 & 1.22 & 2{,}850 \\
+SupCon-true $\lambda{=}1.0$ & 10 & 8/10 & 24{,}400 & \textbf{0.80} & \textbf{2{,}000} \\
+SupCon-shuffled (all $\lambda$) & 20 & \textbf{0/20} & $>$50{,}000 & $\geq$2.2 & --- \\
+Norm-matched (all $\lambda$) & 15 & \textbf{0/15} & $>$50{,}000 & $\geq$2.2 & --- \\
+\bottomrule
+\end{tabular}
+\caption{Generalization outcomes within the 50{,}000-epoch budget. ``Median paired ratio'' is the
+per-seed ratio $\tgen^{\text{cond}}/\tgen^{\text{baseline}}$ (values $<1$ indicate acceleration;
+censored runs are conservatively scored at the budget). SupCon-true groks in 22/30 runs versus
+0/20 for the exactly-matched shuffled-structure control (Fisher exact $p=1.3\times10^{-7}$) and
+0/15 for the weight-norm-matched control ($p=1.9\times10^{-6}$).}
+\label{tab:main}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig6_survival.pdf}
+\caption{Survival curves: fraction of seeds that have not yet reached 95\% test accuracy, per
+auxiliary-loss strength $\lambda$. The true-structure prior (red) produces the earliest
+generalization in the dataset (2{,}000 epochs at $\lambda{=}1.0$, $2.75\times$ faster than the
+same seed's baseline) together with a heavy stalled tail; the shuffled-structure control (blue,
+dashed) and the weight-norm-matched control (purple) never generalize within budget at any
+$\lambda$. Grokfast (green) is a consistent but bounded accelerator.}
+\label{fig:survival}
+\end{figure}
+
+\subsection{Structural content, not the auxiliary loss, controls generalization}
+Across 30 runs (10 seeds $\times$ 3 strengths), training with the true-structure prior reaches
+95\% test accuracy within budget in 22 cases (Table~\ref{tab:main},
+Fig.~\ref{fig:survival}). The shuffled-structure control --- identical loss form, strength,
+temperature, positive-set cardinalities, and normalized-projection geometry --- \emph{never}
+generalizes within budget (0/20; Fisher exact $p=1.3\times10^{-7}$). At $\lambda{=}1.0$ the
+contrast is maximal: the true prior yields the fastest generalization we observe anywhere in the
+dataset (2{,}000 epochs, versus 5{,}500 for the same seed's baseline), while the shuffled prior
+leaves test accuracy at chance ($\leq 2\%$) and even delays training-set interpolation to
+$\sim$10--15k epochs. Whatever the contrastive term contributes --- optimization pressure,
+representation-norm control, gradient noise --- is present in both conditions; only the
+\emph{content} of the equivalence structure differs.
+
+\subsection{The effect is not mediated by the weight norm}
+The true-structure prior inflates the total weight norm from $\sim$50 to 105--150, and
+\citet{weightnormdelay2026} show the norm alone rescales the grokking timescale exponentially.
+Replaying each SupCon-true run's per-epoch norm trajectory onto plain cross-entropy training
+(same seed, initialization, and split) reproduces the \emph{pathology} but none of the
+\emph{benefit}: 0/15 norm-matched runs generalize. Pure CE at the inflated norm collapses into
+saturated memorization --- logit scale grows to $\sim$$10^4$, softmax confidence exceeds 0.99,
+test cross-entropy diverges ($>$2{,}000), and embedding Fourier concentration never leaves its
+memorization value (Fig.~\ref{fig:reps}) --- exactly the norm$\to$logit-scale$\to$saturation
+chain of \citet{logitscale2026}. Critically, this holds even for the trajectory of the run that
+grokked in 9{,}800 epochs (twice the baseline speed): the norm signature of acceleration confers
+no acceleration. Both contrastive conditions, true and shuffled, avoid the saturation collapse
+(confidence $\approx$0.6--0.7 throughout), identifying a second, structure-\emph{agnostic} channel
+of the auxiliary loss: it keeps logits soft where decoupled weight decay alone cannot. But
+anti-saturation without correct structure never yields generalization (shuffled: 0/20).
+
+\subsection{A bidirectional, dose-dependent lever with a stochastic trap}
+The true prior does not uniformly accelerate: per-seed paired ratios at $\lambda{=}1.0$ span
+$0.36$ (a $2.75\times$ speedup) to complete trapping beyond budget, with median $0.80$ (8/10
+grokking; 6/10 faster than their paired baseline, i.e.\ 6 of the 8 that grokked). Acceleration is dose-monotone on seeds that
+grok (e.g.\ seed 6: $5{,}100 \to 2{,}850 \to 2{,}000$ epochs for
+$\lambda = 0.1 \to 0.3 \to 1.0$), while the stall probability is roughly dose-independent
+(2/10, 4/10, 2/10). Stalled runs are not dead: their test accuracy and Fourier concentration
+climb slowly (e.g.\ 28\% and 0.54 at budget), indicating a delayed, not destroyed, transition.
+Trajectory analysis suggests a race: seeds that develop class-clustered representations before
+norm inflation saturates the readout ride the injected structure to early generalization; seeds
+that miss this window inherit the high-norm slow regime. Under matched seeds, Grokfast
+\citep{lee2024grokfast} is a consistent but bounded accelerator (5/5 grokked, ratios
+$0.43$--$0.85$); the structural prior reaches larger peak speedups at the cost of the trap mode.
+
+\subsection{Representation timing explains generalization timing}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig3_reps.pdf}
+\caption{Representation-timing probes (medians across seeds, primary $\lambda{=}1.0$).
+\textbf{Left}: fraction of embedding Fourier power in the top-8 frequencies. \textbf{Middle}:
+class cosine gap (within-class minus between-class mean cosine similarity) of held-out
+representations. \textbf{Right}: linear CKA between representations at epoch $t$ and the same
+run's final representations. The true-structure prior (red) builds class structure during the
+apparent plateau, ahead of its own generalization; the norm-matched control (purple) never forms
+structure (its high CKA reflects representations frozen at memorization); the shuffled control
+(blue) shows no task-structure formation despite equal optimization pressure.}
+\label{fig:reps}
+\end{figure}
+The probes tie the delay to the timing of structure formation. In the true-structure condition
+the class cosine gap of held-out representations rises during the plateau, thousands of epochs
+before the accuracy jump, and embedding Fourier concentration rises earlier than in any other
+condition (Fig.~\ref{fig:reps}); the accuracy transition occurs as these measures complete their
+ascent. In the shuffled condition the same optimization pressure produces \emph{no} task-relevant
+class structure (cosine gap $\approx$0 until late), and in the norm-matched condition no
+structure forms at all. Across all 80 runs, none generalizes before its representation probes move, and none completes
+the Fourier rise without generalizing\footnote{Operationalized as: every run reaching 95\% test
+accuracy first crossed cosine gap $>0.05$ or Fourier top-8 fraction $>0.45$ at an earlier epoch
+(80/80 satisfied); no run reached Fourier top-8 $>0.8$ without generalizing (80/80).} --- the
+interventional counterpart of the observational representation-first accounts
+\citep{twospeeds2026, circuitsync2026}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\textwidth]{figs/fig4_mediation.pdf}
+\caption{Mediating variables (medians across seeds, primary $\lambda{=}1.0$). \textbf{Left}:
+total weight norm. Both contrastive conditions inflate the norm well above the baseline's
+weight-decay equilibrium; the norm-matched control (purple) replays the SupCon-true trajectory
+by construction. \textbf{Right}: logit scale. Pure cross-entropy at the inflated norm diverges
+into softmax saturation (purple), while both contrastive conditions hold logits soft ---
+the structure-agnostic anti-saturation channel. Neither variable separates true from shuffled
+structure; only the representational content does.}
+\label{fig:mediation}
+\end{figure}
+
+\section{Discussion}
+
+\paragraph{The delay is representation-limited, causally.}
+The representation-first accounts of grokking --- slow encoder, fast readout
+\citep{twospeeds2026}, circuit synchronization preceding the jump \citep{circuitsync2026},
+structured-embedding quality gating generalization \citep{liu2022towards} --- predicted exactly
+the intervention outcome we observe: demand the task's equivalence structure in representation
+space and generalization time shrinks, down to $2.75\times$ faster than baseline; demand an
+equally strong but wrong structure and generalization never arrives. The grokking delay in this
+system is therefore not an unavoidable optimization constant but the time for task-structured
+representations to form, and it can be manipulated in either direction by controlling
+which structure forms.
+
+\paragraph{Reconciling with the weight-norm delay law.}
+Our results do not contradict \citet{weightnormdelay2026}; they bound its scope. The norm channel
+is real and strong in our data: inflating the norm of a plain-CE learner to the SupCon trajectory
+reliably destroys generalization within budget (0/15), via the logit-scale saturation mechanism
+of \citet{logitscale2026}. But the delay law is a law for \emph{structure-agnostic} training.
+A structure-specific objective breaks it in both directions: SupCon-true generalizes at norms
+(105--150) where plain CE cannot, and its acceleration survives on trajectories whose norm
+signature alone confers none. Timescale control by the norm is thus conditional on the absence
+of stronger representational forces --- a boundary condition future delay-law work must state.
+
+\paragraph{Geometry versus content.}
+\citet{radialsuppression2026} accelerate grokking by penalizing radial inflation of hidden
+activations and note they cannot isolate which of several correlated geometric mechanisms is
+operative. Our shuffled control speaks to this: a loss with identical normalized-projection
+geometry, identical strength, and identical anti-saturation behavior, differing only in the
+partition it encodes, produces zero generalization. Geometric regularization of representations
+can be a useful lever, but in our setting geometry without content never suffices --- and content
+overrides adverse geometry (norm inflation). The two families of intervention are
+mechanistically distinct, and only the structural one is bidirectional.
+
+\paragraph{The trap mode and the race.}
+The failure mode of the true-structure prior is as informative as its success. Injected structure
+competes with a side-effect of its own optimization: contrastive gradients on normalized
+projections inflate upstream weight norms, which drives the readout toward saturation. Seeds
+whose class clusters consolidate early convert the prior into early Fourier structure and grok
+up to $2.75\times$ sooner; seeds that miss the window inherit a slowed, high-norm regime ---
+though still one qualitatively better than its norm-matched counterfactual (climbing versus flat
+test accuracy). This race picture predicts that stabilizing the norm side-effect (e.g.\
+norm-preserving contrastive gradients, or annealing $\lambda$) would retain the acceleration
+while removing the trap; we leave this to future work.
+
+\paragraph{Practical note.}
+Grokfast remains the more \emph{reliable} accelerator in this setup (5/5, $1.2$--$2.3\times$);
+structure injection achieves larger peak speedups ($2.75\times$) with stall risk. The two act on
+different variables (gradient spectrum versus representation target) and are in principle
+composable.
+
+\section{Limitations}
+Our evidence comes from one task family (modular addition, $p=97$) and one small architecture, the
+regime where grokking is cleanest and where the mechanistic ground truth (the Fourier circuit) is
+known; transfer to larger models and natural data is untested, a limitation shared with the
+interventional grokking literature \citep{radialsuppression2026, weightnormdelay2026}. The
+structure-specific prior consumes only information already present in the training labels, but it
+is supervised: a self-supervised variant (positives from algebraic invariances rather than labels)
+would sharpen the claim. The shuffled control matches class sizes, loss form, and strength, but a
+fixed random partition is also \emph{learnable} by memorization; it controls for optimization
+pressure, not for the learnability of the partition. Finally, the contrastive term adds
+$O(n^2)$ similarity computation per step, roughly 1.5$\times$ wall-clock in our full-batch
+setting; we compare conditions in epochs, not wall-clock.
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\appendix
+\section{Hyperparameters and reproducibility}
+\begin{table}[h]
+\centering\small
+\begin{tabular}{ll}
+\toprule
+Task & $(a+b)\bmod 97$, tokens $[a,b,=]$, 30\% of $97^2$ pairs train \\
+Model & 1-layer transformer, $d_{\text{model}}{=}128$, 4 heads, $d_{\text{mlp}}{=}512$ (ReLU) \\
+     & no LayerNorm, no biases, learned positional embeddings \\
+Optimizer & full-batch AdamW, $\eta{=}10^{-3}$, $\beta{=}(0.9,0.98)$, weight decay $1.0$ \\
+SupCon & $L^{\mathrm{out}}$ variant, $\tau{=}0.1$, linear projection $128\!\to\!64$ (no bias), \\
+       & $\lambda\in\{0.1, 0.3, 1.0\}$, computed on the full training batch \\
+Grokfast & EMA filter, $\alpha{=}0.98$, $\lambda_{\mathrm{gf}}{=}2.0$ \\
+Norm-matched & per-step global rescale of base parameters to the recorded \\
+             & per-epoch norm of the paired (same-seed) SupCon-true run \\
+Budget & 50{,}000 epochs cap; early stop 3{,}000 epochs after sustained test acc $\geq 0.99$ \\
+Thresholds & $\ttest$: train acc $\geq 0.99$; $\tgen$: test acc $\geq 0.95$ for 3 consecutive evals \\
+Seeds & $\geq 5$ per condition, shared across conditions (matched init and split) \\
+Hardware & single NVIDIA RTX 3080; full grid $\approx$ 4 GPU-hours \\
+\bottomrule
+\end{tabular}
+\caption{Complete configuration. Code and run artifacts accompany the paper.}
+\label{tab:hparams}
+\end{table}
+
+\section{Additional figures}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figs/fig1_curves.pdf}
+\caption{Test-accuracy trajectories at the primary strength $\lambda{=}1.0$ (thin: individual
+seeds; thick: medians). Median curves for conditions with stalled runs reflect the bimodal
+outcome distribution.}
+\label{fig:curves}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{figs/fig2_delay.pdf}
+\caption{Epochs to generalization and delay ($\tgen-\ttest$) per condition at $\lambda{=}1.0$
+(points: seeds; bars: medians; censored runs plotted at the 50{,}000-epoch budget).}
+\label{fig:delay}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.55\textwidth]{figs/fig5_dose.pdf}
+\caption{Dose--response: epochs to generalization versus auxiliary-loss strength $\lambda$
+(triangles: censored runs at budget; line: medians). True structure (red) spans strong
+acceleration to trapping; shuffled structure (blue) never generalizes at any strength.}
+\label{fig:dose}
+\end{figure}
+
+\end{document}

@@ -1,0 +1,9 @@
+linear-readout   seed=0  nrmse=1.97e-03  status=ok         W1=0.1523(f0.1265)  d̄sep=0.0192  h=0.2302  [23s]
+linear-readout   seed=1  nrmse=1.65e-03  status=ok         W1=0.3049(f0.1376)  d̄sep=0.0334  h=0.2595  [21s]
+undertrained     seed=0  nrmse=3.01e-03  status=ok         W1=0.1228(f0.1265)  d̄sep=-0.0051  h=0.2231  [19s]
+undertrained     seed=1  nrmse=2.23e-03  status=ok         W1=0.1410(f0.1376)  d̄sep=-0.0054  h=0.2219  [19s]
+tiny-reservoir   seed=0  nrmse=nan  status=diverged   [2s]
+tiny-reservoir   seed=1  nrmse=5.09e-03  status=ok         W1=29.7127(f0.1376)  d̄sep=0.3576  h=0.0258  [11s]
+over-regularized seed=0  nrmse=8.07e-04  status=ok         W1=0.1278(f0.1265)  d̄sep=-0.0012  h=0.2208  [31s]
+over-regularized seed=1  nrmse=7.33e-04  status=ok         W1=0.1222(f0.1376)  d̄sep=-0.0042  h=0.2227  [30s]
+wrote results/exp5b_esn_degraded.json (155s)

@@ -1,0 +1,8 @@
+E:\GitHub\Research\ornstein-dist\src\ornstein\esn.py:21: RuntimeWarning: divide by zero encountered in scalar divide
+  self.W = W * (rho_spec / eig)
+E:\GitHub\Research\ornstein-dist\src\ornstein\esn.py:21: RuntimeWarning: invalid value encountered in multiply
+  self.W = W * (rho_spec / eig)
+E:\GitHub\Research\ornstein-dist\src\ornstein\esn.py:37: RuntimeWarning: invalid value encountered in matmul
+  r = np.tanh(self.W @ r + self.W_in @ U[t] + self.b)
+E:\GitHub\Research\ornstein-dist\experiments\exp5b_esn_degraded.py:84: RuntimeWarning: invalid value encountered in matmul
+  r = np.tanh(esn.W @ r + esn.W_in @ U_test[t] + esn.b)

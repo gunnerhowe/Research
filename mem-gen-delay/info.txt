@@ -1,0 +1,24 @@
+self-supervised -> theory
+
+Title: Memorization-Generalization Delay
+
+Where this came from: borrow Contrastive Self-Supervised Learning from self-supervised
+
+Description: Add a contrastive auxiliary loss on hidden representations during training of a grokking-prone algorithmic task (pulling together inputs sharing the true underlying structure) and measure whether the delay between train-fit and test-generalization shrinks or vanishes.
+
+Hopefully outcome: A concrete lever to accelerate or abolish grokking, plus a testable mechanistic account tying delayed generalization to the timing of representation-cluster formation.
+
+Goal: Publish findings on arXiv, so build this out, test it properly and gather all necessary evidence with the proper rigor that the scientific community requires with proper formatting and any citations and such. So the output should be a ready to publish paper on this experiment. 
+
+
+Working title-shape: "Structure-specific representational priors causally control the grokking delay"
+
+Design (the 5 conditions that make it a paper, not a trick):
+
+Baseline — small transformer (1–2 layers), modular addition, standard grokking setup
+True-structure SupCon-aux — contrastive loss on hidden reps, positives share the task's real equivalence structure ← the intervention
+Shuffled-structure control — same loss, same strength, wrong structure ← the contribution lives here
+Grokfast baseline + 5. weight-norm-matched control ← kills the "it's just optimization/norm effects" objection
+Metrics: epochs-to-generalization (the delay), plus representation probes (Fourier-component emergence per Nanda, CKA trajectory) showing when structure forms under each condition.
+
+Before writing a line of code: read the three must-reads — Radial Suppression (June 30), Two Speeds (May 26), Weight-Norm Causal Delay Law (June 11) — and position explicitly against them. Then move fast: this niche is running at ~4 papers/week, and your whole experiment fits in a weekend on the 3080. Speed is the last defense against the scoop risk no system can eliminate.
