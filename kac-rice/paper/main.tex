@@ -697,6 +697,41 @@ Seeds & 3 (init + sampling pattern); 2 for ablations \\
 \end{tabular}
 \end{table}
 
+\section{Reproducibility}
+\label{app:repro}
+
+All code, raw result JSONs, and figure generators are public at
+\url{https://github.com/gunnerhowe/Research} (directory \texttt{kac-rice}).
+Every number and figure in this paper regenerates from the released raw runs;
+no result exists only in the manuscript.
+
+\paragraph{Environment.} Python 3.13.6, PyTorch 2.7.1, NumPy 2.4.4, SciPy
+1.17.0, Matplotlib 3.10.7, on a single 16-core Windows workstation. All
+headline experiments ran on CPU in float32 (the machine's GPU was shared with
+unrelated jobs; CPU wall-clock is not a reported metric, and the timing
+comparison of Section~3 uses the dedicated back-to-back benchmark below).
+
+\paragraph{Commands.} Estimator correctness tests:
+\texttt{python tests/test\_correctness.py} (7 tests: crossing counts, co-area,
+Rice agreement, FFL parity vs.\ the official package, gradient flow). Full
+experiment suite (parallel workers; resume-safe, so a single sequential
+invocation is equivalent):
+\begin{center}\small\ttfamily
+python experiments/run\_paper.py --suites exp1\_1d exp2\_1d exp1\_2d\\
+python experiments/run\_paper.py --suites exp2\_2d --tag \_a\\
+python experiments/run\_paper.py --suites ablations --tag \_c
+\end{center}
+Figures and tables: \texttt{python experiments/make\_figures.py} reads
+\texttt{results/paper/*.json} and writes every figure and LaTeX table used
+here. Timing artifact: \texttt{python experiments/bench\_timing.py} writes
+\texttt{results/paper/timing.json} (source of the $2.12\times$/$2.14\times$
+factors).
+
+\paragraph{Seeds and scope.} Seeds $0$--$2$ everywhere (model init and, on
+scattered tasks, sampling patterns), $0$--$1$ for ablations; all seeds are set
+by CLI and recorded per run in the JSONs. Total compute: under one day on the
+single workstation.
+
 \section{Additional results}
 \label{app:additional}
 
