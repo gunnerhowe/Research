@@ -1,0 +1,2 @@
+device=cuda iters=30000 seeds=[0, 1, 2]
+exp5 grad_damp_w0.03 seed0: rel_l2=0.8580 diverged=False (1787s)

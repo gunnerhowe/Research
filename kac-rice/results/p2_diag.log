@@ -1,0 +1,2 @@
+device=cuda iters=30000 seeds=[0, 1]
+diag vanilla_raw seed0: rel_l2=0.8794 diverged=False (1623s)

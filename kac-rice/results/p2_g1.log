@@ -1,0 +1,3 @@
+device=cuda iters=30000 seeds=[0, 1, 2]
+exp3 vanilla seed0: rel_l2=0.8501 diverged=False (1725s)
+exp3 vanilla seed1: rel_l2=0.8617 diverged=False (1875s)

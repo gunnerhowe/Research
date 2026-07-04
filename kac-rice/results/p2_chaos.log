@@ -1,0 +1,4 @@
+device=cuda iters=30000 seeds=[0]
+computing chaotic CGLE reference...
+chaos vanilla seed0: rel_l2=1.3110 diverged=True (4039s)
+chaos budget_ref seed0: rel_l2=1.3056 diverged=True (4062s)

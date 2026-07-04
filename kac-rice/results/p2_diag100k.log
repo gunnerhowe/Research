@@ -1,0 +1,1 @@
+device=cuda iters=100000 seeds=[0]

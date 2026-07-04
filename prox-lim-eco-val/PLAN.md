@@ -103,10 +103,30 @@ marginal/invariant-measure training provably miss. arXiv-ready paper output.
       place events correctly; suppression is the easy descent path.
       Clustered prior punishes spurious events brutally (tiny baseline
       intensity). marg (u_t stats) partially repairs spectrum (1.83).
-- [ ] KS FIX PROBES RUNNING (scripts/probe_ks_fixes.py, ~3h):
-      A. margtpp composition (new condition; both aux, shared rollout)
-      B. gentle-long (w3 st25 lr3e-5 2400 steps)
-      C. milder noise r=0.2 (data/ksr02) base + tpp
+- [x] KS FIX PROBES DONE — ALL variants of pure tpp collapse (gentle-long
+      0.23, r=0.2 0.19). margtpp partial (rate 0.70, iet_ks 0.27, psd 1.9,
+      tpp_ll at ceiling) but WORSE than marg alone on rate/rl/iet_w1 —
+      priors do NOT simply compose. **FINAL KS STORY (D14): KS is the
+      method's BOUNDARY. Deep dynamics deficit (psd e^3) leaves no
+      accessible direction to place events; suppression is the descent
+      path -> rate collapse in every timing-only variant. Jiang's u_t
+      increment stats (a TEMPORAL statistic, note!) repair dynamics; most
+      timing follows but big residual remains (fano 0.34, iet_w1 22) —
+      nobody fully wins KS. Report honestly; motivates dynamics-aware
+      timing priors as future work. NO MORE KS TUNING.**
+      (Note: margtpp probe stall was caused by GPU mem ceiling + USER'S
+      OWN concurrent jobs saturating CPU — do not kill those processes.)
+- [ ] FINAL COMPUTE QUEUE (scripts/resume_final.py, RESUMED after session
+      restart + CUDA illegal-access crash in margtpp_s2 — margtpp retried
+      once, tolerated if it fails again; then L96 seeds 6-8). After: L96
+      n=8 refresh (aggregate.py seeds 1-8 + make_tables.py + paired-test
+      json into paper), final intro pass, full PDF visual check.
+- [x] KS table generated + inserted (make_ks_table.py); KS subsection,
+      abstract, contributions, discussion rewritten to boundary framing.
+      KEY SYMMETRIC FINDING: pois-aux is the BEST RP condition on KS
+      (rate was the broken content there) while harmful on L96 (structure
+      was broken) — prior helps exactly insofar as its content matches
+      the deficit. In paper. Compiles at 11 pages.
 - [x] Aggregate-event transfer (L96): NEGATIVE — site-level prior does not
       fix spatial-max events (rate 1.45 vs base 1.29; CV stays ~1.0 vs GT
       1.13). Added to paper ablations as honest negative result.

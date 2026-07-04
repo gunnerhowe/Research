@@ -1,0 +1,4 @@
+computing CGLE reference (nx=1024, dt=1e-4, T=10)...
+device=cuda iters=2000 seeds=[0]
+exp3 vanilla seed0: rel_l2=1.0132 diverged=True (104s)
+PHASE2 DONE

@@ -124,3 +124,31 @@ class KacRiceLoss(nn.Module):
         if self.relative:
             err = err / (c_gt + c_gt.mean().clamp_min(1e-8)) ** 2
         return err.mean()
+
+
+class CrossingBudgetLoss(nn.Module):
+    """One-sided crossing-density BUDGET (Phase 2): penalize only the EXCESS of
+    the field's crossing density over a physical budget b_j per level,
+
+        L = mean_j relu( c_theta(u_j) - b_j )^2 / (b_j + mean b)^2.
+
+    One-sidedness is mandatory for the PINN use case: early in training the
+    field is smooth (crossings *below* budget); a symmetric match would pump
+    oscillation *up* -- the exact failure being prevented. Levels are FIXED
+    from the amplitude range of the solution class (there is no ground-truth
+    field in a PINN), and budgets come from cgle.budgets_* sources.
+    """
+
+    def __init__(self, levels, budgets, eps, relative=True):
+        super().__init__()
+        self.register_buffer("levels", torch.as_tensor(levels, dtype=torch.float32))
+        self.register_buffer("budgets", torch.as_tensor(budgets, dtype=torch.float32))
+        self.eps = float(eps)
+        self.relative = relative
+
+    def forward(self, values, grad_norm):
+        c = crossing_density(values, grad_norm, self.levels, self.eps)
+        over = torch.relu(c - self.budgets)
+        if self.relative:
+            over = over / (self.budgets + self.budgets.mean().clamp_min(1e-8))
+        return over.pow(2).mean()

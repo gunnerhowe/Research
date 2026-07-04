@@ -30,21 +30,21 @@
 \citation{jiang2023training}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{2}{section.2}\protected@file@percent }
 \newlabel{sec:related}{{2}{2}{Related work}{section.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Method}{2}{section.3}\protected@file@percent }
-\newlabel{sec:method}{{3}{2}{Method}{section.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Setup: surrogates, events, catalogs}{2}{subsection.3.1}\protected@file@percent }
 \citation{daley2003introduction,mei2017neural}
 \citation{wang2023prolificdreamer,luo2023diffinstruct}
-\citation{jiang2023training}
-\citation{brandstetter2022message}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Method}{3}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{3}{Method}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Setup: surrogates, events, catalogs}{3}{subsection.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}The event-timing prior: a recurrent-intensity TPP}{3}{subsection.3.2}\protected@file@percent }
 \newlabel{eq:tpp-ll}{{1}{3}{The event-timing prior: a recurrent-intensity TPP}{equation.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Soft events from differentiable rollouts}{3}{subsection.3.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Mode-seeking, and the likelihood-ratio fix}{3}{subsection.3.4}\protected@file@percent }
 \newlabel{sec:ratio}{{3.4}{3}{Mode-seeking, and the likelihood-ratio fix}{subsection.3.4}{}}
-\newlabel{eq:ratio}{{3}{3}{Mode-seeking, and the likelihood-ratio fix}{equation.3}{}}
+\citation{jiang2023training}
+\citation{brandstetter2022message}
 \citation{lorenz1996predictability,wilks2005effects}
 \citation{lipman2023flow}
+\newlabel{eq:ratio}{{3}{4}{Mode-seeking, and the likelihood-ratio fix}{equation.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Conditions}{4}{subsection.3.5}\protected@file@percent }
 \newlabel{sec:conditions}{{3.5}{4}{Conditions}{subsection.3.5}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Experimental setup}{4}{section.4}\protected@file@percent }
@@ -55,27 +55,30 @@
 \citation{jiang2023training}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Lorenz-96 main results: mean $\pm $ s.d.\ over confirmatory seeds (shared base checkpoint per seed; identical fine-tuning budgets). Bold = best among fine-tuned generative conditions. IET = inter-event time; RP = return period; TPP-LL = catalog-TPP log-likelihood of rollout events (ground-truth ceiling $-0.0994$); CRPS at lead 20 steps.}}{5}{table.1}\protected@file@percent }
 \newlabel{tab:main}{{1}{5}{Lorenz-96 main results: mean $\pm $ s.d.\ over confirmatory seeds (shared base checkpoint per seed; identical fine-tuning budgets). Bold = best among fine-tuned generative conditions. IET = inter-event time; RP = return period; TPP-LL = catalog-TPP log-likelihood of rollout events (ground-truth ceiling $-0.0994$); CRPS at lead 20 steps}{table.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Kuramoto--Sivashinsky: a purely temporal deficit}{5}{subsection.5.2}\protected@file@percent }
-\newlabel{sec:ks}{{5.2}{5}{Kuramoto--Sivashinsky: a purely temporal deficit}{subsection.5.2}{}}
-\citation{black2024ddpo}
+\citation{jiang2023training}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Inter-event-time statistics, Lorenz-96 (pooled over 5 seeds). Left: IET densities; ground truth (shaded) is multimodal at wave-recurrence harmonics. Right: quantile--quantile against ground truth; TPP-aux (red) tracks the diagonal; the Poissonized prior (blue) severely distorts the distribution.}}{6}{figure.1}\protected@file@percent }
 \newlabel{fig:iet}{{1}{6}{Inter-event-time statistics, Lorenz-96 (pooled over 5 seeds). Left: IET densities; ground truth (shaded) is multimodal at wave-recurrence harmonics. Right: quantile--quantile against ground truth; TPP-aux (red) tracks the diagonal; the Poissonized prior (blue) severely distorts the distribution}{figure.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Ablations}{6}{section.6}\protected@file@percent }
-\newlabel{sec:ablations}{{6}{6}{Ablations}{section.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion and limitations}{6}{section.7}\protected@file@percent }
-\newlabel{sec:discussion}{{7}{6}{Discussion and limitations}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Kuramoto--Sivashinsky: the boundary of a timing-only prior}{6}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:ks}{{5.2}{6}{Kuramoto--Sivashinsky: the boundary of a timing-only prior}{subsection.5.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Conditional event hazard vs.\ time since the last event. Ground truth (black) oscillates at the recurrence period. The base surrogate over-amplifies the oscillation; TPP-aux (red) matches it; the rate-matched Poisson prior (blue) flattens it --- the content-specificity dissociation in a single curve.}}{7}{figure.2}\protected@file@percent }
+\newlabel{fig:hazard}{{2}{7}{Conditional event hazard vs.\ time since the last event. Ground truth (black) oscillates at the recurrence period. The base surrogate over-amplifies the oscillation; TPP-aux (red) matches it; the rate-matched Poisson prior (blue) flattens it --- the content-specificity dissociation in a single curve}{figure.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Kuramoto--Sivashinsky results (3 seeds; $\dagger $: single exploratory seed). Ground-truth catalog-TPP ceiling: $-0.050$. The timing-only prior collapses the event rate; the rate-only (Poisson) prior --- harmful on Lorenz-96 --- is here the best return-period condition; increment statistics ($u_t$) repair the dynamics and most of the timing.}}{7}{table.2}\protected@file@percent }
+\newlabel{tab:ks}{{2}{7}{Kuramoto--Sivashinsky results (3 seeds; $\dagger $: single exploratory seed). Ground-truth catalog-TPP ceiling: $-0.050$. The timing-only prior collapses the event rate; the rate-only (Poisson) prior --- harmful on Lorenz-96 --- is here the best return-period condition; increment statistics ($u_t$) repair the dynamics and most of the timing}{table.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Ablations}{7}{section.6}\protected@file@percent }
+\newlabel{sec:ablations}{{6}{7}{Ablations}{section.6}{}}
+\citation{black2024ddpo}
 \bibstyle{plainnat}
 \bibdata{refs}
 \bibcite{aalaila2026seahorse}{{1}{2026}{{Aalaila et~al.}}{{Aalaila, Gro{\ss }mann, and Vollmer}}}
 \bibcite{black2024ddpo}{{2}{2024}{{Black et~al.}}{{Black, Janner, Du, Kostrikov, and Levine}}}
 \bibcite{brandstetter2022message}{{3}{2022}{{Brandstetter et~al.}}{{Brandstetter, Worrall, and Welling}}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion and limitations}{8}{section.7}\protected@file@percent }
+\newlabel{sec:discussion}{{7}{8}{Discussion and limitations}{section.7}{}}
 \bibcite{chakraborty2026binned}{{4}{2026}{{Chakraborty et~al.}}{{Chakraborty, Mohan, and Maulik}}}
 \bibcite{daley2003introduction}{{5}{2003}{{Daley and Vere-Jones}}{{}}}
 \bibcite{jiang2023training}{{6}{2023}{{Jiang et~al.}}{{Jiang, Lu, Orlova, and Willett}}}
 \bibcite{kassam2005fourth}{{7}{2005}{{Kassam and Trefethen}}{{}}}
 \bibcite{kochkov2024neural}{{8}{2024}{{Kochkov et~al.}}{{Kochkov, Yuval, Langmore, Norgaard, Smith, Mooers, Kl{\"o}wer, Lottes, Rasp, D{\"u}ben, Hatfield, Battaglia, Sanchez-Gonzalez, Willson, Brenner, and Hoyer}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Conditional event hazard vs.\ time since the last event. Ground truth (black) oscillates at the recurrence period. The base surrogate over-amplifies the oscillation; TPP-aux (red) matches it; the rate-matched Poisson prior (blue) flattens it --- the content-specificity dissociation in a single curve.}}{7}{figure.2}\protected@file@percent }
-\newlabel{fig:hazard}{{2}{7}{Conditional event hazard vs.\ time since the last event. Ground truth (black) oscillates at the recurrence period. The base surrogate over-amplifies the oscillation; TPP-aux (red) matches it; the rate-matched Poisson prior (blue) flattens it --- the content-specificity dissociation in a single curve}{figure.2}{}}
 \bibcite{lipman2023flow}{{9}{2023}{{Lipman et~al.}}{{Lipman, Chen, Ben-Hamu, Nickel, and Le}}}
 \bibcite{liu2026selfrefining}{{10}{2026}{{Liu et~al.}}{{Liu, Zanna, and Bruna}}}
 \bibcite{lorenz1996predictability}{{11}{1996}{{Lorenz}}{{}}}
@@ -94,6 +97,6 @@
 \bibcite{wattmeyer2025ace2}{{24}{2025}{{Watt-Meyer et~al.}}{{Watt-Meyer, Henn, McGibbon, Clark, Kwa, Perkins, Wu, Harris, and Bretherton}}}
 \bibcite{wilks2005effects}{{25}{2005}{{Wilks}}{{}}}
 \citation{kassam2005fourth}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Experimental details}{9}{appendix.A}\protected@file@percent }
-\newlabel{app:details}{{A}{9}{Experimental details}{appendix.A}{}}
-\gdef \@abspage@last{10}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Experimental details}{10}{appendix.A}\protected@file@percent }
+\newlabel{app:details}{{A}{10}{Experimental details}{appendix.A}{}}
+\gdef \@abspage@last{11}

@@ -47,9 +47,14 @@ surrogate's event process matches the catalog's. Across seeds, TPP-aux
 fine-tuning recovers inter-event-time distributions, burstiness, and
 return-period curves that invariant-measure matching \citep{jiang2023training}
 provably leaves unconstrained, while a rate-matched Poisson control shows the
-gains require the prior's temporal \emph{structure}, not merely its rate.
-Event-timing structure is thus a distinct, directly controllable axis of
-surrogate quality.
+gains require the prior's temporal \emph{structure}, not merely its rate. A
+second system (Kuramoto--Sivashinsky) maps the method's boundary: when
+rollout \emph{dynamics} are deeply corrupted, a timing-only prior collapses
+the event rate rather than repairing it --- a characteristic, easily
+monitored failure signature whose mechanism we analyze. Event-timing
+structure is thus a distinct, directly controllable axis of surrogate
+quality --- one that complements, and does not substitute for,
+dynamics-level training signals.
 \end{abstract}
 
 \section{Introduction}
@@ -93,10 +98,21 @@ separately from gridded reanalyses.
   variational score distillation \citep{wang2023prolificdreamer,luo2023diffinstruct}.
   \item Controls that isolate the mechanism: a rate-matched
   \emph{Poissonized} TPP prior (same loss form and strength, no temporal
-  structure) fails to deliver the gains; the invariant-measure objective of
-  \citet{jiang2023training} (given equally privileged clean statistics)
-  fixes marginals but not timing; pushforward-style stabilization
-  \citep{brandstetter2022message} fixes neither.
+  structure) actively damages event timing rather than repairing it; the
+  invariant-measure objective of \citet{jiang2023training} (given equally
+  privileged clean statistics) excels at marginals but leaves return
+  periods and burstiness unrepaired; pushforward-style stabilization
+  \citep{brandstetter2022message} improves rate-side statistics without
+  learning conditional timing structure, at a significant cost to spectra
+  and probabilistic skill.
+  \item An honest map of the method's boundary: on Kuramoto--Sivashinsky,
+  where the base surrogate's rollout \emph{dynamics} are deeply corrupted
+  (spectrum errors of $e^{3}$) despite near-perfect state marginals, every
+  timing-only variant collapses the event rate --- we analyze the
+  mechanism (mode-seeking through the only accessible descent direction,
+  outrunning the self-TPP brake) --- and neither dynamics-level objectives
+  nor naive composition fully recovers the event process
+  (\S\ref{sec:ks}).
 \end{enumerate}
 
 \section{Related work}
@@ -382,20 +398,82 @@ in a single curve.}
 \label{fig:hazard}
 \end{figure}
 
-\subsection{Kuramoto--Sivashinsky: a purely temporal deficit}
+\subsection{Kuramoto--Sivashinsky: the boundary of a timing-only prior}
 \label{sec:ks}
-%% TODO(results): populate from KS grid (seeds 1-3, base/tpp/pois/marg).
-%% Base numbers (seed 1): iet_ks 0.594, rate_ratio 2.50, rl_logerr 1.14,
-%% state marg W1 0.037 (near-perfect!), psd 3.40.
-On KS ($L=22$, $N=64$, $\Delta t = 1$ tu, events = upcrossings of $u$ at
-its 95th percentile; \emph{clustered}, IET CV $1.58$ --- the opposite
-deviation from Poisson to Lorenz-96), the noisy-observation base surrogate
-exhibits a \emph{purely temporal} deficit: its rollout state marginal is
-nearly perfect (state $W_1 = 0.037$) while the event process is severely
-corrupted --- $2.5\times$ the true event rate, IET KS $0.59$, return-period
-log-error $1.14$. Here there is nothing for a time-marginal objective to
-fix by construction; the corruption lives entirely in temporal structure.
-%% KS results table/figure here after grid.
+
+KS ($L=22$, $N=64$, $\Delta t = 1$ tu; events = upcrossings of $u$ at its
+95th percentile, \emph{clustered}, IET CV $1.58$ --- the opposite deviation
+from Poisson to Lorenz-96) probes a qualitatively different deficit. The
+noisy-observation base surrogate's rollouts have a nearly perfect state
+marginal (state $W_1 = 0.037$) but a severely corrupted event process
+($2.5\times$ the true rate; IET KS $0.59$; return-period log-error $1.14$)
+driven by a \emph{deep dynamical} corruption: the rollout power spectrum is
+wrong by $e^{3}$ at high frequencies --- jittery dynamics generating
+spurious threshold re-crossings. This is the setting the introduction's
+logic points to: nothing here is fixable by matching state marginals alone.
+
+The outcome inverts Lorenz-96, and is instructive. \textbf{The timing-only
+prior fails, by a characteristic mechanism.} Under TPP-aux the event rate
+collapses to $0.31$ of truth (IET $W_1$ worsens from $55$ to $180$), and
+the collapse persists across auxiliary weights $\{1,3,10\}$, self-TPP
+budgets $\{5,25\}$ steps, gentler and $3\times$ longer fine-tuning, and a
+milder noise level ($r{=}0.2$; rate $0.19$). The training traces show why:
+a clustered prior assigns very low baseline intensity between bursts, so
+each of the base model's many mistimed events is heavily penalized, and
+within ${\sim}200$ steps the surrogate's event process shoots \emph{past}
+the target into sparsity while the self-TPP lags; once the self-TPP
+catches up, the two likelihoods equilibrate ($\mathcal{L}_{\phi^\star}
+\approx \mathcal{L}_{\psi}$, both above the ground-truth ceiling) and the
+residual KL pressure ($\approx 0.005$/step) is too weak against the
+flow-matching anchor to escape. In short: when the underlying dynamics are
+too corrupted to offer a gradient direction that \emph{places} events
+correctly, suppressing events is the accessible descent path, and the
+ratio objective's correct fixed point is unreachable. Suppression---not
+repair---is the failure signature to monitor (the rollout event rate makes
+it visible immediately).
+
+\textbf{The controls invert accordingly} (Table~\ref{tab:ks}). The
+rate-matched \emph{Poisson} prior --- harmful on Lorenz-96 --- is the best
+return-period condition on KS (RP log-error $0.16$; rate $0.96$): where
+the dominant error \emph{is} the rate, a rate-only prior transfers exactly
+the information that is broken, and its permissive constant hazard exerts
+no placement pressure that the corrupted dynamics cannot satisfy. The two
+systems are mirror images: a prior helps precisely to the extent that its
+content matches the deficit, and a structured prior whose structure the
+dynamics cannot realize does damage instead.
+
+\textbf{What does repair KS's temporal structure is a dynamics-level
+statistic.} The \citet{jiang2023training} objective --- whose KS summary
+statistics include the \emph{temporal increment} $u_t$, a local-dynamics
+constraint rather than a pure time-marginal --- repairs the spectrum
+($3.40 \to 1.83$) and with it most of the event statistics (rate $1.03$,
+IET KS $0.26$), though substantial timing error remains (IET $W_1$ $22$
+vs.\ a base of $55$; Fano error $0.34$): no condition fully recovers the
+KS event process. Composing the two priors (climatology + catalog)
+reaches the correct typicality level (catalog-TPP LL at the ceiling) and
+halves the base IET KS, but the timing term still drags the rate down
+($0.70$) relative to the increment objective alone --- the priors do not
+simply add.
+
+\begin{table}[t]
+\centering
+\caption{Kuramoto--Sivashinsky results (3 seeds; $\dagger$: single
+exploratory seed). Ground-truth catalog-TPP ceiling: $-0.050$. The
+timing-only prior collapses the event rate; the rate-only (Poisson) prior
+--- harmful on Lorenz-96 --- is here the best return-period condition;
+increment statistics ($u_t$) repair the dynamics and most of the timing.}
+\label{tab:ks}
+\resizebox{\textwidth}{!}{\input{tables/ks_results}}
+\end{table}
+
+Together the two systems bracket the method: when a surrogate's dynamics
+are structurally sound and its event timing is corrupted (Lorenz-96), a
+catalog TPP prior repairs the event process completely and specifically;
+when the dynamics themselves are deeply corrupted (KS), event-timing
+information alone cannot substitute for dynamics repair --- it must wait
+on, or be combined with, objectives that restore the dynamics, and naive
+combination is not enough. We regard characterizing --- and lifting ---
+this boundary as the central open problem this paper leaves.
 
 \section{Ablations}
 \label{sec:ablations}
@@ -453,10 +531,15 @@ is assumed accurate; catalog noise/censoring would enter the prior.
 (exact only as $\Delta t \to 0$). (iv) Truncated rollout gradients bias
 the aux gradient; DDPO-style score-function estimators
 \citep{black2024ddpo} would remove that bias at higher variance --- we
-found the biased low-variance path sufficient. (v) In noise-dominated
-regimes, part of the timing deficit is marginal-reducible and
-time-marginal objectives recover it; the KS results isolate the purely
-temporal component that they cannot.
+found the biased low-variance path sufficient where the method works, and
+no estimator choice rescues the KS regime, whose failure is a property of
+the optimization landscape, not the gradient estimator. (v) The method's
+domain of applicability --- dynamics sound, timing corrupted --- must be
+diagnosed per application; the rollout event rate during fine-tuning is a
+cheap, reliable canary for leaving it. (vi) In noise-dominated regimes,
+part of the timing deficit is marginal-reducible and strong time-marginal
+objectives recover that part; our controls quantify exactly the residual
+that they cannot.
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
