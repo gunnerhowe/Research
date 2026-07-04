@@ -183,34 +183,42 @@ def fig_crossings():
 
 
 def tab_main():
-    recs = all_records()
+    """Two column groups: front benchmark (exp3/exp4/exp5) and chaotic testbed
+    (chaos suite). Rows: vanilla, three budget sources, gradient damping."""
+    front = load("exp3") + load("exp4") + load("exp5")
+    chaos = load("chaos")
     order = ["vanilla", "budget_ref", "budget_phys", "budget_scalar",
-             "grad_damp", "curv_damp", "fourier_pinn", "curriculum", "causal",
-             "fourier_budget_ref"]
-    groups = defaultdict(list)
-    for r in recs:
-        groups[base_config(r["config"])].append(r)
-    # dampers: best weight only
-    for stem in ("grad_damp", "curv_damp"):
-        best, name = best_damper_records(recs, stem)
-        groups[stem] = best
+             "grad_damp"]
 
-    lines = ["\\begin{tabular}{lccc}", "\\toprule",
-             "Config & rel.\\ $L_2$ & diverged & low-band err.\\ \\\\",
+    def cell(recs, cfg):
+        rs = [r for r in recs if base_config(r["config"]) == cfg]
+        if cfg == "grad_damp" and rs:
+            by_w = defaultdict(list)
+            for r in rs:
+                by_w[r["config"]].append(r)
+            bestk = min(by_w, key=lambda k: np.mean(
+                [x["rel_l2"] for x in by_w[k]]))
+            rs = by_w[bestk]
+        if not rs:
+            return "--", ""
+        rl = np.array([min(r["rel_l2"], 99.0) for r in rs])
+        n = len(rs)
+        val = (f"{rl.mean():.3f} $\\pm$ {rl.std():.3f}" if n > 1
+               else f"{rl.mean():.3f}")
+        return val, f" [{n}]"
+
+    lines = ["\\begin{tabular}{lcc}", "\\toprule",
+             " & front benchmark & BF-unstable testbed \\\\",
+             "Config & rel.\\ $L_2$ [seeds] & rel.\\ $L_2$ [seeds] \\\\",
              "\\midrule"]
     for cfg in order:
-        rs = groups.get(cfg, [])
-        if not rs:
+        f_val, f_n = cell(front, cfg)
+        c_val, c_n = cell(chaos, cfg)
+        if f_val == "--" and c_val == "--":
             continue
-        rl = np.array([min(r["rel_l2"], 99.0) for r in rs])
-        div = np.mean([r["diverged"] for r in rs])
-        lb = np.array([r["bands"][0] for r in rs])
-        note = " (best $w$)" if cfg in ("grad_damp", "curv_damp") else ""
-        lines.append(
-            f"{LABELS.get(cfg, cfg)}{note} & "
-            f"{rl.mean():.3f} $\\pm$ {rl.std():.3f} & "
-            f"{int(div * len(rs))}/{len(rs)} & "
-            f"{lb.mean():.3f} $\\pm$ {lb.std():.3f} \\\\")
+        note = " (best $w$)" if cfg == "grad_damp" else ""
+        lines.append(f"{LABELS.get(cfg, cfg)}{note} & {f_val}{f_n} & "
+                     f"{c_val}{c_n} \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
     (TABS / "p2_main.tex").write_text("\n".join(lines))
 

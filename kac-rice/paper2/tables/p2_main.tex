@@ -1,8 +1,12 @@
-\begin{tabular}{lccc}
+\begin{tabular}{lcc}
 \toprule
-Config & rel.\ $L_2$ & diverged & low-band err.\ \\
+ & front benchmark & BF-unstable testbed \\
+Config & rel.\ $L_2$ [seeds] & rel.\ $L_2$ [seeds] \\
 \midrule
-vanilla PINN & 0.867 $\pm$ 0.016 & 0/3 & 0.209 $\pm$ 0.027 \\
-+ gradient damping (best $w$) & 0.858 $\pm$ 0.000 & 0/1 & 0.202 $\pm$ 0.000 \\
+vanilla PINN & 0.867 $\pm$ 0.016 [3] & 1.311 [1] \\
++ budget (reference sim) & 0.866 $\pm$ 0.015 [3] & 1.306 [1] \\
++ budget (physics prior) & 0.875 $\pm$ 0.021 [3] & -- \\
++ budget (scalar cap) & 0.866 $\pm$ 0.015 [3] & -- \\
++ gradient damping (best $w$) & 0.858 [1] & 1.323 [1] \\
 \bottomrule
 \end{tabular}

@@ -220,7 +220,7 @@ BC Latin-hypercube points, $w_{\mathrm{res}}{=}1$, $w_{\mathrm{ic,bc}}{=}100$---
 ASPEN's published configuration. Reference: method-of-lines RK4 at their
 $\Delta t{=}10^{-4}$, $N_x{=}1024$, grid-convergence verified. We run both
 normalized-input and raw-coordinate variants, at 30k iterations (3 seeds) and at
-the full published 100k depth. \TODO{confirm 100k numbers when runs land}
+the full published 100k depth (both variants, seed 0).
 
 \paragraph{Benjamin--Feir-unstable testbed.} The front benchmark is BF-stable
 ($1+bc = 0.35 > 0$); genuine broadband dynamics needs the unstable regime. We add
@@ -235,16 +235,19 @@ Section~\ref{sec:diagnostic}; temporal turning-point rates.
 
 \subsection{Vanilla failure, wrong disease}
 
-\TODO{Table with final numbers once exp4/diag100k land. Current verified content:}
 On the front benchmark the vanilla PINN fails reproducibly---relative $L_2$
-$0.867\pm0.016$ over three seeds, physically useless---but the failure is
-\emph{propagation loss}, not oscillation: error grows from $0.10$ ($t{<}2$) to
-$0.76$ ($t{>}5$), amplitudes stay bounded ($\max|A| = 1.05$), temporal
-turning-point rates sit \emph{below} the reference's, high spatial bands carry
-near-zero excess energy, and the crossing profile lies \emph{under} the physical
-budget at every level (Figure~\ref{fig:taxonomy}, left). Raw-coordinate inputs
-reproduce the same signature ($0.879$), as does the full 100k-iteration protocol
-\TODO{verify when landed}. On the BF-unstable testbed the vanilla PINN
+$0.867\pm0.016$ over three seeds at 30k iterations, physically useless---but the
+failure is \emph{propagation loss}, not oscillation: error grows from $0.10$
+($t{<}2$) to $0.76$ ($t{>}5$), amplitudes stay bounded ($\max|A| = 1.05$),
+temporal turning-point rates sit \emph{below} the reference's, high spatial bands
+carry near-zero excess energy, and the crossing profile lies \emph{under} the
+physical budget at every level (Figure~\ref{fig:taxonomy}, left). Raw-coordinate
+inputs reproduce the same signature ($0.879$). At the full published 100k depth
+the story sharpens rather than changes: the normalized variant improves
+monotonically to $0.555$ and the raw variant to $0.581$---slow convergence toward
+a still-poor solution, with the crossing profile peaking at $0.19$ against a
+budget of $0.43$ and high-band spectral excess of $10^{-3}$. There is no depth at
+which oscillation appears. On the BF-unstable testbed the vanilla PINN
 \emph{diverges} in relative $L_2$ ($0.63\!\to\!1.31$ over training)---but by
 progressive decorrelation toward an over-smoothed field: its crossing density
 ($0.046$ per unit at mid levels) is a third of the reference's ($0.132$), i.e.\ the
@@ -252,19 +255,36 @@ network has \emph{fewer} waves than the physics, while its amplitude stays in
 $[0.75, 1.2]$. In no run, on no testbed, at no depth, did any field exceed its
 crossing budget.
 
+\begin{table}[t]
+\centering
+\caption{\textbf{In-vivo results.} Relative $L_2$ against the reference (mean
+$\pm$ s.d.; seed counts in brackets). Every configuration fails identically:
+the budget never has anything to clamp, and damping has nothing to damp.}
+\label{tab:p2main}
+\input{tables/p2_main}
+\end{table}
+
 \subsection{Consequences: budget and dampers are inert}
 
 Because every failure is under-oscillatory, the one-sided budget is inactive by
-construction---its loss is zero on these fields, which our runs confirm empirically:
-budget-augmented training is statistically indistinguishable from vanilla on the
-front benchmark \TODO{exp4 numbers: budget\_ref/phys/scalar vs vanilla, 3 seeds}
-and on the chaotic testbed \TODO{chaos budget\_ref number}. Uniform gradient
-damping, the natural null control, is likewise inert or mildly harmful
-\TODO{grad\_damp numbers}---there is no excess gradient energy to damp, only
-missing structure. This is the sober, useful reading: \emph{loss-level oscillation
-suppressors of any flavor cannot help a PINN whose failure is under-resolution};
-the remedies that address propagation failure (causal weighting, curricula,
-architecture) live on a different axis.
+construction---and the receipts are as literal as receipts get. On the front
+benchmark, budget-augmented training lands within noise of vanilla for all three
+budget sources (Table~\ref{tab:p2main}); on seed~1 the budget-ref trajectory is
+\emph{bit-identical} to vanilla ($0.8617398766$ in both cases): the one-sided term
+never activated, its gradient was exactly zero, and the two optimizations
+coincide to machine precision. On other seeds the shed initial transient briefly
+exceeds the central-level budgets, the term activates transiently, and endpoints
+shift by at most $0.016$ relative $L_2$ (largest for the tightest budget, the
+physics prior)---activation without consequence, since the eventual failure is
+not oscillatory. On the chaotic testbed the triple
+is $1.311$ (vanilla), $1.306$ ($+$budget), $1.323$ ($+$gradient damping): all
+identical within noise. Uniform gradient damping, the natural null control, is
+likewise inert on the front benchmark ($0.858$ at its best weight, seed~0,
+vs.\ vanilla $0.850$) and mildly harmful on the chaotic one---there is no excess
+gradient energy to damp, only missing structure. The sober, useful reading:
+\emph{loss-level oscillation suppressors of any flavor cannot help a PINN whose
+failure is under-resolution}; the remedies that address propagation failure
+(causal weighting, curricula, architecture) live on a different axis.
 
 \subsection{On the discrepancy with the published failure mode}
 
@@ -343,19 +363,20 @@ Seeds & 3 per configuration \\
 \centering
 \includegraphics[width=\linewidth]{figs/p2_taxonomy.pdf}
 \caption{\textbf{The diagnostic in action}: measured crossing profiles versus
-physical budgets for the front benchmark (left) and the BF-unstable testbed
-(right). Every failed vanilla field sits \emph{below} budget---the
-under-oscillatory branch, on which one-sided budgets are by design inert.
-\TODO{generate figure}}
+physical budgets for the front benchmark (left; band = min--max over 3 seeds)
+and the BF-unstable testbed (right). Every failed vanilla field sits
+\emph{below} budget---the under-oscillatory branch, on which one-sided budgets
+are by design inert.}
 \label{fig:taxonomy}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=.7\linewidth]{figs/p2_invitro.pdf}
-\caption{\textbf{In-vitro positive control}: sparse-data SIREN interpolation.
-MSE-only over-oscillates beyond budget; the one-sided budget clamps the profile
-within specification and improves test error on all seeds. \TODO{generate figure}}
+\caption{\textbf{In-vitro positive control}: sparse-data SIREN interpolation
+(left: seed-0 reconstructions; right: crossing profiles, min--max band over 3
+seeds). MSE-only over-oscillates beyond budget; the one-sided budget clamps the
+profile within specification and improves test error on all seeds.}
 \label{fig:invitro}
 \end{figure}
 

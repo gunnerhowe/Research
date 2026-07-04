@@ -1,5 +1,18 @@
 # Phase 2 Spec — Crossing-density BUDGET as a PINN stabilizer (Catastrophic Divergence on CGLE)
 
+> **OUTCOME (2026-07-04): kill condition #1 fired, with receipts — atlas card → RED.**
+> Vanilla failure reproduced on the ASPEN benchmark (rel L2 0.867±0.016, 3 seeds) and on a
+> BF-unstable chaotic testbed (1.31), but in every run, at every depth (30k and the full
+> published 100k), under both input conventions, the failure was UNDER-oscillatory
+> (propagation loss / decorrelation; crossing profiles below budget at all levels). The
+> one-sided budget is verifiably inert on such failures (bit-identical trajectory on a
+> never-activated seed; ≤0.016 shift when transiently activated); gradient damping likewise.
+> The mechanism itself is validated in vitro (SIREN over-oscillation clamped to budget, test
+> error improved on all seeds). Published as the standalone honest-negative paper in
+> `paper2/` ("Validated Mechanism, Absent Pathology") rather than a Phase-1 section, with a
+> reproducibility caveat on the premise's implementation-sensitivity and the crossing-profile
+> failure-mode diagnostic as a standalone contribution. Successor direction: PHASE3 spec.
+
 **Status:** resurrection of the transformative-YELLOW atlas card *"Wilson momentum-shell RG curriculum +
 Kac–Rice stationary-point-density regularizer → Catastrophic Divergence"* (kill-checked 2026-07-03),
 **gated on Phase 1** (the spectral-bias experiments in this repo). Same primitive as Phase 1, opposite

@@ -1,1 +1,4 @@
 device=cuda iters=100000 seeds=[0]
+diag100k vanilla_norm seed0: rel_l2=0.5552 diverged=False (12204s)
+diag100k vanilla_raw seed0: rel_l2=0.5806 diverged=False (4481s)
+PHASE2 DONE
