@@ -61,6 +61,31 @@ def spectral_moments(traces, dt=1.0, axis=-1):
                 tv_rate=tv_rate, sigma_delta=sigma_delta)
 
 
+def channel_moments(traces, dt=1.0):
+    """Per-channel moments of (B, T, C) traces. mean/lam0 pool over (B, T);
+    increment-based quantities (lam2, rho1, tv_rate, sigma_delta) are computed
+    within traces and averaged over the batch. Adds excess kurtosis (kurt)
+    for the non-Gaussianity analysis. Returns dict of (C,) arrays."""
+    a = np.asarray(traces, dtype=np.float64)
+    B, T, C = a.shape
+    mean = a.mean(axis=(0, 1))
+    lam0 = a.var(axis=(0, 1))
+    d = np.diff(a, axis=1) / dt
+    lam2 = (d ** 2).mean(axis=(0, 1))
+    ac = a - mean
+    denom = np.sqrt((ac[:, :-1] ** 2).mean(axis=(0, 1))
+                    * (ac[:, 1:] ** 2).mean(axis=(0, 1)))
+    rho1 = (ac[:, :-1] * ac[:, 1:]).mean(axis=(0, 1)) / np.maximum(denom, 1e-30)
+    tv_rate = np.abs(d).mean(axis=(0, 1))
+    sigma_delta = (d * dt).std(axis=(0, 1))
+    m2 = (ac ** 2).mean(axis=(0, 1))
+    m4 = (ac ** 4).mean(axis=(0, 1))
+    kurt = m4 / np.maximum(m2 ** 2, 1e-30) - 3.0
+    return dict(mean=mean, lam0=lam0, lam2=lam2,
+                rho1=np.clip(rho1, -1.0, 1.0), tv_rate=tv_rate,
+                sigma_delta=sigma_delta, kurt=kurt)
+
+
 # --------------------------------------------------------------------------
 # Crossing-rate predictors
 # --------------------------------------------------------------------------

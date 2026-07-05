@@ -30,8 +30,8 @@ def evaluate_classifier(model, x, y, batch_size=1024):
 def train_classifier(model, train_xy, val_xy, epochs=15, lr=1e-3,
                      batch_size=256, seed=0, regularizer=None, reg_weight=0.0,
                      log=None, weight_decay=0.0):
-    """regularizer: callable(traces list of (B,T,H)) -> scalar loss; applied to
-    every GRU layer's hidden trace, averaged. Returns history list."""
+    """regularizer: callable taking the LIST of per-layer hidden traces
+    [(B,T,H), ...] and returning a scalar loss. Returns history list."""
     set_seed(seed)
     x, y = train_xy
     opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -46,7 +46,7 @@ def train_classifier(model, train_xy, val_xy, epochs=15, lr=1e-3,
             opt.zero_grad(set_to_none=True)
             if regularizer is not None:
                 logits, traces = model(xb, return_traces=True)
-                reg = sum(regularizer(tr) for tr in traces) / len(traces)
+                reg = regularizer(traces)
             else:
                 logits = model(xb)
                 reg = torch.zeros((), device=xb.device)

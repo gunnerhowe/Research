@@ -1,0 +1,6 @@
+{
+ "rice_gp_max_rel_err": 0.019206819352809032,
+ "ou_discrete_max_rel_err": 0.009727582025568726,
+ "multisine_max_rel_err": 0.0018369895661439998,
+ "passed": true
+}
