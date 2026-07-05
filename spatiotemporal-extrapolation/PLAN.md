@@ -194,7 +194,8 @@ at submission.
   structural, not a tuning issue).
 
 - 2026-07-05 (E3 K2 verdict: K2 FIRES — pre-registered honest-null outcome). The
-  finite-size flow WORKS (E2: gamma 10%, S 5%, C(r) 6.6%, tau 6.9% at L=1408=64x,
+  finite-size flow WORKS (E2 seed-mean/GATE-S point estimate: gamma 9.8%, S 12.5%
+  (median density ratio), C(r) 9.6%, tau 6.1% at L=1408=64x,
   from zero large-L data) but does NOT beat the strongest no-flow null, interp-88
   (interpolate the L=88 spectrum in k: gamma 2.4%, S 0.2%, C(r) 1.9%, tau 2.6%):
   the flow loses on 0/5 headline metrics. Mechanism: KS bulk spectra converge so

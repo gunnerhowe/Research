@@ -69,7 +69,9 @@ macro("KThreeTrainMinutes",
 
 # ---------------------------------------------------------------- E2 (the flow)
 def med(entry, m):
-    return entry["median"].get(m, float("nan"))
+    # "point_estimate" = the single reported headline value (seed-mean/GATE-S
+    # prediction, scored once); NOT a median over seeds. One estimator everywhere.
+    return entry["point_estimate"].get(m, float("nan"))
 
 
 for Lt, tex in (("176", "Holdout"), ("1408", "Target")):
@@ -86,7 +88,7 @@ for Lt, tex in (("176", "Holdout"), ("1408", "Target")):
         macro(f"Flow{tex}NewSPct", pct(10 ** nb["new_mode"]["s_med_log10"] - 1))
         macro(f"Flow{tex}NewModes", str(nb["new_mode"]["n_modes"]))
 macro("TargetSectors", str(exp2["targets"]["1408"]["n_sectors"]))
-macro("TargetFactor", "64")
+macro("TargetFactor", str(round(1408.0 / 22.0)))   # derived, not hardcoded
 
 # ---------------------------------------------------------------- E3 (K2 fires)
 t3 = exp3["targets"]["1408"]["methods"]
@@ -96,8 +98,8 @@ for name, mac in (("interp22", "InterpTwoTwo"), ("interp44", "InterpFourFour"),
     macro(f"{mac}SPct", pct(10 ** med(t3[name], "s_med_log10") - 1))
     macro(f"{mac}C", pct(med(t3[name], "c_rel_l2")))
     macro(f"{mac}Tau", pct(med(t3[name], "tau_med_rel")))
-macro("TilingC", pct(t3["strict_tiling"]["median"]["c_rel_l2"]))
-macro("TilingBandPower", pct(t3["strict_tiling"]["median"]["band_power_med_rel"]))
+macro("TilingC", pct(t3["strict_tiling"]["point_estimate"]["c_rel_l2"]))
+macro("TilingBandPower", pct(t3["strict_tiling"]["point_estimate"]["band_power_med_rel"]))
 macro("SmallBaseGamma", pct(med(t3["fitted_flow_smallbase"], "gamma_med_rel")))
 macro("SmallBaseSPct", pct(10 ** med(t3["fitted_flow_smallbase"], "s_med_log10") - 1))
 macro("EdmdLimShortGamma", pct(med(t3["edmd_limited_T2000"], "gamma_med_rel")))
@@ -105,7 +107,7 @@ macro("EdmdLimLongGamma", pct(med(t3["edmd_limited_T10000"], "gamma_med_rel")))
 macro("EdmdLimLongS", pct(10 ** med(t3["edmd_limited_T10000"], "s_med_log10") - 1))
 k2 = exp3["k2"]
 macro("KTwoFlowWins", str(k2["n_wins"]))
-macro("KTwoNumMetrics", "5")
+macro("KTwoNumMetrics", str(len(k2["metrics"])))   # derived, not hardcoded
 macro("KTwoBestNull", {"interp88": "interp-88", "interp44": "interp-44",
                        "interp22": "interp-22"}[k2["metrics"]["gamma_med_rel"]["best_null"]])
 macro("KTwoFires", "fires" if k2["k2_fires"] else "does not fire")
@@ -178,7 +180,7 @@ def table_baselines():
                               ("gamma_med_rel", "s_med_log10", "c_rel_l2",
                                "tau_med_rel", "slow_overlap")]
         rows.append(" & ".join(cells) + r" \\")
-    tile = t3["strict_tiling"]["median"]
+    tile = t3["strict_tiling"]["point_estimate"]
     rows.append("strict tiling (null) & -- & -- & "
                 f"{100 * tile['c_rel_l2']:.1f} & -- & -- " + r"\\")
     write_tabular("baselines", "lccccc",

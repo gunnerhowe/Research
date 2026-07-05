@@ -22,7 +22,7 @@ spatiotemporal chaos, on a single gaming GPU.
 **Good news first.** The spectrum *does* change smoothly and predictably as the
 domain grows (we call this passing "Gate S"). Fitting that smooth trend on domains
 of size 22–88 and extrapolating to size 1408 (64× the volume) predicts the big
-domain's decay rates to about **10%**, its power spectrum to **5%**, and its
+domain's decay rates to about **10%**, its power spectrum to about **12%**, and its
 correlation function to **7%** — with zero data from the big domain. The method
 works.
 

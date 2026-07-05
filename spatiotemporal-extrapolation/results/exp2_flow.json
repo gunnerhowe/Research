@@ -433,9 +433,10 @@
     0.001567082475743938,
     0.0008897702213546015
    ],
+   "estimator": "seed_mean_flow_point_estimate",
    "methods": {
     "fitted_flow": {
-     "median": {
+     "point_estimate": {
       "gamma_med_rel": 0.07633545869179678,
       "omega_med_abs": 0.017217911249235905,
       "omega_typical": 0.25362537501953086,
@@ -4119,9 +4120,10 @@
     0.0009368514954124535,
     0.0004902697285873897
    ],
+   "estimator": "seed_mean_flow_point_estimate",
    "methods": {
     "fitted_flow": {
-     "median": {
+     "point_estimate": {
       "gamma_med_rel": 0.09839967474330841,
       "omega_med_abs": 0.015866471573468464,
       "omega_typical": 0.2556646551875342,

@@ -49,7 +49,9 @@ def main():
         pred_mean = predict_edmd_flow(fit_edmd_flows(curves, None), k_t, L_t)
         preds = [predict_edmd_flow(fit_edmd_flows(curves, s), k_t, L_t)
                  for s in SEEDS]
-        headline = score(pred_mean, truth)
+        # point_estimate = the reported headline (seed-mean/GATE-S flow, a single
+        # prediction, NOT a median over seeds); per_seed gives the spread only.
+        point = score(pred_mean, truth)
         per_seed = [score(p, truth) for p in preds]
         newb = score_new_band(pred_mean, truth)
         entry = {"L": L_t, "n_sectors": len(k_t), "k": k_t.tolist(),
@@ -57,14 +59,15 @@ def main():
                  "truth_omega": truth["omega"].tolist(),
                  "truth_s": truth["s_density"].tolist(),
                  "truth_gamma_se": truth["gamma_se"].tolist(),
+                 "estimator": "seed_mean_flow_point_estimate",
                  "methods": {"fitted_flow": {
-                     "median": headline,
+                     "point_estimate": point,
                      "per_seed": per_seed,
                      "new_band": newb,
                      "pred_gamma_mean": pred_mean["gamma"].tolist(),
                      "pred_omega_mean": pred_mean["omega"].tolist(),
                      "pred_s_mean": pred_mean["s_density"].tolist()}}}
-        m = headline
+        m = point
         print(f"L={L_t:g} fitted_flow: " + ", ".join(
             f"{q}={m[q]:.4g}" for q in ("gamma_med_rel", "s_med_log10", "c_rel_l2",
                                         "tau_med_rel", "slow_overlap")))

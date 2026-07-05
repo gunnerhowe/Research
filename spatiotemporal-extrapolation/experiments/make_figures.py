@@ -139,7 +139,7 @@ def fig4_convergence_baselines():
     x = np.arange(len(order))
     w = 0.2
     for j, (m, lab) in enumerate(metrics):
-        vals = [t3[n]["median"].get(m, np.nan) for n, _ in order]
+        vals = [t3[n]["point_estimate"].get(m, np.nan) for n, _ in order]
         axes[1].bar(x + (j - 1.5) * w, vals, w, label=lab)
     axes[1].set_xticks(x), axes[1].set_xticklabels([lab for _, lab in order],
                                                    rotation=30, ha="right", fontsize=6.5)

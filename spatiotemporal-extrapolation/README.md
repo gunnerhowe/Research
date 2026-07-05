@@ -9,7 +9,7 @@ modes, not trajectories**: correlation functions, power spectra, decay-of-
 correlation rates, slow-mode subspaces.
 
 **Headline result (honest, pre-registered).** The finite-size flow *works*
-(L = 1408 to ~10% on decay rates, ~5% on the spectral density), but the null
+(L = 1408 to ~10% on decay rates, ~12% on the spectral density), but the null
 control — just interpolate the spectrum of the largest affordable small box
 (L = 88) with no size flow — does *better* (~3%), because KS spectra converge to
 within a few percent of the thermodynamic limit already by L ≈ 88. Kill-condition
@@ -47,7 +47,7 @@ python experiments/exp1_learned_operator.py      # trains 3 conv-Koopman models 
 python experiments/exp2_scaling_flow.py --skip-sim   # EDMD flow + L=1408 validation
 python experiments/exp3_baselines.py             # nulls, limited-data EDMD, K2 verdict
 python experiments/exp4_boundary.py              # convergence, ladder, odd-parity, bands
-python experiments/make_figures.py
+python experiments/make_figures.py               # ~2 min (re-analyzes cached runs); not a hang
 
 python paper/gen_paper_numbers.py                # emits paper/numbers.tex + tables
 python paper/verify_regen.py                     # house rule 1: byte-identical regen

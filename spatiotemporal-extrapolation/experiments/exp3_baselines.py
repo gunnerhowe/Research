@@ -49,9 +49,11 @@ def edmd_limited(L_t, T, tag):
     if not p.exists():
         p = measure_size(L_t, T=T, tag=tag)
     a = analyze_measurement(p)
-    return ([{"gamma": a["gamma"][s], "omega": a["omega"][s],
-              "s_density": a["s_density"][s]} for s in range(len(SEEDS))],
-            float(a["wall_s"]))
+    point = {"gamma": a["gamma"].mean(axis=0), "omega": a["omega"].mean(axis=0),
+             "s_density": a["s_density"].mean(axis=0)}
+    seed_preds = [{"gamma": a["gamma"][s], "omega": a["omega"][s],
+                   "s_density": a["s_density"][s]} for s in range(len(SEEDS))]
+    return point, seed_preds, float(a["wall_s"])
 
 
 def main():
@@ -74,56 +76,61 @@ def main():
         k_t = truth["k"]
         entry = {"methods": {}}
 
-        def add(name, preds, extra=None):
-            scores = [score(p, truth) for p in preds]
+        def add(name, point_pred, seed_preds, extra=None):
+            # point_estimate = the reported headline (seed-mean prediction, a single
+            # scored curve); per_seed = per-seed scores, used only for the spread.
+            point = score(point_pred, truth)
+            per_seed = [score(p, truth) for p in seed_preds]
             entry["methods"][name] = {
-                "per_seed": scores,
-                "median": {m: float(np.nanmedian([s[m] for s in scores]))
-                           for m in scores[0]},
-                "new_band": score_new_band(preds[0], truth)}
+                "point_estimate": point, "per_seed": per_seed,
+                "new_band": score_new_band(point_pred, truth)}
             if extra:
                 entry["methods"][name].update(extra)
             print(f"L={L_t:g} {name}: " + ", ".join(
-                f"{m}={entry['methods'][name]['median'][m]:.4g}" for m in HEADLINE))
+                f"{m}={point[m]:.4g}" for m in HEADLINE))
 
         add("fitted_flow",
+            predict_edmd_flow(fit_edmd_flows(curves, None), k_t, L_t),
             [predict_edmd_flow(fit_edmd_flows(curves, s), k_t, L_t) for s in range(3)])
         add("fitted_flow_smallbase",
+            predict_edmd_flow(fit_edmd_flows(curves_small, None), k_t, L_t),
             [predict_edmd_flow(fit_edmd_flows(curves_small, s), k_t, L_t) for s in range(3)])
-        add("interp22", [predict_interp_null(curves22, s, k_t) for s in range(3)])
-        add("interp44", [predict_interp_null(curves44, s, k_t) for s in range(3)])
-        add("interp88", [predict_interp_null(curves88, s, k_t) for s in range(3)])
-        tile = [strict_tiling_scores(curves22, s, truth) for s in range(3)]
+        add("interp22", predict_interp_null(curves22, None, k_t),
+            [predict_interp_null(curves22, s, k_t) for s in range(3)])
+        add("interp44", predict_interp_null(curves44, None, k_t),
+            [predict_interp_null(curves44, s, k_t) for s in range(3)])
+        add("interp88", predict_interp_null(curves88, None, k_t),
+            [predict_interp_null(curves88, s, k_t) for s in range(3)])
+        tile_point = strict_tiling_scores(curves22, None, truth)
+        tile_seed = [strict_tiling_scores(curves22, s, truth) for s in range(3)]
         entry["methods"]["strict_tiling"] = {
-            "per_seed": tile,
-            "median": {m: float(np.nanmedian([t[m] for t in tile]))
-                       for m in ("c_rel_l2", "band_power_med_rel")}}
-        print(f"L={L_t:g} strict_tiling: c_rel_l2="
-              f"{entry['methods']['strict_tiling']['median']['c_rel_l2']:.4g}, "
-              f"band_power={entry['methods']['strict_tiling']['median']['band_power_med_rel']:.4g}")
+            "point_estimate": {m: tile_point[m] for m in ("c_rel_l2", "band_power_med_rel")},
+            "per_seed": tile_seed}
+        print(f"L={L_t:g} strict_tiling: c_rel_l2={tile_point['c_rel_l2']:.4g}, "
+              f"band_power={tile_point['band_power_med_rel']:.4g}")
         Ts = (2000.0,) if L_t == L_HOLDOUT else (2000.0, 10000.0)
         for T in Ts:
-            preds, wall = edmd_limited(L_t, T, f"L{L_t:g}_short{T:g}")
-            add(f"edmd_limited_T{T:g}", preds, {"sim_wall_s": wall})
+            point_p, seed_p, wall = edmd_limited(L_t, T, f"L{L_t:g}_short{T:g}")
+            add(f"edmd_limited_T{T:g}", point_p, seed_p, {"sim_wall_s": wall})
         results["targets"][f"{L_t:g}"] = entry
 
-    # ---- K2 verdict at L_TARGET
+    # ---- K2 verdict at L_TARGET: compare point estimates (seed-mean); the flow's
+    #      per-seed spread sets the margin it must beat by.
     flow = results["targets"][f"{L_TARGET:g}"]["methods"]["fitted_flow"]
     nulls = results["targets"][f"{L_TARGET:g}"]["methods"]
     wins = {}
     for m in HEADLINE:
-        fvals = [s[m] for s in flow["per_seed"]]
-        fmed = float(np.nanmedian(fvals))
-        spread = float(np.nanstd(fvals, ddof=1))
-        best_null, best_med = None, None
+        fpoint = flow["point_estimate"][m]
+        spread = float(np.nanstd([s[m] for s in flow["per_seed"]], ddof=1))
+        best_null, best_pt = None, None
         for nn in NO_FLOW_NULLS:
-            nv = float(np.nanmedian([s[m] for s in nulls[nn]["per_seed"]]))
-            if best_med is None or (nv > best_med if m in HIGHER_BETTER else nv < best_med):
-                best_med, best_null = nv, nn
-        better = (fmed > best_med + spread if m in HIGHER_BETTER
-                  else fmed < best_med - spread)
-        wins[m] = {"flow_median": fmed, "flow_spread": spread, "best_null": best_null,
-                   "best_null_median": best_med, "flow_wins": bool(better)}
+            nv = nulls[nn]["point_estimate"][m]
+            if best_pt is None or (nv > best_pt if m in HIGHER_BETTER else nv < best_pt):
+                best_pt, best_null = nv, nn
+        better = (fpoint > best_pt + spread if m in HIGHER_BETTER
+                  else fpoint < best_pt - spread)
+        wins[m] = {"flow_point": fpoint, "flow_spread": spread, "best_null": best_null,
+                   "best_null_point": best_pt, "flow_wins": bool(better)}
     n_win = sum(w["flow_wins"] for w in wins.values())
     verdict = {"metrics": wins, "n_wins": n_win, "majority": n_win > len(HEADLINE) / 2}
 
@@ -132,12 +139,11 @@ def main():
     i44 = results["targets"][f"{L_TARGET:g}"]["methods"]["interp44"]
     sb_wins = {}
     for m in HEADLINE:
-        fv = [s[m] for s in sb["per_seed"]]
-        nv = float(np.nanmedian([s[m] for s in i44["per_seed"]]))
-        fmed = float(np.nanmedian(fv))
-        spread = float(np.nanstd(fv, ddof=1))
-        better = (fmed > nv + spread if m in HIGHER_BETTER else fmed < nv - spread)
-        sb_wins[m] = {"flow_median": fmed, "interp44_median": nv, "flow_wins": bool(better)}
+        fpoint = sb["point_estimate"][m]
+        nv = i44["point_estimate"][m]
+        spread = float(np.nanstd([s[m] for s in sb["per_seed"]], ddof=1))
+        better = (fpoint > nv + spread if m in HIGHER_BETTER else fpoint < nv - spread)
+        sb_wins[m] = {"flow_point": fpoint, "interp44_point": nv, "flow_wins": bool(better)}
     verdict["smallbase_vs_interp44"] = {
         "metrics": sb_wins, "n_wins": sum(w["flow_wins"] for w in sb_wins.values()),
         "majority": sum(w["flow_wins"] for w in sb_wins.values()) > len(HEADLINE) / 2}

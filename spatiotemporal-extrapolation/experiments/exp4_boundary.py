@@ -52,20 +52,15 @@ def error_vs_L(paths, curves):
         truth = truth_from_measurement(meas)
         k_t = truth["k"]
         for name in ("fitted_flow", "interp88"):
-            per_seed = []
-            for seed in SEEDS:
-                if name == "fitted_flow":
-                    pred = predict_edmd_flow(fit_edmd_flows(curves, seed), k_t, L)
-                else:
-                    pred = predict_interp_null(curves[88.0], seed, k_t)
-                per_seed.append(score(pred, truth))
+            # seed-mean point estimate (consistent with E2/E3 headline estimator)
+            if name == "fitted_flow":
+                pred = predict_edmd_flow(fit_edmd_flows(curves, None), k_t, L)
+            else:
+                pred = predict_interp_null(curves[88.0], None, k_t)
+            s = score(pred, truth)
             rows.append({"L": L, "method": name,
-                         "gamma_med_rel": float(np.nanmedian(
-                             [s["gamma_med_rel"] for s in per_seed])),
-                         "s_med_log10": float(np.nanmedian(
-                             [s["s_med_log10"] for s in per_seed])),
-                         "c_rel_l2": float(np.nanmedian(
-                             [s["c_rel_l2"] for s in per_seed]))})
+                         "gamma_med_rel": s["gamma_med_rel"],
+                         "s_med_log10": s["s_med_log10"], "c_rel_l2": s["c_rel_l2"]})
             print(f"ladder L={L:g} {name}: gamma {rows[-1]['gamma_med_rel']:.4f} "
                   f"S {rows[-1]['s_med_log10']:.4f} C {rows[-1]['c_rel_l2']:.4f}")
     return rows
@@ -161,12 +156,9 @@ def band_breakdown(curves):
     k_t = truth["k"]
     bands = {"energy": (K_INRANGE_LO, 1.5), "microscale": (1.5, 3.0)}
     out = {"fitted_flow": {}}
+    pred = predict_edmd_flow(fit_edmd_flows(curves, None), k_t, L_TARGET)  # seed-mean
     for bn, band in bands.items():
-        per_seed = [score(predict_edmd_flow(fit_edmd_flows(curves, seed), k_t,
-                                            L_TARGET), truth, band=band)
-                    for seed in SEEDS]
-        out["fitted_flow"][bn] = {m: float(np.nanmedian([s[m] for s in per_seed]))
-                                  for m in per_seed[0]}
+        out["fitted_flow"][bn] = score(pred, truth, band=band)
         print(f"band fitted_flow/{bn}: gamma {out['fitted_flow'][bn]['gamma_med_rel']:.4f} "
               f"S {out['fitted_flow'][bn]['s_med_log10']:.4f}")
     return out

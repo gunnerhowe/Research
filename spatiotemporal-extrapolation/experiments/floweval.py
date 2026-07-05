@@ -45,12 +45,14 @@ def predict_edmd_flow(flows, k_target, L_target):
 
 
 def predict_interp_null(curves_src, seed, k_target):
-    """Single-size no-flow null: PCHIP in k of the seed's measured curves."""
+    """Single-size no-flow null: PCHIP in k of the measured curves. seed=None uses
+    the seed-mean curve (the reported point estimate); an int uses that seed's
+    realization (for the per-seed spread)."""
     c = curves_src
-    return {"gamma": interp_null(c["k"], c["gamma"][seed], k_target, log_y=True),
-            "omega": np.maximum(interp_null(c["k"], c["omega"][seed], k_target), 0.0),
-            "s_density": interp_null(c["k"], c["s_density"][seed], k_target,
-                                     log_y=True)}
+    pick = (lambda q: c[q].mean(axis=0)) if seed is None else (lambda q: c[q][seed])
+    return {"gamma": interp_null(c["k"], pick("gamma"), k_target, log_y=True),
+            "omega": np.maximum(interp_null(c["k"], pick("omega"), k_target), 0.0),
+            "s_density": interp_null(c["k"], pick("s_density"), k_target, log_y=True)}
 
 
 def truth_from_measurement(meas):
@@ -126,9 +128,10 @@ def score_new_band(pred, truth):
 
 def strict_tiling_scores(curves_22, seed, truth):
     """Strict-comb tiling null: only C(r) and band-integrated spectrum are
-    defined; per-k dynamic metrics are N/A by construction."""
+    defined; per-k dynamic metrics are N/A by construction. seed=None uses the
+    seed-mean power (the reported point estimate)."""
     L_t, N_t = truth["L"], truth["N"]
-    p22 = curves_22["p_mean"][seed]
+    p22 = curves_22["p_mean"].mean(axis=0) if seed is None else curves_22["p_mean"][seed]
     p_t, comb = tile_power(p22, 22.0, L_t)
     r = np.arange(0.0, R_MAX + DX / 2, DX)
     n22 = curves_22["N"]
