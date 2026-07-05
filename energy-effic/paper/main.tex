@@ -143,10 +143,11 @@ stronger baseline than the training literature assumes.
 \citet{neil2017delta} threshold changes of RNN inputs and hidden states
 against an anchor memory of the last transmitted value and accumulate
 matrix--vector products incrementally; the mechanism transfers to embedded
-video \citep{yousefzadeh2022delta} and to silicon
-\citep{gao2020edgedrnn,chen2024deltakws}, and underlies sigma--delta
-quantized networks \citep{oconnor2017sigmadelta}. Thresholds are set by
-accuracy-vs-speedup sweeps throughout. EGRU \citep{subramoney2023egru}
+video \citep{yousefzadeh2022delta}, to silicon
+\citep{gao2020edgedrnn,chen2024deltakws}, and to recent RF applications
+\citep{wu2025deltadpd}, and underlies sigma--delta quantized networks
+\citep{oconnor2017sigmadelta}. Thresholds are set by accuracy-vs-speedup
+sweeps throughout, and event counts are reported only after measurement. EGRU \citep{subramoney2023egru}
 trains activity-sparse GRUs with surrogate gradients through a hard
 threshold---spike-style training, not an analytic rate model.
 
@@ -318,7 +319,7 @@ finite-difference moments underpredicts by up to \OURiceFDWorst{} as
 $\rho_1\to0$. (b,c) Smoothing bandwidth $\epsilon$: the segment estimator
 \eqref{eq:segment} has $<$1\% bias for $\epsilon\le0.1\sigma$ at working
 trace lengths ($256\times100$) with batch-to-batch variability already at
-the split-half noise floor (\SplitHalfFloorE0); the midpoint co-area rule
+the split-half noise floor (\SplitHalfFloorEZero); the midpoint co-area rule
 trades a bias spike at small $\epsilon$ against inflated variance.}
 \label{fig:e0}
 \end{figure}
@@ -520,12 +521,12 @@ drop as demanded, and hidden increment scales shrink
 \SigmaShrinkPsMNIST{} at $\rho{=}0.2$ (psMNIST). But at matched events the
 front never improves (Fig.~\ref{fig:e3}): at the reference budget of
 \RefFracPsMNIST{} of dense events on psMNIST, post-hoc reaches
-\E3PosthocPsMNIST{} vs the budget family's \E3BudgetPsMNIST{} (paired
-difference \E3PairedDiffPsMNIST); on SC2 at \RefFracSCTwo{},
-\E3PosthocSCTwo{} vs \E3BudgetSCTwo{} (paired difference
-\E3PairedDiffSCTwo, $n{=}$\E3PairedNSCTwo{} seeds, Wilcoxon
-$p{=}$\E3WilcoxonPSCTwo). The controls tie the post-hoc front
-(plain \E3PlainPsMNIST{}, L1 \E3LOnePsMNIST{}, rate \E3RatePsMNIST{} on
+\EThreePosthocPsMNIST{} vs the budget family's \EThreeBudgetPsMNIST{} (paired
+difference \EThreePairedDiffPsMNIST); on SC2 at \RefFracSCTwo{},
+\EThreePosthocSCTwo{} vs \EThreeBudgetSCTwo{} (paired difference
+\EThreePairedDiffSCTwo, $n{=}$\EThreePairedNSCTwo{} seeds, Wilcoxon
+$p{=}$\EThreeWilcoxonPSCTwo). The controls tie the post-hoc front
+(plain \EThreePlainPsMNIST{}, L1 \EThreeLOnePsMNIST{}, rate \EThreeRatePsMNIST{} on
 psMNIST)---so the pre-registered kill condition fires in its strongest
 form: not only does the crossing budget fail to beat L1-delta, \emph{no}
 temporal-smoothness fine-tune beats doing nothing.
@@ -545,10 +546,16 @@ this as a large win. On the matched-events front the same model is
 dominated by post-hoc thresholding of its own base. Fixed-$\theta$
 comparisons overstate what smoothness training buys.
 
-\paragraph{Overhead.} The budget costs \OverheadPct{} extra training time
-(\TaskOnlyMs\,ms $\to$ \WithBudgetMs\,ms per step, batch 256;
-segment-estimator forward+backward \EstimatorMs\,ms), consistent with the
-$O(NL)$ estimator; the negative result is not a cost story.
+\paragraph{Overhead.} The segment estimator's forward+backward adds a
+\emph{fixed} \EstimatorMs\,ms per layer per step (batch 256), independent of
+model width---it is an $O(NL)$ pass over trace points, not over parameters.
+On our deliberately tiny 128-unit GRU (task step \TaskOnlyMs\,ms) this is a
+large relative cost (\OverheadFactor{} per step), but it is a
+fine-tuning-only expense that amortizes on realistically sized models, and
+Monte-Carlo point subsampling cuts it near-linearly (to \EstimatorQuarterMs
+\,ms at 25\% of points; the estimator \emph{is} a Monte-Carlo integral, and
+Fig.~\ref{fig:e0}c shows its variance is already at the noise floor). The
+negative result is not a cost story.
 
 \section{Discussion}
 \label{sec:discussion}

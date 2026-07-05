@@ -68,3 +68,143 @@ wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json
   ep00 task=0.4268 reg=0.1045 val=0.8932 (17.5s)
   ep01 task=0.3666 reg=0.0306 val=0.9014 (17.2s)
   ep02 task=0.3324 reg=0.02226 val=0.9017 (17.2s)
+  ep03 task=0.3110 reg=0.01899 val=0.9074 (17.2s)
+  ep04 task=0.2983 reg=0.01784 val=0.9096 (17.2s)
+[sc2 s2] budget rho=0.35 dense acc 0.9058
+  ep00 task=0.9103 reg=0.3193 val=0.8171 (17.5s)
+  ep01 task=0.6457 reg=0.06593 val=0.8497 (17.2s)
+  ep02 task=0.5562 reg=0.04949 val=0.8569 (17.1s)
+  ep03 task=0.5140 reg=0.04202 val=0.8670 (17.2s)
+  ep04 task=0.4924 reg=0.03944 val=0.8724 (17.1s)
+[sc2 s2] budget rho=0.2 dense acc 0.8560
+wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json
+[sc2 s3] posthoc dense acc 0.9097
+  ep00 task=0.2230 reg=0.01381 val=0.9176 (17.4s)
+  ep01 task=0.2129 reg=0.007527 val=0.9192 (17.2s)
+  ep02 task=0.1994 reg=0.005935 val=0.9205 (17.1s)
+  ep03 task=0.1893 reg=0.005355 val=0.9232 (17.2s)
+  ep04 task=0.1817 reg=0.005055 val=0.9232 (17.1s)
+[sc2 s3] budget rho=0.7 dense acc 0.9097
+  ep00 task=0.2832 reg=0.04513 val=0.9100 (17.4s)
+  ep01 task=0.2623 reg=0.01783 val=0.9107 (17.1s)
+  ep02 task=0.2451 reg=0.01301 val=0.9164 (17.2s)
+  ep03 task=0.2312 reg=0.01107 val=0.9185 (17.1s)
+  ep04 task=0.2216 reg=0.01044 val=0.9187 (17.2s)
+[sc2 s3] budget rho=0.5 dense acc 0.9062
+  ep00 task=0.4283 reg=0.1048 val=0.8905 (17.1s)
+  ep01 task=0.3683 reg=0.03041 val=0.8984 (17.1s)
+  ep02 task=0.3334 reg=0.02218 val=0.9029 (17.1s)
+  ep03 task=0.3124 reg=0.01893 val=0.9073 (17.1s)
+  ep04 task=0.3000 reg=0.01765 val=0.9088 (17.2s)
+[sc2 s3] budget rho=0.35 dense acc 0.8955
+  ep00 task=0.8833 reg=0.3256 val=0.8135 (17.4s)
+  ep01 task=0.6472 reg=0.06635 val=0.8446 (17.2s)
+  ep02 task=0.5610 reg=0.0487 val=0.8596 (17.1s)
+  ep03 task=0.5183 reg=0.04135 val=0.8629 (17.1s)
+  ep04 task=0.4977 reg=0.03814 val=0.8690 (17.1s)
+[sc2 s3] budget rho=0.2 dense acc 0.8574
+wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json
+[sc2 s4] posthoc dense acc 0.9150
+  ep00 task=0.2205 reg=0.01485 val=0.9217 (17.2s)
+  ep01 task=0.2105 reg=0.008055 val=0.9194 (17.2s)
+  ep02 task=0.1996 reg=0.006384 val=0.9216 (17.1s)
+  ep03 task=0.1888 reg=0.005714 val=0.9234 (17.2s)
+  ep04 task=0.1817 reg=0.005361 val=0.9238 (17.1s)
+[sc2 s4] budget rho=0.7 dense acc 0.9175
+  ep00 task=0.2805 reg=0.0466 val=0.9143 (17.4s)
+  ep01 task=0.2595 reg=0.01831 val=0.9147 (17.1s)
+  ep02 task=0.2450 reg=0.01334 val=0.9172 (17.1s)
+  ep03 task=0.2304 reg=0.01135 val=0.9191 (17.1s)
+  ep04 task=0.2216 reg=0.01056 val=0.9221 (17.1s)
+[sc2 s4] budget rho=0.5 dense acc 0.9126
+  ep00 task=0.4196 reg=0.1102 val=0.8929 (17.5s)
+  ep01 task=0.3607 reg=0.03072 val=0.9005 (17.1s)
+  ep02 task=0.3286 reg=0.02222 val=0.9067 (17.1s)
+  ep03 task=0.3062 reg=0.019 val=0.9105 (17.1s)
+  ep04 task=0.2945 reg=0.01762 val=0.9097 (17.1s)
+[sc2 s4] budget rho=0.35 dense acc 0.8926
+  ep00 task=0.8934 reg=0.3269 val=0.8276 (17.4s)
+  ep01 task=0.6313 reg=0.065 val=0.8572 (17.1s)
+  ep02 task=0.5487 reg=0.04888 val=0.8673 (17.2s)
+  ep03 task=0.5063 reg=0.04209 val=0.8722 (17.1s)
+  ep04 task=0.4865 reg=0.03937 val=0.8751 (17.2s)
+[sc2 s4] budget rho=0.2 dense acc 0.8647
+wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json
+[sc2 s5] posthoc dense acc 0.9077
+  ep00 task=0.2182 reg=0.0138 val=0.9191 (17.4s)
+  ep01 task=0.2089 reg=0.007297 val=0.9197 (17.1s)
+  ep02 task=0.1973 reg=0.005879 val=0.9217 (17.1s)
+  ep03 task=0.1856 reg=0.005153 val=0.9234 (17.2s)
+  ep04 task=0.1789 reg=0.004848 val=0.9237 (17.1s)
+[sc2 s5] budget rho=0.7 dense acc 0.9150
+  ep00 task=0.2770 reg=0.04434 val=0.9124 (17.4s)
+  ep01 task=0.2592 reg=0.01702 val=0.9160 (17.1s)
+  ep02 task=0.2408 reg=0.01255 val=0.9159 (17.1s)
+  ep03 task=0.2276 reg=0.01064 val=0.9184 (17.1s)
+  ep04 task=0.2190 reg=0.009876 val=0.9187 (17.1s)
+[sc2 s5] budget rho=0.5 dense acc 0.9067
+  ep00 task=0.4194 reg=0.1085 val=0.8898 (17.4s)
+  ep01 task=0.3601 reg=0.02946 val=0.8991 (17.1s)
+  ep02 task=0.3280 reg=0.02089 val=0.9068 (17.1s)
+  ep03 task=0.3060 reg=0.01777 val=0.9077 (17.2s)
+  ep04 task=0.2943 reg=0.01626 val=0.9103 (17.1s)
+[sc2 s5] budget rho=0.35 dense acc 0.8955
+  ep00 task=0.8969 reg=0.3345 val=0.8267 (17.4s)
+  ep01 task=0.6234 reg=0.06858 val=0.8551 (17.2s)
+  ep02 task=0.5414 reg=0.05002 val=0.8708 (17.1s)
+  ep03 task=0.4986 reg=0.0429 val=0.8724 (17.1s)
+  ep04 task=0.4787 reg=0.03993 val=0.8768 (17.1s)
+[sc2 s5] budget rho=0.2 dense acc 0.8633
+wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json
+[sc2 s6] posthoc dense acc 0.9180
+  ep00 task=0.2175 reg=0.01361 val=0.9201 (17.4s)
+  ep01 task=0.2065 reg=0.007181 val=0.9240 (17.1s)
+  ep02 task=0.1954 reg=0.005693 val=0.9217 (17.2s)
+  ep03 task=0.1839 reg=0.005082 val=0.9238 (17.2s)
+  ep04 task=0.1772 reg=0.004759 val=0.9239 (17.2s)
+[sc2 s6] budget rho=0.7 dense acc 0.9126
+  ep00 task=0.2770 reg=0.04524 val=0.9155 (17.3s)
+  ep01 task=0.2585 reg=0.01712 val=0.9167 (17.1s)
+  ep02 task=0.2409 reg=0.01243 val=0.9202 (17.1s)
+  ep03 task=0.2275 reg=0.01067 val=0.9198 (17.1s)
+  ep04 task=0.2189 reg=0.009878 val=0.9225 (17.1s)
+[sc2 s6] budget rho=0.5 dense acc 0.9028
+  ep00 task=0.4193 reg=0.1054 val=0.8953 (17.3s)
+  ep01 task=0.3618 reg=0.02824 val=0.9031 (17.1s)
+  ep02 task=0.3289 reg=0.02055 val=0.9081 (17.1s)
+  ep03 task=0.3086 reg=0.01736 val=0.9092 (17.2s)
+  ep04 task=0.2972 reg=0.01609 val=0.9102 (17.1s)
+[sc2 s6] budget rho=0.35 dense acc 0.8921
+  ep00 task=0.8820 reg=0.324 val=0.8254 (17.3s)
+  ep01 task=0.6324 reg=0.06028 val=0.8546 (17.2s)
+  ep02 task=0.5515 reg=0.04451 val=0.8690 (17.1s)
+  ep03 task=0.5085 reg=0.03783 val=0.8695 (17.1s)
+  ep04 task=0.4884 reg=0.03503 val=0.8734 (17.1s)
+[sc2 s6] budget rho=0.2 dense acc 0.8599
+wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json
+[sc2 s7] posthoc dense acc 0.9072
+  ep00 task=0.2237 reg=0.01471 val=0.9215 (17.4s)
+  ep01 task=0.2130 reg=0.007819 val=0.9235 (17.1s)
+  ep02 task=0.2008 reg=0.006286 val=0.9240 (17.1s)
+  ep03 task=0.1903 reg=0.005472 val=0.9241 (17.1s)
+  ep04 task=0.1838 reg=0.005175 val=0.9245 (17.1s)
+[sc2 s7] budget rho=0.7 dense acc 0.9146
+  ep00 task=0.2827 reg=0.04558 val=0.9167 (17.5s)
+  ep01 task=0.2620 reg=0.01752 val=0.9201 (17.1s)
+  ep02 task=0.2455 reg=0.01293 val=0.9199 (17.1s)
+  ep03 task=0.2316 reg=0.01094 val=0.9198 (17.1s)
+  ep04 task=0.2235 reg=0.01028 val=0.9208 (17.1s)
+[sc2 s7] budget rho=0.5 dense acc 0.9077
+  ep00 task=0.4204 reg=0.11 val=0.8966 (17.3s)
+  ep01 task=0.3653 reg=0.03029 val=0.9041 (17.1s)
+  ep02 task=0.3308 reg=0.02211 val=0.9070 (17.1s)
+  ep03 task=0.3105 reg=0.01866 val=0.9071 (17.2s)
+  ep04 task=0.2990 reg=0.0176 val=0.9101 (17.1s)
+[sc2 s7] budget rho=0.35 dense acc 0.8926
+  ep00 task=0.8735 reg=0.3461 val=0.8254 (17.5s)
+  ep01 task=0.6362 reg=0.06576 val=0.8562 (17.1s)
+  ep02 task=0.5516 reg=0.04853 val=0.8632 (17.1s)
+  ep03 task=0.5092 reg=0.0417 val=0.8717 (17.1s)
+  ep04 task=0.4894 reg=0.03889 val=0.8720 (17.1s)
+[sc2 s7] budget rho=0.2 dense acc 0.8525
+wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json

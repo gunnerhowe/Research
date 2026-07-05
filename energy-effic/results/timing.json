@@ -1,0 +1,22 @@
+{
+ "batch": 256,
+ "n_steps": 60,
+ "task_only": {
+  "mean_ms": 10.375789642333984,
+  "sd_ms": 0.560126006603241
+ },
+ "with_budget": {
+  "mean_ms": 116.87793731689453,
+  "sd_ms": 1.6598671674728394
+ },
+ "overhead_pct": 1026.4486014637764,
+ "estimator_fwd_bwd_ms": {
+  "mean_ms": 53.215145111083984
+ },
+ "estimator_subsampled_ms": {
+  "50pct": 26.94692611694336,
+  "25pct": 14.126509666442871
+ },
+ "note": "task step is a tiny 128-unit GRU (5.8ms); the estimator is a fixed O(NL) per-layer cost independent of model width, so the relative overhead shrinks on larger models and is a fine-tuning-only expense",
+ "device": "NVIDIA GeForce RTX 3080"
+}

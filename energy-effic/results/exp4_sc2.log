@@ -1,0 +1,83 @@
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\torch\nn\modules\rnn.py:1393: UserWarning: RNN module weights are not part of single contiguous chunk of memory. This means they need to be compacted at every call, possibly greatly increasing memory usage. To compact weights again call flatten_parameters(). (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\aten\src\ATen\native\cudnn\RNN.cpp:1481.)
+  result = _VF.gru(
+  ep00 task=0.2013 reg=0 val=0.9229 (1.9s)
+  ep01 task=0.1913 reg=0 val=0.9247 (1.6s)
+  ep02 task=0.1801 reg=0 val=0.9269 (1.6s)
+  ep03 task=0.1702 reg=0 val=0.9272 (1.6s)
+  ep04 task=0.1641 reg=0 val=0.9273 (1.6s)
+[sc2 s0] plain ft dense acc 0.9136
+  ep00 task=0.2013 reg=0.04414 val=0.9235 (2.2s)
+  ep01 task=0.1913 reg=0.04429 val=0.9247 (2.1s)
+  ep02 task=0.1801 reg=0.04437 val=0.9271 (2.2s)
+  ep03 task=0.1703 reg=0.04449 val=0.9270 (2.2s)
+  ep04 task=0.1641 reg=0.0444 val=0.9273 (2.7s)
+[sc2 s0] l1delta lam=0.03 dense acc 0.9136
+  ep00 task=0.2013 reg=0.04404 val=0.9232 (3.7s)
+  ep01 task=0.1914 reg=0.04413 val=0.9247 (3.7s)
+  ep02 task=0.1802 reg=0.04416 val=0.9267 (2.7s)
+  ep03 task=0.1703 reg=0.04426 val=0.9266 (3.5s)
+  ep04 task=0.1641 reg=0.04415 val=0.9274 (3.6s)
+[sc2 s0] l1delta lam=0.1 dense acc 0.9126
+  ep00 task=0.2014 reg=0.04379 val=0.9227 (3.1s)
+  ep01 task=0.1914 reg=0.04369 val=0.9233 (3.6s)
+  ep02 task=0.1805 reg=0.0436 val=0.9267 (3.6s)
+  ep03 task=0.1705 reg=0.04362 val=0.9265 (3.6s)
+  ep04 task=0.1643 reg=0.04349 val=0.9275 (2.8s)
+[sc2 s0] l1delta lam=0.3 dense acc 0.9136
+  ep00 task=0.2022 reg=0.043 val=0.9242 (2.3s)
+  ep01 task=0.1924 reg=0.04227 val=0.9204 (2.2s)
+  ep02 task=0.1817 reg=0.0418 val=0.9266 (2.1s)
+  ep03 task=0.1717 reg=0.04165 val=0.9266 (2.1s)
+  ep04 task=0.1654 reg=0.04143 val=0.9277 (2.1s)
+[sc2 s0] l1delta lam=1.0 dense acc 0.9131
+  ep00 task=0.2012 reg=0.4635 val=0.9244 (2.0s)
+  ep01 task=0.1913 reg=0.4618 val=0.9242 (1.9s)
+  ep02 task=0.1801 reg=0.461 val=0.9265 (2.8s)
+  ep03 task=0.1702 reg=0.4604 val=0.9270 (2.2s)
+  ep04 task=0.1640 reg=0.4605 val=0.9276 (2.0s)
+[sc2 s0] rate lam=0.03 dense acc 0.9131
+  ep00 task=0.2013 reg=0.4577 val=0.9244 (1.9s)
+  ep01 task=0.1919 reg=0.4509 val=0.9237 (1.8s)
+  ep02 task=0.1807 reg=0.4464 val=0.9271 (1.8s)
+  ep03 task=0.1708 reg=0.4435 val=0.9281 (1.8s)
+  ep04 task=0.1647 reg=0.4426 val=0.9278 (1.9s)
+[sc2 s0] rate lam=0.1 dense acc 0.9141
+  ep00 task=0.2027 reg=0.4414 val=0.9247 (1.9s)
+  ep01 task=0.1944 reg=0.416 val=0.9237 (1.8s)
+  ep02 task=0.1852 reg=0.4005 val=0.9284 (1.8s)
+  ep03 task=0.1757 reg=0.3913 val=0.9271 (1.8s)
+  ep04 task=0.1696 reg=0.387 val=0.9275 (1.8s)
+[sc2 s0] rate lam=0.3 dense acc 0.9136
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
+  ep00 task=0.2075 reg=0 val=0.9206 (1.7s)
+  ep01 task=0.1969 reg=0 val=0.9224 (1.6s)
+  ep02 task=0.1861 reg=0 val=0.9247 (1.7s)
+  ep03 task=0.1753 reg=0 val=0.9247 (1.7s)
+  ep04 task=0.1691 reg=0 val=0.9255 (1.7s)
+[sc2 s1] plain ft dense acc 0.9111
+  ep00 task=0.2076 reg=0.04411 val=0.9209 (2.3s)
+  ep01 task=0.1969 reg=0.04421 val=0.9229 (2.1s)
+  ep02 task=0.1861 reg=0.04432 val=0.9246 (2.1s)
+  ep03 task=0.1754 reg=0.04436 val=0.9246 (2.1s)
+  ep04 task=0.1691 reg=0.04438 val=0.9253 (2.1s)
+[sc2 s1] l1delta lam=0.03 dense acc 0.9116
+  ep00 task=0.2077 reg=0.04402 val=0.9217 (2.2s)
+  ep01 task=0.1971 reg=0.04404 val=0.9230 (2.0s)
+  ep02 task=0.1861 reg=0.0441 val=0.9248 (2.1s)
+  ep03 task=0.1754 reg=0.04411 val=0.9248 (2.1s)
+  ep04 task=0.1692 reg=0.04411 val=0.9254 (2.1s)
+[sc2 s1] l1delta lam=0.1 dense acc 0.9116
+  ep00 task=0.2077 reg=0.04377 val=0.9208 (2.2s)
+  ep01 task=0.1971 reg=0.04356 val=0.9231 (2.1s)
+  ep02 task=0.1863 reg=0.04346 val=0.9245 (2.1s)
+  ep03 task=0.1756 reg=0.04342 val=0.9245 (2.1s)
+  ep04 task=0.1694 reg=0.04336 val=0.9250 (2.1s)
+[sc2 s1] l1delta lam=0.3 dense acc 0.9106
+  ep00 task=0.2082 reg=0.04289 val=0.9208 (2.1s)
+  ep01 task=0.1983 reg=0.04208 val=0.9233 (4.4s)
+  ep02 task=0.1874 reg=0.04158 val=0.9245 (6.1s)
+  ep03 task=0.1768 reg=0.0413 val=0.9245 (6.0s)
+  ep04 task=0.1705 reg=0.04116 val=0.9257 (2.1s)
+[sc2 s1] l1delta lam=1.0 dense acc 0.9106
+  ep00 task=0.2074 reg=0.4403 val=0.9208 (1.9s)
+  ep01 task=0.1970 reg=0.4392 val=0.9233 (1.8s)

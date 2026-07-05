@@ -85,7 +85,20 @@ Working plan per info.txt. Every deviation from the brief is recorded in the
 ## Kill-check log
 
 - 2026-07-05: atlas kill-check clean vs 3.09M-abstract index + web (per
-  info.txt handoff). Pre-submission re-sweep: PENDING (do before shipping).
+  info.txt handoff).
+- 2026-07-05 (pre-submission re-sweep, DONE): newest-first web/arXiv sweep of
+  "delta network temporal sparsity", "event-driven transformer", "activation
+  change threshold", "level crossing neural", "Rice formula activation event".
+  Findings: (i) DeltaDPD (arXiv:2505.06250, 2025) is a fresh delta-RNN
+  application (RF digital predistortion) — exploits input+hidden temporal
+  sparsity via a tuned threshold Theta, reports measured sparsity/power; STILL
+  no analytic event-rate prediction or rate-objective training. Cited as
+  recent corroboration; the gap holds. (ii) Rice-formula + level-crossing in
+  neural contexts is confined to NEURONAL FIRING-RATE biophysics (LIF escape
+  noise, inertial-process generalizations) — a different object than
+  delta-network activation events. (iii) EGRU/activity-sparsity line already
+  in bib. CONCLUSION: novelty statement stands; no scoop. DOI slot still to
+  fill at Zenodo deposit.
 
 ## Deviations & decisions
 

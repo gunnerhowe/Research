@@ -63,7 +63,7 @@ if gam:
 
 eps = load("exp0_eps_sweep.json")
 if eps:
-    setm("SplitHalfFloorE0", pct(eps["split_half_floor"][0]))
+    setm("SplitHalfFloorEZero", pct(eps["split_half_floor"][0]))
     best = min(eps["eps_sweep"], key=lambda r: abs(r["seg_bias"][0]))
     setm("EpsBest", num(best["eps_rel"], 2))
 
@@ -226,8 +226,8 @@ for t, tex in (("sc2", "SCTwo"), ("psmnist", "PsMNIST")):
                          ("rate_", "Rate")):
         if prefix in fam and fam[prefix]:
             v = np.array(list(fam[prefix].values()))
-            setm(f"E3{name}{tex}", pct(np.nanmean(v)))
-            setm(f"E3{name}Sd{tex}", pct(np.nanstd(v)))
+            setm(f"EThree{name}{tex}", pct(np.nanmean(v)))
+            setm(f"EThree{name}Sd{tex}", pct(np.nanstd(v)))
     # paired budget - posthoc (shared seeds)
     if "budget_" in fam and fam["budget_"]:
         shared = sorted(set(fam["posthoc"]) & set(fam["budget_"]))
@@ -235,11 +235,11 @@ for t, tex in (("sc2", "SCTwo"), ("psmnist", "PsMNIST")):
         b = np.array([fam["posthoc"][s] for s in shared])
         ok = ~(np.isnan(a) | np.isnan(b))
         diff = a[ok] - b[ok]
-        setm(f"E3PairedDiff{tex}", pct(np.mean(diff)))
-        setm(f"E3PairedN{tex}", str(int(ok.sum())))
+        setm(f"EThreePairedDiff{tex}", pct(np.mean(diff)))
+        setm(f"EThreePairedN{tex}", str(int(ok.sum())))
         if ok.sum() >= 5 and np.any(diff != 0):
             p = stats.wilcoxon(diff).pvalue
-            setm(f"E3WilcoxonP{tex}", num(p, 3))
+            setm(f"EThreeWilcoxonP{tex}", num(p, 3))
     # dense-accuracy cost of the binding budget (rho=0.35)
     dense_cost = []
     for s in d3:
@@ -327,10 +327,13 @@ if d:
 
 tim = load("timing.json")
 if tim:
-    setm("OverheadPct", pct(tim["overhead_pct"] / 100.0))
+    setm("OverheadFactor", f"{tim['with_budget']['mean_ms'] / tim['task_only']['mean_ms']:.0f}$\\times$")
     setm("TaskOnlyMs", num(tim["task_only"]["mean_ms"], 1))
     setm("WithBudgetMs", num(tim["with_budget"]["mean_ms"], 1))
-    setm("EstimatorMs", num(tim["estimator_fwd_bwd_ms"]["mean_ms"], 1))
+    setm("EstimatorMs", num(tim["estimator_fwd_bwd_ms"]["mean_ms"], 0))
+    if "estimator_subsampled_ms" in tim:
+        setm("EstimatorQuarterMs",
+             num(tim["estimator_subsampled_ms"]["25pct"], 0))
 
 # ---------------------------------------------------------------- base
 
