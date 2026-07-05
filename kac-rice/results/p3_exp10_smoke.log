@@ -1,0 +1,14 @@
+device=cpu seeds=[0]
+exp10 sphere eikonal_only seed0: betti=(12, 140, 0) ok=False cham=0.20879 topo=0.0ms/it (39s)
+exp10 sphere smooth_null seed0: betti=(8, 86, 0) ok=False cham=0.21358 topo=0.3ms/it (134s)
+exp10 sphere vector_match seed0: betti=(2, 1, 1) ok=False cham=0.22873 topo=2.8ms/it (141s)
+exp10 sphere ph_loss seed0: betti=(1, 4, 0) ok=False cham=0.19205 topo=925.9ms/it (479s)
+exp10 torus eikonal_only seed0: betti=(6, 155, 2) ok=False cham=0.23907 topo=0.0ms/it (35s)
+exp10 torus smooth_null seed0: betti=(2, 91, 1) ok=False cham=0.22283 topo=0.3ms/it (137s)
+exp10 torus vector_match seed0: betti=(2, 12, 9) ok=False cham=0.30706 topo=3.1ms/it (148s)
+exp10 torus ph_loss seed0: betti=(4, 4, 0) ok=False cham=0.19054 topo=1071.5ms/it (534s)
+exp10 genus2 eikonal_only seed0: betti=(4, 183, 4) ok=False cham=0.28923 topo=0.0ms/it (38s)
+exp10 genus2 smooth_null seed0: betti=(2, 83, 0) ok=False cham=0.29436 topo=0.3ms/it (144s)
+exp10 genus2 vector_match seed0: betti=(1, 8, 0) ok=False cham=0.30125 topo=3.1ms/it (153s)
+exp10 genus2 ph_loss seed0: betti=(1, 2, 0) ok=True cham=0.24606 topo=1068.1ms/it (526s)
+PHASE3 SUITE DONE

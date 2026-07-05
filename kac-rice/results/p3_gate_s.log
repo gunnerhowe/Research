@@ -1,0 +1,14 @@
+polluted u=0.3: (2, 0)  u=0.6: (2, 0)
+iter 0: cap_loss=0.0000
+iter 250: cap_loss=0.0000
+iter 500: cap_loss=0.0000
+iter 750: cap_loss=0.0000
+iter 1000: cap_loss=0.0000
+iter 1250: cap_loss=0.0000
+iter 1500: cap_loss=0.0000
+iter 1750: cap_loss=0.0000
+repaired u=0.2: (3, 0)
+repaired u=0.3: (2, 0)
+repaired u=0.5: (2, 0)
+max field in spurious region: 0.5255447626113892
+GATE_S_DONE

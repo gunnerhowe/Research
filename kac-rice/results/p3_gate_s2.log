@@ -1,0 +1,15 @@
+polluted u=0.3: (2, 0)  u=0.6: (2, 0)
+chi-hat on polluted net: [0.97, 2.02, 1.75, 0.84]
+iter 0: cap_loss=0.1127
+iter 250: cap_loss=0.0000
+iter 500: cap_loss=0.0000
+iter 750: cap_loss=0.0000
+iter 1000: cap_loss=0.0000
+iter 1250: cap_loss=0.0000
+iter 1500: cap_loss=0.0000
+iter 1750: cap_loss=0.0000
+repaired u=0.2: (4, 3)
+repaired u=0.3: (3, 1)
+repaired u=0.5: (2, 0)
+max field in spurious region: 0.6346698999404907
+GATE_S_DONE

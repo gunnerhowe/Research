@@ -1,0 +1,14 @@
+device=cpu seeds=[0, 1, 2]
+exp9 anchor_only seed0: topo={'0.2': (3, 0), '0.3': (2, 0), '0.5': (2, 0)} spur=0.573 mse=0.00393 repaired=False (28s)
+exp9 smooth_null seed0: topo={'0.2': (1, 0), '0.3': (1, 0), '0.5': (1, 0)} spur=0.122 mse=0.05336 repaired=True (799s)
+exp9 chi_only seed0: topo={'0.2': (2, 1), '0.3': (2, 3), '0.5': (4, 1)} spur=0.655 mse=0.01082 repaired=False (920s)
+exp9 vector_cap seed0: topo={'0.2': (1, 0), '0.3': (1, 0), '0.5': (1, 0)} spur=0.109 mse=0.00314 repaired=True (948s)
+exp9 anchor_only seed1: topo={'0.2': (12, 5), '0.3': (13, 0), '0.5': (4, 0)} spur=0.732 mse=0.02935 repaired=False (27s)
+exp9 smooth_null seed1: topo={'0.2': (2, 0), '0.3': (1, 0), '0.5': (1, 0)} spur=0.143 mse=0.00248 repaired=False (770s)
+exp9 chi_only seed1: topo={'0.2': (2, 0), '0.3': (1, 0), '0.5': (1, 2)} spur=0.136 mse=0.00211 repaired=False (783s)
+exp9 vector_cap seed1: topo={'0.2': (1, 0), '0.3': (1, 0), '0.5': (1, 0)} spur=0.110 mse=0.00369 repaired=True (804s)
+exp9 anchor_only seed2: topo={'0.2': (15, 25), '0.3': (27, 7), '0.5': (19, 0)} spur=0.790 mse=0.05198 repaired=False (29s)
+exp9 smooth_null seed2: topo={'0.2': (1, 0), '0.3': (1, 0), '0.5': (1, 0)} spur=0.121 mse=0.06173 repaired=True (754s)
+exp9 chi_only seed2: topo={'0.2': (11, 0), '0.3': (3, 0), '0.5': (1, 0)} spur=0.274 mse=0.00430 repaired=False (797s)
+exp9 vector_cap seed2: topo={'0.2': (1, 0), '0.3': (1, 0), '0.5': (1, 0)} spur=0.110 mse=0.00539 repaired=True (791s)
+PHASE3 SUITE DONE

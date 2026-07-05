@@ -1,4 +1,4 @@
-\begin{thebibliography}{25}
+\begin{thebibliography}{27}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -31,6 +31,11 @@ Dibyajyoti Chakraborty, Arvind~T. Mohan, and Romit Maulik.
   systems.
 \newblock \emph{Journal of Computational Physics}, 558:\penalty0 114866, 2026.
 \newblock \doi{10.1016/j.jcp.2026.114866}.
+
+\bibitem[Chang and Sapsis(2025)]{chang2025extreme}
+Kai Chang and Themistoklis~P. Sapsis.
+\newblock Extreme event aware ($\eta$-) learning.
+\newblock \emph{arXiv preprint arXiv:2510.19161}, 2025.
 
 \bibitem[Daley and Vere-Jones(2003)]{daley2003introduction}
 Daryl~J. Daley and David Vere-Jones.
@@ -124,6 +129,15 @@ Chris Pedersen, Laure Zanna, and Joan Bruna.
   chaos.
 \newblock In \emph{International Conference on Machine Learning}, 2025.
 \newblock arXiv:2503.18731.
+
+\bibitem[Pickering et~al.(2022)Pickering, Guth, Karniadakis, and
+  Sapsis]{pickering2022discovering}
+Ethan Pickering, Stephen Guth, George~Em Karniadakis, and Themistoklis~P.
+  Sapsis.
+\newblock Discovering and forecasting extreme events via active learning in
+  neural operators.
+\newblock \emph{Nature Computational Science}, 2\penalty0 (12):\penalty0
+  823--833, 2022.
 
 \bibitem[Price et~al.(2025)Price, Sanchez-Gonzalez, Alet, Andersson, El-Kadi,
   Masters, Ewalds, Stott, Mohamed, Battaglia, Lam, and

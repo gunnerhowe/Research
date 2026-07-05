@@ -1,0 +1,12 @@
+polluted u=0.3: (2, 0)
+iter 0: chi_cap=0.1027 m1_cap=0.0000
+iter 400: chi_cap=0.0000 m1_cap=0.0000
+iter 800: chi_cap=0.0000 m1_cap=0.0000
+iter 1200: chi_cap=0.0000 m1_cap=0.0000
+iter 1600: chi_cap=0.0000 m1_cap=0.0000
+repaired u=0.2: (1, 0)
+repaired u=0.3: (1, 0)
+repaired u=0.5: (1, 0)
+max field in spurious region: 0.10941284149885178
+MSE vs clean signal: 0.0023460285738110542
+GATE_S_VECTOR_DONE

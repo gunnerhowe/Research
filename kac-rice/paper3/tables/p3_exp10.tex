@@ -1,0 +1,17 @@
+\begin{tabular}{lcccc}
+\toprule
+Config & topo correct & median $b_1$ err & Chamfer & topo ms/iter \\
+\midrule
+\multicolumn{5}{l}{\emph{hard ($\omega{=}15$, 8k) regime}} \\
+Eikonal only & 0/12 & 390 & 0.239 & 0.0 \\
++ smoothness & 0/12 & 276 & 0.221 & 0.2 \\
++ Minkowski vector (ours) & 0/12 & 5734 & 0.275 & 3.1 \\
++ persistent homology & 1/12 & 4 & 0.188 & 828.3 \\
+\midrule
+\multicolumn{5}{l}{\emph{matched ($\omega{=}8$, 16k) regime}} \\
+Eikonal only & 0/9 & 161 & 0.204 & 0.0 \\
++ smoothness & 0/9 & 81 & 0.210 & 0.1 \\
++ Minkowski vector (ours) & 0/9 & 91390 & 0.256 & 2.7 \\
++ persistent homology & 4/9 & 1 & 0.260 & 654.3 \\
+\bottomrule
+\end{tabular}

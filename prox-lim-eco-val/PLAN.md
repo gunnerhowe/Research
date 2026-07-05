@@ -116,11 +116,15 @@ marginal/invariant-measure training provably miss. arXiv-ready paper output.
       timing priors as future work. NO MORE KS TUNING.**
       (Note: margtpp probe stall was caused by GPU mem ceiling + USER'S
       OWN concurrent jobs saturating CPU — do not kill those processes.)
-- [ ] FINAL COMPUTE QUEUE (scripts/resume_final.py, RESUMED after session
-      restart + CUDA illegal-access crash in margtpp_s2 — margtpp retried
-      once, tolerated if it fails again; then L96 seeds 6-8). After: L96
-      n=8 refresh (aggregate.py seeds 1-8 + make_tables.py + paired-test
-      json into paper), final intro pass, full PDF visual check.
+- [x] ALL COMPUTE DONE (2026-07-04): margtpp s2/s3 succeeded on retry
+      (CUDA error was transient); L96 seeds 6-8 complete. n=8 refresh in
+      paper (all headline metrics at Wilcoxon floor 0.0078; tpp rate
+      1.001±0.029; CRPS +0.5% p=.048). KS table 3 seeds all rows. Intro
+      bridging paragraph written; TODOs cleared; contribution 1 wording
+      matched to evidence. FINAL PDF: paper/main.pdf, 11 pages.
+      STATUS: arXiv-ready draft COMPLETE. Possible future polish: IET-QQ
+      axis clipping cosmetic fix; tpp_mle collapse trace figure; exact
+      arXiv metadata/categories at submission time.
 - [x] KS table generated + inserted (make_ks_table.py); KS subsection,
       abstract, contributions, discussion rewritten to boundary framing.
       KEY SYMMETRIC FINDING: pois-aux is the BEST RP condition on KS
