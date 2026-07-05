@@ -1,0 +1,25 @@
+[sc2 s0] posthoc dense acc 0.9116
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\torch\nn\modules\rnn.py:1393: UserWarning: RNN module weights are not part of single contiguous chunk of memory. This means they need to be compacted at every call, possibly greatly increasing memory usage. To compact weights again call flatten_parameters(). (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\aten\src\ATen\native\cudnn\RNN.cpp:1481.)
+  result = _VF.gru(
+  ep00 task=0.2206 reg=0.01416 val=0.9193 (17.5s)
+  ep01 task=0.2085 reg=0.007689 val=0.9217 (17.2s)
+  ep02 task=0.1980 reg=0.006169 val=0.9254 (17.1s)
+  ep03 task=0.1873 reg=0.005367 val=0.9242 (17.1s)
+  ep04 task=0.1801 reg=0.005045 val=0.9242 (17.2s)
+[sc2 s0] budget rho=0.7 dense acc 0.9126
+  ep00 task=0.2815 reg=0.04386 val=0.9118 (17.3s)
+  ep01 task=0.2582 reg=0.01714 val=0.9176 (17.2s)
+  ep02 task=0.2406 reg=0.01255 val=0.9185 (17.2s)
+  ep03 task=0.2277 reg=0.01062 val=0.9179 (17.2s)
+  ep04 task=0.2190 reg=0.009833 val=0.9204 (17.2s)
+[sc2 s0] budget rho=0.5 dense acc 0.9043
+  ep00 task=0.4180 reg=0.1032 val=0.8954 (17.3s)
+  ep01 task=0.3566 reg=0.02871 val=0.9011 (17.3s)
+  ep02 task=0.3247 reg=0.02089 val=0.9055 (24.9s)
+  ep03 task=0.3046 reg=0.0178 val=0.9078 (26.3s)
+  ep04 task=0.2933 reg=0.01645 val=0.9096 (17.2s)
+[sc2 s0] budget rho=0.35 dense acc 0.8877
+  ep00 task=0.9038 reg=0.3155 val=0.8206 (25.8s)
+  ep01 task=0.6332 reg=0.06456 val=0.8566 (17.2s)
+  ep02 task=0.5486 reg=0.04801 val=0.8658 (17.2s)
+  ep03 task=0.5064 reg=0.04145 val=0.8728 (17.2s)

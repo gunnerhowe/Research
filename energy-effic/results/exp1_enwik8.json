@@ -11213,10 +11213,11 @@
   "events": [
    {
     "x": 0.1,
+    "bpc": 2.3225145991097733,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.12509504641427288,
-      "measured": 0.8749938011169434,
+      "measured": 0.8750852098651961,
       "pred_analytic_emp_tv": 0.91615216027845,
       "pred_analytic_gauss_tv": 0.91615216027845,
       "pred_openloop_cal": 0.8770542144775391,
@@ -11224,7 +11225,7 @@
      },
      "l0.out_in": {
       "theta": 0.013873153522714642,
-      "measured": 0.8121480941772461,
+      "measured": 0.8121194278492647,
       "pred_analytic_emp_tv": 0.906397342486836,
       "pred_analytic_gauss_tv": 0.906397342486836,
       "pred_openloop_cal": 0.8106865882873535,
@@ -11232,7 +11233,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.08193717094623212,
-      "measured": 0.8929972648620605,
+      "measured": 0.8930884267769608,
       "pred_analytic_emp_tv": 0.9166508379947877,
       "pred_analytic_gauss_tv": 0.9166508379947877,
       "pred_openloop_cal": 0.8965706825256348,
@@ -11240,7 +11241,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.02185078698761736,
-      "measured": 0.6910099983215332,
+      "measured": 0.6909742168351716,
       "pred_analytic_emp_tv": 0.9036391314862386,
       "pred_analytic_gauss_tv": 0.9040056040022517,
       "pred_openloop_cal": 0.6942919492721558,
@@ -11248,7 +11249,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.08288694706631412,
-      "measured": 0.8917698860168457,
+      "measured": 0.8918356502757353,
       "pred_analytic_emp_tv": 0.9167503206396597,
       "pred_analytic_gauss_tv": 0.9167503206396597,
       "pred_openloop_cal": 0.8953003883361816,
@@ -11256,7 +11257,7 @@
      },
      "l1.out_in": {
       "theta": 0.060956997106266765,
-      "measured": 0.8628530502319336,
+      "measured": 0.8628575942095589,
       "pred_analytic_emp_tv": 0.9151009134295914,
       "pred_analytic_gauss_tv": 0.9151009134295914,
       "pred_openloop_cal": 0.8691244125366211,
@@ -11264,7 +11265,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.15988511067917188,
-      "measured": 0.9071264266967773,
+      "measured": 0.9071332146139706,
       "pred_analytic_emp_tv": 0.9176980900521612,
       "pred_analytic_gauss_tv": 0.9176980900521612,
       "pred_openloop_cal": 0.911961555480957,
@@ -11272,7 +11273,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.09856387272009498,
-      "measured": 0.528727650642395,
+      "measured": 0.5287713742723652,
       "pred_analytic_emp_tv": 0.9104834981790841,
       "pred_analytic_gauss_tv": 0.9111547597878329,
       "pred_openloop_cal": 0.5315122604370117,
@@ -11282,10 +11283,11 @@
    },
    {
     "x": 0.2,
+    "bpc": 2.6476373096242103,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.25019009282854576,
-      "measured": 0.8054628372192383,
+      "measured": 0.8055606617647059,
       "pred_analytic_emp_tv": 0.8338121584045168,
       "pred_analytic_gauss_tv": 0.8338121584045168,
       "pred_openloop_cal": 0.8076291084289551,
@@ -11293,7 +11295,7 @@
      },
      "l0.out_in": {
       "theta": 0.027746307045429283,
-      "measured": 0.6613039970397949,
+      "measured": 0.6612879136029411,
       "pred_analytic_emp_tv": 0.8169053571515785,
       "pred_analytic_gauss_tv": 0.8169053571515785,
       "pred_openloop_cal": 0.6588263511657715,
@@ -11301,7 +11303,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.16387434189246425,
-      "measured": 0.8111691474914551,
+      "measured": 0.8113032322303921,
       "pred_analytic_emp_tv": 0.8346254315587015,
       "pred_analytic_gauss_tv": 0.8346254315587015,
       "pred_openloop_cal": 0.8148021697998047,
@@ -11309,7 +11311,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.04370157397523472,
-      "measured": 0.5306293964385986,
+      "measured": 0.530587948069853,
       "pred_analytic_emp_tv": 0.8102131027831989,
       "pred_analytic_gauss_tv": 0.8128429038937051,
       "pred_openloop_cal": 0.532130241394043,
@@ -11317,7 +11319,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.16577389413262825,
-      "measured": 0.8078756332397461,
+      "measured": 0.8079532398897059,
       "pred_analytic_emp_tv": 0.834800296357838,
       "pred_analytic_gauss_tv": 0.834800296357838,
       "pred_openloop_cal": 0.8122186660766602,
@@ -11325,7 +11327,7 @@
      },
      "l1.out_in": {
       "theta": 0.12191399421253353,
-      "measured": 0.7448816299438477,
+      "measured": 0.7448950674019608,
       "pred_analytic_emp_tv": 0.8320737154174864,
       "pred_analytic_gauss_tv": 0.8320737154174864,
       "pred_openloop_cal": 0.7597193717956543,
@@ -11333,7 +11335,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.31977022135834376,
-      "measured": 0.8161988258361816,
+      "measured": 0.8162190755208333,
       "pred_analytic_emp_tv": 0.8363595888483824,
       "pred_analytic_gauss_tv": 0.8363595888483824,
       "pred_openloop_cal": 0.827669620513916,
@@ -11341,7 +11343,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.19712774544018996,
-      "measured": 0.3492661714553833,
+      "measured": 0.3493064730775123,
       "pred_analytic_emp_tv": 0.821404826956079,
       "pred_analytic_gauss_tv": 0.8252073636417867,
       "pred_openloop_cal": 0.35396838188171387,
@@ -11351,10 +11353,11 @@
    },
    {
     "x": 0.35,
+    "bpc": 3.5721732169826046,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.437832662449955,
-      "measured": 0.702336311340332,
+      "measured": 0.7024169921875,
       "pred_analytic_emp_tv": 0.7183186606335912,
       "pred_analytic_gauss_tv": 0.7183186606335912,
       "pred_openloop_cal": 0.7039518356323242,
@@ -11362,7 +11365,7 @@
      },
      "l0.out_in": {
       "theta": 0.048556037329501235,
-      "measured": 0.5007481575012207,
+      "measured": 0.5008205039828432,
       "pred_analytic_emp_tv": 0.6867705788716973,
       "pred_analytic_gauss_tv": 0.6945050425624326,
       "pred_openloop_cal": 0.4998660087585449,
@@ -11370,7 +11373,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.2867800983118124,
-      "measured": 0.6993694305419922,
+      "measured": 0.6995844822303922,
       "pred_analytic_emp_tv": 0.7192522379233572,
       "pred_analytic_gauss_tv": 0.7192522379233572,
       "pred_openloop_cal": 0.7032451629638672,
@@ -11378,7 +11381,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.07647775445666076,
-      "measured": 0.3809717893600464,
+      "measured": 0.3808885761335784,
       "pred_analytic_emp_tv": 0.6678770377701807,
       "pred_analytic_gauss_tv": 0.6886369921342501,
       "pred_openloop_cal": 0.37310099601745605,
@@ -11386,7 +11389,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.2901043147320994,
-      "measured": 0.6978273391723633,
+      "measured": 0.6979439529718138,
       "pred_analytic_emp_tv": 0.7195647204802964,
       "pred_analytic_gauss_tv": 0.7195647204802964,
       "pred_openloop_cal": 0.7013263702392578,
@@ -11394,7 +11397,7 @@
      },
      "l1.out_in": {
       "theta": 0.21334948987193367,
-      "measured": 0.5874929428100586,
+      "measured": 0.5875981349571079,
       "pred_analytic_emp_tv": 0.7161539356154774,
       "pred_analytic_gauss_tv": 0.7161539356154774,
       "pred_openloop_cal": 0.6254444122314453,
@@ -11402,7 +11405,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.5595978873771015,
-      "measured": 0.6885991096496582,
+      "measured": 0.6886522480085784,
       "pred_analytic_emp_tv": 0.7214570931398381,
       "pred_analytic_gauss_tv": 0.7214570931398381,
       "pred_openloop_cal": 0.7100543975830078,
@@ -11410,7 +11413,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.34497355452033235,
-      "measured": 0.30228912830352783,
+      "measured": 0.3023670869715073,
       "pred_analytic_emp_tv": 0.6840522309307808,
       "pred_analytic_gauss_tv": 0.7063085142647845,
       "pred_openloop_cal": 0.31042754650115967,
@@ -11420,10 +11423,11 @@
    },
    {
     "x": 0.5,
+    "bpc": 4.354623765521531,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.6254752320713644,
-      "measured": 0.5995621681213379,
+      "measured": 0.5996534160539215,
       "pred_analytic_emp_tv": 0.6128533593159979,
       "pred_analytic_gauss_tv": 0.6128533593159979,
       "pred_openloop_cal": 0.600740909576416,
@@ -11431,7 +11435,7 @@
      },
      "l0.out_in": {
       "theta": 0.0693657676135732,
-      "measured": 0.3957066535949707,
+      "measured": 0.39569355085784313,
       "pred_analytic_emp_tv": 0.5422711705863326,
       "pred_analytic_gauss_tv": 0.5876842169749916,
       "pred_openloop_cal": 0.39408445358276367,
@@ -11439,7 +11443,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.4096858547311606,
-      "measured": 0.5955681800842285,
+      "measured": 0.5958237591911765,
       "pred_analytic_emp_tv": 0.6139263295356097,
       "pred_analytic_gauss_tv": 0.6139466342138961,
       "pred_openloop_cal": 0.6005291938781738,
@@ -11447,7 +11451,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.1092539349380868,
-      "measured": 0.29273271560668945,
+      "measured": 0.2926307827818627,
       "pred_analytic_emp_tv": 0.5222277892698757,
       "pred_analytic_gauss_tv": 0.5811214538008023,
       "pred_openloop_cal": 0.27325141429901123,
@@ -11455,7 +11459,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.4144347353315706,
-      "measured": 0.5976381301879883,
+      "measured": 0.5977797564338235,
       "pred_analytic_emp_tv": 0.6141970878194676,
       "pred_analytic_gauss_tv": 0.6141970878194676,
       "pred_openloop_cal": 0.5963120460510254,
@@ -11463,7 +11467,7 @@
      },
      "l1.out_in": {
       "theta": 0.3047849855313338,
-      "measured": 0.450014591217041,
+      "measured": 0.4501479204963235,
       "pred_analytic_emp_tv": 0.61007680137807,
       "pred_analytic_gauss_tv": 0.6105987272782861,
       "pred_openloop_cal": 0.5194525718688965,
@@ -11471,7 +11475,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.7994255533958593,
-      "measured": 0.5711593627929688,
+      "measured": 0.5711985868566176,
       "pred_analytic_emp_tv": 0.6162252612579439,
       "pred_analytic_gauss_tv": 0.6162252612579439,
       "pred_openloop_cal": 0.6024937629699707,
@@ -11479,7 +11483,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.49281936360047485,
-      "measured": 0.2601214647293091,
+      "measured": 0.2601792279411765,
       "pred_analytic_emp_tv": 0.5418504427139239,
       "pred_analytic_gauss_tv": 0.6007152795524244,
       "pred_openloop_cal": 0.27556395530700684,
@@ -11489,10 +11493,11 @@
    },
    {
     "x": 0.75,
+    "bpc": 5.417379893603903,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.9382128481070465,
-      "measured": 0.4471282958984375,
+      "measured": 0.44718615962009806,
       "pred_analytic_emp_tv": 0.46547997256062396,
       "pred_analytic_gauss_tv": 0.4676166341631952,
       "pred_openloop_cal": 0.4493832588195801,
@@ -11500,7 +11505,7 @@
      },
      "l0.out_in": {
       "theta": 0.1040486514203598,
-      "measured": 0.28354644775390625,
+      "measured": 0.28342668121936276,
       "pred_analytic_emp_tv": 0.3811680969421922,
       "pred_analytic_gauss_tv": 0.44122615480752336,
       "pred_openloop_cal": 0.28173303604125977,
@@ -11508,7 +11513,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.6145287820967409,
-      "measured": 0.4370574951171875,
+      "measured": 0.437408566942402,
       "pred_analytic_emp_tv": 0.46718732724490175,
       "pred_analytic_gauss_tv": 0.4691563666107236,
       "pred_openloop_cal": 0.4475688934326172,
@@ -11516,7 +11521,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.1638809024071302,
-      "measured": 0.2076859474182129,
+      "measured": 0.20761455461090686,
       "pred_analytic_emp_tv": 0.3370426833571762,
       "pred_analytic_gauss_tv": 0.4372687683002613,
       "pred_openloop_cal": 0.18226659297943115,
@@ -11524,7 +11529,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.6216521029973558,
-      "measured": 0.44957971572875977,
+      "measured": 0.4497745289522059,
       "pred_analytic_emp_tv": 0.466478727006429,
       "pred_analytic_gauss_tv": 0.4691987224926564,
       "pred_openloop_cal": 0.4435453414916992,
@@ -11532,7 +11537,7 @@
      },
      "l1.out_in": {
       "theta": 0.45717747829700073,
-      "measured": 0.2800159454345703,
+      "measured": 0.28033040364583334,
       "pred_analytic_emp_tv": 0.4423050849351295,
       "pred_analytic_gauss_tv": 0.4656714084044529,
       "pred_openloop_cal": 0.38774633407592773,
@@ -11540,7 +11545,7 @@
      },
      "l1.fc1_in": {
       "theta": 1.199138330093789,
-      "measured": 0.39589691162109375,
+      "measured": 0.3958716299019608,
       "pred_analytic_emp_tv": 0.4693406750030902,
       "pred_analytic_gauss_tv": 0.47138546483653965,
       "pred_openloop_cal": 0.44791316986083984,
@@ -11548,7 +11553,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.7392290454007122,
-      "measured": 0.19923293590545654,
+      "measured": 0.19929091509650734,
       "pred_analytic_emp_tv": 0.34442061069493285,
       "pred_analytic_gauss_tv": 0.4554038252952846,
       "pred_openloop_cal": 0.22875511646270752,
@@ -11558,10 +11563,11 @@
    },
    {
     "x": 1.0,
+    "bpc": 6.052718202421291,
     "streams": {
      "l0.qkv_in": {
       "theta": 1.2509504641427287,
-      "measured": 0.3148517608642578,
+      "measured": 0.3148782169117647,
       "pred_analytic_emp_tv": 0.34524079944833497,
       "pred_analytic_gauss_tv": 0.34912705683696427,
       "pred_openloop_cal": 0.3173351287841797,
@@ -11569,7 +11575,7 @@
      },
      "l0.out_in": {
       "theta": 0.1387315352271464,
-      "measured": 0.20575761795043945,
+      "measured": 0.2056161917892157,
       "pred_analytic_emp_tv": 0.2683423836619496,
       "pred_analytic_gauss_tv": 0.3331468219626289,
       "pred_openloop_cal": 0.21158552169799805,
@@ -11577,7 +11583,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.8193717094623212,
-      "measured": 0.3042774200439453,
+      "measured": 0.3046985102634804,
       "pred_analytic_emp_tv": 0.34678634711923795,
       "pred_analytic_gauss_tv": 0.3495772781596084,
       "pred_openloop_cal": 0.3197770118713379,
@@ -11585,7 +11591,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.2185078698761736,
-      "measured": 0.1603999137878418,
+      "measured": 0.16041678634344364,
       "pred_analytic_emp_tv": 0.235528610985619,
       "pred_analytic_gauss_tv": 0.3294793905847877,
       "pred_openloop_cal": 0.13548028469085693,
@@ -11593,7 +11599,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.8288694706631412,
-      "measured": 0.33464956283569336,
+      "measured": 0.3349887025122549,
       "pred_analytic_emp_tv": 0.3450776686086435,
       "pred_analytic_gauss_tv": 0.34951031504879554,
       "pred_openloop_cal": 0.31717443466186523,
@@ -11601,7 +11607,7 @@
      },
      "l1.out_in": {
       "theta": 0.6095699710626676,
-      "measured": 0.17905521392822266,
+      "measured": 0.17937634037990197,
       "pred_analytic_emp_tv": 0.31659391257662806,
       "pred_analytic_gauss_tv": 0.34738148631201493,
       "pred_openloop_cal": 0.29377174377441406,
@@ -11609,7 +11615,7 @@
      },
      "l1.fc1_in": {
       "theta": 1.5988511067917186,
-      "measured": 0.252899169921875,
+      "measured": 0.25286123238357844,
       "pred_analytic_emp_tv": 0.34755705104811463,
       "pred_analytic_gauss_tv": 0.35097743581109336,
       "pred_openloop_cal": 0.3232550621032715,
@@ -11617,7 +11623,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.9856387272009497,
-      "measured": 0.13801121711730957,
+      "measured": 0.13806846469056372,
       "pred_analytic_emp_tv": 0.235740403969455,
       "pred_analytic_gauss_tv": 0.34258523512520644,
       "pred_openloop_cal": 0.19049417972564697,
@@ -11627,10 +11633,11 @@
    },
    {
     "x": 1.5,
+    "bpc": 6.676729733852854,
     "streams": {
      "l0.qkv_in": {
       "theta": 1.876425696214093,
-      "measured": 0.12283515930175781,
+      "measured": 0.1228204465379902,
       "pred_analytic_emp_tv": 0.19564990284223693,
       "pred_analytic_gauss_tv": 0.19793425140799892,
       "pred_openloop_cal": 0.12387323379516602,
@@ -11638,7 +11645,7 @@
      },
      "l0.out_in": {
       "theta": 0.2080973028407196,
-      "measured": 0.09376239776611328,
+      "measured": 0.09362601485906863,
       "pred_analytic_emp_tv": 0.14968141717936545,
       "pred_analytic_gauss_tv": 0.19775199652085318,
       "pred_openloop_cal": 0.1325063705444336,
@@ -11646,7 +11653,7 @@
      },
      "l0.fc1_in": {
       "theta": 1.2290575641934818,
-      "measured": 0.16934633255004883,
+      "measured": 0.16982421875,
       "pred_analytic_emp_tv": 0.19656558952382008,
       "pred_analytic_gauss_tv": 0.19815559673500427,
       "pred_openloop_cal": 0.1422557830810547,
@@ -11654,7 +11661,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.3277618048142604,
-      "measured": 0.12108731269836426,
+      "measured": 0.1213794184666054,
       "pred_analytic_emp_tv": 0.13456478381660575,
       "pred_analytic_gauss_tv": 0.19537807293219925,
       "pred_openloop_cal": 0.08725297451019287,
@@ -11662,7 +11669,7 @@
      },
      "l1.qkv_in": {
       "theta": 1.2433042059947117,
-      "measured": 0.20717287063598633,
+      "measured": 0.20765452665441175,
       "pred_analytic_emp_tv": 0.19547400004633128,
       "pred_analytic_gauss_tv": 0.19810212965750762,
       "pred_openloop_cal": 0.14223957061767578,
@@ -11670,7 +11677,7 @@
      },
      "l1.out_in": {
       "theta": 0.9143549565940015,
-      "measured": 0.11391687393188477,
+      "measured": 0.11429323682598039,
       "pred_analytic_emp_tv": 0.17849131449736924,
       "pred_analytic_gauss_tv": 0.19768993151567943,
       "pred_openloop_cal": 0.17293357849121094,
@@ -11678,7 +11685,7 @@
      },
      "l1.fc1_in": {
       "theta": 2.398276660187578,
-      "measured": 0.08756542205810547,
+      "measured": 0.08754164751838235,
       "pred_analytic_emp_tv": 0.19646358295876093,
       "pred_analytic_gauss_tv": 0.198382372423968,
       "pred_openloop_cal": 0.15576505661010742,
@@ -11686,7 +11693,7 @@
      },
      "l1.fc2_in": {
       "theta": 1.4784580908014244,
-      "measured": 0.05574679374694824,
+      "measured": 0.05579175762101716,
       "pred_analytic_emp_tv": 0.1333222635037368,
       "pred_analytic_gauss_tv": 0.19806763545383932,
       "pred_openloop_cal": 0.13105261325836182,
@@ -11696,10 +11703,11 @@
    },
    {
     "x": 2.0,
+    "bpc": 7.150952631550152,
     "streams": {
      "l0.qkv_in": {
       "theta": 2.5019009282854574,
-      "measured": 0.025930404663085938,
+      "measured": 0.02592198988970588,
       "pred_analytic_emp_tv": 0.1191987644374646,
       "pred_analytic_gauss_tv": 0.1205872818560334,
       "pred_openloop_cal": 0.02646780014038086,
@@ -11707,7 +11715,7 @@
      },
      "l0.out_in": {
       "theta": 0.2774630704542928,
-      "measured": 0.0269012451171875,
+      "measured": 0.026895680147058825,
       "pred_analytic_emp_tv": 0.0945433053657558,
       "pred_analytic_gauss_tv": 0.12479952956360049,
       "pred_openloop_cal": 0.09037256240844727,
@@ -11715,7 +11723,7 @@
      },
      "l0.fc1_in": {
       "theta": 1.6387434189246424,
-      "measured": 0.15285634994506836,
+      "measured": 0.15328967524509804,
       "pred_analytic_emp_tv": 0.11939302013999267,
       "pred_analytic_gauss_tv": 0.12035141453548748,
       "pred_openloop_cal": 0.04819345474243164,
@@ -11723,7 +11731,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.4370157397523472,
-      "measured": 0.1434231996536255,
+      "measured": 0.1437783633961397,
       "pred_analytic_emp_tv": 0.08438221476275884,
       "pred_analytic_gauss_tv": 0.12432706026067598,
       "pred_openloop_cal": 0.05942130088806152,
@@ -11731,7 +11739,7 @@
      },
      "l1.qkv_in": {
       "theta": 1.6577389413262824,
-      "measured": 0.1879100799560547,
+      "measured": 0.18837794883578432,
       "pred_analytic_emp_tv": 0.11874091819340726,
       "pred_analytic_gauss_tv": 0.12033184971470712,
       "pred_openloop_cal": 0.05296182632446289,
@@ -11739,7 +11747,7 @@
      },
      "l1.out_in": {
       "theta": 1.2191399421253353,
-      "measured": 0.1123652458190918,
+      "measured": 0.11274557674632353,
       "pred_analytic_emp_tv": 0.10943348452529303,
       "pred_analytic_gauss_tv": 0.12116839758488357,
       "pred_openloop_cal": 0.10164737701416016,
@@ -11747,7 +11755,7 @@
      },
      "l1.fc1_in": {
       "theta": 3.197702213583437,
-      "measured": 0.02773141860961914,
+      "measured": 0.027759267769607843,
       "pred_analytic_emp_tv": 0.11872163493156199,
       "pred_analytic_gauss_tv": 0.11987717638800185,
       "pred_openloop_cal": 0.06109619140625,
@@ -11755,7 +11763,7 @@
      },
      "l1.fc2_in": {
       "theta": 1.9712774544018994,
-      "measured": 0.02248847484588623,
+      "measured": 0.02252460554534314,
       "pred_analytic_emp_tv": 0.08289517366255297,
       "pred_analytic_gauss_tv": 0.12266116576287028,
       "pred_openloop_cal": 0.08872127532958984,
@@ -22979,10 +22987,11 @@
   "events": [
    {
     "x": 0.1,
+    "bpc": 2.356881204301085,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.12442242840607638,
-      "measured": 0.873253345489502,
+      "measured": 0.8733403224571078,
       "pred_analytic_emp_tv": 0.9163381972091915,
       "pred_analytic_gauss_tv": 0.9163381972091915,
       "pred_openloop_cal": 0.874631404876709,
@@ -22990,7 +22999,7 @@
      },
      "l0.out_in": {
       "theta": 0.015486511075170128,
-      "measured": 0.806391716003418,
+      "measured": 0.8063835592830882,
       "pred_analytic_emp_tv": 0.8958302980297506,
       "pred_analytic_gauss_tv": 0.8958302980297506,
       "pred_openloop_cal": 0.8046832084655762,
@@ -22998,7 +23007,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.08625720758568318,
-      "measured": 0.8936519622802734,
+      "measured": 0.8937136182598039,
       "pred_analytic_emp_tv": 0.9162420872582941,
       "pred_analytic_gauss_tv": 0.9162420872582941,
       "pred_openloop_cal": 0.8986115455627441,
@@ -23006,7 +23015,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.024567777467224827,
-      "measured": 0.7005578279495239,
+      "measured": 0.7005150888480393,
       "pred_analytic_emp_tv": 0.9053400425954222,
       "pred_analytic_gauss_tv": 0.9053400425954222,
       "pred_openloop_cal": 0.7029829025268555,
@@ -23014,7 +23023,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.0822352222615286,
-      "measured": 0.8959484100341797,
+      "measured": 0.8959563610600491,
       "pred_analytic_emp_tv": 0.9166353510513239,
       "pred_analytic_gauss_tv": 0.9166353510513239,
       "pred_openloop_cal": 0.9008641242980957,
@@ -23022,7 +23031,7 @@
      },
      "l1.out_in": {
       "theta": 0.05298471547344552,
-      "measured": 0.855158805847168,
+      "measured": 0.8551939721200981,
       "pred_analytic_emp_tv": 0.9099205578550595,
       "pred_analytic_gauss_tv": 0.9099205578550595,
       "pred_openloop_cal": 0.8592491149902344,
@@ -23030,7 +23039,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.1589492669070904,
-      "measured": 0.9073162078857422,
+      "measured": 0.9073567708333333,
       "pred_analytic_emp_tv": 0.9176096536560051,
       "pred_analytic_gauss_tv": 0.9176096536560051,
       "pred_openloop_cal": 0.9120707511901855,
@@ -23038,7 +23047,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.09316411328714058,
-      "measured": 0.5163657665252686,
+      "measured": 0.5163807588465074,
       "pred_analytic_emp_tv": 0.9111977190186396,
       "pred_analytic_gauss_tv": 0.9114079655299099,
       "pred_openloop_cal": 0.5175808668136597,
@@ -23048,10 +23057,11 @@
    },
    {
     "x": 0.2,
+    "bpc": 2.828476723041152,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.24884485681215276,
-      "measured": 0.8034048080444336,
+      "measured": 0.8034806793811274,
       "pred_analytic_emp_tv": 0.8341170937801404,
       "pred_analytic_gauss_tv": 0.8341170937801404,
       "pred_openloop_cal": 0.8043045997619629,
@@ -23059,7 +23069,7 @@
      },
      "l0.out_in": {
       "theta": 0.030973022150340257,
-      "measured": 0.6486959457397461,
+      "measured": 0.6486696729473039,
       "pred_analytic_emp_tv": 0.7983964353672715,
       "pred_analytic_gauss_tv": 0.7983964353672715,
       "pred_openloop_cal": 0.6495051383972168,
@@ -23067,7 +23077,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.17251441517136637,
-      "measured": 0.8078098297119141,
+      "measured": 0.8079604204963236,
       "pred_analytic_emp_tv": 0.8339361761406873,
       "pred_analytic_gauss_tv": 0.8339361761406873,
       "pred_openloop_cal": 0.8125753402709961,
@@ -23075,7 +23085,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.049135554934449654,
-      "measured": 0.5417520999908447,
+      "measured": 0.5417044845281863,
       "pred_analytic_emp_tv": 0.8125151138043738,
       "pred_analytic_gauss_tv": 0.815348203690293,
       "pred_openloop_cal": 0.5414927005767822,
@@ -23083,7 +23093,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.1644704445230572,
-      "measured": 0.8089427947998047,
+      "measured": 0.8090030445772058,
       "pred_analytic_emp_tv": 0.8345951809396637,
       "pred_analytic_gauss_tv": 0.8345951809396637,
       "pred_openloop_cal": 0.8144512176513672,
@@ -23091,7 +23101,7 @@
      },
      "l1.out_in": {
       "theta": 0.10596943094689104,
-      "measured": 0.7333779335021973,
+      "measured": 0.7334309895833333,
       "pred_analytic_emp_tv": 0.8230463978431406,
       "pred_analytic_gauss_tv": 0.8230463978431406,
       "pred_openloop_cal": 0.7437200546264648,
@@ -23099,7 +23109,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.3178985338141808,
-      "measured": 0.816399097442627,
+      "measured": 0.8164512484681372,
       "pred_analytic_emp_tv": 0.8362129761503801,
       "pred_analytic_gauss_tv": 0.8362129761503801,
       "pred_openloop_cal": 0.8285350799560547,
@@ -23107,7 +23117,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.18632822657428116,
-      "measured": 0.3309297561645508,
+      "measured": 0.3309564328661152,
       "pred_analytic_emp_tv": 0.8201832752235036,
       "pred_analytic_gauss_tv": 0.8255645538680157,
       "pred_openloop_cal": 0.3318740129470825,
@@ -23117,10 +23127,11 @@
    },
    {
     "x": 0.35,
+    "bpc": 3.8156899876799883,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.4354784994212673,
-      "measured": 0.6996054649353027,
+      "measured": 0.6996749578737745,
       "pred_analytic_emp_tv": 0.7186962809740114,
       "pred_analytic_gauss_tv": 0.7186962809740114,
       "pred_openloop_cal": 0.7002110481262207,
@@ -23128,7 +23139,7 @@
      },
      "l0.out_in": {
       "theta": 0.05420278876309545,
-      "measured": 0.4772014617919922,
+      "measured": 0.47709242876838237,
       "pred_analytic_emp_tv": 0.6546693157576178,
       "pred_analytic_gauss_tv": 0.6665893799699285,
       "pred_openloop_cal": 0.4898686408996582,
@@ -23136,7 +23147,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.3019002265498911,
-      "measured": 0.692202091217041,
+      "measured": 0.6923679725796569,
       "pred_analytic_emp_tv": 0.7183113069178149,
       "pred_analytic_gauss_tv": 0.7183113069178149,
       "pred_openloop_cal": 0.6997113227844238,
@@ -23144,7 +23155,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.08598722113528688,
-      "measured": 0.392814040184021,
+      "measured": 0.3927078546262255,
       "pred_analytic_emp_tv": 0.6786840126291012,
       "pred_analytic_gauss_tv": 0.6934989305369272,
       "pred_openloop_cal": 0.3809891939163208,
@@ -23152,7 +23163,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.28782327791535006,
-      "measured": 0.6967735290527344,
+      "measured": 0.6968338311887254,
       "pred_analytic_emp_tv": 0.7192147308987449,
       "pred_analytic_gauss_tv": 0.7192147308987449,
       "pred_openloop_cal": 0.6987347602844238,
@@ -23160,7 +23171,7 @@
      },
      "l1.out_in": {
       "theta": 0.18544650415705932,
-      "measured": 0.5741286277770996,
+      "measured": 0.5741263595281862,
       "pred_analytic_emp_tv": 0.7025306930731934,
       "pred_analytic_gauss_tv": 0.7028333269927,
       "pred_openloop_cal": 0.6060504913330078,
@@ -23168,7 +23179,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.5563224341748163,
-      "measured": 0.6865682601928711,
+      "measured": 0.6865669998468137,
       "pred_analytic_emp_tv": 0.7212757780922108,
       "pred_analytic_gauss_tv": 0.7212757780922108,
       "pred_openloop_cal": 0.7111492156982422,
@@ -23176,7 +23187,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.32607439650499204,
-      "measured": 0.28629744052886963,
+      "measured": 0.2863113702512255,
       "pred_analytic_emp_tv": 0.6778254920669724,
       "pred_analytic_gauss_tv": 0.7068645445118215,
       "pred_openloop_cal": 0.29162442684173584,
@@ -23186,10 +23197,11 @@
    },
    {
     "x": 0.5,
+    "bpc": 4.55005556289888,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.6221121420303819,
-      "measured": 0.5997343063354492,
+      "measured": 0.5997951133578432,
       "pred_analytic_emp_tv": 0.6132689101612683,
       "pred_analytic_gauss_tv": 0.6132689101612683,
       "pred_openloop_cal": 0.6008648872375488,
@@ -23197,7 +23209,7 @@
      },
      "l0.out_in": {
       "theta": 0.07743255537585064,
-      "measured": 0.36280250549316406,
+      "measured": 0.3627039292279412,
       "pred_analytic_emp_tv": 0.5074801765628588,
       "pred_analytic_gauss_tv": 0.5554509335504169,
       "pred_openloop_cal": 0.38840389251708984,
@@ -23205,7 +23217,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.4312860379284159,
-      "measured": 0.5812063217163086,
+      "measured": 0.5813983992034314,
       "pred_analytic_emp_tv": 0.6128103939957485,
       "pred_analytic_gauss_tv": 0.6128982047021673,
       "pred_openloop_cal": 0.5971980094909668,
@@ -23213,7 +23225,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.12283888733612412,
-      "measured": 0.30329644680023193,
+      "measured": 0.3031568340226716,
       "pred_analytic_emp_tv": 0.5403825969895684,
       "pred_analytic_gauss_tv": 0.5868114361890606,
       "pred_openloop_cal": 0.2785249948501587,
@@ -23221,7 +23233,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.411176111307643,
-      "measured": 0.5942387580871582,
+      "measured": 0.5943483838848039,
       "pred_analytic_emp_tv": 0.613851347055131,
       "pred_analytic_gauss_tv": 0.6138984963363125,
       "pred_openloop_cal": 0.5955066680908203,
@@ -23229,7 +23241,7 @@
      },
      "l1.out_in": {
       "theta": 0.2649235773672276,
-      "measured": 0.4461221694946289,
+      "measured": 0.4460458792892157,
       "pred_analytic_emp_tv": 0.5895739310495274,
       "pred_analytic_gauss_tv": 0.5974485108827281,
       "pred_openloop_cal": 0.5010371208190918,
@@ -23237,7 +23249,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.794746334535452,
-      "measured": 0.5635285377502441,
+      "measured": 0.5634890088848039,
       "pred_analytic_emp_tv": 0.6160073532493497,
       "pred_analytic_gauss_tv": 0.6160073532493497,
       "pred_openloop_cal": 0.603248119354248,
@@ -23245,7 +23257,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.4658205664357029,
-      "measured": 0.24737977981567383,
+      "measured": 0.24737345377604167,
       "pred_analytic_emp_tv": 0.5341457985201401,
       "pred_analytic_gauss_tv": 0.6010879648463483,
       "pred_openloop_cal": 0.25938093662261963,
@@ -23255,10 +23267,11 @@
    },
    {
     "x": 0.75,
+    "bpc": 5.400617088589606,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.9331682130455728,
-      "measured": 0.4489407539367676,
+      "measured": 0.44898849188112744,
       "pred_analytic_emp_tv": 0.46570719824478646,
       "pred_analytic_gauss_tv": 0.4696770345641224,
       "pred_openloop_cal": 0.44913148880004883,
@@ -23266,7 +23279,7 @@
      },
      "l0.out_in": {
       "theta": 0.11614883306377596,
-      "measured": 0.24053525924682617,
+      "measured": 0.24048952588848038,
       "pred_analytic_emp_tv": 0.348462915047839,
       "pred_analytic_gauss_tv": 0.40986057466830583,
       "pred_openloop_cal": 0.2839241027832031,
@@ -23274,7 +23287,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.6469290568926238,
-      "measured": 0.4218931198120117,
+      "measured": 0.42219621246936273,
       "pred_analytic_emp_tv": 0.4649781845746297,
       "pred_analytic_gauss_tv": 0.467906636925818,
       "pred_openloop_cal": 0.446136474609375,
@@ -23282,7 +23295,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.18425833100418618,
-      "measured": 0.21697914600372314,
+      "measured": 0.21689871993719362,
       "pred_analytic_emp_tv": 0.3477887894683197,
       "pred_analytic_gauss_tv": 0.44380662958617156,
       "pred_openloop_cal": 0.18586528301239014,
@@ -23290,7 +23303,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.6167641669614645,
-      "measured": 0.44757509231567383,
+      "measured": 0.4477859796262255,
       "pred_analytic_emp_tv": 0.46643141544172145,
       "pred_analytic_gauss_tv": 0.4693268279755881,
       "pred_openloop_cal": 0.4432954788208008,
@@ -23298,7 +23311,7 @@
      },
      "l1.out_in": {
       "theta": 0.3973853660508414,
-      "measured": 0.2836289405822754,
+      "measured": 0.2838278377757353,
       "pred_analytic_emp_tv": 0.4276013330528681,
       "pred_analytic_gauss_tv": 0.45078061449366946,
       "pred_openloop_cal": 0.37361669540405273,
@@ -23306,7 +23319,7 @@
      },
      "l1.fc1_in": {
       "theta": 1.192119501803178,
-      "measured": 0.38885068893432617,
+      "measured": 0.38875804227941174,
       "pred_analytic_emp_tv": 0.47094766056706716,
       "pred_analytic_gauss_tv": 0.4728989653521396,
       "pred_openloop_cal": 0.44827795028686523,
@@ -23314,7 +23327,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.6987308496535544,
-      "measured": 0.18991577625274658,
+      "measured": 0.18993877336090687,
       "pred_analytic_emp_tv": 0.3374714476819948,
       "pred_analytic_gauss_tv": 0.45541000076990695,
       "pred_openloop_cal": 0.2158966064453125,
@@ -23324,10 +23337,11 @@
    },
    {
     "x": 1.0,
+    "bpc": 6.005242735615914,
     "streams": {
      "l0.qkv_in": {
       "theta": 1.2442242840607638,
-      "measured": 0.3192291259765625,
+      "measured": 0.319287109375,
       "pred_analytic_emp_tv": 0.3444388346210038,
       "pred_analytic_gauss_tv": 0.3485607308762516,
       "pred_openloop_cal": 0.3199019432067871,
@@ -23335,7 +23349,7 @@
      },
      "l0.out_in": {
       "theta": 0.15486511075170128,
-      "measured": 0.16621637344360352,
+      "measured": 0.16619609757965687,
       "pred_analytic_emp_tv": 0.25993133189081674,
       "pred_analytic_gauss_tv": 0.31067869302321316,
       "pred_openloop_cal": 0.22065496444702148,
@@ -23343,7 +23357,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.8625720758568318,
-      "measured": 0.2907381057739258,
+      "measured": 0.29110897288602944,
       "pred_analytic_emp_tv": 0.3450109525918801,
       "pred_analytic_gauss_tv": 0.3484202406493395,
       "pred_openloop_cal": 0.3201146125793457,
@@ -23351,7 +23365,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.24567777467224824,
-      "measured": 0.16642999649047852,
+      "measured": 0.1664645325903799,
       "pred_analytic_emp_tv": 0.23989117942575455,
       "pred_analytic_gauss_tv": 0.33535471258684113,
       "pred_openloop_cal": 0.14629137516021729,
@@ -23359,7 +23373,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.822352222615286,
-      "measured": 0.3236122131347656,
+      "measured": 0.323892271752451,
       "pred_analytic_emp_tv": 0.34436194516926344,
       "pred_analytic_gauss_tv": 0.3489821584305937,
       "pred_openloop_cal": 0.31702756881713867,
@@ -23367,7 +23381,7 @@
      },
      "l1.out_in": {
       "theta": 0.5298471547344552,
-      "measured": 0.17520999908447266,
+      "measured": 0.17538918887867647,
       "pred_analytic_emp_tv": 0.31362200927133843,
       "pred_analytic_gauss_tv": 0.34047937237936987,
       "pred_openloop_cal": 0.28524351119995117,
@@ -23375,7 +23389,7 @@
      },
      "l1.fc1_in": {
       "theta": 1.589492669070904,
-      "measured": 0.25217390060424805,
+      "measured": 0.2520550896139706,
       "pred_analytic_emp_tv": 0.34720015731132026,
       "pred_analytic_gauss_tv": 0.3504204136406712,
       "pred_openloop_cal": 0.32270383834838867,
@@ -23383,7 +23397,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.9316411328714058,
-      "measured": 0.1362769603729248,
+      "measured": 0.13625021541819854,
       "pred_analytic_emp_tv": 0.2287412830755921,
       "pred_analytic_gauss_tv": 0.3435922812517375,
       "pred_openloop_cal": 0.18100059032440186,
@@ -23393,10 +23407,11 @@
    },
    {
     "x": 1.5,
+    "bpc": 6.917060353960353,
     "streams": {
      "l0.qkv_in": {
       "theta": 1.8663364260911457,
-      "measured": 0.1235957145690918,
+      "measured": 0.1236007391237745,
       "pred_analytic_emp_tv": 0.1955305923242937,
       "pred_analytic_gauss_tv": 0.1979422645151233,
       "pred_openloop_cal": 0.12371110916137695,
@@ -23404,7 +23419,7 @@
      },
      "l0.out_in": {
       "theta": 0.23229766612755193,
-      "measured": 0.0699758529663086,
+      "measured": 0.06991325827205883,
       "pred_analytic_emp_tv": 0.16086308872763322,
       "pred_analytic_gauss_tv": 0.19157450132110304,
       "pred_openloop_cal": 0.14677190780639648,
@@ -23412,7 +23427,7 @@
      },
      "l0.fc1_in": {
       "theta": 1.2938581137852476,
-      "measured": 0.15633630752563477,
+      "measured": 0.15671195235906862,
       "pred_analytic_emp_tv": 0.19636891670208978,
       "pred_analytic_gauss_tv": 0.19815141967513794,
       "pred_openloop_cal": 0.1481022834777832,
@@ -23420,7 +23435,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.36851666200837235,
-      "measured": 0.11700570583343506,
+      "measured": 0.11724554323682598,
       "pred_analytic_emp_tv": 0.13631159155917566,
       "pred_analytic_gauss_tv": 0.19708599169974986,
       "pred_openloop_cal": 0.09530436992645264,
@@ -23428,7 +23443,7 @@
      },
      "l1.qkv_in": {
       "theta": 1.233528333922929,
-      "measured": 0.19348430633544922,
+      "measured": 0.1938601026348039,
       "pred_analytic_emp_tv": 0.19573258682549283,
       "pred_analytic_gauss_tv": 0.19818192976577942,
       "pred_openloop_cal": 0.14569473266601562,
@@ -23436,7 +23451,7 @@
      },
      "l1.out_in": {
       "theta": 0.7947707321016828,
-      "measured": 0.10552501678466797,
+      "measured": 0.10584118412990196,
       "pred_analytic_emp_tv": 0.17888539681911314,
       "pred_analytic_gauss_tv": 0.1983505889737602,
       "pred_openloop_cal": 0.17324352264404297,
@@ -23444,7 +23459,7 @@
      },
      "l1.fc1_in": {
       "theta": 2.384239003606356,
-      "measured": 0.08883523941040039,
+      "measured": 0.08880351945465687,
       "pred_analytic_emp_tv": 0.1964992888494621,
       "pred_analytic_gauss_tv": 0.1983134178078664,
       "pred_openloop_cal": 0.15524578094482422,
@@ -23452,7 +23467,7 @@
      },
      "l1.fc2_in": {
       "theta": 1.3974616993071087,
-      "measured": 0.0578913688659668,
+      "measured": 0.05789064893535539,
       "pred_analytic_emp_tv": 0.1291445354097669,
       "pred_analytic_gauss_tv": 0.19814012867143338,
       "pred_openloop_cal": 0.12662601470947266,
@@ -23462,10 +23477,11 @@
    },
    {
     "x": 2.0,
+    "bpc": 7.276828109577848,
     "streams": {
      "l0.qkv_in": {
       "theta": 2.4884485681215276,
-      "measured": 0.027360916137695312,
+      "measured": 0.027353802849264707,
       "pred_analytic_emp_tv": 0.11913670447851002,
       "pred_analytic_gauss_tv": 0.12057821768422301,
       "pred_openloop_cal": 0.027326583862304688,
@@ -23473,7 +23489,7 @@
      },
      "l0.out_in": {
       "theta": 0.30973022150340257,
-      "measured": 0.017433643341064453,
+      "measured": 0.017429247089460784,
       "pred_analytic_emp_tv": 0.10601767510453167,
       "pred_analytic_gauss_tv": 0.12647038352155499,
       "pred_openloop_cal": 0.10598182678222656,
@@ -23481,7 +23497,7 @@
      },
      "l0.fc1_in": {
       "theta": 1.7251441517136636,
-      "measured": 0.1365828514099121,
+      "measured": 0.1369284237132353,
       "pred_analytic_emp_tv": 0.11956169356976457,
       "pred_analytic_gauss_tv": 0.12060621831534714,
       "pred_openloop_cal": 0.05334329605102539,
@@ -23489,7 +23505,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.4913555493444965,
-      "measured": 0.1326603889465332,
+      "measured": 0.1329940496706495,
       "pred_analytic_emp_tv": 0.08584372541964197,
       "pred_analytic_gauss_tv": 0.1238120099424684,
       "pred_openloop_cal": 0.06505489349365234,
@@ -23497,7 +23513,7 @@
      },
      "l1.qkv_in": {
       "theta": 1.644704445230572,
-      "measured": 0.17568492889404297,
+      "measured": 0.17607565487132354,
       "pred_analytic_emp_tv": 0.11897784581020034,
       "pred_analytic_gauss_tv": 0.12044079182042686,
       "pred_openloop_cal": 0.057141780853271484,
@@ -23505,7 +23521,7 @@
      },
      "l1.out_in": {
       "theta": 1.0596943094689104,
-      "measured": 0.11158275604248047,
+      "measured": 0.11193895526960784,
       "pred_analytic_emp_tv": 0.11150557914827502,
       "pred_analytic_gauss_tv": 0.1234920279408495,
       "pred_openloop_cal": 0.10829544067382812,
@@ -23513,7 +23529,7 @@
      },
      "l1.fc1_in": {
       "theta": 3.178985338141808,
-      "measured": 0.028756141662597656,
+      "measured": 0.02876263786764706,
       "pred_analytic_emp_tv": 0.11881275006887348,
       "pred_analytic_gauss_tv": 0.11990411302619577,
       "pred_openloop_cal": 0.061980247497558594,
@@ -23521,7 +23537,7 @@
      },
      "l1.fc2_in": {
       "theta": 1.8632822657428116,
-      "measured": 0.022969603538513184,
+      "measured": 0.023003432329963235,
       "pred_analytic_emp_tv": 0.08044207136577383,
       "pred_analytic_gauss_tv": 0.12269322317386638,
       "pred_openloop_cal": 0.08741700649261475,
@@ -34745,10 +34761,11 @@
   "events": [
    {
     "x": 0.1,
+    "bpc": 2.348390420827988,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.12185854732702467,
-      "measured": 0.8691716194152832,
+      "measured": 0.8692674823835784,
       "pred_analytic_emp_tv": 0.9158389975076504,
       "pred_analytic_gauss_tv": 0.9158389975076504,
       "pred_openloop_cal": 0.8707442283630371,
@@ -34756,7 +34773,7 @@
      },
      "l0.out_in": {
       "theta": 0.011862157858384384,
-      "measured": 0.7781057357788086,
+      "measured": 0.7780895756740196,
       "pred_analytic_emp_tv": 0.8987593519303121,
       "pred_analytic_gauss_tv": 0.8987593519303121,
       "pred_openloop_cal": 0.7762069702148438,
@@ -34764,7 +34781,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.0810407495828017,
-      "measured": 0.8861880302429199,
+      "measured": 0.8862749885110294,
       "pred_analytic_emp_tv": 0.9158137965402501,
       "pred_analytic_gauss_tv": 0.9158137965402501,
       "pred_openloop_cal": 0.8894515037536621,
@@ -34772,7 +34789,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.020297007335635404,
-      "measured": 0.6895166635513306,
+      "measured": 0.6894963283164829,
       "pred_analytic_emp_tv": 0.9032023290172796,
       "pred_analytic_gauss_tv": 0.9040685059832549,
       "pred_openloop_cal": 0.6921800374984741,
@@ -34780,7 +34797,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.08185388049567238,
-      "measured": 0.8913846015930176,
+      "measured": 0.8914234834558824,
       "pred_analytic_emp_tv": 0.9163784948817504,
       "pred_analytic_gauss_tv": 0.9163784948817504,
       "pred_openloop_cal": 0.894991397857666,
@@ -34788,7 +34805,7 @@
      },
      "l1.out_in": {
       "theta": 0.056777481856168766,
-      "measured": 0.8620986938476562,
+      "measured": 0.8621151194852941,
       "pred_analytic_emp_tv": 0.9157288668446473,
       "pred_analytic_gauss_tv": 0.9157288668446473,
       "pred_openloop_cal": 0.8687434196472168,
@@ -34796,7 +34813,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.1592589054887489,
-      "measured": 0.908658504486084,
+      "measured": 0.9086617264093138,
       "pred_analytic_emp_tv": 0.9176355925619075,
       "pred_analytic_gauss_tv": 0.9176355925619075,
       "pred_openloop_cal": 0.912775993347168,
@@ -34804,7 +34821,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.09971744293701335,
-      "measured": 0.5229150056838989,
+      "measured": 0.5229501761642157,
       "pred_analytic_emp_tv": 0.9101430858234864,
       "pred_analytic_gauss_tv": 0.9108816910941782,
       "pred_openloop_cal": 0.5236927270889282,
@@ -34814,10 +34831,11 @@
    },
    {
     "x": 0.2,
+    "bpc": 2.667040736259854,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.24371709465404934,
-      "measured": 0.7969574928283691,
+      "measured": 0.7970573874080882,
       "pred_analytic_emp_tv": 0.8332878778388003,
       "pred_analytic_gauss_tv": 0.8332878778388003,
       "pred_openloop_cal": 0.7992801666259766,
@@ -34825,7 +34843,7 @@
      },
      "l0.out_in": {
       "theta": 0.02372431571676877,
-      "measured": 0.638390064239502,
+      "measured": 0.638366938572304,
       "pred_analytic_emp_tv": 0.7952312499610998,
       "pred_analytic_gauss_tv": 0.8033329400077543,
       "pred_openloop_cal": 0.6326813697814941,
@@ -34833,7 +34851,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.1620814991656034,
-      "measured": 0.8030548095703125,
+      "measured": 0.803195369944853,
       "pred_analytic_emp_tv": 0.8332293306203957,
       "pred_analytic_gauss_tv": 0.8332293306203957,
       "pred_openloop_cal": 0.8068699836730957,
@@ -34841,7 +34859,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.04059401467127081,
-      "measured": 0.5327613353729248,
+      "measured": 0.5327016793045343,
       "pred_analytic_emp_tv": 0.8089807862249956,
       "pred_analytic_gauss_tv": 0.8132549009585572,
       "pred_openloop_cal": 0.5343942642211914,
@@ -34849,7 +34867,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.16370776099134476,
-      "measured": 0.8066229820251465,
+      "measured": 0.8066884957107843,
       "pred_analytic_emp_tv": 0.8341740921557951,
       "pred_analytic_gauss_tv": 0.8341740921557951,
       "pred_openloop_cal": 0.8113245964050293,
@@ -34857,7 +34875,7 @@
      },
      "l1.out_in": {
       "theta": 0.11355496371233753,
-      "measured": 0.7478442192077637,
+      "measured": 0.7478702320772059,
       "pred_analytic_emp_tv": 0.8331238693605427,
       "pred_analytic_gauss_tv": 0.8331238693605427,
       "pred_openloop_cal": 0.7604165077209473,
@@ -34865,7 +34883,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.3185178109774978,
-      "measured": 0.8200149536132812,
+      "measured": 0.8200123506433824,
       "pred_analytic_emp_tv": 0.8362551091928494,
       "pred_analytic_gauss_tv": 0.8362551091928494,
       "pred_openloop_cal": 0.8296051025390625,
@@ -34873,7 +34891,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.1994348858740267,
-      "measured": 0.34784364700317383,
+      "measured": 0.34786029890471815,
       "pred_analytic_emp_tv": 0.8203700124319707,
       "pred_analytic_gauss_tv": 0.8247672106526156,
       "pred_openloop_cal": 0.34976744651794434,
@@ -34883,10 +34901,11 @@
    },
    {
     "x": 0.35,
+    "bpc": 3.689464352975135,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.42650491564458626,
-      "measured": 0.6941356658935547,
+      "measured": 0.6942224839154412,
       "pred_analytic_emp_tv": 0.7175460404782681,
       "pred_analytic_gauss_tv": 0.7175460404782681,
       "pred_openloop_cal": 0.6963047981262207,
@@ -34894,7 +34913,7 @@
      },
      "l0.out_in": {
       "theta": 0.04151755250434534,
-      "measured": 0.49629688262939453,
+      "measured": 0.4962703929227941,
       "pred_analytic_emp_tv": 0.6364978301172624,
       "pred_analytic_gauss_tv": 0.6779517705681548,
       "pred_openloop_cal": 0.48881053924560547,
@@ -34902,7 +34921,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.2836426235398059,
-      "measured": 0.6936674118041992,
+      "measured": 0.693856751685049,
       "pred_analytic_emp_tv": 0.7173353217722251,
       "pred_analytic_gauss_tv": 0.7173353217722251,
       "pred_openloop_cal": 0.6975278854370117,
@@ -34910,7 +34929,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.07103952567472391,
-      "measured": 0.38730287551879883,
+      "measured": 0.3872318043428309,
       "pred_analytic_emp_tv": 0.6715289906143515,
       "pred_analytic_gauss_tv": 0.6894134068062455,
       "pred_openloop_cal": 0.3798809051513672,
@@ -34918,7 +34937,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.2864885817348533,
-      "measured": 0.6950182914733887,
+      "measured": 0.6951545266544118,
       "pred_analytic_emp_tv": 0.7187449608015584,
       "pred_analytic_gauss_tv": 0.7187449608015584,
       "pred_openloop_cal": 0.697540283203125,
@@ -34926,7 +34945,7 @@
      },
      "l1.out_in": {
       "theta": 0.19872118649659068,
-      "measured": 0.5991401672363281,
+      "measured": 0.5991268382352941,
       "pred_analytic_emp_tv": 0.7175426146133428,
       "pred_analytic_gauss_tv": 0.7175426146133428,
       "pred_openloop_cal": 0.6273303031921387,
@@ -34934,7 +34953,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.5574061692106211,
-      "measured": 0.6933956146240234,
+      "measured": 0.6934120327818627,
       "pred_analytic_emp_tv": 0.7213036741301421,
       "pred_analytic_gauss_tv": 0.7213036741301421,
       "pred_openloop_cal": 0.7128381729125977,
@@ -34942,7 +34961,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.3490110502795467,
-      "measured": 0.29933714866638184,
+      "measured": 0.29936679017310047,
       "pred_analytic_emp_tv": 0.6822919173897589,
       "pred_analytic_gauss_tv": 0.7059713400780522,
       "pred_openloop_cal": 0.30727267265319824,
@@ -34952,10 +34971,11 @@
    },
    {
     "x": 0.5,
+    "bpc": 4.391182117615438,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.6092927366351233,
-      "measured": 0.5929813385009766,
+      "measured": 0.5930750229779411,
       "pred_analytic_emp_tv": 0.6121079851912344,
       "pred_analytic_gauss_tv": 0.6122425843632298,
       "pred_openloop_cal": 0.5952491760253906,
@@ -34963,7 +34983,7 @@
      },
      "l0.out_in": {
       "theta": 0.05931078929192192,
-      "measured": 0.40323925018310547,
+      "measured": 0.4032638250612745,
       "pred_analytic_emp_tv": 0.5310534068201743,
       "pred_analytic_gauss_tv": 0.5699115808637074,
       "pred_openloop_cal": 0.39316511154174805,
@@ -34971,7 +34991,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.4052037479140085,
-      "measured": 0.5912742614746094,
+      "measured": 0.5915824142156862,
       "pred_analytic_emp_tv": 0.611827174894475,
       "pred_analytic_gauss_tv": 0.6120119871507503,
       "pred_openloop_cal": 0.5959663391113281,
@@ -34979,7 +34999,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.10148503667817702,
-      "measured": 0.299643874168396,
+      "measured": 0.2995731129365809,
       "pred_analytic_emp_tv": 0.5244453901535282,
       "pred_analytic_gauss_tv": 0.5816464277672342,
       "pred_openloop_cal": 0.2819710969924927,
@@ -34987,7 +35007,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.4092694024783619,
-      "measured": 0.5951333045959473,
+      "measured": 0.5952967026654412,
       "pred_analytic_emp_tv": 0.6131895494413822,
       "pred_analytic_gauss_tv": 0.6131895494413822,
       "pred_openloop_cal": 0.595766544342041,
@@ -34995,7 +35015,7 @@
      },
      "l1.out_in": {
       "theta": 0.2838874092808438,
-      "measured": 0.4617800712585449,
+      "measured": 0.46193273207720587,
       "pred_analytic_emp_tv": 0.6120130141503493,
       "pred_analytic_gauss_tv": 0.6120130141503493,
       "pred_openloop_cal": 0.5212926864624023,
@@ -35003,7 +35023,7 @@
      },
      "l1.fc1_in": {
       "theta": 0.7962945274437445,
-      "measured": 0.5763702392578125,
+      "measured": 0.5764131433823529,
       "pred_analytic_emp_tv": 0.6160780615602185,
       "pred_analytic_gauss_tv": 0.6160780615602185,
       "pred_openloop_cal": 0.6068124771118164,
@@ -35011,7 +35031,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.4985872146850667,
-      "measured": 0.2586069107055664,
+      "measured": 0.25863599590226716,
       "pred_analytic_emp_tv": 0.5389432703598848,
       "pred_analytic_gauss_tv": 0.6005433536411279,
       "pred_openloop_cal": 0.27321290969848633,
@@ -35021,10 +35041,11 @@
    },
    {
     "x": 0.75,
+    "bpc": 5.356663482508599,
     "streams": {
      "l0.qkv_in": {
       "theta": 0.9139391049526849,
-      "measured": 0.44463491439819336,
+      "measured": 0.4447485830269608,
       "pred_analytic_emp_tv": 0.462944516855083,
       "pred_analytic_gauss_tv": 0.4669715015971313,
       "pred_openloop_cal": 0.44526100158691406,
@@ -35032,7 +35053,7 @@
      },
      "l0.out_in": {
       "theta": 0.08896618393788289,
-      "measured": 0.3095426559448242,
+      "measured": 0.3094994638480392,
       "pred_analytic_emp_tv": 0.37820631960497214,
       "pred_analytic_gauss_tv": 0.4333470931123286,
       "pred_openloop_cal": 0.28793907165527344,
@@ -35040,7 +35061,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.6078056218710127,
-      "measured": 0.43430233001708984,
+      "measured": 0.43468280867034315,
       "pred_analytic_emp_tv": 0.4632245104351058,
       "pred_analytic_gauss_tv": 0.4663764411719653,
       "pred_openloop_cal": 0.44378137588500977,
@@ -35048,7 +35069,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.15222755501726554,
-      "measured": 0.22101199626922607,
+      "measured": 0.22096785003063726,
       "pred_analytic_emp_tv": 0.33380621297756746,
       "pred_analytic_gauss_tv": 0.4370403026418785,
       "pred_openloop_cal": 0.18716049194335938,
@@ -35056,7 +35077,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.6139041037175429,
-      "measured": 0.44829750061035156,
+      "measured": 0.44852989047181374,
       "pred_analytic_emp_tv": 0.4645610381421585,
       "pred_analytic_gauss_tv": 0.46759971060523187,
       "pred_openloop_cal": 0.44370222091674805,
@@ -35064,7 +35085,7 @@
      },
      "l1.out_in": {
       "theta": 0.4258311139212657,
-      "measured": 0.29688453674316406,
+      "measured": 0.297036803002451,
       "pred_analytic_emp_tv": 0.4431471114027089,
       "pred_analytic_gauss_tv": 0.467233106959873,
       "pred_openloop_cal": 0.3894948959350586,
@@ -35072,7 +35093,7 @@
      },
      "l1.fc1_in": {
       "theta": 1.1944417911656169,
-      "measured": 0.4008808135986328,
+      "measured": 0.40087172564338236,
       "pred_analytic_emp_tv": 0.47100822228926126,
       "pred_analytic_gauss_tv": 0.47229467058162566,
       "pred_openloop_cal": 0.45181989669799805,
@@ -35080,7 +35101,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.7478808220276001,
-      "measured": 0.19799399375915527,
+      "measured": 0.19805824429381128,
       "pred_analytic_emp_tv": 0.34604650962147904,
       "pred_analytic_gauss_tv": 0.4550713996770065,
       "pred_openloop_cal": 0.22692584991455078,
@@ -35090,10 +35111,11 @@
    },
    {
     "x": 1.0,
+    "bpc": 6.082568887166246,
     "streams": {
      "l0.qkv_in": {
       "theta": 1.2185854732702466,
-      "measured": 0.31824684143066406,
+      "measured": 0.3183220358455882,
       "pred_analytic_emp_tv": 0.3445558086405243,
       "pred_analytic_gauss_tv": 0.3492379173214458,
       "pred_openloop_cal": 0.31896495819091797,
@@ -35101,7 +35123,7 @@
      },
      "l0.out_in": {
       "theta": 0.11862157858384384,
-      "measured": 0.23921966552734375,
+      "measured": 0.23916398590686275,
       "pred_analytic_emp_tv": 0.2708752987449291,
       "pred_analytic_gauss_tv": 0.33254632458646305,
       "pred_openloop_cal": 0.22129297256469727,
@@ -35109,7 +35131,7 @@
      },
      "l0.fc1_in": {
       "theta": 0.810407495828017,
-      "measured": 0.29906654357910156,
+      "measured": 0.2994858685661765,
       "pred_analytic_emp_tv": 0.34502678290330435,
       "pred_analytic_gauss_tv": 0.34863021944819117,
       "pred_openloop_cal": 0.31830453872680664,
@@ -35117,7 +35139,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.20297007335635403,
-      "measured": 0.17454063892364502,
+      "measured": 0.17459238089767157,
       "pred_analytic_emp_tv": 0.23394961355630953,
       "pred_analytic_gauss_tv": 0.32787963194171527,
       "pred_openloop_cal": 0.13502776622772217,
@@ -35125,7 +35147,7 @@
      },
      "l1.qkv_in": {
       "theta": 0.8185388049567238,
-      "measured": 0.33202362060546875,
+      "measured": 0.3323797487745098,
       "pred_analytic_emp_tv": 0.34529163360672693,
       "pred_analytic_gauss_tv": 0.3493458294968119,
       "pred_openloop_cal": 0.316378116607666,
@@ -35133,7 +35155,7 @@
      },
      "l1.out_in": {
       "theta": 0.5677748185616877,
-      "measured": 0.18948125839233398,
+      "measured": 0.18982555912990196,
       "pred_analytic_emp_tv": 0.316264228077457,
       "pred_analytic_gauss_tv": 0.3482552737334736,
       "pred_openloop_cal": 0.2961869239807129,
@@ -35141,7 +35163,7 @@
      },
      "l1.fc1_in": {
       "theta": 1.592589054887489,
-      "measured": 0.26148223876953125,
+      "measured": 0.2614406211703431,
       "pred_analytic_emp_tv": 0.3485618611162431,
       "pred_analytic_gauss_tv": 0.3507928080734591,
       "pred_openloop_cal": 0.32561397552490234,
@@ -35149,7 +35171,7 @@
      },
      "l1.fc2_in": {
       "theta": 0.9971744293701335,
-      "measured": 0.13990819454193115,
+      "measured": 0.13994990330116422,
       "pred_analytic_emp_tv": 0.23482217417722634,
       "pred_analytic_gauss_tv": 0.34267589123535536,
       "pred_openloop_cal": 0.1892932653427124,
@@ -35159,10 +35181,11 @@
    },
    {
     "x": 1.5,
+    "bpc": 7.112378298822831,
     "streams": {
      "l0.qkv_in": {
       "theta": 1.8278782099053699,
-      "measured": 0.12808561325073242,
+      "measured": 0.1280828737745098,
       "pred_analytic_emp_tv": 0.1950707563580711,
       "pred_analytic_gauss_tv": 0.19792165941521359,
       "pred_openloop_cal": 0.12906122207641602,
@@ -35170,7 +35193,7 @@
      },
      "l0.out_in": {
       "theta": 0.17793236787576577,
-      "measured": 0.1155548095703125,
+      "measured": 0.11539617800245099,
       "pred_analytic_emp_tv": 0.15486500577107642,
       "pred_analytic_gauss_tv": 0.20079614467944057,
       "pred_openloop_cal": 0.14254188537597656,
@@ -35178,7 +35201,7 @@
      },
      "l0.fc1_in": {
       "theta": 1.2156112437420254,
-      "measured": 0.16489648818969727,
+      "measured": 0.1653430415134804,
       "pred_analytic_emp_tv": 0.19601762489404537,
       "pred_analytic_gauss_tv": 0.19815304113393947,
       "pred_openloop_cal": 0.14465999603271484,
@@ -35186,7 +35209,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.3044551100345311,
-      "measured": 0.11457443237304688,
+      "measured": 0.11480892405790441,
       "pred_analytic_emp_tv": 0.13368443478640113,
       "pred_analytic_gauss_tv": 0.19400920947597106,
       "pred_openloop_cal": 0.08557093143463135,
@@ -35194,7 +35217,7 @@
      },
      "l1.qkv_in": {
       "theta": 1.2278082074350858,
-      "measured": 0.19786548614501953,
+      "measured": 0.19832404641544119,
       "pred_analytic_emp_tv": 0.1958031614628037,
       "pred_analytic_gauss_tv": 0.19812024583070614,
       "pred_openloop_cal": 0.14513111114501953,
@@ -35202,7 +35225,7 @@
      },
      "l1.out_in": {
       "theta": 0.8516622278425314,
-      "measured": 0.1100459098815918,
+      "measured": 0.11035108379289216,
       "pred_analytic_emp_tv": 0.17847059452055652,
       "pred_analytic_gauss_tv": 0.19772882954254062,
       "pred_openloop_cal": 0.1768484115600586,
@@ -35210,7 +35233,7 @@
      },
      "l1.fc1_in": {
       "theta": 2.3888835823312338,
-      "measured": 0.09572982788085938,
+      "measured": 0.0956997740502451,
       "pred_analytic_emp_tv": 0.19711601479193464,
       "pred_analytic_gauss_tv": 0.19839255474768575,
       "pred_openloop_cal": 0.15707635879516602,
@@ -35218,7 +35241,7 @@
      },
      "l1.fc2_in": {
       "theta": 1.4957616440552002,
-      "measured": 0.05874645709991455,
+      "measured": 0.05877733417585784,
       "pred_analytic_emp_tv": 0.13227633907600989,
       "pred_analytic_gauss_tv": 0.19819287054216825,
       "pred_openloop_cal": 0.13087153434753418,
@@ -35228,10 +35251,11 @@
    },
    {
     "x": 2.0,
+    "bpc": 7.317141530870694,
     "streams": {
      "l0.qkv_in": {
       "theta": 2.437170946540493,
-      "measured": 0.02922344207763672,
+      "measured": 0.029216930912990196,
       "pred_analytic_emp_tv": 0.11904049472197786,
       "pred_analytic_gauss_tv": 0.12076035945548685,
       "pred_openloop_cal": 0.029073238372802734,
@@ -35239,7 +35263,7 @@
      },
      "l0.out_in": {
       "theta": 0.23724315716768768,
-      "measured": 0.026713848114013672,
+      "measured": 0.02662664675245098,
       "pred_analytic_emp_tv": 0.09855611183394763,
       "pred_analytic_gauss_tv": 0.12731303549929252,
       "pred_openloop_cal": 0.09871768951416016,
@@ -35247,7 +35271,7 @@
      },
      "l0.fc1_in": {
       "theta": 1.620814991656034,
-      "measured": 0.16015148162841797,
+      "measured": 0.1605478324142157,
       "pred_analytic_emp_tv": 0.11952348225286666,
       "pred_analytic_gauss_tv": 0.12080672449215933,
       "pred_openloop_cal": 0.05022144317626953,
@@ -35255,7 +35279,7 @@
      },
      "l0.fc2_in": {
       "theta": 0.40594014671270806,
-      "measured": 0.14202141761779785,
+      "measured": 0.14230909160539215,
       "pred_analytic_emp_tv": 0.08434727563051017,
       "pred_analytic_gauss_tv": 0.12318212447219495,
       "pred_openloop_cal": 0.05789530277252197,
@@ -35263,7 +35287,7 @@
      },
      "l1.qkv_in": {
       "theta": 1.6370776099134476,
-      "measured": 0.1969132423400879,
+      "measured": 0.19729961320465686,
       "pred_analytic_emp_tv": 0.11908228487793862,
       "pred_analytic_gauss_tv": 0.12047361977886353,
       "pred_openloop_cal": 0.05214738845825195,
@@ -35271,7 +35295,7 @@
      },
      "l1.out_in": {
       "theta": 1.1355496371233753,
-      "measured": 0.13465595245361328,
+      "measured": 0.13498726639093137,
       "pred_analytic_emp_tv": 0.10904781953321918,
       "pred_analytic_gauss_tv": 0.12075717763022523,
       "pred_openloop_cal": 0.10731935501098633,
@@ -35279,7 +35303,7 @@
      },
      "l1.fc1_in": {
       "theta": 3.185178109774978,
-      "measured": 0.03137683868408203,
+      "measured": 0.03137972962622549,
       "pred_analytic_emp_tv": 0.1191388185083216,
       "pred_analytic_gauss_tv": 0.11990783196357618,
       "pred_openloop_cal": 0.06323766708374023,
@@ -35287,7 +35311,7 @@
      },
      "l1.fc2_in": {
       "theta": 1.994348858740267,
-      "measured": 0.02557241916656494,
+      "measured": 0.025596110026041667,
       "pred_analytic_emp_tv": 0.08245492572217111,
       "pred_analytic_gauss_tv": 0.12286861844353503,
       "pred_openloop_cal": 0.08899915218353271,

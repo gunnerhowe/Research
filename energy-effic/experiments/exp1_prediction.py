@@ -283,9 +283,13 @@ def run_lm_task():
             model.set_thetas(theta)
             model.reset_event_counts()
             with torch.no_grad():
-                model(xev)
+                logits = model(xev[:, :-1])
+                nll = torch.nn.functional.cross_entropy(
+                    logits.reshape(-1, logits.shape[-1]),
+                    xev[:, 1:].reshape(-1))
+            bpc = float(nll.item() / np.log(2.0))
             stats = model.event_stats()
-            row = dict(x=x, streams={})
+            row = dict(x=x, bpc=bpc, streams={})
             for s in stats:
                 name = f"l{s['layer']}.{s['name']}_in"
                 th = x * sd[name]

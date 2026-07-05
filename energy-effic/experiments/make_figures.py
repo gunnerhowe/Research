@@ -321,6 +321,7 @@ def _seed_envelope(d, prefix, fracs):
 
 
 FAMILIES = [("posthoc", "post-hoc thresholding (base)", "k"),
+            ("plain", "plain fine-tune", "0.55"),
             ("budget_", "crossing budget (ours)", "C0"),
             ("l1delta_", "L1 on deltas", "C1"),
             ("rate_", "rate regularizer", "C2")]

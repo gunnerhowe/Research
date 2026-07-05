@@ -72,3 +72,9 @@ wrote E:\GitHub\Research\energy-effic\results\exp3_psmnist.json
   ep04 task=0.0612 reg=0.005217 val=0.9842 (3.4s)
 [psmnist s2] budget rho=0.35 dense acc 0.9805
   ep00 task=0.3744 reg=0.6147 val=0.9278 (3.7s)
+  ep01 task=0.2750 reg=0.05019 val=0.9434 (3.5s)
+  ep02 task=0.2157 reg=0.0322 val=0.9530 (3.4s)
+  ep03 task=0.1861 reg=0.02499 val=0.9582 (3.6s)
+  ep04 task=0.1743 reg=0.02248 val=0.9622 (3.5s)
+[psmnist s2] budget rho=0.2 dense acc 0.9521
+wrote E:\GitHub\Research\energy-effic\results\exp3_psmnist.json

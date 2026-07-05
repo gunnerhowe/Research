@@ -56,6 +56,15 @@ def run_task(task, seeds=SEEDS):
                                         weights_only=True))
         base.eval()
         arms = {}
+        # control-of-controls: PLAIN fine-tune (no regularizer) isolates the
+        # effect of 5 extra epochs from the regularizers' effects
+        model, hist = finetune_arm(base, None, 0.0, train_xy, val_gpu, seed)
+        front, sd = theta_sweep_front(model, xcal, xte_s, yte_s, in_size)
+        arms["plain"] = dict(lam=0.0, history=hist, front=front, sd=sd,
+                             dense_acc=evaluate_classifier(
+                                 model, xte_s.to(DEVICE), yte_s.to(DEVICE)))
+        log(f"[{task} s{seed}] plain ft dense acc "
+            f"{arms['plain']['dense_acc']:.4f}")
         for lam in L1_GRID:
             model, hist = finetune_arm(base, l1_reg, lam, train_xy, val_gpu,
                                        seed)
