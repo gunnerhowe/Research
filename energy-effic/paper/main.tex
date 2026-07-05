@@ -4,7 +4,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
-\usepackage{microtype}
+\usepackage[protrusion=true,expansion=false]{microtype}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{xcolor}
 \usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
@@ -147,9 +147,15 @@ video \citep{yousefzadeh2022delta}, to silicon
 \citep{gao2020edgedrnn,chen2024deltakws}, and to recent RF applications
 \citep{wu2025deltadpd}, and underlies sigma--delta quantized networks
 \citep{oconnor2017sigmadelta}. Thresholds are set by accuracy-vs-speedup
-sweeps throughout, and event counts are reported only after measurement. EGRU \citep{subramoney2023egru}
-trains activity-sparse GRUs with surrogate gradients through a hard
-threshold---spike-style training, not an analytic rate model.
+sweeps throughout, and event counts are reported only after measurement. A
+parallel \emph{training}-side line adds delta/activation-change penalties
+during training and reports temporal-sparsity gains---the Delta Activation
+Layer \citep{yousefzadeh2021training,yousefzadeh2022delta}, and EGRU
+\citep{subramoney2023egru}, which trains activity-sparse GRUs with surrogate
+gradients through a hard threshold. Our E3--E4 results speak directly to this
+line (\S\ref{sec:e3}): at matched, re-tuned event budgets we do not reproduce
+a training advantage, and \S\ref{sec:e3} explains why the fixed-threshold
+evaluations these methods use overstate it.
 
 \paragraph{Spiking transformers and spatial activation sparsity.}
 Spikformer \citep{zhou2023spikformer} and SpikeGPT \citep{zhu2023spikegpt}
@@ -549,6 +555,25 @@ this as a large win. On the matched-events front the same model is
 dominated by post-hoc thresholding of its own base. Fixed-$\theta$
 comparisons overstate what smoothness training buys.
 
+\paragraph{Reconciliation with the training-for-sparsity line.}
+This is not a contradiction of prior training results so much as a
+reinterpretation of how they are read. The Delta Activation Layer of
+\citet{yousefzadeh2021training} trains with an activation-change objective
+and reports an almost $3\times$ temporal-sparsity improvement; such gains are
+measured at a \emph{fixed} inference threshold (or fixed sparsification
+heuristic), which is precisely the matched-\emph{absolute}-$\theta$
+comparison that our scale-freeness analysis shows credits smoothness training
+with the \AbsThetaSavingPsMNIST{} apparent saving measured above---a
+saving that vanishes once the threshold is re-tuned per model (the
+matched-\emph{events} comparison, which is what deployment does). The
+actionable warning to our own subfield is therefore narrow and concrete:
+report event savings from a temporal-sparsity objective against a post-hoc
+baseline whose threshold is re-tuned to the same accuracy, not against the
+same model at a frozen threshold. Independently, the most recent
+temporal-sparsity work on large language models is training-\emph{free},
+thresholding a converged model post hoc \citep{qi2025deltallm}; the field's
+practice is already converging on the baseline our results endorse.
+
 \paragraph{Overhead.} The segment estimator's forward+backward adds a
 \emph{fixed} \EstimatorMs\,ms per layer per step (batch 256), independent of
 model width---it is an $O(NL)$ pass over trace points, not over parameters.
@@ -628,8 +653,9 @@ all energy numbers are model-based.
 \section{Reproducibility}
 Code, tests, experiment scripts, and every result JSON regenerate the
 paper: \url{https://github.com/gunnerhowe/Research} (directory
-\texttt{energy-effic}); archived at DOI: \texttt{10.5281/zenodo.XXXXXXX}
-(to be minted at submission). Environment: Python 3.13.6, PyTorch
+\texttt{energy-effic}); archived at DOI:
+\href{https://doi.org/10.5281/zenodo.21205335}{\texttt{10.5281/zenodo.21205335}}.
+Environment: Python 3.13.6, PyTorch
 2.7.1+cu118, single RTX~3080 (10\,GB), Windows~11; seeds 0--7 (SC2) / 0--2
 (psMNIST, enwik8); \texttt{python -m pytest tests/ -q} (14 tests) and
 \texttt{python experiments/exp\{0..4\}*.py} reproduce

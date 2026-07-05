@@ -31,9 +31,13 @@ Working plan per info.txt. Every deviation from the brief is recorded in the
 - [x] paper/main.tex compiled clean (12pp); **regenerate-and-diff PASS**
 - [x] Pre-submission arXiv sweep re-run — gap holds; DeltaDPD cited (see log)
 
-**PROJECT COMPLETE.** Remaining before Zenodo deposit: fill DOI slot in
-main.tex (\texttt{10.5281/zenodo.XXXXXXX}) at submission; tell atlas
-assistant to stamp the green card executed=negative (mechanism validated,
+**PROJECT COMPLETE.** DOI 10.5281/zenodo.21205335 wired into main.tex
+Reproducibility block (2026-07-05). Related-work engagement with the
+training-for-sparsity line added: DAL/Yousefzadeh 2021 (arXiv:2107.07305)
+engaged explicitly in E3-E4 (their fixed-threshold evaluation overstates
+gains by the AbsThetaSaving mechanism), DeltaLLM (arXiv:2507.19608) cited as
+training-free convergence evidence. Remaining: tell the atlas assistant to
+stamp the green card executed=negative (mechanism validated,
 prediction+allocation positive, budget-training negative with mechanism).
 
 ## Task/model choices (brief allows a pick)
