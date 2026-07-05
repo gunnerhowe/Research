@@ -1,0 +1,25 @@
+[psmnist s0] frac 0.6: uniform_x acc 0.9839 realized 0.588
+[psmnist s0] frac 0.45: uniform_x acc 0.9824 realized 0.440
+[psmnist s0] frac 0.3: uniform_x acc 0.9648 realized 0.290
+[psmnist s0] frac 0.2: uniform_x acc 0.4297 realized 0.144
+[psmnist s0] frac 0.12: uniform_x acc 0.3369 realized 0.073
+[psmnist s0] frac 0.07: uniform_x acc 0.1924 realized 0.033
+[psmnist s0] frac 0.04: uniform_x acc 0.2378 realized 0.009
+[psmnist s0] random search done
+[psmnist s1] frac 0.6: uniform_x acc 0.9844 realized 0.587
+[psmnist s1] frac 0.45: uniform_x acc 0.9844 realized 0.440
+[psmnist s1] frac 0.3: uniform_x acc 0.9658 realized 0.290
+[psmnist s1] frac 0.2: uniform_x acc 0.5186 realized 0.153
+[psmnist s1] frac 0.12: uniform_x acc 0.3652 realized 0.078
+[psmnist s1] frac 0.07: uniform_x acc 0.2090 realized 0.035
+[psmnist s1] frac 0.04: uniform_x acc 0.1108 realized 0.007
+[psmnist s1] random search done
+[psmnist s2] frac 0.6: uniform_x acc 0.9868 realized 0.589
+[psmnist s2] frac 0.45: uniform_x acc 0.9844 realized 0.439
+[psmnist s2] frac 0.3: uniform_x acc 0.9673 realized 0.290
+[psmnist s2] frac 0.2: uniform_x acc 0.5059 realized 0.148
+[psmnist s2] frac 0.12: uniform_x acc 0.3569 realized 0.073
+[psmnist s2] frac 0.07: uniform_x acc 0.1904 realized 0.032
+[psmnist s2] frac 0.04: uniform_x acc 0.1382 realized 0.009
+[psmnist s2] random search done
+wrote E:\GitHub\Research\energy-effic\results\exp2_psmnist.json

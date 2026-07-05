@@ -108,3 +108,11 @@ Working plan per info.txt. Every deviation from the brief is recorded in the
 - 2026-07-05: 35-class SC2 setup (all keywords) rather than the 12-class
   (10 + silence + unknown) variant, to avoid synthetic silence-clip
   generation; stated in the paper.
+- 2026-07-05: E5 (stretch) realized as an energy-per-decision table for SC2
+  keyword spotting (modeled energy, Horowitz constants, dense vs delta at
+  chosen operating points) computed from E2/E3 results — no new dataset, no
+  silicon claims. DVS demo dropped (E1-E4 land on two primaries + secondary).
+- 2026-07-05: enwik8 base LM retrained at 12k steps / lr 1e-3 / 20M-char
+  slice after the first 3k-step run underfit (3.43 bpc); final ~2.3-2.5 bpc
+  expected. Base GRU seeds extended to 8 on SC2 for the E3/E4 headline
+  (house rule 3); psMNIST stays 3 seeds; enwik8 3 seeds (secondary).

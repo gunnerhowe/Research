@@ -108,11 +108,14 @@ def run_task(task, seeds=SEEDS):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--task", default="all", choices=["all", "sc2", "psmnist"])
+    p.add_argument("--seeds", default=None,
+                   help="comma-separated; default 0-7 for sc2, 0-2 psmnist")
     args = p.parse_args()
-    if args.task in ("all", "sc2"):
-        run_task("sc2")
-    if args.task in ("all", "psmnist"):
-        run_task("psmnist")
+    for task, default_seeds in (("sc2", range(8)), ("psmnist", range(3))):
+        if args.task in ("all", task):
+            seeds = (tuple(int(s) for s in args.seeds.split(","))
+                     if args.seeds else tuple(default_seeds))
+            run_task(task, seeds)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,49 @@
+[enwik8 s0] l0.qkv_in: emp 0.019 rice 0.142 iid 0.131
+[enwik8 s0] l0.out_in: emp 0.081 rice 0.387 iid 3.584
+[enwik8 s0] l0.fc1_in: emp 0.026 rice 0.122 iid 0.247
+[enwik8 s0] l0.fc2_in: emp 0.037 rice 0.350 iid 0.548
+[enwik8 s0] l1.qkv_in: emp 0.026 rice 0.121 iid 0.275
+[enwik8 s0] l1.out_in: emp 0.042 rice 0.151 iid 0.879
+[enwik8 s0] l1.fc1_in: emp 0.027 rice 0.080 iid 0.223
+[enwik8 s0] l1.fc2_in: emp 0.031 rice 0.443 iid 0.596
+[enwik8 s0] x=0.1 l0.qkv meas 0.8750 pred 0.9162
+[enwik8 s0] x=0.2 l0.qkv meas 0.8055 pred 0.8338
+[enwik8 s0] x=0.35 l0.qkv meas 0.7023 pred 0.7183
+[enwik8 s0] x=0.5 l0.qkv meas 0.5996 pred 0.6129
+[enwik8 s0] x=0.75 l0.qkv meas 0.4471 pred 0.4655
+[enwik8 s0] x=1.0 l0.qkv meas 0.3149 pred 0.3452
+[enwik8 s0] x=1.5 l0.qkv meas 0.1228 pred 0.1956
+[enwik8 s0] x=2.0 l0.qkv meas 0.0259 pred 0.1192
+[enwik8 s1] l0.qkv_in: emp 0.017 rice 0.139 iid 0.137
+[enwik8 s1] l0.out_in: emp 0.071 rice 0.330 iid 3.272
+[enwik8 s1] l0.fc1_in: emp 0.023 rice 0.100 iid 0.232
+[enwik8 s1] l0.fc2_in: emp 0.030 rice 0.337 iid 0.504
+[enwik8 s1] l1.qkv_in: emp 0.025 rice 0.105 iid 0.232
+[enwik8 s1] l1.out_in: emp 0.038 rice 0.148 iid 1.021
+[enwik8 s1] l1.fc1_in: emp 0.029 rice 0.079 iid 0.217
+[enwik8 s1] l1.fc2_in: emp 0.030 rice 0.475 iid 0.626
+[enwik8 s1] x=0.1 l0.qkv meas 0.8733 pred 0.9163
+[enwik8 s1] x=0.2 l0.qkv meas 0.8034 pred 0.8341
+[enwik8 s1] x=0.35 l0.qkv meas 0.6996 pred 0.7187
+[enwik8 s1] x=0.5 l0.qkv meas 0.5997 pred 0.6133
+[enwik8 s1] x=0.75 l0.qkv meas 0.4489 pred 0.4657
+[enwik8 s1] x=1.0 l0.qkv meas 0.3192 pred 0.3444
+[enwik8 s1] x=1.5 l0.qkv meas 0.1236 pred 0.1955
+[enwik8 s1] x=2.0 l0.qkv meas 0.0274 pred 0.1191
+[enwik8 s2] l0.qkv_in: emp 0.019 rice 0.149 iid 0.139
+[enwik8 s2] l0.out_in: emp 0.079 rice 0.392 iid 3.925
+[enwik8 s2] l0.fc1_in: emp 0.027 rice 0.123 iid 0.250
+[enwik8 s2] l0.fc2_in: emp 0.037 rice 0.339 iid 0.534
+[enwik8 s2] l1.qkv_in: emp 0.028 rice 0.128 iid 0.264
+[enwik8 s2] l1.out_in: emp 0.035 rice 0.147 iid 0.991
+[enwik8 s2] l1.fc1_in: emp 0.028 rice 0.079 iid 0.217
+[enwik8 s2] l1.fc2_in: emp 0.029 rice 0.447 iid 0.601
+[enwik8 s2] x=0.1 l0.qkv meas 0.8692 pred 0.9158
+[enwik8 s2] x=0.2 l0.qkv meas 0.7970 pred 0.8333
+[enwik8 s2] x=0.35 l0.qkv meas 0.6941 pred 0.7175
+[enwik8 s2] x=0.5 l0.qkv meas 0.5930 pred 0.6121
+[enwik8 s2] x=0.75 l0.qkv meas 0.4446 pred 0.4629
+[enwik8 s2] x=1.0 l0.qkv meas 0.3182 pred 0.3446
+[enwik8 s2] x=1.5 l0.qkv meas 0.1281 pred 0.1951
+[enwik8 s2] x=2.0 l0.qkv meas 0.0292 pred 0.1190
+wrote E:\GitHub\Research\energy-effic\results\exp1_enwik8.json

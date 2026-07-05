@@ -1,0 +1,25 @@
+[sc2 s0] frac 0.6: uniform_x acc 0.9102 realized 0.599
+[sc2 s0] frac 0.45: uniform_x acc 0.9121 realized 0.448
+[sc2 s0] frac 0.3: uniform_x acc 0.9072 realized 0.295
+[sc2 s0] frac 0.2: uniform_x acc 0.9033 realized 0.192
+[sc2 s0] frac 0.12: uniform_x acc 0.8716 realized 0.110
+[sc2 s0] frac 0.07: uniform_x acc 0.7720 realized 0.061
+[sc2 s0] frac 0.04: uniform_x acc 0.5410 realized 0.030
+[sc2 s0] random search done
+[sc2 s1] frac 0.6: uniform_x acc 0.9160 realized 0.600
+[sc2 s1] frac 0.45: uniform_x acc 0.9165 realized 0.449
+[sc2 s1] frac 0.3: uniform_x acc 0.9136 realized 0.295
+[sc2 s1] frac 0.2: uniform_x acc 0.9048 realized 0.191
+[sc2 s1] frac 0.12: uniform_x acc 0.8726 realized 0.110
+[sc2 s1] frac 0.07: uniform_x acc 0.7822 realized 0.061
+[sc2 s1] frac 0.04: uniform_x acc 0.5415 realized 0.030
+[sc2 s1] random search done
+[sc2 s2] frac 0.6: uniform_x acc 0.9106 realized 0.601
+[sc2 s2] frac 0.45: uniform_x acc 0.9136 realized 0.450
+[sc2 s2] frac 0.3: uniform_x acc 0.9136 realized 0.297
+[sc2 s2] frac 0.2: uniform_x acc 0.9062 realized 0.193
+[sc2 s2] frac 0.12: uniform_x acc 0.8716 realized 0.111
+[sc2 s2] frac 0.07: uniform_x acc 0.7847 realized 0.061
+[sc2 s2] frac 0.04: uniform_x acc 0.5317 realized 0.031
+[sc2 s2] random search done
+wrote E:\GitHub\Research\energy-effic\results\exp2_sc2.json

@@ -1,0 +1,21 @@
+{
+ "sc2": {
+  "empirical_median": 0.030915966257452965,
+  "empirical_max": 0.07534018158912659,
+  "rice_median": 0.36346755262160263,
+  "passed": true
+ },
+ "psmnist": {
+  "empirical_median": 0.018096592277288437,
+  "empirical_max": 0.026740144938230515,
+  "rice_median": 0.3327942068815147,
+  "passed": true
+ },
+ "enwik8": {
+  "empirical_median": 0.029010879807174206,
+  "empirical_max": 0.08064521849155426,
+  "rice_median": 0.14717538691968268,
+  "passed": true
+ },
+ "passed": true
+}
