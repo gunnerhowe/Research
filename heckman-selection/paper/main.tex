@@ -197,6 +197,20 @@ learning \citep{elkan2008,bekker2020} concerns missing labels for a
 binary class under (usually) selected-completely-at-random assumptions,
 not the MNAR sampling of $(x, y)$ pairs.
 
+\paragraph{Flexible-ML selection models.} Closest in spirit is a recent
+line that fits Heckman/Tobit selection models with flexible ML rather than
+linear equations: \citet{oneill2025tobart} give a Type-2 Tobit sample-
+selection model with Bayesian additive regression trees, a Dirichlet-
+process-mixture error model that relaxes bivariate normality, and
+individual credible intervals. It is the nearest prior work and we
+distinguish it precisely: it is a tree ensemble (not a deep net), targets
+econometric estimation and treatment effects (not epistemic uncertainty
+under distribution shift), and does not study the selected-vs-well-sampled
+region split or the importance-weighting failure that is our headline. Our
+contribution is orthogonal --- selection-corrected \emph{epistemic UQ} with
+deep feature maps --- and complementary: their non-normal error model is a
+natural way to relax our Gaussian assumption (\S\ref{sec:e2}).
+
 \paragraph{Deep uncertainty.} Deep ensembles
 \citep{lakshminarayanan2017}, MC dropout \citep{gal2016}, GPs
 \citep{rasmussen2006}, and quantile-calibration metrics
@@ -205,11 +219,12 @@ not the MNAR sampling of $(x, y)$ pairs.
 --- after a kill-test against a 3M-abstract index and an adversarial web
 sweep (2026-07-04, re-swept before submission; \S\ref{sec:repro}) --- no
 deep-learning instantiation of selection-corrected epistemic UQ exists;
-the nearest lines are the four above, and we claim exactly the gap
-between them: \emph{when the sampling of training points is correlated
-with unobserved determinants of the outcome, importance weighting cannot
-fix the bias even with oracle propensities; a joint selection/outcome
-error model can, given an instrument.}
+the nearest lines are those above plus the flexible-ML Tobit work just
+cited, and we claim exactly the gap between them: \emph{when the sampling
+of training points is correlated with unobserved determinants of the
+outcome, importance weighting cannot fix the bias even with oracle
+propensities; a joint selection/outcome error model can, given an
+instrument.}
 
 \section{Method: Heckman-corrected predictive distributions}
 \label{sec:method}
@@ -375,8 +390,8 @@ $\hat\rho = \RhoHatHi \pm \RhoHatHiSD$ (true $0.9$) and coverage
 absorbs the correction and $\hat\rho$ collapses toward $0$ (we observed
 $\hat\rho \to 0.16$ at true $0.8$ in tuning). The two-step needs no such
 schedule --- its hard separation of the probit fit from the outcome fit
-is inherently robust --- and is $\sim$30\% cheaper, so we recommend it as
-the default and report both throughout.
+is inherently robust --- so we recommend it as the default and report both
+throughout.
 
 \section{A-E2/E3: semi-real tabular MNAR}
 \label{sec:e2}

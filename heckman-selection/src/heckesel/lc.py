@@ -33,12 +33,17 @@ Estimators:
                         MAR-correct usage;
     'survivor_naive'    survivors only, no correction (the common practice:
                         train the extrapolator on completed runs);
-    'survivor_heckman'  survivors only WITH the selection correction
-                        - n * log P_psi(survive all rungs): the
-                        Heckman-type joint selection+outcome likelihood.
-                        P_psi(survive) is a smooth low-dimensional integral
-                        estimated by fixed common-random-number MC over the
-                        prior (well-behaved, unlike the data marginal).
+    'survivor_heckman'  survivors only WITH a population-level survival
+                        normalizer - n * log P_psi(survive all rungs) added
+                        to the marginal likelihood, i.e. the population-
+                        conditional form prod_i p(D_i) / P(survive)^n. This
+                        is NOT the full per-curve conditional likelihood
+                        (which would also weight each curve's data integral
+                        by its own survival probability); the population
+                        normalizer suffices for recovering mu. P_psi(survive)
+                        is a smooth low-dimensional integral estimated by
+                        fixed common-random-number MC over the prior
+                        (well-behaved, unlike the data marginal).
   Predictions are closed-form posterior shrinkage: phi_i | phi_hat_i ~
   N(m_i, C_i) with C_i = (Sigma^-1 + V_i^-1)^-1; the predicted final is
   the posterior mean of y_T(phi) by small-sample MC from that Gaussian.

@@ -80,12 +80,20 @@ if e1:
     rows = e1["rows"]
     sig0 = 0.01
 
-    def pop(key):
-        v = [r["pop"][key] for r in rows if r["sigma"] == sig0]
+    def pop(key, sigma=sig0):
+        v = [r["pop"][key] for r in rows if r["sigma"] == sigma]
         return float(np.mean(v)), float(np.std(v))
 
     setm("PopTrueMuA", num(rows[0]["pop"]["true_mu_a"], 3))
     setm("PopTrueSdA", num(rows[0]["pop"]["true_sd_a"], 3))
+    # overshoot triplet: multi-bracket Heckman mu_a vs noise (all sourced)
+    sig_avail = sorted({r["sigma"] for r in rows})
+    for s, tex in ((0.005, "Lo"), (0.01, "Med"), (0.02, "Hi")):
+        if any(abs(s - x) < 1e-9 for x in sig_avail):
+            m, _ = pop("eb_surv_heck_mb_mu_a", s)
+            setm(f"PopMuAHeckMBSig{tex}", num(m, 3))
+            ma, _ = pop("eb_all_mu_a", s)
+            setm(f"PopMuAEBAllSig{tex}", num(ma, 3))
     for key, tex in (("naive_mu_a", "Naive"),
                      ("eb_surv_naive_mu_a", "EBSurv"),
                      ("eb_surv_heck_1b_mu_a", "HeckOneBr"),
@@ -99,9 +107,9 @@ if e1:
     v = [r["pop"]["n_surv"] for r in rows if r["sigma"] == sig0]
     setm("PopNSurv", str(int(np.mean(v))))
 
-    def extrap(method, rung, key="bias"):
+    def extrap(method, rung, key="bias", sigma=sig0):
         v = [r["extrap"][f"rung{rung}"][method][key] for r in rows
-             if r["sigma"] == sig0]
+             if r["sigma"] == sigma]
         return float(np.mean(v)), float(np.std(v))
 
     for method, tex in (("naive_ls", "Naive"), ("tobit", "Tobit"),
@@ -114,6 +122,12 @@ if e1:
         setm(f"ExtrapBias{tex}SD", num(sd, 4))
         m, _ = extrap(method, 0, "rmse")
         setm(f"ExtrapRMSE{tex}", num(m, 4))
+    # residual at higher noise (sigma=0.02): scopes "essentially removes"
+    if any(abs(r["sigma"] - 0.02) < 1e-9 for r in rows):
+        setm("ExtrapBiasHeckMBHi", num(extrap("eb_surv_heck_mb", 0,
+                                              sigma=0.02)[0], 4))
+        setm("ExtrapBiasEBAllHi", num(extrap("eb_all", 0,
+                                             sigma=0.02)[0], 4))
 
     def fresh(method, key="bias"):
         v = [r["fresh"][method][key] for r in rows if r["sigma"] == sig0]

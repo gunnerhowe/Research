@@ -95,12 +95,15 @@ rakotoarison2024ifbo}. None of these models the sampler's censoring
 mechanism, although every deployed curve the surrogate ever sees was
 selected by it. This remains true in the newest work: a 2025 method that
 predicts learning curves with latent-Kronecker GPs to \emph{reduce}
-premature pruning \citep{lin2025lkgp} still trains its predictor on
-survivor curves as if they were an unbiased sample, and a fresh
-large-scale learning-curve database documents that curves are more
-ill-behaved than assumed \citep{mohr2025lcdb} without connecting the
-ill-behavedness to selection. The gap our pre-registered kill-test found
-(\S\ref{sec:repro}) holds.
+premature pruning \citep{lin2025lkgp} trains on a uniformly-random,
+unselected sample of curves and runs successive halving on a separate set
+--- a sound protocol that sidesteps rather than models the censoring, so
+when its predictor is deployed inside the sampler the survivor selection it
+induces is still uncorrected. A fresh large-scale learning-curve database
+documents that curves are more ill-behaved than assumed \citep{mohr2025lcdb}
+without connecting the ill-behavedness to selection. The gap our
+pre-registered kill-test found (\S\ref{sec:repro}) --- nobody models the
+sampler's censoring mechanism --- holds.
 
 \paragraph{The honest crux.} Stated immediately, because it disarms the
 obvious objection: SH selects on the \emph{observed} prefix, which the
@@ -193,11 +196,15 @@ summarized by its LS fit $\hat\phi_i$ with observation covariance $V_i =
 closed form); predictions are exact-likelihood posterior means via
 importance sampling with the Laplace posterior as proposal (the Laplace
 summary is only a proposal; its error cancels in the weights).
-\emph{EB + Heckman}: the same, fitted on survivor curves only, with the
-selection correction $-\,n\log P_{\psi}(\text{survive all rungs})$ ---
-the joint selection+outcome likelihood; survival probabilities are
-probit products over rungs, estimated by common-random-number Monte
-Carlo over the prior. A first attempt that Monte-Carlo-estimated the
+\emph{EB + Heckman}: the same, fitted on survivor curves only, with a
+population-level selection normalizer $-\,n\log P_{\psi}(\text{survive all
+rungs})$ added to the marginal likelihood --- the population-conditional
+form $\prod_i p(D_i)\,/\,P(\text{survive})^{n}$, not the full per-curve
+conditional likelihood (which would additionally reweight each curve's
+data integral by its own survival probability; we found the population
+normalizer sufficient for recovering $\mu$ and did not implement the
+per-curve weighting). Survival probabilities are probit products over
+rungs, estimated by common-random-number Monte Carlo over the prior. A first attempt that Monte-Carlo-estimated the
 \emph{data} marginal from prior samples collapses for peaked likelihoods
 (effective sample size $\approx$ 3 at $T = 52$, $\sigma = 0.01$); we
 document this failure mode and use the closed-form marginal instead.
@@ -283,7 +290,8 @@ verified by evaluating it at truth vs.\ at the naive fit and finding the
 naive fit scores lower). Three brackets give
 \PopMuAHeckMB{}$\pm$\PopMuAHeckMBSD{}, cutting $|$bias$|$ from $0.084$ to
 $0.036$ --- but now overshooting \emph{below} truth, and increasingly so
-with noise ($0.76, 0.74, 0.66$ at $\sigma = 0.005, 0.01, 0.02$): the
+with noise (\PopMuAHeckMBSigLo{}, \PopMuAHeckMBSigMed{},
+\PopMuAHeckMBSigHi{} at $\sigma = 0.005, 0.01, 0.02$): the
 functional-form correction is itself sensitive to the assumed noise model,
 the classic Heckman fragility \citep{puhani2000}. The population sd is
 recovered well (\PopSdAHeckMB{} vs true \PopTrueSdA{}). The estimator we
@@ -296,18 +304,23 @@ machinery, same fragility --- but the practical lesson here is sharper:
 because selection is on observed prefixes, one need not model it at all;
 one need only fit on the prefixes rather than on the survivors.
 
-\paragraph{Survivor extrapolation.} At the first rung the naive fit's
-bias is \ExtrapBiasNaive{}$\pm$\ExtrapBiasNaiveSD{}; the per-curve Tobit
-correction (no prior) shaves it to \ExtrapBiasTobit{} --- the truncation
-terms only touch the marginal survivors --- while the exact posterior
-under the corrected prior essentially removes it (\ExtrapBiasHeckMB{};
-RMSE \ExtrapRMSEHeckMB{} vs \ExtrapRMSENaive{} naive). Since survival is
-a deterministic function of the observed prefix, the \emph{posterior}
-needs no extra selection term --- exact Bayes has zero conditional bias
-given any data-measurable selection event; what selection breaks is the
-\emph{prior} estimated from survivors, and that is where the correction
-belongs. This decomposition is, to our knowledge, not stated in the
-LC-surrogate literature.
+\paragraph{Survivor extrapolation.} At the first rung and $\sigma = 0.01$
+the naive fit's bias is \ExtrapBiasNaive{}$\pm$\ExtrapBiasNaiveSD{}; the
+per-curve Tobit correction (no prior) shaves it to \ExtrapBiasTobit{} ---
+the truncation terms only touch the marginal survivors --- while the exact
+posterior under the corrected prior nearly removes it (\ExtrapBiasHeckMB{};
+RMSE \ExtrapRMSEHeckMB{} vs \ExtrapRMSENaive{} naive). The residual grows
+at higher noise: at $\sigma = 0.02$ the corrected bias is
+\ExtrapBiasHeckMBHi{}, still the smallest of the surrogate variants but no
+longer negligible (the MAR all-prefix estimator sits at
+\ExtrapBiasEBAllHi{} there --- the two are within noise of each other, so
+we do not claim the survivor correction dominates at high noise). Since
+survival is a deterministic function of the observed prefix, the
+\emph{posterior} needs no extra selection term --- exact Bayes has zero
+conditional bias given any data-measurable selection event; what selection
+breaks is the \emph{prior} estimated from survivors, and that is where the
+correction belongs. This decomposition is, to our knowledge, not stated in
+the LC-surrogate literature.
 
 \paragraph{Arellano--Bond variant.} The lag-instrument dynamic-panel
 idea \citep{arellano1991} --- extrapolating increments with second-lag
