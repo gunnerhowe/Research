@@ -23,3 +23,48 @@ C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\torch\nn\modules\r
   ep01 task=0.6332 reg=0.06456 val=0.8566 (17.2s)
   ep02 task=0.5486 reg=0.04801 val=0.8658 (17.2s)
   ep03 task=0.5064 reg=0.04145 val=0.8728 (17.2s)
+  ep04 task=0.4850 reg=0.03877 val=0.8747 (17.2s)
+[sc2 s0] budget rho=0.2 dense acc 0.8584
+wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json
+[sc2 s1] posthoc dense acc 0.9111
+  ep00 task=0.2256 reg=0.01281 val=0.9182 (31.8s)
+  ep01 task=0.2143 reg=0.006779 val=0.9210 (31.9s)
+  ep02 task=0.2021 reg=0.005501 val=0.9239 (31.8s)
+  ep03 task=0.1911 reg=0.004829 val=0.9249 (31.8s)
+  ep04 task=0.1842 reg=0.004607 val=0.9254 (31.8s)
+[sc2 s1] budget rho=0.7 dense acc 0.9121
+  ep00 task=0.2830 reg=0.04128 val=0.9116 (32.3s)
+  ep01 task=0.2624 reg=0.01626 val=0.9141 (32.0s)
+  ep02 task=0.2449 reg=0.01198 val=0.9156 (31.6s)
+  ep03 task=0.2316 reg=0.01017 val=0.9180 (31.9s)
+  ep04 task=0.2222 reg=0.009644 val=0.9195 (32.0s)
+[sc2 s1] budget rho=0.5 dense acc 0.9097
+  ep00 task=0.4213 reg=0.09931 val=0.8916 (31.8s)
+  ep01 task=0.3608 reg=0.02921 val=0.8994 (20.4s)
+  ep02 task=0.3295 reg=0.02135 val=0.9050 (17.2s)
+  ep03 task=0.3087 reg=0.01832 val=0.9081 (17.2s)
+  ep04 task=0.2966 reg=0.01716 val=0.9091 (17.2s)
+[sc2 s1] budget rho=0.35 dense acc 0.8931
+  ep00 task=0.8723 reg=0.3169 val=0.8193 (17.4s)
+  ep01 task=0.6426 reg=0.06443 val=0.8449 (17.2s)
+  ep02 task=0.5610 reg=0.04771 val=0.8589 (17.1s)
+  ep03 task=0.5181 reg=0.04075 val=0.8653 (17.2s)
+  ep04 task=0.4970 reg=0.03813 val=0.8687 (17.2s)
+[sc2 s1] budget rho=0.2 dense acc 0.8486
+wrote E:\GitHub\Research\energy-effic\results\exp3_sc2.json
+[sc2 s2] posthoc dense acc 0.9170
+  ep00 task=0.2254 reg=0.01436 val=0.9172 (17.5s)
+  ep01 task=0.2145 reg=0.007949 val=0.9189 (17.1s)
+  ep02 task=0.2027 reg=0.006418 val=0.9212 (17.2s)
+  ep03 task=0.1910 reg=0.005703 val=0.9242 (17.1s)
+  ep04 task=0.1834 reg=0.005435 val=0.9257 (17.1s)
+[sc2 s2] budget rho=0.7 dense acc 0.9155
+  ep00 task=0.2852 reg=0.04456 val=0.9131 (17.4s)
+  ep01 task=0.2641 reg=0.01778 val=0.9143 (17.2s)
+  ep02 task=0.2471 reg=0.01338 val=0.9152 (17.2s)
+  ep03 task=0.2322 reg=0.01141 val=0.9195 (17.2s)
+  ep04 task=0.2228 reg=0.01076 val=0.9220 (17.2s)
+[sc2 s2] budget rho=0.5 dense acc 0.9160
+  ep00 task=0.4268 reg=0.1045 val=0.8932 (17.5s)
+  ep01 task=0.3666 reg=0.0306 val=0.9014 (17.2s)
+  ep02 task=0.3324 reg=0.02226 val=0.9017 (17.2s)

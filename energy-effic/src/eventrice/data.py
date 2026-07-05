@@ -24,8 +24,9 @@ def sc2_classes():
 
 
 def build_sc2_cache(device="cuda"):
-    """Compute 40-bin log-mel features (25 ms window, 10 ms hop -> T=98) for
-    every clip; cache float16 tensors + labels + official split ids."""
+    """Compute 40-bin log-mel features (25 ms window, 10 ms hop, centered
+    -> T=101) for every clip; cache float16 tensors + labels + official
+    split ids."""
     import torchaudio
 
     classes = sc2_classes()

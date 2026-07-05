@@ -269,14 +269,21 @@ def fig_e2_pareto():
             ax.errorbar(fr.mean(0), ac.mean(0), yerr=ac.std(0),
                         xerr=fr.std(0), fmt="o-", ms=3, color=c, lw=1.2,
                         label=lab)
+        grid = np.geomspace(0.02, 0.7, 40)
         for k, c, ls in (("k6", "0.55", ":"), ("k48", "0.2", "--")):
-            pts = []
+            envs = []
             for s in d:
-                pts += [(r["frac_of_dense"], r["acc"])
-                        for r in d[s]["random_search"][k]]
-            pts.sort()
-            fr, ac = zip(*pts)
-            ax.plot(fr, ac, ls, color=c, lw=1.4,
+                pts = sorted((r["frac_of_dense"], r["acc"])
+                             for r in d[s]["random_search"][k])
+                ef, ea, best = [], [], -1
+                for f, a in pts:
+                    if a > best:
+                        ef.append(f)
+                        ea.append(a)
+                        best = a
+                envs.append(np.interp(grid, ef, ea, left=np.nan,
+                                      right=ea[-1]))
+            ax.plot(grid, np.nanmean(envs, 0), ls, color=c, lw=1.4,
                     label=f"random search ({k[1:]} cfgs/seed)")
         ax.set_xscale("log")
         ax.set_xlabel("MAC-weighted events (fraction of dense)")

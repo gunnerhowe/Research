@@ -30,36 +30,111 @@ Independent Researcher\\
 \maketitle
 
 \begin{abstract}
-% FINAL ABSTRACT WRITTEN AFTER RESULTS -- honest, states what did not work.
+Delta networks spend compute only when an activation changes by more than a
+threshold: each supra-threshold change is an \emph{event} that triggers the
+corresponding weight-column MACs and memory traffic. A delta event is,
+definitionally, a level crossing of the activation time series---yet the
+delta-network literature tunes thresholds by grid search and only ever
+\emph{measures} event counts after the fact. We connect this literature to
+the century-old analytic theory of level crossings. \textbf{Predict:} on
+three trained networks (GRU keyword spotting on Speech Commands, a
+row-sequential-MNIST GRU, an enwik8 char-transformer), an empirical
+crossing-rate profile fitted on a calibration split predicts per-channel
+crossing rates on held-out data to \EmpMedianSCTwo--\EmpMedianEnwik{} median
+relative error, and open-loop send-on-delta simulation on cached traces
+predicts closed-loop delta-network event rates to within
+\EventOpenloopMaxSCTwo{} (SC2) in the regime where the delta approximation
+preserves accuracy. Rice's Gaussian formula works where activations are
+near-Gaussian (LayerNorm-fed streams) and fails predictably with kurtosis
+(GELU outputs, deep GRU states); an iid baseline fails by
+\IidMinSCTwo--\IidMaxSCTwo. \textbf{Allocate:} inverting the predicted rate
+curves turns a global event budget into per-stream thresholds analytically;
+on Speech Commands this matches the Pareto front of a 48-configuration
+random search at $\sim$2\% of its tuning cost, and realized event rates land
+within \AllocRealizedErrSCTwo{} of target. \textbf{Train (negative):}
+fine-tuning against a one-sided differentiable crossing budget makes traces
+comply (crossings drop as demanded, increment scales shrink
+\SigmaShrinkPsMNIST{}) but does \emph{not} improve the accuracy--events
+Pareto front over post-hoc thresholding of the unmodified network---and
+neither do L1-on-deltas or activity-rate controls. The mechanism is an
+approximate scale-freeness: send-on-delta event rates depend on
+$\theta/\sigma_\delta$, so smoothness training rescales dynamics without
+restructuring them, while fixed-threshold comparisons misleadingly report
+large savings (\AbsThetaSavingPsMNIST{} fewer events at matched absolute
+$\theta$). Prediction and allocation work; training-for-temporal-sparsity,
+in these tasks, does not beat the post-hoc baseline it is meant to replace.
+We release estimators, receipts, and benchmarks.
 \end{abstract}
 
 \section{Introduction}
 
 Delta networks---delta-RNNs, sigma--delta networks, event-driven
 transformers---spend compute only when an activation \emph{changes} by more
-than a threshold~$\theta$: each supra-threshold change transmits a delta,
+than a threshold $\theta$: each supra-threshold change transmits a delta,
 triggers the corresponding weight-column MACs and memory traffic, and is
 therefore a quantum of energy \citep{neil2017delta,oconnor2017sigmadelta,
 yousefzadeh2022delta,gao2020edgedrnn,chen2024deltakws}. In this literature
-the thresholds are tuned by post-hoc grid search and the event counts are
-always \emph{measured after the fact}; no published delta-network method
-predicts event rates from activation statistics or trains against an
-analytic rate objective.
+the thresholds are tuned by post-hoc accuracy-vs-speedup sweeps and the
+event counts are always \emph{measured after the fact}; no published
+delta-network method predicts event rates from activation statistics or
+trains against an analytic rate objective.
 
 A delta event is, definitionally, a level crossing of the activation time
-series. Level-crossing statistics have an analytic theory that is a century
-old: Rice's formula \citep{rice1944,kac1943} gives the mean crossing rate of
-a stationary Gaussian process at level $u$ from two spectral moments, and
-its Monte-Carlo/co-area estimator---validated as a differentiable training
-objective in our preceding program
+series. Level-crossing statistics have an analytic theory that is eighty
+years old: Rice's formula \citep{rice1944,kac1943} gives the mean crossing
+rate of a stationary Gaussian process at any level from two spectral
+moments, and its smoothed Monte-Carlo estimator---built and validated as a
+differentiable training objective in the preceding papers of this program
 \citep{howe2026levelcrossing,howe2026budget,howe2026minkowski}---needs no
-Gaussianity at all. This paper connects the two: it gives the delta-network
-literature the analytic, differentiable event-rate model it has been
-missing, and it gives the level-crossing program the domain where excess
-crossings are the cost \emph{by construction}.
+Gaussianity at all. This paper connects the two. It is the fourth paper of
+the program, and the arc matters: \citet{howe2026budget} validated a
+one-sided crossing \emph{budget} whose loss and gradient vanish within
+budget, then reported honestly that PINNs fail by under- rather than
+over-oscillating, so the budget was inert there. Delta networks are the
+budget's native domain---excess crossings are excess energy \emph{by
+construction}---and this paper is the test of that promise.
 
-% narrative arc paragraph (mechanism validated, pathology absent, native
-% domain found) + contributions list -- FILLED AFTER RESULTS.
+The results split cleanly into two positives and one negative, and we
+report all three:
+
+\begin{enumerate}
+\item \textbf{Validated estimator (E0).} The temporal segment estimator
+(exact for piecewise-linear traces, differentiable, converging to hard
+counts) and Rice predictions agree with ground truth to
+$\le$\GateVRiceGP{} on synthetic processes with known spectra; the exact
+discrete-time Gaussian crossing formula (an Owen's-$T$ expression) removes
+the up-to-\OURiceFDWorst{} bias of the continuous formula on coarsely
+sampled sequences. The send-on-delta event rate is bounded by total
+variation over $\theta$; the gap---hysteresis of the anchor memory---is a
+strikingly process-independent function $\gamma(\theta/\sigma_\delta)$ for
+$\theta\lesssim\sigma_\delta/2$ (spread \GammaSpreadSmallX{} across four
+process families).
+\item \textbf{Prediction and allocation on real networks (E1--E2).} A
+calibration-split crossing profile predicts held-out per-channel crossing
+rates to \EmpMedianSCTwo--\EmpMedianEnwik{} median error across a GRU
+keyword spotter, a row-sequential-MNIST GRU, and a char-transformer; Rice's
+Gaussian form holds on near-Gaussian streams and fails predictably with
+kurtosis. Open-loop simulation on cached traces predicts deployed
+(closed-loop) event rates to a few percent in the regime where accuracy
+survives. Inverting these curves allocates per-stream thresholds
+analytically: on Speech Commands the resulting operating points match a
+48-configuration random search at $\sim$2\% of its tuning cost.
+\item \textbf{An honest negative with a mechanism (E3--E4).} Fine-tuning
+against the one-sided crossing budget makes networks comply---crossing
+profiles drop as demanded, increment scales shrink
+\SigmaShrinkPsMNIST{}---but the accuracy--events Pareto front does
+\emph{not} improve over post-hoc thresholding of the unmodified network.
+Neither do the obvious alternatives (L1 on activation deltas, activity-rate
+regularization, plain fine-tuning). The mechanism: send-on-delta event
+rates are approximately scale-free---they depend on the threshold in units
+of the increment scale, $\theta/\sigma_\delta$---so smoothness training
+\emph{rescales} dynamics without \emph{restructuring} them. At matched
+absolute threshold the budget-trained network fires
+\AbsThetaSavingPsMNIST{} fewer events, which is exactly the comparison a
+fixed-threshold evaluation would report as a win; at matched \emph{events}
+the base network is as good or better. Post-hoc thresholding is a much
+stronger baseline than the training literature assumes.
+\end{enumerate}
 
 \section{Related work}
 \label{sec:related}
@@ -67,17 +142,17 @@ crossings are the cost \emph{by construction}.
 \paragraph{Delta and sigma--delta networks.}
 \citet{neil2017delta} threshold changes of RNN inputs and hidden states
 against an anchor memory of the last transmitted value and accumulate
-matrix--vector products incrementally; the mechanism transfers to
-convolutional and embedded video settings \citep{yousefzadeh2022delta}, to
-silicon \citep{gao2020edgedrnn,chen2024deltakws}, and underlies sigma--delta
-quantized networks \citep{oconnor2017sigmadelta}. Throughout, thresholds are
-set by accuracy-vs-speedup sweeps. EGRU \citep{subramoney2023egru} trains
-activity-sparse GRUs with surrogate gradients through a hard threshold;
-that is spike-style training, not an analytic rate model.
+matrix--vector products incrementally; the mechanism transfers to embedded
+video \citep{yousefzadeh2022delta} and to silicon
+\citep{gao2020edgedrnn,chen2024deltakws}, and underlies sigma--delta
+quantized networks \citep{oconnor2017sigmadelta}. Thresholds are set by
+accuracy-vs-speedup sweeps throughout. EGRU \citep{subramoney2023egru}
+trains activity-sparse GRUs with surrogate gradients through a hard
+threshold---spike-style training, not an analytic rate model.
 
 \paragraph{Spiking transformers and spatial activation sparsity.}
 Spikformer \citep{zhou2023spikformer} and SpikeGPT \citep{zhu2023spikegpt}
-use spike \emph{coding}---a different mechanism from delta thresholding; we
+use spike \emph{coding}, a different mechanism from delta thresholding; we
 cite and do not claim their ground. The activation-sparsity line
 \citep{li2023lazy} concerns \emph{spatial} sparsity (which units are zero);
 ours is \emph{temporal} sparsity (which units change).
@@ -88,10 +163,10 @@ counting \citep{bray2007,choromanska2015} and in our own program
 \citep{howe2026levelcrossing,howe2026budget,howe2026minkowski}---never as an
 activation-event or energy model. Zero-crossing statistics are classical
 discrimination features \citep{kedem1986,kedem1994book}; send-on-delta
-sampling theory \citep{miskowicz2006} bounds event rates by total variation.
-The novelty here, as in the companion papers, is the \emph{instantiation}:
-crossing rates as a differentiable model of, and budget on, delta-network
-energy.
+sampling theory \citep{miskowicz2006} bounds event rates by total
+variation. The novelty here, as in the companion papers, is the
+\emph{instantiation}: crossing rates as a differentiable model of, and
+budget on, delta-network events.
 
 \section{Theory: delta events as level crossings}
 \label{sec:theory}
@@ -99,23 +174,25 @@ energy.
 \paragraph{Setting.}
 Let $a_c(t)$, $t=1,\dots,T$ be the sampled activation trace of channel $c$
 feeding a delta-encoded matrix--vector product. The send-on-delta encoder
-\citep{neil2017delta,miskowicz2006} keeps an anchor $\hat a$ (last
+\citep{neil2017delta,miskowicz2006} keeps an anchor $\hat a$ (the last
 transmitted value), fires when $|a_c(t)-\hat a|>\theta$, and updates the
-anchor to $a_c(t)$. Every event costs the fan-out of the weight column in
-MACs plus the associated memory traffic (Section~\ref{sec:energy}).
+anchor to $a_c(t)$ (anchor-on-event, preventing drift). Every event costs
+the fan-out of the weight column in MACs plus the associated memory traffic
+(Section~\ref{sec:setup}).
 
 \paragraph{Rice's formula and its discrete-time form.}
-For a stationary process with spectral moments $\lambda_0=\operatorname{Var}
-a$ and $\lambda_2=\operatorname{Var}\dot a$, the mean rate of up- and
-down-crossings of level $u$ is
+For a stationary process with spectral moments
+$\lambda_0=\operatorname{Var} a$ and $\lambda_2=\operatorname{Var}\dot a$,
+the mean rate of up- and down-crossings of level $u$ is, under Gaussianity
+\citep{rice1944},
 \begin{equation}
 \mu(u) \;=\; \frac{1}{\pi}\sqrt{\frac{\lambda_2}{\lambda_0}}
-\exp\!\Big({-\frac{(u-m)^2}{2\lambda_0}}\Big),
+\exp\!\Big({-\frac{(u-m)^2}{2\lambda_0}}\Big).
 \label{eq:rice}
 \end{equation}
-under Gaussianity \citep{rice1944}. Sampled traces are sequences, not
-continuous paths: for a stationary Gaussian \emph{sequence} with lag-1
-autocorrelation $\rho_1$ the exact per-step crossing probability is
+Sampled traces are sequences, not continuous paths: for a stationary
+Gaussian \emph{sequence} with lag-1 autocorrelation $\rho_1$ the exact
+per-step crossing probability has the closed form
 \begin{equation}
 P\big[(a_t-u)(a_{t+1}-u)<0\big] \;=\; 4\,
 \mathrm{T}\!\Big(\tfrac{u-m}{\sqrt{\lambda_0}},
@@ -124,18 +201,18 @@ P\big[(a_t-u)(a_{t+1}-u)<0\big] \;=\; 4\,
 \end{equation}
 with $\mathrm{T}$ Owen's T function \citep{owen1956}; at $u=m$ this is the
 classical $\arccos(\rho_1)/\pi$ \citep{kedem1994book}, and $\rho_1\to 0$
-recovers the iid baseline $2\Phi(\tilde u)(1-\Phi(\tilde u))$.
+recovers the iid value $2\Phi(\tilde u)(1-\Phi(\tilde u))$.
 Eq.~\eqref{eq:rice} with finite-difference moments underpredicts
-Eq.~\eqref{eq:discrete} as $\rho_1\to0$ (by up to $\sim$10\%, quantified in
-Section~\ref{sec:e0}); we use Eq.~\eqref{eq:rice} as the headline Gaussian
-predictor, as specified, and Eq.~\eqref{eq:discrete} in the appendix.
+Eq.~\eqref{eq:discrete} as correlation weakens---by up to \OURiceFDWorst{}
+at $\rho_1=0.1$ (Section~\ref{sec:e0})---so we use \eqref{eq:rice} as the
+headline Gaussian predictor, as the delta literature would, and
+\eqref{eq:discrete} as the refined form (both are reported).
 
 \paragraph{Differentiable estimator.}
-The program's smoothed Monte-Carlo estimator
-\citep{howe2026levelcrossing} evaluates the co-area integrand
-$\delta_\epsilon(a-u)\,|\dot a|$ at sample points. On a sampled trace, the
-piecewise-linear segment $a_t\!\to\!a_{t+1}$ admits the \emph{exact}
-smoothed count
+The program's smoothed Monte-Carlo estimator \citep{howe2026levelcrossing}
+evaluates the co-area integrand $\delta_\epsilon(a-u)\,|\dot a|$ at sample
+points. On a sampled trace, the piecewise-linear segment
+$a_t\!\to\!a_{t+1}$ admits an \emph{exact} smoothed count,
 \begin{equation}
 \hat c(u) \;=\; \frac{1}{(T-1)\,\Delta t}\sum_{t=1}^{T-1}
 \Big|\,\Phi\big(\tfrac{a_{t+1}-u}{\epsilon}\big)-
@@ -143,30 +220,34 @@ smoothed count
 \label{eq:segment}
 \end{equation}
 which converges to the hard sign-change count as $\epsilon\to0$, remains
-differentiable in the trace values---and hence in the network
-parameters---and is robust to steps that jump many $\epsilon$ in one
-$\Delta t$ (where the midpoint co-area rule undercounts;
-Section~\ref{sec:e0}).
+differentiable in the trace values---hence in the network parameters---and
+is robust to steps that jump many $\epsilon$ in one $\Delta t$, where the
+midpoint co-area rule undercounts (Fig.~\ref{fig:e0}b,c).
 
 \paragraph{From crossings to delta events.}
 Summing crossing rates over the implicit ladder of transmission levels
 spaced $\theta$ apart bounds the send-on-delta event rate by total
 variation \citep{miskowicz2006}:
 \begin{equation}
-R(\theta)\;\le\;\min\!\big(\E|\Delta a|/\theta,\;1/\Delta t\big),
+R(\theta)\;\le\;\min\!\big(\E|\Delta a|/(\theta\,\Delta t),\;1/\Delta t\big),
 \qquad \E|\dot a| = \sqrt{2\lambda_2/\pi}\ \text{(Gaussian)}.
 \label{eq:bound}
 \end{equation}
 The bound is loose by exactly the hysteresis of the anchor (re-crossing a
 level without traveling $\theta$) and by multi-level jumps. We measure this
-gap once on synthetic processes as a correction factor
-$\gamma(\theta/\sigma_\delta)$, $\sigma_\delta$ the one-step increment
-scale, and find it strikingly process-independent for
-$\theta \lesssim \sigma_\delta$ (Section~\ref{sec:e0}).
+gap once, on synthetic processes, as a correction
+$\gamma(\theta/\sigma_\delta)$ with $\sigma_\delta$ the one-step increment
+scale (Fig.~\ref{fig:gamma}); for $\theta\le\sigma_\delta/2$ it is
+process-independent to \GammaSpreadSmallX{} across four process families.
+On real activation traces, whose increments are heavy-tailed, the
+synthetic $\gamma$ transfers imperfectly (up to
+\AnalyticGammaWorstSCTwo{} error; Section~\ref{sec:e1}); the empirical
+route---simulating the encoder on cached calibration traces, which costs no
+extra network forwards---is what allocation uses.
 
 \paragraph{One-sided crossing budget.}
-The training objective transplants the howe2026budget mechanism to its
-native domain: per layer $\ell$ with hidden traces $h_\ell$,
+The training objective transplants the \citet{howe2026budget} mechanism to
+its native domain: per layer $\ell$ with hidden traces $h_\ell$,
 \begin{equation}
 \loss_{\mathrm{budget}}^{(\ell)} \;=\;
 \operatorname{mean}_j\;
@@ -176,17 +257,434 @@ native domain: per layer $\ell$ with hidden traces $h_\ell$,
 \label{eq:budget}
 \end{equation}
 with levels $u_j$ on a quantile ladder of the layer's calibration
-activation distribution (dense-ladder rule of \citet{howe2026minkowski}),
-budgets a $\rho$-scaled copy of the calibration profile, and $\hat c$ the
-segment estimator \eqref{eq:segment}. Within budget the loss and its
-gradient are exactly zero (one-sidedness), so compliant dynamics are
-untouched. The sampling-scale failure mode of \citet{howe2026minkowski}
-does not arise here: traces are densely sampled 1-D sequences.
+activation distribution (the dense-ladder rule of
+\citet{howe2026minkowski}), budgets a $\rho$-scaled copy of the calibration
+profile, and $\hat c$ the segment estimator \eqref{eq:segment}. Within
+budget the loss and its gradient are exactly zero (one-sidedness;
+unit-tested), so compliant dynamics are untouched. The sampling-scale
+failure mode of \citet{howe2026minkowski} does not arise here: traces are
+densely sampled 1-D sequences.
 
-% Sections E0-E4, energy accounting, limitations, reproducibility --
-% FILLED AFTER RESULTS.
+\section{Experimental setup}
+\label{sec:setup}
+
+\paragraph{Tasks and models.}
+(i) \textbf{SC2}: Google Speech Commands~v2 \citep{warden2018speech},
+35-class keyword spotting, 40-bin log-mel features (25\,ms window, 10\,ms
+hop, $T{=}101$), 2-layer GRU \citep{cho2014gru} with 128 units, mean-pool,
+linear head; test accuracy \BaseAccSCTwo{}$\pm$\BaseAccSdSCTwo{} over 8
+seeds. (ii) \textbf{psMNIST}: row-sequential MNIST \citep{lecun1998mnist}
+($T{=}28$ rows of 28 pixels), same GRU;
+\BaseAccPsMNIST{}$\pm$\BaseAccSdPsMNIST{} over 3 seeds. (iii)
+\textbf{enwik8} (secondary): byte-level char-LM \citep{mahoney2011enwik8}
+on a 20M-character slice, 2-layer causal transformer (dim 128, 4 heads, FFN
+512, $T{=}256$), \BaseBpcEnwik{} test bpc over 3 seeds. The delta-GRU
+follows \citet{neil2017delta} exactly (thresholds on input and hidden
+streams, anchor-on-event, incremental accumulators); at $\theta{=}0$ it
+reproduces \texttt{torch.nn.GRU} to numerical precision (unit-tested). For
+the transformer, the input streams of the QKV, attention-output, and both
+FFN projections are delta-encoded along the sequence axis; attention
+score/value matmuls stay dense, as in the event-driven transformer
+literature. All experiments run on one RTX~3080 (10\,GB).
+
+\paragraph{Events and modeled energy.}
+One event = one transmitted vector component = its weight-column fan-out in
+MACs plus the associated SRAM traffic. We report MAC-weighted event rates
+as fractions of the dense network, and modeled energy using
+\citet{horowitz2014} 45\,nm figures (FP32 MAC 4.6\,pJ, 32-bit SRAM read
+5\,pJ, weights SRAM-resident). \emph{The paper reports event counts and
+modeled energy, never measured watts.}
+
+\paragraph{Discipline.}
+Every number in this paper is machine-generated from committed result
+JSONs (\texttt{gen\_paper\_numbers.py}, \texttt{make\_figures.py}); the
+regenerate-and-diff check passes at submission. All estimator and
+delta-cell properties are unit-tested (\texttt{pytest}, 14 tests). Gates
+were pre-registered in the project brief: GATE~V (estimator vs closed
+forms, $\le$3\%), GATE~P (calibration-split predictor within $\sim$10\% on
+real networks), and the E4 kill condition (budget $\approx$ L1-delta at
+matched events must be reported as such).
+
+\section{E0: estimator validation (GATE V)}
+\label{sec:e0}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/e0_validation.pdf}
+\caption{\textbf{Estimator validation.} (a) Sampled OU/AR(1) sequences:
+the discrete-time Gaussian form \eqref{eq:discrete} is exact across
+correlation levels (max error \GateVOU); the continuous Rice formula with
+finite-difference moments underpredicts by up to \OURiceFDWorst{} as
+$\rho_1\to0$. (b,c) Smoothing bandwidth $\epsilon$: the segment estimator
+\eqref{eq:segment} has $<$1\% bias for $\epsilon\le0.1\sigma$ at working
+trace lengths ($256\times100$) with batch-to-batch variability already at
+the split-half noise floor (\SplitHalfFloorE0); the midpoint co-area rule
+trades a bias spike at small $\epsilon$ against inflated variance.}
+\label{fig:e0}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{figs/e0_gamma.pdf}
+\caption{\textbf{Send-on-delta correction.} Measured event rate over the
+TV/$\theta$ bound, $\gamma$, vs $x=\theta/\sigma_\delta$ for four synthetic
+process families (3 seeds each). For $x\le0.5$ the curves collapse
+(spread \GammaSpreadSmallX); beyond $x\approx1$ the tail of the increment
+distribution takes over and process-dependence sets in.}
+\label{fig:gamma}
+\end{figure}
+
+Random-phase-sinusoid Gaussian processes with \emph{known} spectral
+moments: Rice \eqref{eq:rice} vs dense-grid hard counts at levels
+$0$--$1.5\sigma$, 3 seeds, max relative error \GateVRiceGP. Sampled AR(1)
+(exact OU discretization, deliberately \emph{not} mean-square
+differentiable): the discrete form \eqref{eq:discrete} is exact to
+\GateVOU{} while continuous Rice-from-FD-moments underpredicts by up to
+\OURiceFDWorst{} at weak correlation---the bias regime real activation
+traces occupy (Fig.~\ref{fig:e0}a). Deterministic multisines: segment
+estimator vs exact counts, \GateVMultisine. \textbf{GATE~V passes} (all
+$\le$3\%). Fig.~\ref{fig:e0}b,c documents the $\epsilon$ trade-off once:
+we use $\epsilon=0.15\sigma$ for training (bias $<$2\%, variance at the
+noise floor) and hard counts for all measurement. Fig.~\ref{fig:gamma}
+shows the hysteresis correction $\gamma$ and its small-$x$ universality.
+
+\section{E1: prediction on real networks (GATE P)}
+\label{sec:e1}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/e1_profiles.pdf}
+\caption{\textbf{Per-channel crossing profiles} (points: measured on
+held-out data; lines: predictors fitted on a disjoint calibration split).
+Top row: typical channels; bottom row: high-kurtosis channels. The
+empirical profile (b) tracks everything including the kurtosis-389 GELU
+channel (right); Rice (a) is good on near-Gaussian channels and
+systematically wrong on heavy-tailed ones; the iid baseline (c) is not in
+the running.}
+\label{fig:profiles}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/e1_events.pdf}
+\caption{\textbf{Delta-event rates}, measured closed-loop (all streams
+thresholded at $\theta=x\sigma_\delta$) vs predictions from base-network
+statistics. Open-loop simulation on calibration traces (blue) tracks the
+deployed rates until the delta approximation itself degrades the network
+(psMNIST beyond $x\approx0.75$); the analytic TV$/\theta\cdot\gamma$ curve
+(orange) inherits the synthetic $\gamma$'s error on heavy-tailed real
+increments.}
+\label{fig:events}
+\end{figure}
+
+\begin{table}[t]
+\centering\small
+\caption{Crossing-profile prediction on held-out data: median relative
+error and fraction of (channel, level) cells within 10\%, over seeds;
+levels at $m_c + k\sigma_c$, $k\in[-2,2]$, cells above the
+0.005/step noise floor. ``Floor'' = split-half measurement floor.}
+\input{tables/e1_profiles.tex}
+\label{tab:e1}
+\end{table}
+
+For each task and seed we record activation traces on a calibration split
+(2048 sequences) and predict per-channel crossing rates on a disjoint
+evaluation split at channel-standardized levels. Three predictors: (a)
+Rice \eqref{eq:rice} from fitted moments, (b) the empirical calibration
+profile, (c) Gaussian-iid (temporal structure discarded).
+Table~\ref{tab:e1} and Fig.~\ref{fig:profiles}:
+
+\textbf{(b) carries the paper}: median error
+\EmpMedianSCTwo{}/\EmpMedianPsMNIST{}/\EmpMedianEnwik{} on
+SC2/psMNIST/enwik8, worst stream \EmpMaxEnwik. \textbf{GATE~P passes} on
+all three tasks. \textbf{(a) fails exactly where it should}: it holds to
+\RiceMinEnwik{} on LayerNorm-fed transformer streams (excess kurtosis
+$\approx$0) and degrades to \RiceMaxSCTwo{} on deep GRU states and
+\RiceMaxEnwik{} on GELU outputs (kurtosis up to several hundred);
+the failure is two-sided---sub-Gaussian channels (saturated, bimodal tanh
+states, negative excess kurtosis) break it as surely as heavy tails---and
+per-channel Rice error correlates with $|$excess kurtosis$|$ at Spearman
+$\rho=$\,\KurtSpearmanSCTwo{}/\KurtSpearmanPsMNIST{}/\KurtSpearmanEnwik{}
+(Fig.~\ref{fig:kurt}). This quantifies, rather than hand-waves, where
+Gaussian theory is usable.
+\textbf{(c) is off by \IidMinSCTwo--\IidMaxSCTwo{}} on GRU streams:
+temporal structure is the entire game.
+
+\paragraph{Event rates.}
+Deployed (closed-loop) event rates are predicted from base-network
+statistics by open-loop send-on-delta simulation on the cached calibration
+traces: max error \EventOpenloopMaxSCTwo{} (SC2) and
+\EventOpenloopMaxPsMNIST{} (psMNIST) across all streams and thresholds in
+the regime where accuracy stays within a point of dense; prediction
+degrades only where the delta approximation itself breaks the network
+(psMNIST $x\ge1$, accuracy $<$52\%), i.e.\ outside any useful operating
+point (Fig.~\ref{fig:events}). The fully analytic route (Gaussian TV +
+synthetic $\gamma$) misses by up to \AnalyticGammaWorstSCTwo{} on real
+traces---their increments are heavy-tailed, violating the small-$x$
+universality of Fig.~\ref{fig:gamma}---which is why allocation uses the
+empirical curves. On enwik8, thresholding costs quality quickly
+(\BaseBpcEnwik$\to$\BpcAtXPointOne{} bpc already at $x{=}0.1$,
+\EventsAtXPointOneEnwik{} events): character streams carry little temporal
+redundancy at the feature level, unlike audio or image rows; prediction
+still works (max \EventOpenloopMaxEnwikDeploy{} error at $x\le0.1$), but
+delta deployment is not attractive there, consistent with event-driven
+transformers targeting video/event streams rather than text.
+
+\section{E2: analytic threshold allocation}
+\label{sec:e2}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/e2_pareto.pdf}
+\caption{\textbf{Analytic allocation vs threshold search} (test accuracy
+vs MAC-weighted events, mean$\pm$sd over 3 seeds). The analytic operating
+points (one calibration pass, zero search) lie on the random-search front
+in the regime where accuracy is preserved; random search needs
+$\sim$48 configurations ($48\times$ the evaluation cost) to match them.}
+\label{fig:e2}
+\end{figure}
+
+Deployment requires per-stream thresholds $(\theta_{\mathrm{in}},
+\theta_{h_1}, \theta_{h_2})$. The incumbent tunes them by search, each
+configuration costing a validation evaluation. We instead record traces in
+\emph{one} calibration pass, build per-stream rate curves $R_s(\theta)$ by
+open-loop simulation on the cached traces (no further network forwards),
+and invert them for a target budget: a single relative threshold $x^*$
+(with $\theta_s = x^*\sigma_{\delta,s}$) solved by bisection on the
+predicted aggregate curve; a proportional-share variant; and a single
+absolute $\theta$ (all use the predicted curves; they differ in how
+thresholds distribute across streams).
+
+Fig.~\ref{fig:e2}: on SC2 the realized event budgets land within
+\AllocRealizedErrSCTwo{} of target for budgets $\ge$20\% of dense, and the
+analytic points sit on the 48-configuration random-search front. At the
+tightest budget that costs $\le$1 accuracy point, the analytic allocation
+needs \FracAtOnePtAnalyticSCTwo{} of dense events vs
+\FracAtOnePtRSFortyEightSCTwo{} for the full 48-configuration search and
+\FracAtOnePtRSSixSCTwo{} for a 6-configuration search---i.e.\ it matches
+the asymptotic sweep and dominates the cost-matched one at
+\TuneCostRatioSCTwo{} lower tuning cost. On psMNIST the same holds at
+moderate budgets, while at aggressive budgets the joint search exploits
+per-stream asymmetries the analytic heuristics do not
+(\FracAtOnePtAnalyticPsMNIST{} vs \FracAtOnePtRSFortyEightPsMNIST); the
+allocation-rule choice among our three variants is second-order
+everywhere---what replaces the sweep is the predicted curves themselves.
+In the accuracy-collapse regime, realized events undershoot targets
+(feedback reduces activity; consistent with Fig.~\ref{fig:events});
+allocation there is meaningless anyway. As a modeled-energy anchor: at the
+20\%-of-dense operating point, SC2 keyword spotting runs at
+\AccAtTwentySCTwo{} accuracy for \EnergyDeltaPerDecisionUJ\,$\mu$J per
+decision vs \EnergyDensePerDecisionUJ\,$\mu$J dense
+(\EnergyRatioAtTwenty{} modeled reduction; Horowitz-table energy, not
+measured watts).
+
+\section{E3--E4: budget training vs null controls (negative)}
+\label{sec:e3}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/e3_pareto.pdf}
+\caption{\textbf{Training for temporal sparsity does not beat post-hoc
+thresholding.} Accuracy--events Pareto envelopes (per family over its
+hyperparameter grid; mean$\pm$sd over 8 seeds on SC2, 3 on psMNIST). All
+fine-tuned families---crossing budget, L1-on-deltas, rate
+regularizer, plain fine-tune---sit on or below the post-hoc front of the
+unmodified base network.}
+\label{fig:e3}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/e4_histograms.pdf}
+\caption{\textbf{Mechanism check: increment histograms.} The budget
+compresses the entire $|\Delta h|$ distribution (scale shrink); L1-delta
+mildly sharpens it. Neither restructures the dynamics in a way that
+survives threshold re-scaling.}
+\label{fig:e4}
+\end{figure}
+
+Per task and seed, the base model is fine-tuned (5 epochs) with
+$\loss_{\mathrm{task}} + \lambda\,\loss_{\mathrm{budget}}$
+(Eq.~\ref{eq:budget}; $\rho\in\{0.7,0.5,0.35,0.2\}$ the Pareto knob), or
+with the null controls: L1 on one-step deltas $|h_t-h_{t-1}|$, a
+spiking-style activity penalty $\overline{h^2}$, a \emph{plain} fine-tune
+(no regularizer; isolates the effect of extra epochs), and the post-hoc
+sweep on the unmodified network. Every model is then evaluated closed-loop
+over a threshold sweep $\theta_s = x\,\sigma_{\delta,s}$ using \emph{its
+own} calibration statistics (thresholds re-tuned per model, as deployment
+would), giving each model its own accuracy--events front.
+
+\textbf{The budget does what it promises---and it does not help.}
+Compliance is real: the budget loss falls to near zero, crossing profiles
+drop as demanded, and hidden increment scales shrink
+\SigmaShrinkPsMNIST{} at $\rho{=}0.2$ (psMNIST). But at matched events the
+front never improves (Fig.~\ref{fig:e3}): at the reference budget of
+\RefFracPsMNIST{} of dense events on psMNIST, post-hoc reaches
+\E3PosthocPsMNIST{} vs the budget family's \E3BudgetPsMNIST{} (paired
+difference \E3PairedDiffPsMNIST); on SC2 at \RefFracSCTwo{},
+\E3PosthocSCTwo{} vs \E3BudgetSCTwo{} (paired difference
+\E3PairedDiffSCTwo, $n{=}$\E3PairedNSCTwo{} seeds, Wilcoxon
+$p{=}$\E3WilcoxonPSCTwo). The controls tie the post-hoc front
+(plain \E3PlainPsMNIST{}, L1 \E3LOnePsMNIST{}, rate \E3RatePsMNIST{} on
+psMNIST)---so the pre-registered kill condition fires in its strongest
+form: not only does the crossing budget fail to beat L1-delta, \emph{no}
+temporal-smoothness fine-tune beats doing nothing.
+
+\textbf{Mechanism: approximate scale-freeness.} A send-on-delta encoder
+driven at $\theta = x\,\sigma_\delta$ has event rate $\approx
+\gamma(x)\,\mathrm{TV}/(x\,\sigma_\delta)$ with $\mathrm{TV}\propto
+\sigma_\delta$: the scale cancels. Training that shrinks $\sigma_\delta$
+therefore moves a model \emph{along} its own front, not above it; only
+restructuring the increment distribution's \emph{shape} could help, and
+Fig.~\ref{fig:e4} shows the budget compresses scale rather than shape. The
+flip side is a warning about evaluation methodology: at matched
+\emph{absolute} $\theta$ the budget-trained model fires
+\AbsThetaSavingPsMNIST{} fewer events (at \AbsThetaCostPsMNIST{} accuracy
+cost)---a fixed-threshold comparison, the natural default, would report
+this as a large win. On the matched-events front the same model is
+dominated by post-hoc thresholding of its own base. Fixed-$\theta$
+comparisons overstate what smoothness training buys.
+
+\paragraph{Overhead.} The budget costs \OverheadPct{} extra training time
+(\TaskOnlyMs\,ms $\to$ \WithBudgetMs\,ms per step, batch 256;
+segment-estimator forward+backward \EstimatorMs\,ms), consistent with the
+$O(NL)$ estimator; the negative result is not a cost story.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{What the theory buys.}
+The validated chain is: activation statistics $\to$ crossing profiles
+(Rice where Gaussian, empirical profile in general) $\to$ event rates
+(open-loop simulation; TV bound with a universal small-$x$ hysteresis
+correction on Gaussian-increment processes) $\to$ analytic threshold
+allocation that replaces sweeps. This is the piece the delta-network
+literature lacked: DeltaKWS-style deployments tune thresholds by silicon-
+or simulator-in-the-loop sweeps; a calibration pass plus curve inversion
+gets there for a few percent error at \TuneCostRatioSCTwo{} less tuning
+compute on SC2.
+
+\paragraph{What it does not buy.}
+Training against the rate model (or any smoothness proxy) is
+Pareto-neutral at best under scale-adapted thresholds. This is consistent
+with, and explains, the delta literature's practice of training normally
+and thresholding afterwards: our results say that practice is not lazy, it
+is \emph{correct} for these architectures and tasks. The scale-freeness
+argument suggests where a positive result might live: objectives that
+restructure increment \emph{shape} (e.g., pushing traces toward
+piecewise-constant, genuinely sparse-in-time increments) rather than
+shrinking increment scale---EGRU-style hard gating \citep{subramoney2023egru}
+is one such mechanism, and bridging it to analytic rate models is open.
+
+\paragraph{Information per event (framing).}
+One can read the event stream through Palm calculus: conditioning on event
+times, the relevant quantity is information per event (bits per joule
+under the energy model). Our negative says fine-tuning did not increase
+bits-per-event at matched accuracy; we flag this as framing, not a
+load-bearing claim.
+
+\paragraph{Neuromorphic outlook.}
+The prediction/allocation machinery is exactly what event-driven hardware
+needs at design time: given trace statistics from a workload corpus, event
+rates---hence energy and bandwidth envelopes---follow analytically, before
+silicon or even simulation. The modeled \EnergyRatioAtTwenty{} energy
+reduction at \AccAtTwentySCTwo{} accuracy for always-on keyword spotting is
+the standard delta-network story \citep{chen2024deltakws}, now with
+predicted rather than swept thresholds. We claim no measured silicon
+numbers.
+
+\section{What we do not claim}
+We do not claim spiking or spike-coding results (Spikformer/SpikeGPT are a
+different mechanism); we do not claim measured hardware energy (all energy
+is Horowitz-table modeled, weights SRAM-resident); we do not claim the
+training negative generalizes past the tested scale (GRUs to 128 units,
+transformers to 2 layers, three tasks) or to training-from-scratch with
+event costs in the loss from step zero; we do not claim the analytic
+$\gamma$ transfers to heavy-tailed increments (it does not; measured at up
+to \AnalyticGammaWorstSCTwo{} error); and the Palm-calculus paragraph is
+framing only.
+
+\section{Limitations}
+Fine-tuning (5 epochs) rather than from-scratch training; one architecture
+family per task; the budget acts on hidden-state streams via pooled
+per-layer quantile ladders (per-channel budgets untested); the allocation
+heuristics are one-dimensional inversions, not joint optimizers, and lose
+to joint search at accuracy-destroying budgets on psMNIST; enwik8 quality
+under thresholding is evaluated on fixed windows (no KV-cache-aware
+decoding); event accounting charges each matvec's input stream
+independently (a shared encoder would shave the anchor-update term); and
+all energy numbers are model-based.
+
+\section{Reproducibility}
+Code, tests, experiment scripts, and every result JSON regenerate the
+paper: \url{https://github.com/gunnerhowe/Research} (directory
+\texttt{energy-effic}); archived at DOI: \texttt{10.5281/zenodo.XXXXXXX}
+(to be minted at submission). Environment: Python 3.13.6, PyTorch
+2.7.1+cu118, single RTX~3080 (10\,GB), Windows~11; seeds 0--7 (SC2) / 0--2
+(psMNIST, enwik8); \texttt{python -m pytest tests/ -q} (14 tests) and
+\texttt{python experiments/exp\{0..4\}*.py} reproduce
+\texttt{results/*.json}; \texttt{make\_figures.py} and
+\texttt{gen\_paper\_numbers.py} regenerate every figure, table, and prose
+number; the regenerate-and-diff check passes at submission. Speech
+Commands v2 and MNIST download automatically; enwik8 from the Hutter
+corpus.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
+
+\appendix
+
+\section{Discrete-time Gaussian crossing rate}
+\label{app:discrete}
+For a stationary Gaussian sequence with mean $m$, variance $\lambda_0$,
+lag-1 correlation $\rho_1$, the pair $(a_t, a_{t+1})$ is bivariate normal;
+with $h=(u-m)/\sqrt{\lambda_0}$,
+$P[a_t\le u, a_{t+1}\le u] = \Phi(h) - 2\mathrm{T}(h, a)$ with
+$a=\sqrt{(1-\rho_1)/(1+\rho_1)}$ \citep{owen1956}, giving the crossing
+probability $2[\Phi(h)-\Phi_2(h,h;\rho_1)] = 4\mathrm{T}(h,a)$
+(Eq.~\ref{eq:discrete}). Sanity limits: $\rho_1\to0$ gives
+$2\Phi(h)(1-\Phi(h))$ (iid); $u=m$ gives $\arccos(\rho_1)/\pi$; both are
+unit-tested against AR(1) simulation (max error \GateVOU). On real traces
+Eq.~\eqref{eq:discrete} tracks Eq.~\eqref{eq:rice} closely (both fail
+together under non-Gaussianity): median errors differ by $<$2\% on all
+streams, so the headline text reports \eqref{eq:rice}.
+
+\section{Kurtosis and the failure of the Gaussian predictor}
+Fig.~\ref{fig:kurt} plots per-channel Rice error against excess kurtosis
+pooled over all streams, seeds, tasks: the V-shape shows the Gaussian
+predictor failing on \emph{both} sides of Gaussianity.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{figs/e1_kurtosis.pdf}
+\caption{Per-channel Rice median relative error vs excess kurtosis (symlog
+axis). The error is minimal near zero kurtosis and rises two-sidedly;
+Spearman $\rho$ of error vs $|$kurtosis$|$: \KurtSpearmanSCTwo{} (SC2),
+\KurtSpearmanPsMNIST{} (psMNIST), \KurtSpearmanEnwik{} (enwik8).}
+\label{fig:kurt}
+\end{figure}
+
+\section{enwik8 under thresholding}
+Test bpc at uniform relative threshold $x$:
+\BaseBpcEnwik{} (dense) $\to$ \BpcAtXPointOne{} ($x{=}0.1$) $\to$
+\BpcAtXPointThreeFive{} ($x{=}0.35$). The delta-transformer's useful regime
+is $x\lesssim0.1$; within it, event prediction errors are
+$\le$\EventOpenloopMaxEnwikDeploy.
+
+\section{Reproduction commands}
+\begin{verbatim}
+python -m pytest tests/ -q
+python experiments/exp0_validation.py
+python experiments/train_base.py --task all
+python experiments/train_base.py --task sc2 --seeds 3,4,5,6,7
+python experiments/exp1_prediction.py --task all
+python experiments/exp2_allocation.py
+python experiments/exp3_budget_training.py
+python experiments/exp3b_absolute_theta.py
+python experiments/exp4_controls.py
+python experiments/bench_timing.py
+python experiments/make_figures.py
+python paper/gen_paper_numbers.py
+\end{verbatim}
 
 \end{document}

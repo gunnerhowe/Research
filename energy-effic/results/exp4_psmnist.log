@@ -1,0 +1,153 @@
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\torch\nn\modules\rnn.py:1393: UserWarning: RNN module weights are not part of single contiguous chunk of memory. This means they need to be compacted at every call, possibly greatly increasing memory usage. To compact weights again call flatten_parameters(). (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\aten\src\ATen\native\cudnn\RNN.cpp:1481.)
+  result = _VF.gru(
+  ep00 task=0.0176 reg=0 val=0.9880 (1.6s)
+  ep01 task=0.0153 reg=0 val=0.9896 (1.7s)
+  ep02 task=0.0120 reg=0 val=0.9900 (2.4s)
+  ep03 task=0.0102 reg=0 val=0.9894 (2.4s)
+  ep04 task=0.0090 reg=0 val=0.9900 (2.4s)
+[psmnist s0] plain ft dense acc 0.9873
+  ep00 task=0.0176 reg=0.1384 val=0.9880 (2.7s)
+  ep01 task=0.0153 reg=0.1381 val=0.9904 (2.7s)
+  ep02 task=0.0120 reg=0.1381 val=0.9900 (2.6s)
+  ep03 task=0.0103 reg=0.1375 val=0.9894 (2.7s)
+  ep04 task=0.0090 reg=0.1373 val=0.9900 (2.7s)
+[psmnist s0] l1delta lam=0.03 dense acc 0.9878
+  ep00 task=0.0176 reg=0.1372 val=0.9880 (2.7s)
+  ep01 task=0.0154 reg=0.1357 val=0.9910 (2.7s)
+  ep02 task=0.0121 reg=0.1348 val=0.9900 (2.7s)
+  ep03 task=0.0104 reg=0.1336 val=0.9896 (2.6s)
+  ep04 task=0.0091 reg=0.1331 val=0.9902 (2.7s)
+[psmnist s0] l1delta lam=0.1 dense acc 0.9878
+  ep00 task=0.0179 reg=0.1339 val=0.9882 (2.7s)
+  ep01 task=0.0161 reg=0.1294 val=0.9896 (2.7s)
+  ep02 task=0.0132 reg=0.1265 val=0.9890 (2.7s)
+  ep03 task=0.0110 reg=0.124 val=0.9898 (2.7s)
+  ep04 task=0.0097 reg=0.123 val=0.9898 (2.6s)
+[psmnist s0] l1delta lam=0.3 dense acc 0.9868
+  ep00 task=0.0198 reg=0.1255 val=0.9874 (2.6s)
+  ep01 task=0.0200 reg=0.1135 val=0.9880 (2.6s)
+  ep02 task=0.0178 reg=0.1064 val=0.9878 (2.7s)
+  ep03 task=0.0161 reg=0.1022 val=0.9876 (2.6s)
+  ep04 task=0.0140 reg=0.1001 val=0.9880 (2.6s)
+[psmnist s0] l1delta lam=1.0 dense acc 0.9863
+  ep00 task=0.0176 reg=0.4203 val=0.9878 (2.5s)
+  ep01 task=0.0152 reg=0.4143 val=0.9902 (2.5s)
+  ep02 task=0.0121 reg=0.4098 val=0.9900 (2.5s)
+  ep03 task=0.0103 reg=0.4072 val=0.9892 (2.5s)
+  ep04 task=0.0091 reg=0.4051 val=0.9900 (2.5s)
+[psmnist s0] rate lam=0.03 dense acc 0.9873
+  ep00 task=0.0178 reg=0.4072 val=0.9882 (2.5s)
+  ep01 task=0.0156 reg=0.3862 val=0.9912 (2.5s)
+  ep02 task=0.0131 reg=0.3717 val=0.9896 (2.5s)
+  ep03 task=0.0112 reg=0.3622 val=0.9894 (2.5s)
+  ep04 task=0.0099 reg=0.3569 val=0.9900 (2.5s)
+[psmnist s0] rate lam=0.1 dense acc 0.9888
+  ep00 task=0.0197 reg=0.3729 val=0.9892 (2.5s)
+  ep01 task=0.0198 reg=0.3156 val=0.9904 (2.5s)
+  ep02 task=0.0189 reg=0.2808 val=0.9902 (2.5s)
+  ep03 task=0.0174 reg=0.2607 val=0.9898 (2.5s)
+  ep04 task=0.0161 reg=0.2521 val=0.9898 (2.5s)
+[psmnist s0] rate lam=0.3 dense acc 0.9902
+wrote E:\GitHub\Research\energy-effic\results\exp4_psmnist.json
+  ep00 task=0.0179 reg=0 val=0.9892 (2.4s)
+  ep01 task=0.0153 reg=0 val=0.9904 (2.4s)
+  ep02 task=0.0129 reg=0 val=0.9882 (2.4s)
+  ep03 task=0.0106 reg=0 val=0.9896 (2.4s)
+  ep04 task=0.0093 reg=0 val=0.9900 (2.4s)
+[psmnist s1] plain ft dense acc 0.9893
+  ep00 task=0.0180 reg=0.1349 val=0.9896 (2.7s)
+  ep01 task=0.0154 reg=0.1348 val=0.9904 (2.7s)
+  ep02 task=0.0128 reg=0.1349 val=0.9882 (2.6s)
+  ep03 task=0.0107 reg=0.1346 val=0.9896 (2.7s)
+  ep04 task=0.0094 reg=0.1344 val=0.9898 (2.6s)
+[psmnist s1] l1delta lam=0.03 dense acc 0.9893
+  ep00 task=0.0181 reg=0.1339 val=0.9888 (1.2s)
+  ep01 task=0.0155 reg=0.1326 val=0.9908 (1.5s)
+  ep02 task=0.0129 reg=0.1318 val=0.9880 (1.4s)
+  ep03 task=0.0108 reg=0.131 val=0.9894 (1.4s)
+  ep04 task=0.0095 reg=0.1305 val=0.9896 (1.5s)
+[psmnist s1] l1delta lam=0.1 dense acc 0.9888
+  ep00 task=0.0184 reg=0.131 val=0.9888 (2.7s)
+  ep01 task=0.0162 reg=0.1268 val=0.9902 (2.6s)
+  ep02 task=0.0137 reg=0.1241 val=0.9882 (2.6s)
+  ep03 task=0.0114 reg=0.1222 val=0.9892 (2.7s)
+  ep04 task=0.0102 reg=0.121 val=0.9892 (2.7s)
+[psmnist s1] l1delta lam=0.3 dense acc 0.9883
+  ep00 task=0.0206 reg=0.1234 val=0.9874 (2.7s)
+  ep01 task=0.0202 reg=0.1126 val=0.9880 (2.7s)
+  ep02 task=0.0178 reg=0.1062 val=0.9876 (2.7s)
+  ep03 task=0.0157 reg=0.102 val=0.9884 (2.6s)
+  ep04 task=0.0143 reg=0.09995 val=0.9886 (2.7s)
+[psmnist s1] l1delta lam=1.0 dense acc 0.9868
+  ep00 task=0.0179 reg=0.42 val=0.9892 (2.5s)
+  ep01 task=0.0155 reg=0.4148 val=0.9910 (2.5s)
+  ep02 task=0.0130 reg=0.4106 val=0.9886 (2.5s)
+  ep03 task=0.0107 reg=0.4083 val=0.9898 (2.5s)
+  ep04 task=0.0095 reg=0.4071 val=0.9900 (2.5s)
+[psmnist s1] rate lam=0.03 dense acc 0.9893
+  ep00 task=0.0182 reg=0.4083 val=0.9892 (2.5s)
+  ep01 task=0.0162 reg=0.3872 val=0.9912 (2.5s)
+  ep02 task=0.0138 reg=0.3727 val=0.9890 (2.5s)
+  ep03 task=0.0116 reg=0.3631 val=0.9900 (2.5s)
+  ep04 task=0.0104 reg=0.3584 val=0.9896 (2.5s)
+[psmnist s1] rate lam=0.1 dense acc 0.9893
+  ep00 task=0.0201 reg=0.3765 val=0.9878 (2.5s)
+  ep01 task=0.0209 reg=0.3168 val=0.9902 (2.5s)
+  ep02 task=0.0197 reg=0.2825 val=0.9886 (2.6s)
+  ep03 task=0.0179 reg=0.2626 val=0.9900 (2.5s)
+  ep04 task=0.0165 reg=0.2538 val=0.9904 (2.5s)
+[psmnist s1] rate lam=0.3 dense acc 0.9883
+wrote E:\GitHub\Research\energy-effic\results\exp4_psmnist.json
+  ep00 task=0.0172 reg=0 val=0.9884 (2.4s)
+  ep01 task=0.0152 reg=0 val=0.9896 (2.4s)
+  ep02 task=0.0121 reg=0 val=0.9892 (2.4s)
+  ep03 task=0.0099 reg=0 val=0.9894 (2.4s)
+  ep04 task=0.0088 reg=0 val=0.9908 (2.3s)
+[psmnist s2] plain ft dense acc 0.9907
+  ep00 task=0.0172 reg=0.1408 val=0.9880 (2.7s)
+  ep01 task=0.0151 reg=0.1404 val=0.9898 (2.6s)
+  ep02 task=0.0122 reg=0.1404 val=0.9890 (2.6s)
+  ep03 task=0.0099 reg=0.1399 val=0.9890 (2.6s)
+  ep04 task=0.0088 reg=0.1398 val=0.9908 (2.7s)
+[psmnist s2] l1delta lam=0.03 dense acc 0.9902
+  ep00 task=0.0171 reg=0.1395 val=0.9882 (2.7s)
+  ep01 task=0.0150 reg=0.1379 val=0.9894 (2.6s)
+  ep02 task=0.0123 reg=0.1369 val=0.9886 (2.7s)
+  ep03 task=0.0100 reg=0.1358 val=0.9888 (2.6s)
+  ep04 task=0.0089 reg=0.1353 val=0.9906 (2.6s)
+[psmnist s2] l1delta lam=0.1 dense acc 0.9902
+  ep00 task=0.0173 reg=0.1361 val=0.9878 (2.7s)
+  ep01 task=0.0159 reg=0.1313 val=0.9892 (2.7s)
+  ep02 task=0.0132 reg=0.1283 val=0.9880 (2.7s)
+  ep03 task=0.0108 reg=0.1259 val=0.9892 (2.7s)
+  ep04 task=0.0096 reg=0.1248 val=0.9904 (2.6s)
+[psmnist s2] l1delta lam=0.3 dense acc 0.9897
+  ep00 task=0.0192 reg=0.1274 val=0.9870 (2.7s)
+  ep01 task=0.0199 reg=0.1153 val=0.9872 (2.7s)
+  ep02 task=0.0177 reg=0.1083 val=0.9864 (2.7s)
+  ep03 task=0.0158 reg=0.1037 val=0.9868 (2.0s)
+  ep04 task=0.0142 reg=0.1018 val=0.9888 (1.2s)
+[psmnist s2] l1delta lam=1.0 dense acc 0.9873
+  ep00 task=0.0173 reg=0.4304 val=0.9876 (1.4s)
+  ep01 task=0.0152 reg=0.4249 val=0.9898 (1.3s)
+  ep02 task=0.0123 reg=0.421 val=0.9896 (1.3s)
+  ep03 task=0.0100 reg=0.4184 val=0.9902 (1.9s)
+  ep04 task=0.0090 reg=0.4171 val=0.9908 (2.5s)
+[psmnist s2] rate lam=0.03 dense acc 0.9907
+  ep00 task=0.0175 reg=0.4169 val=0.9888 (2.5s)
+  ep01 task=0.0157 reg=0.3953 val=0.9898 (2.5s)
+  ep02 task=0.0133 reg=0.3797 val=0.9888 (2.5s)
+  ep03 task=0.0111 reg=0.3697 val=0.9906 (2.5s)
+  ep04 task=0.0100 reg=0.3648 val=0.9912 (2.5s)
+[psmnist s2] rate lam=0.1 dense acc 0.9912
+  ep00 task=0.0195 reg=0.3795 val=0.9886 (2.5s)
+  ep01 task=0.0211 reg=0.3198 val=0.9890 (2.5s)
+  ep02 task=0.0197 reg=0.284 val=0.9888 (2.5s)
+  ep03 task=0.0179 reg=0.2635 val=0.9892 (2.5s)
+  ep04 task=0.0166 reg=0.2543 val=0.9902 (2.5s)
+[psmnist s2] rate lam=0.3 dense acc 0.9907
+wrote E:\GitHub\Research\energy-effic\results\exp4_psmnist.json
+[psmnist s0] histograms done
+[psmnist s1] histograms done
+[psmnist s2] histograms done
+wrote E:\GitHub\Research\energy-effic\results\exp4_psmnist_histograms.json

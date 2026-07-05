@@ -99,7 +99,8 @@ for t, tex in TASKNAME.items():
                 if b is not None:
                     ku.append(a)
                     er.append(b)
-    rho_s = stats.spearmanr(ku, er).statistic
+    # Rice fails two-sidedly (sub- and super-Gaussian): correlate |kurtosis|
+    rho_s = stats.spearmanr(np.abs(ku), er).statistic
     setm(f"KurtSpearman{tex}", num(rho_s, 2))
     # event prediction: openloop_cal err in deployable regime x<=0.75
     if t != "enwik8":
@@ -255,6 +256,72 @@ for t, tex in (("sc2", "SCTwo"), ("psmnist", "PsMNIST")):
                    for s in d3 if key in d3[s]]
             setm(f"SigmaShrink{tex}", f"{np.mean(shr):.1f}$\\times$")
             break
+
+# ---------------------------------------------------------------- E3b
+
+for t, tex in (("sc2", "SCTwo"), ("psmnist", "PsMNIST")):
+    d = load(f"exp3b_{t}.json")
+    if not d:
+        continue
+    # fixed-absolute-theta view at x=0.35: apparent event saving + acc cost
+    for i, row in enumerate(d["s0"]["rows"]):
+        if row["x"] == 0.35:
+            sav = [1 - d[s]["rows"][i]["tuned"]["frac"]
+                   / d[s]["rows"][i]["base"]["frac"] for s in d]
+            cost = [d[s]["rows"][i]["base"]["acc"]
+                    - d[s]["rows"][i]["tuned"]["acc"] for s in d]
+            setm(f"AbsThetaSaving{tex}", pct(np.mean(sav), 0))
+            setm(f"AbsThetaCost{tex}", pct(np.mean(cost)))
+
+# ---------------------------------------------------------------- enwik8 bpc
+
+d = load("exp1_enwik8.json")
+base = load("base_training.json")
+if d and base:
+    dense_bpc = np.mean([base[k]["test_bpc"] for k in base
+                         if k.startswith("enwik8")])
+    for i, row in enumerate(d["s0"]["events"]):
+        b = np.mean([d[s]["events"][i]["bpc"] for s in d])
+        if row["x"] == 0.1:
+            setm("BpcAtXPointOne", num(b, 2))
+            ev = np.mean([d[s]["events"][i]["streams"]["l0.qkv_in"]["measured"]
+                          for s in d])
+            setm("EventsAtXPointOneEnwik", pct(ev, 0))
+        if row["x"] == 0.35:
+            setm("BpcAtXPointThreeFive", num(b, 2))
+    # deployable regime for enwik8 = x <= 0.1 (bpc within ~0.15 of dense)
+    errs = []
+    for s in d.values():
+        for row in s["events"]:
+            if row["x"] <= 0.1:
+                for st in row["streams"].values():
+                    errs.append(abs(st["pred_openloop_cal"] - st["measured"])
+                                / max(st["measured"], 1e-9))
+    setm("EventOpenloopMaxEnwikDeploy", pct(max(errs)))
+
+# --------------------------------------------------- energy per decision
+
+d = load("exp2_sc2.json")
+if d:
+    T_STEPS = 101  # SC2 log-mel frames per 1 s decision
+    from_dense = []
+    for s in d:
+        dense_w = d[s]["dense_weighted"]
+        # dense energy per step: every component fires
+        row02 = [r for r in d[s]["analytic"]["uniform_x"]
+                 if r["budget_frac"] == 0.2][0]
+        from_dense.append((dense_w, row02["energy_pj_per_step"],
+                           row02["acc"]))
+    # dense pJ/step from stream weights: reuse relation energy = wev*(macs..)
+    # dense energy per step = dense_w*(4.6+5.0) + n_comp*2*5.0
+    n_comp = 40 + 128 + 128
+    dense_e = np.mean([dw * (4.6 + 5.0) + n_comp * 2 * 5.0
+                       for dw, _, _ in from_dense])
+    delta_e = np.mean([e for _, e, _ in from_dense])
+    setm("EnergyDensePerDecisionUJ", num(dense_e * T_STEPS / 1e6, 1))
+    setm("EnergyDeltaPerDecisionUJ", num(delta_e * T_STEPS / 1e6, 1))
+    setm("EnergyRatioAtTwenty", f"{dense_e / delta_e:.1f}$\\times$")
+    setm("AccAtTwentySCTwo", pct(np.mean([a for _, _, a in from_dense])))
 
 # ---------------------------------------------------------------- timing
 
