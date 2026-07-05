@@ -242,8 +242,12 @@ at submission.
   interp of the largest box suffices iff the correlation length xi << that box;
   KS (xi ~ 10 << 88) -> null wins; Nikolaevskiy r=0.1 (xi >~ 88) -> flow wins.
 - 2026-07-05 (E5 OUTCOME: honest NEGATIVE, hypothesis refuted; the xi framing was
-  WRONG). Ran the full Nikolaevskiy ladder {44,66,88}->176,704 (L=22 excluded: it
-  dies at r=0.1, rms->0, turbulence-onset outlier). Findings that overturned the
+  WRONG). Ran the full Nikolaevskiy ladder {44,66,88}->176,704. L=22 excluded: it
+  is TURBULENT at r=0.1 (rms~0.6, r2~1.0) but its per-sector spectrum is a small-box
+  finite-size OUTLIER (few unstable modes fit), and excluding it is GENEROUS to the
+  flow -- including L=22 raises the flow's target gamma error (30.2% vs 21.4%), so
+  it never props up the negative. (The "rms->0 death" is the r=0.05 case above, a
+  DIFFERENT r -- not r=0.1.) Findings that overturned the
   plan: (1) the correlation length is SHORT for BOTH systems (integral xi ~ 4.7 KS,
   5.6 Nik; C(r)->0 by r~40 for both) -- xi is NOT the discriminator; the earlier
   "xi~L" reading was an artifact of a buggy last-crossing metric that caught the

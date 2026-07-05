@@ -168,7 +168,15 @@ macro("NikInterpSPct", pct(10 ** nt["interp88"]["point_estimate"]["s_med_log10"]
 macro("NikInterpC", pct(nt["interp88"]["point_estimate"]["c_rel_l2"]))
 macro("NikInterpFortyFourGamma", pct(nt["interp44"]["point_estimate"]["gamma_med_rel"]))
 macro("NikFlowWins", str(exp5["verdict"]["n_wins"]))
+macro("NikNumMetrics", str(len(exp5["verdict"]["metrics"])))   # derived, not "/5"
 macro("NikSectors", str(exp5["targets"][Lt5]["n_sectors"]))
+# derived ratios (no hand-typed "8x"): target/largest-box, and Nik/KS drift at L=88
+macro("NikTargetOverBox", str(round(cfg5["L_target"] / 88.0)))
+macro("NikDriftRatioKS",
+      str(round(nik_conv[88.0]["gamma_rel_to_limit"] /
+                next(r["gamma_rel_to_limit"] for r in exp4["convergence"] if r["L"] == 88.0))))
+rob = exp5["robustness_L22_included"]
+macro("NikFlowGammaWithSmallest", pct(rob["flow_gamma_med_rel"]))
 # holdout (176) too
 nh = exp5["targets"]["176"]["methods"]
 macro("NikFlowGammaHoldout", pct(nh["fitted_flow"]["point_estimate"]["gamma_med_rel"]))

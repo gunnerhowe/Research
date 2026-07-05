@@ -358,12 +358,17 @@ marginal} --- a conservation-law/Goldstone mode --- giving soft-mode
 turbulence~\citep{nikolaevskiy1989,tribelsky1996,matthews2000} in which the
 marginal mode renormalizes the low-$k$ decay rates with large, slow finite-size
 corrections. We run it at $r=\NikR$ with the identical integrator family,
-estimators, and flow (ladder $\{44,66,88\}$; $L=22$ is a turbulence-onset outlier
-at this $r$ and is excluded). The effect is real and large: the decay-rate drift is
-still \NikConvEightEight\ at $L=88$ (Fig.~\ref{fig:criterion}, left), roughly
-$8\times$ KS's \ConvEightEightGamma, so \textbf{interpolation is genuinely
-degraded} --- interp-88 misses the $L=\NikTargetL$ decay rates by \NikInterpGamma\
-(versus \InterpEightEightGamma\ for KS). Notably the real-space correlation length
+estimators, and flow (ladder $\{44,66,88\}$). $L=22$ is turbulent at this $r$
+(root-mean-square amplitude $\approx0.6$) but its per-sector spectrum is a
+small-box finite-size outlier --- few unstable modes fit in the box --- so we start
+the flow ladder at $L=44$; including $L=22$ makes the flow \emph{worse}
+(target decay-rate error \NikFlowGammaWithSmallest\ versus \NikFlowGamma), so its
+exclusion is generous to the flow and cannot prop up the negative below. The effect
+is real and large: the decay-rate drift is still \NikConvEightEight\ at $L=88$
+(Fig.~\ref{fig:criterion}, left), about \NikDriftRatioKS$\times$ KS's
+\ConvEightEightGamma, so \textbf{interpolation is genuinely degraded} --- interp-88
+misses the $L=\NikTargetL$ decay rates by \NikInterpGamma\ (versus
+\InterpEightEightGamma\ for KS). Notably the real-space correlation length
 is \emph{not} what changed: it is $\xi\approx\NikXiEightEight$, essentially the
 same short value as KS. The slow convergence is a spectral effect of the marginal
 mode, not a long correlation length.
@@ -373,13 +378,15 @@ flow from $\{44,66,88\}$ to $L=\NikTargetL$ ($\NikSectors$ sectors, zero
 large-domain data) gives decay rates to \NikFlowGamma\ --- \emph{worse} than the
 degraded interp-88 (\NikInterpGamma) --- and spectral density to \NikFlowSPct\
 versus interp-88's \NikInterpSPct. The flow beats the best no-flow null on
-\NikFlowWins/5 metrics. Two mechanisms defeat it, both visible in the data. First,
+\NikFlowWins/\NikNumMetrics\ metrics. Two mechanisms defeat it, both visible in the
+data. First,
 the spectral density is \emph{extensive} even here: $\Shat(k)$ is converged by
 $L=44$, so interpolation is near-exact for it (\NikInterpSPct) while the flow only
 adds extrapolation noise (\NikFlowSPct). Second, the finite-size drift that does
 exist --- in the low-$k$ decay rates --- is \emph{non-monotone} across the training
 sizes (soft-mode-contaminated, and estimated from finite trajectories), so the
-$1/L$ fit, extrapolated over an $8\times$ span in system size, overshoots; interp-88,
+$1/L$ fit, extrapolated over a \NikTargetOverBox$\times$ span in system size,
+overshoots; interp-88,
 which does no extrapolation, is closer despite being biased. The flow needs a clean
 monotone approach to a limit, and the marginal-mode regime does not provide one.
 So across both systems --- fast-converging (KS) and slow-converging (Nikolaevskiy)

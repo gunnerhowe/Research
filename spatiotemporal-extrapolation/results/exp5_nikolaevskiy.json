@@ -2955,5 +2955,10 @@
   },
   "n_wins": 0,
   "flow_necessary": false
+ },
+ "robustness_L22_included": {
+  "flow_gamma_med_rel": 0.30223674334866807,
+  "flow_gamma_excluded": 0.2137106017475224,
+  "note": "L=22 is turbulent at r=0.1 (rms~0.6) but a small-box spectral outlier; including it raises the flow's target decay-rate error, so its exclusion is generous to the flow and does not affect the negative conclusion."
  }
 }
