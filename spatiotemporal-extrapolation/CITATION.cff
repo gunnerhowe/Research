@@ -11,6 +11,7 @@ date-released: 2026-07-05
 license: MIT
 keywords:
   - Kuramoto-Sivashinsky
+  - Nikolaevskiy equation
   - Ruelle-Pollicott resonances
   - Koopman operator
   - EDMD
@@ -18,9 +19,10 @@ keywords:
   - domain extension
   - spatiotemporal chaos
   - transfer operator
+  - negative result
 preferred-citation:
   type: article
-  title: "Finite-Size Scaling of Data-Driven Transfer-Operator Spectra: A Characterization, and an Honest Null for Spectral Domain Extension"
+  title: "Interpolation Beats Finite-Size Scaling for Domain Extension of Learned Transfer-Operator Spectra: A Two-System Study and a Convergence Diagnostic"
   authors:
     - family-names: Howe
       given-names: Gunner Levi

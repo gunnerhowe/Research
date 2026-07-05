@@ -200,6 +200,57 @@ def fig6_lowk():
     savefig(fig, "fig6_lowk")
 
 
+def fig7_criterion():
+    """The thesis figure: KS converges by L~88 (interp wins) while Nikolaevskiy
+    does not (flow wins) -> the correlation-length criterion. Requires exp5."""
+    exp5_path = RESULTS / "exp5_nikolaevskiy.json"
+    if not exp5_path.exists():
+        print("fig7 skipped (exp5 not run)")
+        return
+    exp4 = json.load(open(RESULTS / "exp4_boundary.json"))   # KS convergence
+    exp5 = json.load(open(exp5_path))
+    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.5))
+    # (a) convergence to limit: KS vs Nikolaevskiy
+    ks = exp4["convergence"]
+    nik = exp5["convergence"]
+    axes[0].loglog([r["L"] for r in ks], [r["gamma_rel_to_limit"] for r in ks],
+                   "o-", color="#1f77b4", label="KS")
+    axes[0].loglog([r["L"] for r in nik], [r["gamma_rel_to_limit"] for r in nik],
+                   "s-", color="#d62728", label="Nikolaevskiy")
+    axes[0].axvline(88, color="0.6", ls=":")
+    axes[0].set_xlabel("L"), axes[0].set_ylabel(r"$\gamma$ spectral drift")
+    axes[0].set_title("drift: fast KS, slow Nik", fontsize=8), axes[0].legend()
+    # (b) Nikolaevskiy target: flow vs interp-88 vs truth
+    t = exp5["targets"][f"{exp5['config']['L_target']:g}"]
+    k = np.asarray(t["k"])
+    tg, tse = np.asarray(t["truth_gamma"]), np.asarray(t["truth_gamma_se"])
+    axes[1].fill_between(k, tg - 2 * tse, tg + 2 * tse, color="0.85", label="truth")
+    axes[1].plot(k, t["methods"]["fitted_flow"]["pred_gamma_mean"], color=FLOW_C,
+                 lw=1.0, label="FSS flow")
+    curves88 = analyze_measurement(RUNS / "measure_nikL88.npz")
+    from floweval import predict_interp_null
+    ip = predict_interp_null(curves88, None, k)
+    axes[1].plot(k, ip["gamma"], color=INTERP_C, ls="--", lw=1.0, label="interp-88")
+    axes[1].set_xlim(0, 2.2), axes[1].set_ylim(bottom=0)
+    axes[1].set_xlabel("k")
+    axes[1].set_ylabel(rf"$\gamma(k)$ at $L={exp5['config']['L_target']:g}$")
+    axes[1].set_title("Nik target: both inaccurate", fontsize=8)
+    axes[1].legend()
+    # (c) verdict: flow vs interp-88 gamma error, KS vs Nikolaevskiy
+    ks_flow = json.load(open(RESULTS / "exp2_flow.json"))["targets"]["1408"]["methods"]["fitted_flow"]["point_estimate"]["gamma_med_rel"]
+    ks_i88 = json.load(open(RESULTS / "exp3_baselines.json"))["targets"]["1408"]["methods"]["interp88"]["point_estimate"]["gamma_med_rel"]
+    nik_flow = t["methods"]["fitted_flow"]["point_estimate"]["gamma_med_rel"]
+    nik_i88 = t["methods"]["interp88"]["point_estimate"]["gamma_med_rel"]
+    x = np.arange(2)
+    axes[2].bar(x - 0.2, [ks_flow, nik_flow], 0.4, color=FLOW_C, label="FSS flow")
+    axes[2].bar(x + 0.2, [ks_i88, nik_i88], 0.4, color=INTERP_C, label="interp-88")
+    axes[2].set_xticks(x), axes[2].set_xticklabels(["KS\n(64×)", f"Nik\n({round(exp5['config']['L_target']/22)}×)"])
+    axes[2].set_ylabel(r"$\gamma$ med rel err")
+    axes[2].set_title("interp beats flow in both", fontsize=8), axes[2].legend()
+    fig.subplots_adjust(wspace=0.34)
+    savefig(fig, "fig7_criterion")
+
+
 if __name__ == "__main__":
     fig1_snapshots()
     fig2_dispersion()
@@ -207,3 +258,4 @@ if __name__ == "__main__":
     fig4_convergence_baselines()
     fig5_boundary()
     fig6_lowk()
+    fig7_criterion()

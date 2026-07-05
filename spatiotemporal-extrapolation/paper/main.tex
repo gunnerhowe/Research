@@ -15,8 +15,9 @@
 \newcommand{\Shat}{\hat S}
 \newcommand{\kmax}{k_{\max}}
 
-\title{\vspace{-3em}Finite-Size Scaling of Data-Driven Transfer-Operator Spectra:\\
-A Characterization, and an Honest Null for Spectral Domain Extension}
+\title{\vspace{-3em}Interpolation Beats Finite-Size Scaling for Domain\\
+Extension of Learned Transfer-Operator Spectra:\\
+A Two-System Study and a Convergence Diagnostic}
 \author{Gunner Levi Howe\\ \small\texttt{gunnerlevihowe@gmail.com}}
 \date{July 2026}
 
@@ -26,29 +27,31 @@ A Characterization, and an Honest Null for Spectral Domain Extension}
 \begin{abstract}
 Can one predict the long-time statistics of an extensively chaotic field on a
 large domain by learning a transfer operator only on small domains and
-extrapolating its spectrum in system size? We study this for the
-one-dimensional Kuramoto--Sivashinsky (KS) equation. We first establish, as a
-pure-numerics characterization, that the leading Ruelle--Pollicott / Koopman
-resonances and the spectral density estimated by delay-embedded EDMD have a
-\emph{smooth, fittable dependence on domain size} $L$: a per-wavenumber $1/L$
-flow fit on $L\in\{22,44,66,88\}$ predicts the held-out $L=176$ spectrum to
-\GateSHoldoutGamma\ (decay rates) and \GateSHoldoutS\ (spectral density). Pushed
-to $L=1408$ ($\TargetFactor\times$ the base volume) with \emph{zero} large-domain
-data, the finite-size-scaling (FSS) flow reproduces decay rates to
-\FlowTargetGamma, spectral density to \FlowTargetSPct, two-point correlations to
-\FlowTargetC, and correlation times to \FlowTargetTau. However --- and this is
-the central, pre-registered finding --- the FSS machinery is \emph{unnecessary}
-for KS: the simplest translation-invariant null, interpolating the spectrum of
-the largest affordable small box ($L=88$) in wavenumber with no size flow at all,
-does \emph{better} (\InterpEightEightGamma\ on decay rates), because KS bulk
-spectra converge to within \ConvEightEightGamma\ of the thermodynamic limit
-already by $L=88$. We report this honestly, quantify the convergence that drives
-it, and delimit where such a null must fail. Separately, a deep translation-
-equivariant Koopman autoencoder reproduces the invariant spectral density
-(\KThreeSMedPct) but not the per-mode resonances (\KThreeOmegaMedRel\ error on
-oscillation frequencies), so the data-driven-Koopman (EDMD) operator is our
-spectral instrument. All numbers are machine-generated and regenerate byte-for-
-byte.
+extrapolating its spectrum in system size? We built the finite-size-scaling (FSS)
+machinery to do exactly this --- estimate leading Ruelle--Pollicott / Koopman
+resonances and spectral densities by delay-embedded EDMD, fit a per-wavenumber
+$1/L$ flow on small domains, extrapolate --- and the honest verdict, across two
+systems chosen to bracket the finite-size convergence rate, is that it does
+\emph{not} beat the simplest baseline: interpolating the spectrum of the largest
+affordable box in wavenumber, with no size flow at all. For Kuramoto--Sivashinsky
+(KS) the flow works in absolute terms --- $\{22,44,66,88\}\!\to\!L=1408$
+($\TargetFactor\times$ the base volume, zero large-domain data) predicts decay
+rates to \FlowTargetGamma, spectral density to \FlowTargetSPct, correlations to
+\FlowTargetC --- but is \emph{redundant}: KS spectra converge by $L=88$ (drift
+\ConvEightEightGamma), so interpolation does better (\InterpEightEightGamma). We
+then ran the Nikolaevskiy equation, whose marginal $k{=}0$ conservation mode makes
+the \emph{spectrum} converge slowly (drift \NikConvEightEight\ at $L=88$): here
+interpolation is genuinely degraded (\NikInterpGamma\ on decay rates at
+$L=\NikTargetL$) --- yet the $1/L$ flow is \emph{worse still} (\NikFlowGamma),
+because the spectral density stays extensive and the flow overshoots the few
+non-monotone, non-converged low-$k$ decay rates. The FSS flow has no advantage
+window over interpolation in either regime. The operative diagnostic is not the
+correlation length (short, $\approx\!\KSXiEightEight$ and $\NikXiEightEight$, for
+both) but the \emph{small-domain spectral drift}, which a practitioner can measure
+to predict interpolation's accuracy. A deep translation-equivariant Koopman
+autoencoder reproduces the invariant density (\KThreeSMedPct) but not per-mode
+resonances (\KThreeOmegaMedRel\ error), so EDMD is our instrument. Every number is
+machine-generated and regenerates byte-for-byte.
 \end{abstract}
 
 \section{Introduction}
@@ -80,19 +83,26 @@ we treat it as substrate. The only mechanism we test as novel is
 \emph{domain-size extrapolation} of a learned operator's spectrum via a learned
 finite-size-scaling flow.
 
-\paragraph{Contributions and honest outcome.}
+\paragraph{Contributions.}
 (i) A characterization (\S\ref{sec:e0}): the finite-size dependence of
 EDMD-estimated KS RP/Koopman spectra is smooth and $1/L$-fittable
-(\emph{GATE~S passes}); this is, to our knowledge, the first such measurement.
-(ii) A working FSS flow (\S\ref{sec:e2}) that extrapolates the spectrum to
-$\TargetFactor\times$ the base volume at single-digit-percent error from zero
-large-domain data. (iii) The pre-registered null result (\S\ref{sec:e3}):
-because KS spectra converge by $L\approx 4\times$ the base, a no-flow null
-(interpolate the largest small box) \emph{beats} the flow; the FSS mechanism adds
-nothing over translation invariance for KS. We report this as the primary finding
-and delimit where it must fail. (iv) An honest negative for deep operators
-(\S\ref{sec:e1}): a translation-equivariant Koopman autoencoder matches the
-invariant measure but not per-mode resonances.
+(\emph{GATE~S passes}); to our knowledge the first such measurement, and the
+foundation any FSS flow would stand on. (ii) A working FSS flow (\S\ref{sec:e2})
+that does extrapolate the spectrum to $\TargetFactor\times$ the base volume at
+single-digit-percent error from zero large-domain data. (iii) \textbf{The honest
+verdict}: across two systems chosen to bracket the finite-size convergence rate,
+interpolating the largest affordable box beats the flow --- for KS because the
+spectrum is converged and the flow is redundant (\S\ref{sec:e3}), and for the
+Nikolaevskiy equation, whose marginal mode makes the spectrum converge slowly,
+because the flow overshoots the non-monotone drift while the spectral density
+stays extensive (\S\ref{sec:e5}). The flow has no advantage window; we say so and
+give the mechanism. (iv) \textbf{A diagnostic}: the small-domain spectral drift
+(not the correlation length, which is short for both systems) is measurable from
+the training data and predicts interpolation's accuracy, so a practitioner can
+tell whether extrapolation is trustworthy before paying for a large run.
+(v) An honest negative for deep operators (\S\ref{sec:e1}): a translation-
+equivariant Koopman autoencoder matches the invariant measure but not per-mode
+resonances, so we scale the EDMD operator.
 
 \section{Related work}
 \textbf{RP resonances of stochastic/observed systems.}
@@ -108,8 +118,9 @@ problem: \citet{devilleroche2026zeroshot} achieve zero-shot generalization of
 transformer neural operators to larger domains via attention locality, and
 \citet{huang2025domain} via domain-decomposition operator learning; both are
 \emph{locality} routes. Ours is a \emph{spectral / renormalization} route, and
-our finding is that for a fast-converging system the locality-free null already
-suffices --- so we cite-compare rather than reimplement. \textbf{RG $\times$ ML}:
+our finding is that a plain wavenumber-interpolation null already matches or beats
+the spectral flow in both convergence regimes we tested --- so we cite-compare
+rather than reimplement. \textbf{RG $\times$ ML}:
 neural-network renormalization group~\citep{li2018nnrg} and analyses of when
 learning dynamics renormalize~\citep{zhang2025renormalize} share the RG framing
 but target sampling / training dynamics, not operator-spectrum domain extension.
@@ -228,10 +239,11 @@ band is the sub-$2\pi/22$ region (partial/new-mode support) reported separately.
 \label{fig:headline}
 \end{figure}
 
-\section{E3: the honest null --- K2 fires}
+\section{E3: KS --- when interpolation suffices (K2 fires)}
 \label{sec:e3}
-The house rule is that the null control is the experiment that makes it a paper.
-We compare the flow against the strongest no-flow null: \textbf{interp-88},
+The flow works, but does it \emph{beat} the obvious no-flow null? For KS, no ---
+and understanding why gives half the criterion. We compare the flow against the
+strongest no-flow null: \textbf{interp-88},
 which interpolates the measured $L=88$ spectrum in wavenumber to the target grid
 with \emph{no size flow at all} (the spectral analog of evaluating a small-domain
 operator on a larger domain, the locality/zero-shot
@@ -272,11 +284,19 @@ interp-88 beats the FSS flow on every headline metric --- K2 fires.}
 
 \section{E4: boundaries --- where each route breaks}
 \label{sec:e4}
-\textbf{Convergence (the mechanism).} Table~\ref{tab:convergence} reports the
-median distance of each size's common-grid spectrum from the $L=1408$ limit. The
-decay rates are within \ConvFourFourGamma\ by $L=44$ and \ConvEightEightGamma\ by
-$L=88$; this rapid convergence is exactly why interp-88 suffices and the flow is
-redundant.
+\textbf{Convergence: the diagnostic that matters.}
+Table~\ref{tab:convergence} reports the median distance of each size's common-grid
+spectrum from the $L=1408$ limit --- the \emph{spectral finite-size drift}. The
+KS decay rates are within \ConvFourFourGamma\ by $L=44$ and \ConvEightEightGamma\
+by $L=88$; this rapid convergence is exactly why interp-88 suffices and the flow
+is redundant. The drift is measurable from the training sizes alone, so it, rather
+than any post-hoc knowledge, tells the practitioner interpolation is safe here.
+One might expect the real-space correlation length to be the diagnostic instead;
+it is not. The KS integral correlation length is $\xi\approx\KSXiEightEight$ (and
+$C(r)$ is negligible beyond $r\approx40$), but so is Nikolaevskiy's
+($\NikXiEightEight$, \S\ref{sec:e5}) --- yet the two converge at completely
+different rates. What separates them is a marginal mode, not a long correlation
+length; the drift captures its effect directly.
 
 \input{tables/convergence_wrap}
 
@@ -327,31 +347,92 @@ $k$. Statics extrapolate in wavenumber; dynamics do not.}
 \label{fig:lowk}
 \end{figure}
 
-\section{What we do not claim}
-We do not claim trajectory forecasting (N1): only statistics and slow modes. We
-do not claim that the FSS flow beats translation-invariant interpolation for KS
---- it does not (K2 fires); we claim only that the size-dependence is smooth and
-fittable, and that both routes extrapolate the bulk statistics to
-$\TargetFactor\times$ at single-digit-percent error. We make no 2-D/3-D or
-turbulence claims (none were run). We do not claim the deep operator captures
+\section{E5: Nikolaevskiy --- a slow-converging spectrum, and the flow still loses}
+\label{sec:e5}
+KS converges so fast that interpolation is near-exact; does the flow earn its keep
+when the spectrum converges \emph{slowly}? We test the hardest honest case:
+the Nikolaevskiy equation,
+$u_t = -u\,u_x + \mathcal{F}^{-1}\!\big[\sigma(k)\,\hat u\big]$ with linear growth
+rate $\sigma(k)=k^2[\,r-(1-k^2)^2\,]$. The prefactor $k^2$ makes $k{=}0$ \emph{exactly
+marginal} --- a conservation-law/Goldstone mode --- giving soft-mode
+turbulence~\citep{nikolaevskiy1989,tribelsky1996,matthews2000} in which the
+marginal mode renormalizes the low-$k$ decay rates with large, slow finite-size
+corrections. We run it at $r=\NikR$ with the identical integrator family,
+estimators, and flow (ladder $\{44,66,88\}$; $L=22$ is a turbulence-onset outlier
+at this $r$ and is excluded). The effect is real and large: the decay-rate drift is
+still \NikConvEightEight\ at $L=88$ (Fig.~\ref{fig:criterion}, left), roughly
+$8\times$ KS's \ConvEightEightGamma, so \textbf{interpolation is genuinely
+degraded} --- interp-88 misses the $L=\NikTargetL$ decay rates by \NikInterpGamma\
+(versus \InterpEightEightGamma\ for KS). Notably the real-space correlation length
+is \emph{not} what changed: it is $\xi\approx\NikXiEightEight$, essentially the
+same short value as KS. The slow convergence is a spectral effect of the marginal
+mode, not a long correlation length.
+
+This is the regime the flow was built for --- and it still loses. Extrapolating the
+flow from $\{44,66,88\}$ to $L=\NikTargetL$ ($\NikSectors$ sectors, zero
+large-domain data) gives decay rates to \NikFlowGamma\ --- \emph{worse} than the
+degraded interp-88 (\NikInterpGamma) --- and spectral density to \NikFlowSPct\
+versus interp-88's \NikInterpSPct. The flow beats the best no-flow null on
+\NikFlowWins/5 metrics. Two mechanisms defeat it, both visible in the data. First,
+the spectral density is \emph{extensive} even here: $\Shat(k)$ is converged by
+$L=44$, so interpolation is near-exact for it (\NikInterpSPct) while the flow only
+adds extrapolation noise (\NikFlowSPct). Second, the finite-size drift that does
+exist --- in the low-$k$ decay rates --- is \emph{non-monotone} across the training
+sizes (soft-mode-contaminated, and estimated from finite trajectories), so the
+$1/L$ fit, extrapolated over an $8\times$ span in system size, overshoots; interp-88,
+which does no extrapolation, is closer despite being biased. The flow needs a clean
+monotone approach to a limit, and the marginal-mode regime does not provide one.
+So across both systems --- fast-converging (KS) and slow-converging (Nikolaevskiy)
+--- interpolating the largest affordable box beats the $1/L$ flow.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig7_criterion}
+\caption{Two systems bracketing the convergence rate. Left: spectral drift (median
+distance of the bulk spectrum to the large-$L$ limit) vs.\ $L$ --- KS collapses by
+$L\approx88$ (dotted), Nikolaevskiy stays large. Middle: at the Nikolaevskiy target
+neither route is accurate for $\gc(k)$; the flow (red) overshoots the low-$k$
+drift that interp-88 (blue) merely under-resolves. Right: decay-rate error of flow
+vs.\ interp-88 for both systems --- interpolation wins in both, redundantly for KS
+and by overshoot-avoidance for Nikolaevskiy.}
+\label{fig:criterion}
+\end{figure}
+
+\section{What we do not claim, and where the flow might yet help}
+We do not claim trajectory forecasting (N1): only statistics and slow modes. We do
+\emph{not} claim the FSS flow beats interpolation --- for neither KS nor
+Nikolaevskiy does it, and the honest reading is that a $1/L$ finite-size-scaling
+flow has no advantage window over interpolating the largest affordable box for
+these 1-D operator spectra. We make no 2-D/3-D or turbulence claims (none were run)
+and no claim about universality classes. We do not claim the deep operator captures
 resonances (it does not). We do not claim the new long-wave modes' \emph{dynamics}
 are predicted --- only their spectral density.
 
-\paragraph{Where the null must fail (proposed, not claimed).} interp-88 wins
-because the KS correlation length is short relative to $L=88$, so the bulk
-spectrum is converged. A finite-size flow should be necessary precisely where the
-largest affordable box is \emph{not} converged: systems with a correlation length
-comparable to the box, long-range coupling, or size-dependent linear
-instabilities (so that new unstable modes appear as $L$ grows). Testing whether
-the FSS flow beats interpolation there --- where interpolation of a small box must
-fail --- is the natural next experiment.
+\paragraph{Why the flow lost, and the one regime that could reverse it.} The flow
+is redundant when the spectrum converges fast (interpolation is then near-exact)
+and it overshoots when convergence is slow but \emph{non-monotone} (as the
+marginal-mode regime makes it). The gap it would need is a system whose spectrum
+converges \emph{slowly but cleanly and monotonically} in $1/L$ --- extensive, so a
+thermodynamic limit exists to extrapolate to, yet far from it at the largest
+affordable box. Neither of our two systems is that: KS converges too fast, and
+Nikolaevskiy's slow convergence is non-monotone and confined to a few soft modes
+while its density stays extensive. Whether such a clean-slow-convergence system
+exists (long-range coupling and size-dependent instabilities are the candidates we
+could not rule out) is the open question our negative result sharpens. Until one is
+exhibited, the practical guidance is concrete: measure the small-domain spectral
+drift; if it has saturated, interpolate the largest box; if it has not, no
+fixed-form extrapolation we tested is trustworthy --- acquire large-domain data.
 
 \section{Reproducibility}
 Every number above is emitted by \texttt{gen\_paper\_numbers.py} from committed
-JSON and regenerates byte-for-byte (\texttt{verify\_regen.py}); the integrator,
-estimators, and scaling fits are unit-tested (spectra vs.\ analytic linear
-sectors; integrator regression; scaling round-trip). Simulations use a fixed
-grid, $3$ seeds, and pre-registered gates (PLAN.md). Code and data:
+JSON and regenerates byte-for-byte (\texttt{verify\_regen.py}); the KS and
+Nikolaevskiy integrators, the streaming estimators, and the scaling fits are
+unit-tested (spectra vs.\ analytic linear sectors; KS integrator regression
+against a prior validated code; Nikolaevskiy marginal-mode, mean-conservation and
+chaos checks; scaling round-trip). Both systems share one ETDRK4 core and one
+system-agnostic estimator/flow pipeline --- only the linear symbol changes ---
+which is what makes the KS-vs-Nikolaevskiy comparison a controlled one. All runs
+use a fixed grid, $3$ seeds, and pre-registered gates (PLAN.md). Code and data:
 \texttt{DOI to be assigned at submission}. Recency re-sweep logged in PLAN.md.
 
 \small

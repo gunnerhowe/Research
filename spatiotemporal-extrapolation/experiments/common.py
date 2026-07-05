@@ -61,9 +61,12 @@ def t_sim(L):
 
 
 def measure_size(L, T=None, seeds=SEEDS, bc="periodic", store_fields=False,
-                 tag=None, log=print):
-    """Simulate KS at (L, N(L)) for all seeds in lockstep and accumulate the
-    streaming estimators. Saves runs/measure_{tag}.npz and returns its path."""
+                 tag=None, log=print, system="ks", sys_kwargs=None):
+    """Simulate the chosen PDE at (L, N(L)) for all seeds in lockstep and
+    accumulate the streaming estimators. system='ks' (default, Kuramoto-
+    Sivashinsky) or 'nik' (Nikolaevskiy; sys_kwargs may set r, dt, transient).
+    Saves runs/measure_{tag}.npz and returns its path. analyze_measurement is
+    system-agnostic (it consumes the mode series)."""
     L = float(L)
     N = n_of(L)
     T = t_sim(L) if T is None else float(T)
@@ -84,10 +87,21 @@ def measure_size(L, T=None, seeds=SEEDS, bc="periodic", store_fields=False,
                for seed in seeds]
     snippet = []
     chunk = 2048 if N >= 2048 else 4096
+    sys_kwargs = dict(sys_kwargs or {})
+    if system == "ks":
+        stream = ks_stream_batch(L, N, n_samples, seeds, dt=DT, dt_sample=DT_S,
+                                 transient=TRANSIENT, bc=bc, chunk_samples=chunk)
+    elif system == "nik":
+        from specext.nikolaevskiy import nik_stream_batch
+        if bc != "periodic":
+            raise ValueError("nik: periodic only")
+        stream = nik_stream_batch(L, N, n_samples, seeds, dt_sample=DT_S,
+                                  chunk_samples=chunk, **sys_kwargs)
+    else:
+        raise ValueError(f"unknown system {system!r}")
     t0 = time.time()
     written = 0
-    for field in ks_stream_batch(L, N, n_samples, seeds, dt=DT, dt_sample=DT_S,
-                                 transient=TRANSIENT, bc=bc, chunk_samples=chunk):
+    for field in stream:
         modes_full = np.fft.rfft(field, axis=-1) / N
         spec.add_modes(modes_full)
         modes = np.ascontiguousarray(modes_full[:, :, grid.m_idx])

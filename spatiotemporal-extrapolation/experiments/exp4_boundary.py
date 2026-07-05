@@ -187,6 +187,20 @@ def convergence_to_limit():
     return rows
 
 
+def corr_length(curve, L):
+    """Integral (envelope) correlation length xi = int_0^{L/2} |C(r)|/C(0) dr,
+    over the first half-domain to avoid the periodic revival C(r)=C(L-r). Robust to
+    the fast pattern oscillation. Same definition as E5, so the two systems'
+    xi are directly comparable (both turn out short, ~5 units -- the regime is set
+    by the spectral finite-size drift, not by real-space correlation length)."""
+    from specext.stats import corr_from_power
+    p_full = curve["p_mean"].mean(axis=0)
+    r = DX * np.arange(max(2, int((L / 2) / DX)))
+    env = np.abs(corr_from_power(p_full, L, r))
+    env = env / env[0]
+    return float(np.sum(0.5 * (env[:-1] + env[1:])) * DX)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-sim", action="store_true")
@@ -194,7 +208,10 @@ def main():
     curves = {L: analyze_measurement(RUNS / f"measure_L{L:g}.npz")
               for L in SIZES_TRAIN}
     paths = ladder_measurements(skip_sim=True)
+    xi = {f"{L:g}": corr_length(curves[L], L) for L in SIZES_TRAIN}
+    print("KS corr length xi:", {k: round(v, 1) for k, v in xi.items()})
     results = {"convergence": convergence_to_limit(),
+               "corr_length": xi,
                "ladder": error_vs_L(paths, curves),
                "odd_parity": odd_parity_study(curves, args.skip_sim),
                "bands_1408": band_breakdown(curves)}

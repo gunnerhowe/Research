@@ -1,24 +1,32 @@
-# Finite-Size Scaling of Data-Driven Transfer-Operator Spectra
+# Interpolation Beats Finite-Size Scaling for Domain Extension of Learned Transfer-Operator Spectra
 
-Learn a data-driven Koopman/transfer operator for 1-D Kuramoto–Sivashinsky on
-SMALL domains, extract its leading Ruelle–Pollicott resonances per translation
-sector, fit the finite-size (1/L) dependence of the spectrum across a few small
-sizes (L = 22–88), and predict the statistics of a 64× larger domain (L = 1408)
-with ZERO large-domain data. Predicted at long horizon are **statistics and slow
-modes, not trajectories**: correlation functions, power spectra, decay-of-
-correlation rates, slow-mode subspaces.
+Learn a data-driven Koopman/transfer operator for a 1-D chaotic PDE on SMALL
+domains, extract its leading Ruelle–Pollicott resonances per translation sector,
+fit the finite-size (1/L) dependence of the spectrum, and extrapolate to a much
+larger domain — predicting **statistics and slow modes, not trajectories**
+(correlation functions, power spectra, decay rates), with ZERO large-domain data.
 
-**Headline result (honest, pre-registered).** The finite-size flow *works*
-(L = 1408 to ~10% on decay rates, ~12% on the spectral density), but the null
-control — just interpolate the spectrum of the largest affordable small box
-(L = 88) with no size flow — does *better* (~3%), because KS spectra converge to
-within a few percent of the thermodynamic limit already by L ≈ 88. Kill-condition
-K2 fires: the scaling machinery is unnecessary for KS. We report this, quantify
-the fast convergence that drives it, and delimit where the null must fail. See
-`paper/` and `PLAN.md`.
+**Headline result (honest two-system negative).** The finite-size flow *works* in
+absolute terms (Kuramoto–Sivashinsky, L = 1408 = 64×, to ~10% on decay rates,
+~12% on spectral density) — **but it never beats the simplest baseline**:
+interpolating the spectrum of the largest affordable box in wavenumber, no size
+flow. Shown across two systems that bracket the finite-size convergence rate:
 
-Everything runs on one RTX 3080 (10 GB); the headline flow is pure numerics (no
-GPU). A deep conv-Koopman autoencoder (E1) is trained as an ablation.
+- **Kuramoto–Sivashinsky** (fast convergence): interp-88 (3.3%) beats the flow
+  (9.8%) — the spectrum is converged by L = 88, so the flow is *redundant*.
+- **Nikolaevskiy** (marginal k=0 mode → slow spectral convergence): interp is
+  genuinely degraded (16.3%), but the 1/L flow is *worse still* (21.4%) — the
+  spectral density stays extensive and the flow overshoots the non-monotone
+  low-k drift.
+
+The 1/L flow has no advantage window. The operative diagnostic is the measurable
+**small-domain spectral drift** (not the correlation length, which is short for
+both). `paper/` gives the mechanism and the one regime — clean slow convergence —
+that could still reverse it, which we did not find.
+
+Everything runs on one RTX 3080 (10 GB); the analysis is pure numerics (no GPU).
+A deep conv-Koopman autoencoder (E1) is an ablation. Experiments: `exp0..exp4`
+(KS), `exp5` (Nikolaevskiy).
 
 ## Layout
 
@@ -46,7 +54,8 @@ python experiments/exp0_scaling_study.py         # ~6 min sims + GATE S
 python experiments/exp1_learned_operator.py      # trains 3 conv-Koopman models (GPU); K3
 python experiments/exp2_scaling_flow.py --skip-sim   # EDMD flow + L=1408 validation
 python experiments/exp3_baselines.py             # nulls, limited-data EDMD, K2 verdict
-python experiments/exp4_boundary.py              # convergence, ladder, odd-parity, bands
+python experiments/exp4_boundary.py              # KS convergence/drift, ladder, odd-parity, xi
+python experiments/exp5_nikolaevskiy.py          # 2nd system: flow vs interp (the honest negative)
 python experiments/make_figures.py               # ~2 min (re-analyzes cached runs); not a hang
 
 python paper/gen_paper_numbers.py                # emits paper/numbers.tex + tables

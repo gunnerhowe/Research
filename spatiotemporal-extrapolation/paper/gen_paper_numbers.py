@@ -35,6 +35,7 @@ def load(name):
 
 exp0, exp1, exp2 = load("exp0_scaling.json"), load("exp1_learned.json"), load("exp2_flow.json")
 exp3, exp4 = load("exp3_baselines.json"), load("exp4_boundary.json")
+exp5 = load("exp5_nikolaevskiy.json")
 
 # ---------------------------------------------------------------- E0 (GATE S)
 g = exp0["gate_s"]["per_quantity"]
@@ -142,6 +143,36 @@ macro("OddHealingLength", num(od["healing_length"], 1))
 b4 = exp4["bands_1408"]["fitted_flow"]
 macro("BandEnergyGamma", pct(b4["energy"]["gamma_med_rel"]))
 macro("BandMicroGamma", pct(b4["microscale"]["gamma_med_rel"]))
+
+# ---------------------------------------------------------------- E5 (Nikolaevskiy)
+cfg5 = exp5["config"]
+Lt5 = f"{cfg5['L_target']:g}"
+macro("NikR", num(cfg5["r"], 2))
+macro("NikTargetFactor", str(round(cfg5["L_target"] / 22.0)))
+macro("NikTargetL", Lt5)
+nik_conv = {r["L"]: r for r in exp5["convergence"]}
+macro("NikConvFortyFour", pct(nik_conv[44.0]["gamma_rel_to_limit"]))
+macro("NikConvEightEight", pct(nik_conv[88.0]["gamma_rel_to_limit"]))
+macro("NikConvEightEightS", pct(nik_conv[88.0]["s_rel_to_limit"]))
+xi = exp5["corr_length"]
+macro("NikXiEightEight", num(xi["88"], 0))
+macro("NikXiTarget", num(xi[Lt5], 0))
+macro("KSXiEightEight", num(exp4["corr_length"]["88"], 1))
+nt = exp5["targets"][Lt5]["methods"]
+macro("NikFlowGamma", pct(nt["fitted_flow"]["point_estimate"]["gamma_med_rel"]))
+macro("NikFlowSPct", pct(10 ** nt["fitted_flow"]["point_estimate"]["s_med_log10"] - 1))
+macro("NikFlowC", pct(nt["fitted_flow"]["point_estimate"]["c_rel_l2"]))
+macro("NikFlowTau", pct(nt["fitted_flow"]["point_estimate"]["tau_med_rel"]))
+macro("NikInterpGamma", pct(nt["interp88"]["point_estimate"]["gamma_med_rel"]))
+macro("NikInterpSPct", pct(10 ** nt["interp88"]["point_estimate"]["s_med_log10"] - 1))
+macro("NikInterpC", pct(nt["interp88"]["point_estimate"]["c_rel_l2"]))
+macro("NikInterpFortyFourGamma", pct(nt["interp44"]["point_estimate"]["gamma_med_rel"]))
+macro("NikFlowWins", str(exp5["verdict"]["n_wins"]))
+macro("NikSectors", str(exp5["targets"][Lt5]["n_sectors"]))
+# holdout (176) too
+nh = exp5["targets"]["176"]["methods"]
+macro("NikFlowGammaHoldout", pct(nh["fitted_flow"]["point_estimate"]["gamma_med_rel"]))
+macro("NikInterpGammaHoldout", pct(nh["interp88"]["point_estimate"]["gamma_med_rel"]))
 
 # ---------------------------------------------------------------- tables
 NAME = {"fitted_flow": "FSS flow (ours)", "fitted_flow_smallbase": "FSS flow, base $\\le 44$",

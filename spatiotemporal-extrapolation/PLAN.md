@@ -28,11 +28,20 @@ recorded in "Deviations & decisions", dated.
 - [x] Pre-submission arXiv recency re-sweep logged below (mechanism unoccupied)
 - [x] README + laymen.md + CITATION.cff + LICENSE + requirements.txt
 
+- [x] E5 Nikolaevskiy (second system, author-requested main-track attempt):
+      honest **NEGATIVE** — interp-88 beats the flow here too (gamma 16.3% vs
+      21.4% at L=704), because S stays extensive and the low-k drift is
+      non-monotone. Integrator tested (4 tests). The 1/L flow has no advantage
+      window over interpolation in either regime.
+
 **Atlas link-back:** card closes **negative-with-mechanism** (GREEN-cautious
 appeal was honest: the characterization E0 is positive and novel; the domain-
-extension mechanism E2 works but is unnecessary for KS — K2 fires because KS
-converges by L~4x base). Report for ingestion + honest stamping: executed =
-characterization-positive, domain-extension-null-with-mechanism. DOI to be filled
+extension MECHANISM does not pay off — interpolating the largest affordable box
+beats the 1/L FSS flow in BOTH a fast-converging system (KS, flow redundant) and
+a slow-converging one (Nikolaevskiy, flow overshoots). Report for ingestion +
+honest stamping: executed = characterization-positive, domain-extension-flow-
+has-no-advantage-window (two systems), with a measurable drift diagnostic and the
+open question (does a clean-slow-convergence system exist where the flow wins?). DOI to be filled
 at submission.
 
 ## Fixed numerical conventions (pre-registered)
@@ -214,6 +223,46 @@ at submission.
   (full L=1408 EDMD) costs 8x our small-L route; interp-88 costs the same as ours.
   This is the atlas "negative-with-mechanism" close, and per house rule it is the
   null control that makes it a paper.
+
+- 2026-07-05 (E5 added — main-track upgrade, at author's request). To turn the KS
+  honest-null into a method result, add a SECOND system where the largest
+  affordable box is NOT converged, so interpolation must fail and the flow wins:
+  the Nikolaevskiy equation (marginal k=0 mode -> soft-mode turbulence, long
+  correlation length). Same ETDRK4 + estimators + flow (system-agnostic); only the
+  linear symbol changes: sigma(k)=k^2[r-(1-k^2)^2], mean-conserving Burgers
+  nonlinearity. Tuning (2 seeds): the finite-size effect grows monotonically as
+  r -> onset. r=0.2 is KS-like (converged, resid 88-vs-176 ~3.7%); r=0.05 is
+  strongly unconverged (gamma flow 44->88 = 43%, resid 88-vs-176 = 16%, r2=0.99)
+  BUT L=22 dies (rms=0, below the turbulence threshold in a small box). CHOSEN:
+  r=0.1 with the SAME ladder {22,44,66,88} as KS (all robustly turbulent, rms
+  0.55-0.61, r2~1.0) and a strong unconverged signal (gamma flow 44->88 = 25%,
+  resid 88-vs-176 = 6.7%). Target L=704 (32x the base; Nikolaevskiy's slow soft
+  modes make 64x costlier, and 704 is already 8x beyond the L=88 training ceiling
+  -- enough to make interp-88 fail decisively). Criterion the paper reports:
+  interp of the largest box suffices iff the correlation length xi << that box;
+  KS (xi ~ 10 << 88) -> null wins; Nikolaevskiy r=0.1 (xi >~ 88) -> flow wins.
+- 2026-07-05 (E5 OUTCOME: honest NEGATIVE, hypothesis refuted; the xi framing was
+  WRONG). Ran the full Nikolaevskiy ladder {44,66,88}->176,704 (L=22 excluded: it
+  dies at r=0.1, rms->0, turbulence-onset outlier). Findings that overturned the
+  plan: (1) the correlation length is SHORT for BOTH systems (integral xi ~ 4.7 KS,
+  5.6 Nik; C(r)->0 by r~40 for both) -- xi is NOT the discriminator; the earlier
+  "xi~L" reading was an artifact of a buggy last-crossing metric that caught the
+  periodic revival C(r)=C(L-r). (2) Nikolaevskiy's spectrum DOES converge slowly
+  (decay-rate drift 35% at L=88 vs KS 4.3%), driven by the marginal k=0 mode, not
+  a long xi -- so interp-88 IS genuinely degraded (gamma 16.3% at L=704 vs KS
+  3.3%). (3) BUT the 1/L flow is WORSE STILL (21.4%): the spectral density stays
+  extensive (converges by L=44) so interp is near-exact on S, and the low-k
+  decay-rate drift is NON-MONOTONE across sizes, so the 1/L fit overshoots on an
+  8x extrapolation. Verdict: flow beats the best no-flow null on 0/5 metrics for
+  Nikolaevskiy too. CONCLUSION (author-approved, "ship honest two-system
+  negative"): the 1/L FSS flow has NO advantage window over wavenumber
+  interpolation for these 1-D operator spectra -- redundant where the spectrum
+  converges (KS), overshooting where it does not (Nikolaevskiy). The operative
+  diagnostic is the measurable small-domain spectral DRIFT (not xi). Paper reframed
+  to the honest two-system negative + drift diagnostic + mechanism; title changed
+  to "Interpolation Beats Finite-Size Scaling ...". The one regime that could still
+  favor the flow -- slow BUT clean/monotone extensive convergence -- was not found
+  in either system and is flagged as the open question.
 
 ## Recency re-sweep log
 
