@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+runs/
+paper/main.aux
+paper/main.log
+paper/main.out
+paper/main.bbl
+paper/main.blg
+paper/main.toc
+*.synctex.gz

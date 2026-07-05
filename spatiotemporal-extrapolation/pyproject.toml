@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "specext"
+version = "0.1.0"
+description = "Spectral domain extension: finite-size scaling of learned transfer operators (1-D Kuramoto-Sivashinsky)"
+authors = [{ name = "Gunner Levi Howe", email = "gunnerlevihowe@gmail.com" }]
+requires-python = ">=3.11"
+dependencies = ["numpy", "scipy", "matplotlib", "torch"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

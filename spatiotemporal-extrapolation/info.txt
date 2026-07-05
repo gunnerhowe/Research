@@ -1,0 +1,128 @@
+PROJECT BRIEF — Spectral Domain Extension: Finite-Size Scaling of Learned Transfer Operators
+=============================================================================================
+Read this whole file before writing any code. This card was YELLOW on the atlas board
+(family-prior triage) and was UPGRADED to GREEN (cautious) on a full individual
+kill-test 2026-07-05, WITH TWO MANDATORY NARROWINGS baked in below — the original card
+text overclaims in two places and this brief is the corrected scope. Author: Gunner
+Levi Howe (gunnerlevihowe@gmail.com). Hardware: one RTX 3080 (10GB). The 1-D
+instantiation below is deliberately sized for it (original card said "cluster";
+1-D Kuramoto-Sivashinsky makes it weeks).
+
+THE IDEA (as narrowed — this wording is kill-test-honest)
+---------------------------------------------------------
+Learn a neural transfer/Koopman operator for an extensive chaotic spatiotemporal
+system on a SMALL domain; extract its leading Ruelle-Pollicott (RP) resonances; then
+predict the system's behavior on a MUCH LARGER domain (target: 64x volume) by
+extrapolating the operator's SPECTRUM with a learned finite-size-scaling (RG-style)
+flow fitted across a few small domain sizes — instead of ever training or simulating
+at the large size. Two narrowings relative to the original card:
+(N1) WHAT IS PREDICTED AT LONG HORIZON IS STATISTICS AND SLOW MODES, NOT TRAJECTORIES.
+     e^{lambda t} spectral continuation cannot beat positive Lyapunov exponents; RP
+     resonances legitimately give correlation functions, power spectra, mixing/decay
+     rates, and slow-mode dynamics. This is also this lab's published position
+     (the Ornstein d-bar paper: statistics, not trajectories) — the papers are
+     mutually reinforcing; cite it.
+(N2) THE SPECTRAL-PREDICTION HALF IS SUBSTRATE, NOT CLAIM. Koopman/RP spectral
+     analysis and forecasting is an occupied field (see Occupants). The novel claim
+     is confined to: DOMAIN-SIZE EXTRAPOLATION OF LEARNED OPERATOR SPECTRA AND THE
+     STATISTICS THEY IMPLY, via learned finite-size scaling. "Wilson momentum-shell"
+     is the inspiration; implement whatever scaling ansatz the data supports and do
+     not oversell the RG language if it reduces to smooth-in-1/L fitting.
+
+KILL-TEST RECEIPTS (2026-07-05, 3M-abstract index + web; re-sweep at submission)
+--------------------------------------------------------------------------------
+OCCUPANTS (cite, distinguish, do not fight):
+- RP resonances for reduced-order modeling/prediction: Chekroun et al., "Ruelle-
+  Pollicott Resonances of Stochastic Systems in Reduced State Space" Parts I-III
+  (arXiv 1912.03170 etc., incl. El Nino application); Kolmogorov modes / linear
+  response; Mori-Zwanzig connections. Our substrate is their machinery, learned.
+- Koopman spectral forecasting at fixed domain: delay-coordinate Koopman spectra,
+  Koopman autoencoders (incl. consistent/continuous-time variants), EDMD/DMD.
+- Domain extension for neural operators — THE NAMED PROBLEM AND NAMED BASELINE:
+  "Zero-shot generalization of transformer neural operators to larger domains"
+  (arXiv 2606.14597, June 2026) — locality/attention route; also domain-decomposition
+  operator learning (2504.00510) and graph-simulator locality arguments. The web
+  search explicitly found NO renormalization/finite-size-scaling approach to domain
+  extension: that is the unoccupied mechanism this project claims.
+- RG x ML lines that are NOT this: neural-network renormalization group (sampling/
+  stat-mech), inverse-RG scale-invariance generation, "When Does Learning
+  Renormalize?" (theory of NN spectra). Cite the closest in related work.
+PHYSICS GROUNDING (this is why the idea should work, and its main risk):
+- Extensive chaos: for translation-invariant systems like Kuramoto-Sivashinsky, the
+  Lyapunov spectrum is EXTENSIVE (density of exponents per unit length converges as
+  L grows; established numerically in the KS literature). RP/transfer-operator
+  spectral densities should inherit a thermodynamic-limit structure with finite-size
+  corrections in 1/L — those corrections ARE the flow to be learned. If they do not
+  converge/scale smoothly, that is the kill condition and the characterization paper.
+
+EXPERIMENT LADDER (gated)
+-------------------------
+E0. GROUND-TRUTH SCALING STUDY (pure numerics, no learning — the paper's foundation
+    and GATE S). KS (ETDRK4 — adapt the integrator from E:/GitHub/Research/
+    ornstein-dist, it exists and is validated) at L = 22, 44, 88, 176: estimate
+    RP/Koopman spectra with EDMD/delay-embedding at each size (and with the
+    pseudospectral rigorous-estimation literature as methodological reference).
+    Questions: do leading resonances / spectral densities converge or scale smoothly
+    in 1/L? What is the finite-size correction's functional form? GATE S: a smooth,
+    fittable size-dependence exists. If not -> the honest characterization paper
+    ("finite-size behavior of data-driven transfer-operator spectra") — still novel,
+    still publishable, atlas card closes negative-with-mechanism.
+E1. LEARNED OPERATOR AT SMALL L: neural Koopman/transfer operator (dictionary or
+    autoencoder style) at L=22 reproduces E0's EDMD spectra and the system's
+    correlation functions / power spectra. Standard; keep small.
+E2. THE SCALING FLOW (the claim): fit the size-dependence of the learned operator's
+    spectrum (and/or its effective couplings / dictionary statistics) across
+    L = 22-88; extrapolate to L = 176 and L = 1408 (64x the base). Validate against
+    direct large-L simulation (feasible in 1-D: ETDRK4 at N=4096 modes is cheap).
+    Metrics: resonance positions/densities; predicted vs true power spectra,
+    two-point correlations (space and time), decay-of-correlation rates; slow-mode
+    subspace principal angles.
+E3. BASELINES (the credibility section):
+    (i) NAIVE TILING — the null control that matters: periodically tile the small-
+        domain surrogate / spectrum-implied statistics to the large domain.
+        Translation invariance makes this STRONG; if tiling ties the scaling flow,
+        the RG machinery is unnecessary — report it (house rule: the null control is
+        the experiment that makes it a paper).
+    (ii) Zero-shot operator domain-extension (2606.14597-style locality route) —
+        reimplement faithfully at our scale or cite-compare per house rule.
+    (iii) Direct large-L training (oracle upper bound; report its compute multiple).
+    (iv) EDMD fitted directly at large L from limited large-L data (data-efficiency
+        comparison: our route uses ZERO large-L data).
+E4. HONEST BOUNDARY: push until it breaks — non-universal microscale content,
+    boundary-condition sensitivity (periodic vs otherwise), how far in L the flow
+    extrapolates before resonance predictions drift, and (stretch, only if E2 lands
+    early) one 2-D system at modest size.
+
+KILL CONDITIONS (pre-registered)
+--------------------------------
+K1. GATE S fails (no smooth size-dependence) -> characterization paper, close card
+    negative-with-mechanism.
+K2. Naive tiling matches the scaling flow on all E2/E3 metrics -> the mechanism adds
+    nothing over translation invariance; report honestly (and note where tiling MUST
+    fail: systems with long-range coupling or size-dependent instabilities — propose,
+    do not claim).
+K3. Learned-operator spectra at small L do not match EDMD ground truth (E1) ->
+    fix or fall back to EDMD-based flow (the claim survives without deep learning;
+    it becomes a numerics paper — allowed).
+
+REPO LAYOUT / DISCIPLINE — identical to energy-effic (zero-number-error precedent):
+src/specext/ (integrator vendored from ornstein-dist with attribution, edmd.py,
+koopman.py, scaling.py, stats.py), experiments/exp0..exp4 + make_figures.py +
+gen_paper_numbers.py, tests/ (spectra vs analytic linear cases; integrator
+regression against ornstein-dist outputs; scaling-fit round-trip), results/
+(committed JSONs), paper/. Every number machine-generated; every prose ratio a
+macro; >=3 seeds; regenerate-and-diff at submission; honest abstract + "What we do
+not claim" (no trajectory-forecasting claims (N1), no 2-D/3-D claims beyond what is
+run, no turbulence claims); Reproducibility with DOI filled at submission; recency
+re-sweep at submission ("domain extension neural operator", "finite-size scaling
+learned dynamics", newest-first; log the date in PLAN.md).
+
+ATLAS LINK-BACK
+---------------
+Card: "Ruelle-Pollicott resonances ... -> Spatiotemporal Extrapolation" — was YELLOW
+(family prior), upgraded GREEN-cautious by this kill-test (the appeal mechanism
+working as designed; third successful appeal of the program). Marked in-progress.
+On ship, report back for ingestion + honest stamping. Note for the paper's framing:
+this project connects three of the lab's own threads — transfer-operator statistics
+(Ornstein paper), long-horizon statistical fidelity (TPP paper), and scaling-not-
+training as the route to big systems — say so in one sentence, not a manifesto.
