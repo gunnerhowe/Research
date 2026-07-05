@@ -1,0 +1,24 @@
+{
+ "datasets": {
+  "imagenet__resnet": {
+   "sigma_pow3_median": 0.01990988240986291,
+   "T": 251,
+   "n": 938
+  },
+  "lm1b__transformer": {
+   "sigma_pow3_median": 0.0015698600673524007,
+   "T": 38,
+   "n": 310
+  },
+  "uniref50__transformer": {
+   "sigma_pow3_median": 0.0002098175987882157,
+   "T": 22,
+   "n": 326
+  },
+  "svhn_no_extra__wide_resnet": {
+   "sigma_pow3_median": 0.0030698888860388567,
+   "T": 13,
+   "n": 977
+  }
+ }
+}

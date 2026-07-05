@@ -1,0 +1,250 @@
+{
+ "rows": [
+  {
+   "dataset": "Fashion-MNIST",
+   "n_pool": 50,
+   "seed": 0,
+   "sigma": 0.007258515763761348,
+   "best": 0.8895851969718933,
+   "pred@rung0": {
+    "last_value": {
+     "spearman": 0.9148098348059932,
+     "rmse": 0.12039525806903839,
+     "bias": -0.09056207537651062,
+     "bias_top_decile": -0.01788341999053955
+    },
+    "naive_pow3": {
+     "spearman": 0.44486062103149154,
+     "rmse": 0.10856027621711761,
+     "bias": -0.018474371004758138,
+     "bias_top_decile": 0.20313386256102284
+    },
+    "naive_pow3_vpen": {
+     "spearman": 0.5689452329426934,
+     "rmse": 0.10326344228329563,
+     "bias": -0.041956193796228905,
+     "bias_top_decile": 0.0968537954680859
+    },
+    "eb_replay": {
+     "spearman": 0.42747725047736806,
+     "rmse": 0.09242030388729103,
+     "bias": -0.028473871588316456,
+     "bias_top_decile": 0.10584364456567497
+    }
+   },
+   "last_value": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   },
+   "naive_pow3": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   },
+   "naive_pow3_vpen": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   },
+   "eb_replay": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   }
+  },
+  {
+   "dataset": "Fashion-MNIST",
+   "n_pool": 50,
+   "seed": 1,
+   "sigma": 0.007258515763761348,
+   "best": 0.8793771862983704,
+   "pred@rung0": {
+    "last_value": {
+     "spearman": 0.8500564241687677,
+     "rmse": 0.13368229568004608,
+     "bias": -0.09293579310178757,
+     "bias_top_decile": -0.016733443364501
+    },
+    "naive_pow3": {
+     "spearman": 0.641023794273465,
+     "rmse": 0.11220663124180495,
+     "bias": -0.049238697261654994,
+     "bias_top_decile": 0.12363399684194029
+    },
+    "naive_pow3_vpen": {
+     "spearman": 0.6518283754189839,
+     "rmse": 0.12735267527072705,
+     "bias": -0.07179812785631944,
+     "bias_top_decile": 0.07039032988123387
+    },
+    "eb_replay": {
+     "spearman": 0.665610218924601,
+     "rmse": 0.10695940438445295,
+     "bias": -0.060710970066469194,
+     "bias_top_decile": 0.06900960236867085
+    }
+   },
+   "last_value": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   },
+   "naive_pow3": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   },
+   "naive_pow3_vpen": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   },
+   "eb_replay": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   }
+  },
+  {
+   "dataset": "adult",
+   "n_pool": 50,
+   "seed": 0,
+   "sigma": 0.003366847019596807,
+   "best": 0.803518533706665,
+   "pred@rung0": {
+    "last_value": {
+     "spearman": 0.7372439810709043,
+     "rmse": 0.10034732520580292,
+     "bias": -0.049185194075107574,
+     "bias_top_decile": 0.000999963260255754
+    },
+    "naive_pow3": {
+     "spearman": 0.39873220263364495,
+     "rmse": 0.11852464418361194,
+     "bias": 0.010316341330439183,
+     "bias_top_decile": 0.24802651006817727
+    },
+    "naive_pow3_vpen": {
+     "spearman": 0.5219583657021664,
+     "rmse": 0.11182472735107338,
+     "bias": -0.00844188356133245,
+     "bias_top_decile": 0.19315536387354543
+    },
+    "eb_replay": {
+     "spearman": 0.7277354930398959,
+     "rmse": 0.11143465610071118,
+     "bias": -0.04601938919129855,
+     "bias_top_decile": 0.015551668513656369
+    }
+   },
+   "last_value": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   },
+   "naive_pow3": {
+    "budget": 512,
+    "regret_completed": 0.012407362461090088,
+    "regret_allpick": 0.020925939083099365,
+    "allpick_was_killed": true,
+    "n_completed": 2
+   },
+   "naive_pow3_vpen": {
+    "budget": 512,
+    "regret_completed": 0.012407362461090088,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": true,
+    "n_completed": 2
+   },
+   "eb_replay": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   }
+  },
+  {
+   "dataset": "adult",
+   "n_pool": 50,
+   "seed": 1,
+   "sigma": 0.003366847019596807,
+   "best": 0.804444432258606,
+   "pred@rung0": {
+    "last_value": {
+     "spearman": 0.7455396825683798,
+     "rmse": 0.1390395611524582,
+     "bias": -0.06990185379981995,
+     "bias_top_decile": 0.0021851658821105957
+    },
+    "naive_pow3": {
+     "spearman": 0.3913461094745171,
+     "rmse": 0.12331364946751071,
+     "bias": 0.003802677498361462,
+     "bias_top_decile": 0.25111787084634296
+    },
+    "naive_pow3_vpen": {
+     "spearman": 0.3967247773185649,
+     "rmse": 0.11675242928878318,
+     "bias": -0.015085902940701166,
+     "bias_top_decile": 0.19412542115781478
+    },
+    "eb_replay": {
+     "spearman": 0.5944868682273956,
+     "rmse": 0.11518654699282908,
+     "bias": -0.05746656420080441,
+     "bias_top_decile": 0.03888373531379086
+    }
+   },
+   "last_value": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   },
+   "naive_pow3": {
+    "budget": 512,
+    "regret_completed": 0.0025925636291503906,
+    "regret_allpick": 0.025370359420776367,
+    "allpick_was_killed": true,
+    "n_completed": 2
+   },
+   "naive_pow3_vpen": {
+    "budget": 512,
+    "regret_completed": 0.0025925636291503906,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": true,
+    "n_completed": 2
+   },
+   "eb_replay": {
+    "budget": 512,
+    "regret_completed": 0.0,
+    "regret_allpick": 0.0,
+    "allpick_was_killed": false,
+    "n_completed": 2
+   }
+  }
+ ],
+ "eta": 3.0,
+ "kappa": 1.0
+}

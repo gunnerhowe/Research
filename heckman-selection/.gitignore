@@ -1,0 +1,28 @@
+# Large data artifacts (rebuildable via experiments/convert_*.py and curl)
+data/data_2k_lw.json
+data/data_2k_lw_clean.json
+data/data_2k_lw.zip
+data/lcbench_cache.npz
+data/pd1.tar.gz
+data/pd1/
+data/pd1_cache.npz
+data/pwc_results.csv
+data/evaluation-tables.json.gz
+data/sk/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls

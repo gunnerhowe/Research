@@ -1,0 +1,37 @@
+{
+ "datasets": {
+  "Fashion-MNIST": {
+   "sigma_diff_median": 0.0006772956985078605,
+   "sigma_diff_q90": 0.0021673649543527927,
+   "sigma_pow3_median": 0.007258515763761348
+  },
+  "adult": {
+   "sigma_diff_median": 0.0002912515160952313,
+   "sigma_diff_q90": 0.0027179934610037423,
+   "sigma_pow3_median": 0.003366847019596807
+  },
+  "higgs": {
+   "sigma_diff_median": 0.00029018924264482345,
+   "sigma_diff_q90": 0.0014022751889680573,
+   "sigma_pow3_median": 0.004261676774139682
+  },
+  "jasmine": {
+   "sigma_diff_median": 0.0015859804764727515,
+   "sigma_diff_q90": 0.0015860428735648827,
+   "sigma_pow3_median": 0.0069299794066191595
+  },
+  "vehicle": {
+   "sigma_diff_median": 0.0,
+   "sigma_diff_q90": 0.005576332305553968,
+   "sigma_pow3_median": 0.010211329494186468
+  },
+  "volkert": {
+   "sigma_diff_median": 0.000894406504056032,
+   "sigma_diff_q90": 0.007805962363255111,
+   "sigma_pow3_median": 0.005930510140449982
+  }
+ },
+ "sigma_median": 0.00043528384338771927,
+ "sigma_q90": 0.003979916697443849,
+ "sigma_pow3_median": 0.006136598113845541
+}

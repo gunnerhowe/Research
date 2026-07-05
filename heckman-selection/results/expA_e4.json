@@ -1,0 +1,208 @@
+{
+ "Image Classification": {
+  "n_cells": 576,
+  "n_models": 72,
+  "n_datasets": 8,
+  "reported_frac": 0.2934027777777778,
+  "rho_two_step": 0.9999,
+  "rho_mle": 1.0,
+  "rho_mle_se": NaN,
+  "ability_coef_outcome": 8.015722483004891,
+  "ability_coef_selection": 0.0049546650174555375,
+  "beta_lambda": 1362.0320541986587,
+  "loglik": -1438.8802052551423,
+  "converged": false,
+  "datasets": [
+   "ImageNet",
+   "ObjectNet",
+   "mini WebVision 1.0",
+   "iNaturalist 2018",
+   "ImageNet ReaL",
+   "Flowers-102",
+   "WebVision-1000",
+   "Clothing1M"
+  ],
+  "boundary": true,
+  "pairwise": [
+   {
+    "anchor": "ImageNet",
+    "target": "ImageNet ReaL",
+    "n": 58,
+    "n_reported": 34,
+    "rho_mle": 0.8732798927452019,
+    "rho_two_step": -0.9999,
+    "rho_mle_se": 0.08931108836893703,
+    "boundary": false,
+    "converged": true
+   },
+   {
+    "anchor": "ImageNet",
+    "target": "iNaturalist 2018",
+    "n": 58,
+    "n_reported": 21,
+    "rho_mle": 1.0,
+    "rho_two_step": 0.9999,
+    "rho_mle_se": null,
+    "boundary": true,
+    "converged": true
+   },
+   {
+    "anchor": "ImageNet",
+    "target": "Flowers-102",
+    "n": 58,
+    "n_reported": 19,
+    "rho_mle": 1.0,
+    "rho_two_step": 0.9999,
+    "rho_mle_se": null,
+    "boundary": true,
+    "converged": false
+   }
+  ]
+ },
+ "Semantic Segmentation": {
+  "n_cells": 656,
+  "n_models": 82,
+  "n_datasets": 8,
+  "reported_frac": 0.2820121951219512,
+  "rho_two_step": -0.9999,
+  "rho_mle": -0.9999999999999966,
+  "rho_mle_se": NaN,
+  "ability_coef_outcome": 1.3049481797780231,
+  "ability_coef_selection": -0.017506521995011647,
+  "beta_lambda": -107.74148935341779,
+  "loglik": -930.6557674979631,
+  "converged": false,
+  "datasets": [
+   "ADE20K",
+   "ADE20K val",
+   "Cityscapes val",
+   "ScanNet",
+   "PASCAL Context",
+   "S3DIS Area5",
+   "LaRS",
+   "ImageNet-S"
+  ],
+  "boundary": true,
+  "pairwise": [
+   {
+    "anchor": "ADE20K",
+    "target": "ADE20K val",
+    "n": 65,
+    "n_reported": 51,
+    "rho_mle": -1.0,
+    "rho_two_step": -0.9999,
+    "rho_mle_se": null,
+    "boundary": true,
+    "converged": false
+   },
+   {
+    "anchor": "ADE20K",
+    "target": "PASCAL Context",
+    "n": 65,
+    "n_reported": 20,
+    "rho_mle": -1.0,
+    "rho_two_step": -0.9999,
+    "rho_mle_se": null,
+    "boundary": true,
+    "converged": false
+   },
+   {
+    "anchor": "ADE20K",
+    "target": "Cityscapes val",
+    "n": 65,
+    "n_reported": 15,
+    "rho_mle": 0.04832111783417661,
+    "rho_two_step": 0.9999,
+    "rho_mle_se": 3.1965708981177796,
+    "boundary": false,
+    "converged": true
+   }
+  ]
+ },
+ "Object Detection": {
+  "n_cells": 368,
+  "n_models": 46,
+  "n_datasets": 8,
+  "reported_frac": 0.25271739130434784,
+  "rho_two_step": -0.27589344074647576,
+  "rho_mle": -0.0025513966039289898,
+  "rho_mle_se": NaN,
+  "ability_coef_outcome": 0.05638663458341186,
+  "ability_coef_selection": -0.08846092060321671,
+  "beta_lambda": -0.4083955640100224,
+  "loglik": -179.2985399258862,
+  "converged": true,
+  "datasets": [
+   "COCO test-dev",
+   "COCO minival",
+   "COCO 2017 val",
+   "CPPE-5",
+   "AI-TOD",
+   "COCO 2017",
+   "COCO-O",
+   "PASCAL VOC 2007"
+  ],
+  "boundary": false,
+  "pairwise": []
+ },
+ "Machine Translation": {
+  "n_cells": 488,
+  "n_models": 61,
+  "n_datasets": 8,
+  "reported_frac": 0.32991803278688525,
+  "rho_two_step": -0.9999,
+  "rho_mle": -0.8951070374390669,
+  "rho_mle_se": 0.056292740495467446,
+  "ability_coef_outcome": 0.038096631313511875,
+  "ability_coef_selection": -0.013167261786557118,
+  "beta_lambda": -1.7779398191212104,
+  "loglik": -466.6518724959765,
+  "converged": true,
+  "datasets": [
+   "WMT2014 English-German",
+   "WMT2014 English-French",
+   "IWSLT2014 German-English",
+   "WMT2016 Romanian-English",
+   "WMT2016 English-Romanian",
+   "WMT2014 German-English",
+   "IWSLT2015 German-English",
+   "WMT2016 English-German"
+  ],
+  "boundary": false,
+  "pairwise": [
+   {
+    "anchor": "WMT2014 English-German",
+    "target": "WMT2014 English-French",
+    "n": 54,
+    "n_reported": 36,
+    "rho_mle": -1.0,
+    "rho_two_step": -0.9999,
+    "rho_mle_se": null,
+    "boundary": true,
+    "converged": false
+   },
+   {
+    "anchor": "WMT2014 English-German",
+    "target": "WMT2016 Romanian-English",
+    "n": 54,
+    "n_reported": 12,
+    "rho_mle": 0.2650089340992169,
+    "rho_two_step": 0.9999,
+    "rho_mle_se": 2.31323973369058,
+    "boundary": false,
+    "converged": true
+   },
+   {
+    "anchor": "WMT2014 English-German",
+    "target": "WMT2014 German-English",
+    "n": 54,
+    "n_reported": 14,
+    "rho_mle": -1.0,
+    "rho_two_step": -0.9999,
+    "rho_mle_se": null,
+    "boundary": true,
+    "converged": false
+   }
+  ]
+ }
+}

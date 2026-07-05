@@ -1,0 +1,441 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+
+\input{numbers}
+
+\newcommand{\E}{\mathbb{E}}
+
+\title{Survivor Bias in Learning-Curve Surrogates:\\
+Successive Halving Selects on Noise}
+
+\author{Gunner Levi Howe\\
+Independent Researcher\\
+\texttt{gunnerlevihowe@gmail.com}}
+
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Learning-curve surrogates for hyperparameter optimization --- freeze-thaw
+GPs, power-law extrapolation, in-context learning-curve networks --- are
+fit and deployed on curves that \emph{survived} earlier rungs of
+successive halving (SH), Hyperband, or ASHA, yet no method in this line
+models the censoring mechanism. We state the honest crux up front:
+selection acts on \emph{observed} prefixes, so if prefixes were noiseless
+the censoring would be ignorable (missing at random). The bias enters
+because prefixes are noisy observations of latent curve parameters: rung
+survival selects on noise, so survivors' continuations systematically
+disappoint a naive per-curve extrapolation --- regression-to-the-mean
+survivor bias with a Tobit/Heckman structure on the latent parameters. In
+a controlled power-law family the effect is precisely dose-responsive:
+survivor selection bias at the first rung grows from \GateBiasSigLo{}
+(accuracy units) at noise $\sigma = 0.005$ to \GateBiasSigXhi{} at
+$\sigma = 0.04$ and grows with selection pressure $\eta$; at the
+\emph{median} noise we calibrate from real LCBench curves
+($\sigma \approx \CalibSigDiff$) it is \emph{indistinguishable from zero}
+--- an informative null about SH robustness that we report rather than
+bury, with the caveat that noisier regimes (small validation sets;
+PD1's ImageNet task at $\sigma \approx 0.02$) sit well inside the
+biased zone. A Heckman-type joint selection+outcome model --- a
+hierarchical prior over latent curve parameters with rung-survival probit
+likelihoods --- attacks the survivor bias but exposes the same
+identification fragility econometrics warns of: with a single SH bracket
+it is weakly identified (it prefers the biased solution at realistic
+survivor counts), and pooling three Hyperband-style brackets ---
+rung-assignment randomness as an \emph{exclusion restriction} --- cuts the
+survivor-only asymptote bias from $+0.084$ to $-0.036$ accuracy units
+(naive \PopMuANaive, corrected \PopMuAHeckMB, truth \PopTrueMuA) but now
+\emph{overshoots}, more so at higher noise. The robust practical estimator
+is the boring one: refit the prior on \emph{all} observed prefixes,
+including those of killed configs (\PopMuAEBAll, near-unbiased) --- exactly
+the data a replaying tool already holds, reinforcing the crux that the fix
+is to use the prefixes one has, not to model survivor selection. The same
+posterior machinery cuts survivor-extrapolation bias at the first rung
+from \ExtrapBiasNaive{} (naive least squares) to \ExtrapBiasHeckMB{};
+a per-curve Tobit correction without the population prior manages only
+\ExtrapBiasTobit{}, and an Arellano--Bond-flavoured lag-instrument
+extrapolator is worse than the naive fit and is dropped. On LCBench and
+PD1 replays the story is honestly mixed and matches the calibrated-noise
+prediction: plain last-value SH is already near-optimal at decision
+level; naive power-law extrapolation \emph{hurts} promotions and suffers
+a winner's curse when picking from extrapolations
+(top-decile prediction bias \TopBiasLCBPow{} on LCBench); the corrected
+surrogate slashes that tail bias ($\sim$7$\times$, to \TopBiasLCBEB{}) and
+ties last-value SH on LCBench decisions, but on PD1 it improves prediction
+while \emph{worsening} decisions, and a one-parameter variance-penalty hack
+captures most of the benefit for far less machinery --- a
+prediction--decision gap we quantify rather than paper over.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Multi-fidelity hyperparameter optimization kills most of its training
+runs early: successive halving \citep{jamieson2016}, Hyperband
+\citep{li2018hyperband}, and ASHA \citep{li2020asha} advance only the top
+$1/\eta$ of configurations at each rung. An active literature fits
+\emph{learning-curve surrogates} to the resulting prefixes --- freeze-thaw
+GPs \citep{swersky2014}, parametric extrapolation
+\citep{domhan2015,klein2017}, deep-kernel multi-fidelity models
+\citep{wistuba2022dyhpo}, power-law scaling fits \citep{kadra2023dpl},
+and in-context curve extrapolators \citep{adriaensen2023lcpfn,
+rakotoarison2024ifbo}. None of these models the sampler's censoring
+mechanism, although every deployed curve the surrogate ever sees was
+selected by it. This remains true in the newest work: a 2025 method that
+predicts learning curves with latent-Kronecker GPs to \emph{reduce}
+premature pruning \citep{lin2025lkgp} still trains its predictor on
+survivor curves as if they were an unbiased sample, and a fresh
+large-scale learning-curve database documents that curves are more
+ill-behaved than assumed \citep{mohr2025lcdb} without connecting the
+ill-behavedness to selection. The gap our pre-registered kill-test found
+(\S\ref{sec:repro}) holds.
+
+\paragraph{The honest crux.} Stated immediately, because it disarms the
+obvious objection: SH selects on the \emph{observed} prefix, which the
+surrogate also observes, so if prefixes were noiseless functions of the
+latent curve the censoring would be ignorable --- missing at random,
+nothing to correct. The bias enters through observation noise. A config
+survives the rung at epoch $t_k$ if its \emph{noisy} value there clears
+the bar; survival therefore selects on the noise realization
+($\E[\epsilon_{t_k} \mid \text{survived}] = \GateEpsSurv$ at $\sigma =
+0.02$, $\eta = 3$ in our controlled family), the fitted latent parameters
+of survivors are noise-inflated, and their continuations disappoint the
+extrapolation --- \citeauthor{galton1886}'s regression to the mean
+\citep{galton1886}, in the form of a Tobit/Heckman selection structure
+\citep{tobin1958,heckman1979} on the \emph{latent} curve parameters, with
+Tweedie/empirical-Bayes shrinkage \citep{efron2011tweedie} as the natural
+repair. This is a precise, testable claim, not a vibe, and it makes two
+falsifiable predictions: the bias must grow with noise and with selection
+pressure, and it must vanish as noise $\to 0$. Both hold
+(\S\ref{sec:e0}).
+
+\paragraph{Identification, up front (shared with the companion paper
+\citealp{howe2026heckuq}).} Recovering the \emph{unselected} population
+of curves from survivor-only data is a Heckman problem, and without an
+exclusion restriction it rides on functional form. HPO has a natural
+instrument: \emph{rung-assignment randomness}. Hyperband runs identical
+populations under brackets with different rung schedules; bracket
+assignment affects survival but not the latent curve. We show empirically
+that the survival-corrected estimator is weakly identified from one
+bracket and roughly halves the bias from three --- though it then
+overshoots, so the estimator we actually recommend is the MAR one that
+uses killed configs' prefixes (\S\ref{sec:e1}).
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item \textbf{Mechanism, dose-response, and an informative null}
+(\S\ref{sec:e0}): in a controlled power-law family under SH, survivor
+bias of naive extrapolation at the first rung grows from
+\GateBiasSigLo{} to \GateBiasSigXhi{} accuracy units as $\sigma$ goes
+$0.005 \to 0.04$ (and with $\eta$: \GateBiasEtaTwo{} $\to$
+\GateBiasEtaFour); at LCBench's \emph{median} calibrated noise the bias
+is $\approx$ zero. SH is robust exactly where its inputs are clean ---
+and several real regimes are not (PD1 ImageNet: $\sigma \approx 0.02$).
+\item \textbf{A corrected surrogate with an honest identification story}
+(\S\ref{sec:e1}): a hierarchical Gaussian prior over pow3 parameters in
+a Laplace/sufficient-statistic formulation with rung-survival probit
+terms. Survivor-only + single bracket: weakly identified (we show the
+likelihood prefers the biased solution). Survivor-only + three brackets:
+bias roughly halved but overshooting (\PopMuAHeckMB{} vs truth
+\PopTrueMuA{}, survivor-naive \PopMuANaive{}). The estimator we actually
+recommend includes killed-curve prefixes (the data a replaying tool has
+anyway) and is near-unbiased (MAR reference \PopMuAEBAll{}) --- the
+theory's real payoff is not a survivor-only correction but the diagnosis
+of \emph{which} data to fit on.
+\item \textbf{Decision-level replays on LCBench and PD1}
+(\S\ref{sec:e2}): naive power-law extrapolation \emph{hurts} SH
+(regret \RegLCBPow{} vs \RegLCBLast{} for last-value on LCBench pools);
+the corrected surrogate pulls it back to last-value parity there; the
+winner's curse of picking from extrapolations is large (top-decile bias
+\TopBiasLCBPow) and the corrected posterior cuts it $\sim$7$\times$
+(\TopBiasLCBEB). The pre-registered null control --- a one-parameter
+variance penalty --- captures most of that decision-level benefit for a
+fraction of the machinery.
+\item \textbf{The prediction--decision gap, reported} (\S\ref{sec:e2}):
+the corrected surrogate improves predictions (RMSE, tail bias) everywhere,
+yet does not beat plain last-value SH at matched budget --- and on PD1 it
+is decisively \emph{worse} at decisions despite better predictions,
+because refitting a prior on small pools adds decision noise the
+prediction metrics miss. We say so plainly; it is the calibrated null of
+\S\ref{sec:e0} made concrete.
+\end{enumerate}
+
+\section{Setup}
+\label{sec:setup}
+
+\paragraph{Curve family.} Latent pow3 curves $y_i(t) = a_i - b_i
+t^{-c_i}$, $t = 1..T{=}52$; $\phi_i = (a_i, \log b_i, \log c_i) \sim
+N(\mu_{\text{pop}}, \Sigma_{\text{pop}})$ calibrated loosely to LCBench
+validation-accuracy curves; observations $\hat y_{it} = y_i(t) + \sigma
+\epsilon_{it}$, iid Gaussian. SH with rungs at $t \in \{4, 12, 36\}$,
+keep-fraction $1/\eta$ by the observed value at the rung epoch.
+
+\paragraph{Estimators.} \emph{Naive}: per-curve nonlinear least squares
+(the standard extrapolating surrogate; \citealp{domhan2015,kadra2023dpl}).
+\emph{Tobit}: per-curve truncation correction --- the survival events'
+$\log\Phi$ terms added to the per-curve NLL (no population prior;
+\citealp{tobin1958}). \emph{EB}: hierarchical Gaussian prior over $\phi$
+fitted by marginal likelihood in a Laplace formulation (each curve
+summarized by its LS fit $\hat\phi_i$ with observation covariance $V_i =
+\sigma^2 (J^\top J)^{-1}$, so $\hat\phi_i \sim N(\mu, \Sigma + V_i)$ in
+closed form); predictions are exact-likelihood posterior means via
+importance sampling with the Laplace posterior as proposal (the Laplace
+summary is only a proposal; its error cancels in the weights).
+\emph{EB + Heckman}: the same, fitted on survivor curves only, with the
+selection correction $-\,n\log P_{\psi}(\text{survive all rungs})$ ---
+the joint selection+outcome likelihood; survival probabilities are
+probit products over rungs, estimated by common-random-number Monte
+Carlo over the prior. A first attempt that Monte-Carlo-estimated the
+\emph{data} marginal from prior samples collapses for peaked likelihoods
+(effective sample size $\approx$ 3 at $T = 52$, $\sigma = 0.01$); we
+document this failure mode and use the closed-form marginal instead.
+
+\section{B-E0: the gate --- bias exists, is dose-responsive, and
+vanishes at clean-signal noise}
+\label{sec:e0}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig1_mechanism}
+\caption{(a) The mechanism: SH survivors (blue) at the first rung were
+partly selected on upward noise; naive pow3 fits to their 4-epoch
+prefixes (dashed) overshoot their true continuations (black). (b)
+Survivor selection bias (survivor minus no-selection control) of naive
+extrapolation at the first rung vs observation noise, $\eta = 3$, 8
+seeds; green dashed lines: noise levels calibrated from real LCBench
+curves (lag-1-difference median and pow3-residual median). (c) The bias
+grows with selection pressure $\eta$ and decays across rungs as prefixes
+pin the fits down.}
+\label{fig:mechanism}
+\end{figure}
+
+For each rung we fit the naive surrogate on same-length prefixes of
+\emph{all} configs (the no-selection control) and of survivors; the
+\emph{selection bias} is the difference of their mean prediction errors,
+isolating censoring from generic extrapolation error. Results
+(Fig.~\ref{fig:mechanism}; $n = 1000$ configs, 8 seeds): at the first
+rung ($t = 4$, where SH kills two thirds of the pool and the surrogate
+extrapolates $13\times$) the selection bias is
+\GateBiasSigLo{}$\pm$\GateBiasSigLoSD{} at $\sigma = 0.005$,
+\GateBiasSigMed{} at $0.01$, \GateBiasSigHi{} at $0.02$, and
+\GateBiasSigXhi{} at $0.04$ accuracy units --- monotone in $\sigma$, as
+the mechanism demands --- and monotone in selection pressure
+(\GateBiasEtaTwo{} $\to$ \GateBiasEtaThree{} $\to$ \GateBiasEtaFour{} at
+$\sigma = 0.02$ for $\eta = 2, 3, 4$). By the third rung the bias is an
+order of magnitude smaller (\GateBiasRungOne{} $\to$ \GateBiasRungThree{}
+at $\sigma = 0.02$): long prefixes leave little room for noise-driven
+selection to distort the fit. The pre-registered gate --- bias exists and
+grows with noise and selection pressure --- \textbf{passes}.
+
+\paragraph{The informative null.} Calibrating $\sigma$ from real LCBench
+curves gives a median lag-1-difference noise of \CalibSigDiff{} (much of
+LCBench's measurement error is a \emph{persistent} per-config validation-set
+effect rather than per-epoch jitter) and a pow3-residual scale of
+\CalibSigPow{}; at these levels the first-rung selection bias is
+\GateBiasCalibDiff{} and \GateBiasCalibPow{} respectively ---
+negligible to small. The honest conclusion, pre-registered as an
+acceptable outcome: \emph{at LCBench-median noise, SH's censoring is
+close to ignorable, and the practical bite of survivor bias is confined
+to noisy regimes} --- small validation sets, quantized metrics, or tasks
+like PD1's ImageNet ($\sigma \approx 0.02$ by the same calibration),
+which sits squarely in the dose-responsive zone.
+
+\section{B-E1: the corrected surrogate and its identification}
+\label{sec:e1}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig2_correction}
+\caption{$\sigma = 0.01$, 8 seeds, mean$\pm$sd. (a) Recovering the
+unselected population mean $\mu_a$ from survivor-only data: the naive
+survivor mean and uncorrected EB prior are biased upward; the
+survival-corrected fit from ONE bracket is weakly identified (high
+variance); THREE Hyperband-style brackets (rung-assignment randomness as
+exclusion restriction) roughly halve the bias but overshoot downward; the
+all-prefixes EB reference (using killed configs' prefixes) is nearly
+unbiased and is the estimator we recommend. (b) Survivor extrapolation
+bias by rung.}
+\label{fig:correction}
+\end{figure}
+
+\paragraph{Population recovery.} Fitting the extrapolator's prior on
+completed (survivor) runs is common practice; it estimates the
+\emph{survivor} population. At $\sigma = 0.01$, three brackets of 999
+configs leave \PopNSurv{} completed curves whose naive mean asymptote is
+\PopMuANaive{} against a true \PopTrueMuA{} (uncorrected EB prior:
+\PopMuAEBSurv{}), a $+0.084$ upward bias. Adding the survival-likelihood
+correction needs cross-bracket variation to bite at all: one bracket gives
+\PopMuAHeckOneBr{}$\pm$\PopMuAHeckOneBrSD{} (weakly identified --- the
+conditional likelihood \emph{prefers} the biased solution, which we
+verified by evaluating it at truth vs.\ at the naive fit and finding the
+naive fit scores lower). Three brackets give
+\PopMuAHeckMB{}$\pm$\PopMuAHeckMBSD{}, cutting $|$bias$|$ from $0.084$ to
+$0.036$ --- but now overshooting \emph{below} truth, and increasingly so
+with noise ($0.76, 0.74, 0.66$ at $\sigma = 0.005, 0.01, 0.02$): the
+functional-form correction is itself sensitive to the assumed noise model,
+the classic Heckman fragility \citep{puhani2000}. The population sd is
+recovered well (\PopSdAHeckMB{} vs true \PopTrueSdA{}). The estimator we
+actually recommend is the MAR-correct one that refits the prior on
+\emph{all} observed prefixes, killed configs included: it lands at
+\PopMuAEBAll{}, essentially unbiased, and it is exactly the data a
+replaying tool already holds. The parallel with the companion paper's
+instrument-absent honesty curve \citep{howe2026heckuq} is exact --- same
+machinery, same fragility --- but the practical lesson here is sharper:
+because selection is on observed prefixes, one need not model it at all;
+one need only fit on the prefixes rather than on the survivors.
+
+\paragraph{Survivor extrapolation.} At the first rung the naive fit's
+bias is \ExtrapBiasNaive{}$\pm$\ExtrapBiasNaiveSD{}; the per-curve Tobit
+correction (no prior) shaves it to \ExtrapBiasTobit{} --- the truncation
+terms only touch the marginal survivors --- while the exact posterior
+under the corrected prior essentially removes it (\ExtrapBiasHeckMB{};
+RMSE \ExtrapRMSEHeckMB{} vs \ExtrapRMSENaive{} naive). Since survival is
+a deterministic function of the observed prefix, the \emph{posterior}
+needs no extra selection term --- exact Bayes has zero conditional bias
+given any data-measurable selection event; what selection breaks is the
+\emph{prior} estimated from survivors, and that is where the correction
+belongs. This decomposition is, to our knowledge, not stated in the
+LC-surrogate literature.
+
+\paragraph{Arellano--Bond variant.} The lag-instrument dynamic-panel
+idea \citep{arellano1991} --- extrapolating increments with second-lag
+instruments --- gives first-rung bias \ExtrapBiasABIV{}, worse than
+naive least squares (power-law curvature defeats short-lag AR
+structure). Per the pre-registered plan we drop it without ceremony.
+
+\paragraph{Fresh-config transfer.} Priors learned from survivor-only
+data and used on \emph{new} unselected configs (the ``surrogate trained
+on completed runs'' deployment) show the same ordering but a small effect
+at the $12$-epoch prefix we test, where even the naive fit extrapolates
+well: bias \FreshBiasEBSurv{} uncorrected vs \FreshBiasHeckMB{} corrected
+(\FreshBiasEBAll{} for the MAR reference). The transfer penalty of a
+survivor-fit prior is real but modest once prefixes are moderately long.
+
+\section{B-E2--E4: LCBench and PD1 replays}
+\label{sec:e2}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figs/fig3_lcbench}
+\caption{Replays on real curves (six LCBench datasets, four PD1 tasks;
+8 seeds $\times$ pool sizes 50/200). (a) Rank fidelity of final-value
+predictions from first-rung prefixes. (b) The winner's curse: mean
+prediction error in the top decile of each surrogate's own predictions.
+(c) Decision-level regret under SH replay with surrogate-driven
+promotion, and under picking the best \emph{predicted} config from all
+prefixes including killed ones.}
+\label{fig:lcbench}
+\end{figure}
+
+We replay synchronous SH (rungs at fixed fractions of each task's
+horizon, $\eta = 3$) on precomputed curves --- six LCBench datasets
+\citep{zimmer2021lcbench} and four PD1 tasks \citep{wang2022pd1} ---
+with the surrogate driving both promotions and the final pick.
+Surrogates: last-value (standard SH), naive pow3, pow3 with a
+one-parameter variance penalty $\hat y - \kappa\,\mathrm{sd}$ (the
+pre-registered B-E4 null control, $\kappa = 1$), and the EB-corrected
+surrogate fitted on the fly from all prefixes observed so far in the
+replay. FT-PFN \citep{rakotoarison2024ifbo} is cite-compared rather than
+run: its synthetic-prior pretraining mitigates per-curve overfitting ---
+a shrinkage effect our EB model makes explicit --- but does not model
+the deployed sampler's selection process, which is the object of study
+here.
+
+\paragraph{Predictions.} From first-rung prefixes, last-value ranks
+configs surprisingly well (Spearman \SpearLCBLast{} on LCBench) but is
+uniformly pessimistic (curves still rise); naive pow3 collapses the
+ranking (\SpearLCBPow) and exhibits a large winner's curse --- the top
+decile of its own predictions over-promises by \TopBiasLCBPow{} accuracy
+units --- while the corrected surrogate recovers much of the rank fidelity
+(\SpearLCBEB) with the best RMSE (\RMSELCBEB{} vs \RMSELCBPow{} naive)
+and a $\sim$7$\times$ smaller tail bias (\TopBiasLCBEB{} vs
+\TopBiasLCBPow{}). PD1 mirrors the prediction pattern (Spearman
+\SpearPDLast{} / \SpearPDPow{} / \SpearPDEB; top-decile bias \TopBiasPDPow{}
+naive vs \TopBiasPDEB{} corrected).
+
+\paragraph{Decisions.} Here the story splits by benchmark, and we report
+the split. Under promotion-by-surrogate on LCBench, last-value SH is
+already near-optimal (regret \RegLCBLast{}), consistent with the
+\S\ref{sec:e0} null at LCBench noise: naive pow3 promotion is \emph{worse}
+(\RegLCBPow; paired Wilcoxon vs corrected $p = \PRegNaiveVsEBLCB$), and the
+corrected surrogate pulls extrapolation-driven promotion back to
+last-value parity (\RegLCBEB; vs last-value $p = \PRegLastVsEBLCB$, not
+significant). On PD1, however, the corrected surrogate improves
+\emph{prediction} yet \emph{worsens decisions}: its promotion regret
+(\RegPDEB) is significantly \emph{above} last-value's (\RegPDLast;
+$p = \PRegLastVsEBPD$) and above naive pow3's (\RegPDPow) --- refitting a
+prior on small, heterogeneous PD1 pools each rung adds decision noise the
+prediction metrics do not see. This is the prediction--decision gap in its
+starkest form, and it is exactly what the pre-registered kill condition
+told us to watch for. When the final pick may choose \emph{any} config
+from its predicted final --- where killed configs' extrapolations compete
+--- naive's winner's curse costs real accuracy (regret \RegAllLCBPow{}; it
+picks an early-killed config in \AllpickKilledFracPowLCB{} of LCBench
+replays), and both the cheap variance penalty (\RegAllLCBPowVpen) and the
+corrected surrogate (\RegAllLCBEB) roughly halve that damage --- but
+neither reaches plain last-value's \RegAllLCBLast{}. That is the B-E4
+verdict, stated plainly: \emph{the one-parameter variance penalty captures
+most of the correction's decision-level benefit}, and \emph{neither
+intervention beats plain last-value SH at matched budget on these
+benchmarks}. The corrected surrogate's value on these families is confined
+to (i) whenever extrapolating surrogates are used at all --- it makes them
+safer --- and (ii) unbiased final-value prediction itself (reporting,
+meta-learning, transfer), not raw SH
+regret at clean-signal noise.
+
+\section{What we do not claim}
+
+We claim nothing beyond the tested benchmark families (LCBench tabular
+MLP curves; four PD1 tasks) and the pow3 curve family; other curve
+shapes (double-descent, cyclic schedules) violate the parametric prior.
+We do not claim corrected surrogates improve end-to-end HPO regret at
+LCBench-median noise --- they do not, and \S\ref{sec:e0} explains why
+that is the expected outcome, not a failure of the theory. We do not
+claim asynchronous ASHA results; replays are synchronous SH. The
+rank-based rung thresholds are treated as fixed constants in the
+survival likelihood (standard, but an approximation). We make no claim
+about FT-PFN's internals beyond the cited design.
+
+\section{Limitations}
+
+Observation noise is modeled iid Gaussian per epoch; real LCBench noise
+has a persistent per-config component (fixed validation set) that acts
+like latent quality for within-run decisions and is invisible to our
+lag-1 calibration --- our two calibration estimates bracket it. The
+Laplace summary degrades for 3--4-point prefixes (we correct predictions
+with exact-likelihood importance sampling, but the prior fit inherits
+some coarseness). The multi-bracket estimator assumes bracket assignment
+is random --- true in Hyperband by construction, but not in adaptive
+schedulers. Survivor counts below $\sim$50 leave the survival-corrected
+fit weakly identified even with brackets.
+
+\section{Reproducibility}
+\label{sec:repro}
+
+All code, tests (including the SH harness, Tobit direction, and
+multi-bracket recovery tests), committed result JSONs, and the
+auto-generated \texttt{numbers.tex} (regenerate-and-diff passes at
+submission) are in the repository; discipline inherited from
+\citet{howe2026eventrice}. LCBench data \citep{zimmer2021lcbench} and
+PD1 \citep{wang2022pd1} are public; converter scripts and calibration
+JSONs are committed. Total compute: under three GPU-hours plus CPU
+replays on a 16-core desktop. Archived release: DOI
+\texttt{10.5281/zenodo.TBD} (filled at submission). Pre-submission
+recency sweep logged in \texttt{PLAN.md}.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

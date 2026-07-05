@@ -1,0 +1,158 @@
+PROJECT BRIEF — Selection Models for Machine Learning (two-paper program)
+=========================================================================
+Read this whole file before writing any code. It is the complete handoff from the
+AI Research Atlas: two kill-tested green cards that share one theoretical backbone
+(Heckman-type selection models) and one codebase. Build BOTH papers in this repo
+(paper/ and paper2/, like the kac-rice program). Author: Gunner Levi Howe
+(gunnerlevihowe@gmail.com), Independent Researcher. Hardware: one RTX 3080 (10GB),
+16-core CPU, Windows. Paper B is nearly CPU-scale.
+
+THE SHARED IDEA
+---------------
+ML training data is routinely collected by a SELECTION PROCESS the model never sees:
+regions of input space get sampled or skipped (Paper A), hyperparameter configurations
+get killed at early rungs (Paper B). The field's default fixes assume selection is
+ignorable given observables (importance weighting, covariate-shift correction, MAR
+imputation). Econometrics solved the harder problem in 1979: Heckman's two-equation
+model jointly fits a SELECTION equation (probit: was this unit observed?) and an
+OUTCOME equation, linked through correlated errors; the inverse-Mills-ratio term
+corrects the outcome model for selection on UNOBSERVABLES — the case where importance
+weighting is structurally helpless. These two papers instantiate that machinery where
+ML actually bleeds from it.
+
+SHARED CORE (src/heckesel/)
+---------------------------
+- selection.py: two-equation Heckman — classic two-step (probit + inverse-Mills
+  regressor) AND joint MLE (bivariate-normal likelihood); both with NN feature maps
+  (deep outcome net, shallow/linear selection head to start). Unit-test against
+  statsmodels' Heckman on classic econometric test data (faithfulness first).
+- synth.py: selective-sampling harnesses with CONTROLLED selection mechanisms:
+  selection-on-observables (MAR control), selection-on-unobservables (correlated
+  errors, the target regime), and mixtures with tunable correlation rho.
+- The identification caveat, stated up front in BOTH papers (this is the honest crux
+  of the whole program): Heckman identification is robust when the selection equation
+  has an EXCLUSION RESTRICTION (an instrument: a variable affecting selection but not
+  the outcome). Without one, identification rides on functional-form assumptions
+  (bivariate normality) and is fragile — econometrics reviewers know this cold. Every
+  experiment grid must include instrument-present AND instrument-absent conditions,
+  and the papers must say plainly which regime a practitioner is in. In ML settings
+  natural instruments exist and should be named: data-collection context (which
+  sensor/site/annotator/batch), acquisition-policy randomness (exploration epsilon),
+  rung-assignment randomness (Paper B).
+
+======================================================================
+PAPER A — Heckman-Corrected Epistemic Uncertainty (paper/)
+======================================================================
+CARD: "Heckman selection correction (inverse Mills ratio) -> Epistemic Uncertainty".
+Kill-tested 2026-07-04 (3M-abstract index + web + adversarial pass): NO deep-learning
+instantiation of selection-corrected epistemic UQ exists. Nearest lines, cite and
+distinguish: importance weighting / covariate-shift UQ (handles selection on
+OBSERVABLES only); the selective-labels literature (Lakkaraju et al. — decisions
+hide outcomes; diagnosis, not a UQ fix); PU learning (labels, not sampling of x);
+Cortes et al. 2008 sample-selection-bias theory (importance-weighting framework).
+THE DEFENSIBLE EDGE, claim it precisely: when the sampling of training points is
+correlated with UNOBSERVED determinants of the outcome, importance weighting cannot
+fix the bias even with oracle propensities; a joint selection/outcome error model can.
+
+Experiment ladder (gated):
+A-E0. Faithfulness gate: our Heckman implementations reproduce statsmodels/classic
+      results on econometric reference data (tests).
+A-E1. Synthetic demonstration (the paper's Figure 1): controlled generator where
+      sampling probability depends on an unobservable correlated (rho swept 0->0.9)
+      with the outcome noise. Show: (i) deep ensembles / MC-dropout / GP baselines
+      are MISCALIBRATED in selected-against regions (overconfident exactly where data
+      was avoided for reasons correlated with outcome); (ii) importance weighting
+      with ORACLE propensities does not fix it (the point!); (iii) the Heckman-
+      corrected predictive variance does, when an instrument exists; (iv) degradation
+      without the instrument (honesty curve vs rho).
+A-E2. Semi-real: tabular datasets (UCI-scale) with INDUCED MNAR selection via a
+      latent-correlated rule (document the rule; multiple seeds); optionally one
+      naturally-selected dataset (loan/medical-style selective observation) with
+      appropriate caveats about unverifiable ground truth.
+A-E3. Baselines: deep ensembles, MC dropout, a GP, importance-weighted variants,
+      a naive selection-blind Heckman-less two-head net (ablation: is it the joint
+      error model or just the extra head?). Metrics: calibration (ECE + reliability
+      by region), NLL, coverage of prediction intervals SPLIT BY sampled-density
+      region (the headline metric: coverage in selected-against regions).
+A-E4. Companion section (banked from a killed sibling card): public model x task
+      benchmark matrices are missing-NOT-at-random panels (selective reporting).
+      One tight analysis (e.g., estimate reporting-selection correlation on an open
+      benchmark aggregate) as a discussion-section vignette, not a headline claim.
+Kill conditions: if IW-with-oracle-propensities matches Heckman under
+selection-on-unobservables, the premise is wrong -> report and stop (the synthetic
+generator makes this checkable in week 1). If the inverse-Mills term is unstable with
+deep feature maps, characterize (two-step vs joint MLE, regularization) — a methods
+finding either way.
+
+======================================================================
+PAPER B — Survivor Bias in Learning-Curve Surrogates (paper2/)
+======================================================================
+CARD: "Heckman + Arellano-Bond dynamic-panel -> Hyperparameter Optimization (HPO)".
+Kill-tested 2026-07-05: the LC-surrogate line (freeze-thaw BO, DyHPO, power-law/DPL,
+In-Context FT-PFN) is active, but NOBODY models the censoring mechanism: successive
+halving / Hyperband / ASHA fit and act on curves that SURVIVED earlier rungs.
+HONEST CRUX (lead with it, it disarms the obvious objection): selection is on
+OBSERVED prefixes, so if prefixes were noiseless the censoring would be ignorable
+(MAR). The bias enters because prefixes are NOISY observations of latent curve
+parameters: rung survival selects on noise, so survivors' continuations systematically
+disappoint a naive surrogate — regression-to-the-mean survivor bias, a Tobit/Heckman
+structure on the LATENT curve parameters. This is a precise, demonstrable claim, not
+a vibe. Distinguish FT-PFN explicitly: its synthetic-prior pretraining mitigates but
+does not model the deployed sampler's selection process.
+
+Experiment ladder (gated):
+B-E0. Synthetic demonstration (afternoon-scale, the paper's Figure 1): power-law
+      curve family with per-config latent parameters + observation noise; run SH
+      censoring; fit a naive LC surrogate on survivors; plot fitted-parameter bias
+      vs rung and vs noise level. GATE: the bias exists and grows with noise/selection
+      pressure (if negligible at realistic noise calibrated from LCBench residuals,
+      that IS the paper's answer — an informative null about SH robustness; report it).
+B-E1. Corrected surrogate: joint selection+outcome model — survival likelihood at
+      each rung (probit on noisy prefix rank/threshold) coupled to the latent-curve
+      outcome model; also a simpler Tobit-style truncation correction as ablation.
+      The Arellano-Bond half (lag-instrument dynamics of curve increments) is
+      SECONDARY — try it as a variant, drop without ceremony if it adds nothing.
+B-E2. Real benchmarks: LCBench, PD1 (precomputed learning curves — no training!).
+      Replay ASHA/Hyperband with naive vs corrected surrogate driving promotion and
+      final-pick decisions: regret vs budget curves, rank correlation of final-value
+      predictions on held-out completions, calibration of extrapolations.
+B-E3. Baselines, faithful: last-value, power-law/DPL fit, freeze-thaw GP, FT-PFN if
+      its released weights run locally (cite-compare otherwise, per house rule).
+B-E4. Null control: does simply INFLATING predictive variance for early-killed
+      configs (a one-parameter hack) match the full selection model at decision
+      level? If yes, say so — practitioners deserve the cheap fix.
+Kill conditions: B-E0 gate (above); corrected surrogate helps predictions but not
+DECISIONS at matched budget -> report the gap honestly (prediction-decision gap is
+itself a finding).
+
+REPO LAYOUT / DISCIPLINE (identical to energy-effic; it produced a zero-number-error
+paper — follow it exactly)
+--------------------------------------------------------------------------------
+src/heckesel/, experiments/ (expA_*.py, expB_*.py, make_figures.py, bench where
+relevant), tests/, results/ (committed JSONs), paper/ + paper2/ (each: main.tex,
+references.bib, numbers.tex AUTO-GENERATED by gen_paper_numbers.py, tables/, figs/).
+- Every number machine-generated; every prose ratio a macro; regenerate-and-diff
+  must pass at submission.
+- >=3 seeds (8 for headline comparisons), mean±sd, paired tests, state Wilcoxon
+  floors at small n.
+- Pre-registered gates and kill conditions are those written above; deviations get
+  logged in PLAN.md.
+- Honest-abstract house style: state what did not work; "What we do not claim"
+  section (Paper A: no causal-discovery claims, no real-MNAR ground-truth claims
+  beyond induced selection; Paper B: no claim beyond tested benchmark families);
+  Limitations; Reproducibility with DOI slot FILLED at submission (house rule after
+  two papers shipped without it).
+- Recency sweep before each submission: "selection bias uncertainty estimation",
+  "learning curve surrogate censoring survivor bias", newest-first; log date in
+  PLAN.md. Atlas kill-checks were clean 2026-07-04/05; hot spaces move.
+- Cite the program when reusing its discipline artifacts; cite econometrics
+  primaries (Heckman 1979; Tobin; Arellano-Bond 1991 if used) and the ML-adjacent
+  lines listed above.
+
+ATLAS LINK-BACK
+---------------
+Cards: "Heckman -> Epistemic Uncertainty" and "Heckman + Arellano-Bond -> HPO"
+(board: E:/GitHub/ai-atlas/ui/public/greens_ledger.json), both marked in-progress.
+When each paper ships to Zenodo, tell the atlas assistant to ingest it as an own-lab
+node and stamp its card with the honest outcome (positive / negative-with-mechanism /
+null — all three are valid closes; the program has shipped all three kinds).
