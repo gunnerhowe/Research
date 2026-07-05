@@ -37,7 +37,10 @@ WELCH_BLOCK = 4096
 WELCH_BLOCK_LONG = 65536
 K_LOW = 0.15               # long-Welch subset
 K_GATE_MAX = 2.2
-K_INRANGE_LO = 2 * np.pi / 88.0     # smallest trained wavenumber
+K_FULL_LO = 2 * np.pi / 22.0        # smallest wavenumber present at ALL train sizes
+K_INRANGE_LO = 2 * np.pi / 88.0     # smallest wavenumber present at ANY train size
+# headline band = full 4-size support [2pi/22, 2.2]; partial-support band
+# [2pi/88, 2pi/22) and new-mode band (k < 2pi/88) are reported separately.
 COMMON_M22 = np.arange(1, 8)        # k = 2 pi m / 22, m = 1..7 (k <= 2.0)
 
 
@@ -148,8 +151,12 @@ def analyze_measurement(path, r2_tmax_mult=6.0):
         om_pk[:, sel] = om_l
     tau_mean = tau.mean(axis=0)
     om_mean = om_pk.mean(axis=0)
-    stride_sel = pick_stride(tau_mean, om_mean, STRIDES, D_DELAYS, DT_S)
     npairs = {s: n for s, n in zip(z["strides"].tolist(), z["npairs"].tolist())}
+    # only strides with enough pairs for a stable Gram (short-trajectory safe)
+    avail = [s for s in STRIDES if npairs[s] >= 50 * (D_DELAYS + 1)]
+    if not avail:
+        avail = [min(STRIDES)]
+    stride_sel = pick_stride(tau_mean, om_mean, avail, D_DELAYS, DT_S)
     gz = {s: z[f"gz_{s}"] for s in STRIDES}
     gamma = np.full((S, M), np.nan)
     omega = np.full((S, M), np.nan)
@@ -180,6 +187,39 @@ def analyze_measurement(path, r2_tmax_mult=6.0):
             "tau_acf": tau, "omega_pk": om_pk, "r2": r2, "stride": stride_sel,
             "weight_frac": wfrac, "p_mean": z["p_mean"], "N": int(z["N"]),
             "wall_s": float(z["wall_s"])}
+
+
+def resonances_from_modeseries(modes, dt_s=DT_S):
+    """Leading per-mode resonances from a complex mode series (T, n_modes) using
+    the SAME estimator pipeline as analyze_measurement (Hankel-EDMD + Welch stride
+    selection). Returns (gamma, omega, r2) each (n_modes,). Single realization."""
+    T, Mret = modes.shape
+    x = np.ascontiguousarray(modes[:, None, :])          # (T, 1 seed, M)
+    han = HankelAccum(STRIDES, D_DELAYS, 1, Mret)
+    wel = WelchAccum(WELCH_BLOCK, 1, Mret)
+    for i0 in range(0, T, 4096):
+        ch = x[i0:i0 + 4096]
+        han.add(ch)
+        wel.add(np.ascontiguousarray(ch))
+    acf = wel.autocorr(max_lag=WELCH_BLOCK // 2)
+    tau, _ = tau_e_from_autocorr(acf, dt_s)
+    om = omega_peak_from_welch(wel.p_sum, WELCH_BLOCK, dt_s)
+    npairs = {s: han.npairs[s] for s in STRIDES}
+    avail = [s for s in STRIDES if npairs[s] >= 50 * (D_DELAYS + 1)] or [min(STRIDES)]
+    stride = pick_stride(tau.mean(0), om.mean(0), avail, D_DELAYS, dt_s)
+    gamma = np.full(Mret, np.nan)
+    omega = np.full(Mret, np.nan)
+    r2 = np.full(Mret, np.nan)
+    for mi in range(Mret):
+        s = int(stride[mi])
+        mu, w = edmd_eig(han.gz[s][0, mi], npairs[s])
+        lam, _ = leading_resonance(mu, w, s * dt_s)
+        gamma[mi] = -lam.real
+        omega[mi] = abs(lam.imag)
+        r2[mi] = edmd_autocorr_r2(han.gz[s][0, mi], npairs[s], s, acf[:, 0, mi],
+                                  dt_s, t_max=min(6 * tau.mean(0)[mi],
+                                                  0.45 * WELCH_BLOCK * dt_s))
+    return gamma, omega, r2
 
 
 class WelchAccumFromSums:

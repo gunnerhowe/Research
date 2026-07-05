@@ -74,16 +74,25 @@ def rel_l2(pred, true):
     return float(np.linalg.norm(pred[ok] - true[ok]) / max(np.linalg.norm(true[ok]), 1e-300))
 
 
-def slow_set_overlap(pred_gamma, true_gamma, k, n_top=16):
-    """Fraction of the true n_top slowest sectors recovered by the predicted ranking.
-    (Principal angles between the corresponding Fourier spans are 0/90 degrees by
-    translation invariance, so the overlap fraction carries the same information;
-    the paper states this.)"""
-    ok = np.isfinite(pred_gamma) & np.isfinite(true_gamma)
-    idx = np.nonzero(ok)[0]
-    ps = idx[np.argsort(pred_gamma[idx])][:n_top]
-    ts = idx[np.argsort(true_gamma[idx])][:n_top]
-    return float(len(set(ps.tolist()) & set(ts.tolist())) / n_top)
+def slow_set_overlap(pred_gamma, true_gamma, k, q=0.25):
+    """Jaccard overlap of the SLOW-MODE subspaces: the sets of sectors whose decay
+    rate is in the slowest q-quantile of the (finite) band. Scale-robust (unlike a
+    fixed top-N, whose members become near-degenerate as the mode spacing shrinks
+    with L). Because sectors are Fourier modes (translation invariance), the
+    principal angle between the predicted and true slow spans is 0 for shared
+    sectors and 90 degrees otherwise, so Jaccard carries the same information; the
+    paper states this."""
+    pf = np.isfinite(pred_gamma)
+    tf = np.isfinite(true_gamma)
+    if not tf.any():
+        return np.nan
+    thr_t = np.quantile(true_gamma[tf], q)
+    thr_p = np.quantile(pred_gamma[pf], q) if pf.any() else np.inf
+    ts = set(np.nonzero(tf & (true_gamma <= thr_t))[0].tolist())
+    ps = set(np.nonzero(pf & (pred_gamma <= thr_p))[0].tolist())
+    if not (ts | ps):
+        return np.nan
+    return float(len(ts & ps) / len(ts | ps))
 
 
 def band_mask(k, lo, hi):

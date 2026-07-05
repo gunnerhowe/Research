@@ -93,6 +93,76 @@ class SmoothFlow:
         return np.exp(y) if self.log_y else y
 
 
+class PointwiseFlow:
+    """Nearest-neighbour-in-k pointwise 1/L flow (the GATE-S recipe generalized to
+    arbitrary target k). For each target wavenumber, gather the value at the
+    nearest mode of each training size, fit y = y_inf + c*(L_BASE/L)^p with p
+    chosen by AICc (p in {1,2}), and predict at the target L. No smoothness is
+    imposed across k, so the real per-mode structure is preserved; the only
+    requirement is that every training size has a mode near the target k (true by
+    construction for the full-support band). Optionally fits in log y (for
+    positive quantities: gamma, S)."""
+
+    def __init__(self, log_y=False, min_sizes=2):
+        self.log_y = log_y
+        self.min_sizes = min_sizes
+
+    def fit(self, size_curves):
+        # size_curves: {L: (k_array, y_array[, se_array])} seed-reduced
+        self.sizes = sorted(size_curves)
+        self.ks = {L: np.asarray(size_curves[L][0], float) for L in self.sizes}
+        self.ys = {L: np.asarray(size_curves[L][1], float) for L in self.sizes}
+        self.se = {L: (np.asarray(size_curves[L][2], float)
+                       if len(size_curves[L]) > 2 else None) for L in self.sizes}
+        return self
+
+    def predict(self, k_target, L_target):
+        k_target = np.atleast_1d(np.asarray(k_target, float))
+        out = np.full(len(k_target), np.nan)
+        for i, kt in enumerate(k_target):
+            Ls, ys, kdev, ses = [], [], [], []
+            for L in self.sizes:
+                j = int(np.argmin(np.abs(self.ks[L] - kt)))
+                yv = self.ys[L][j]
+                if not np.isfinite(yv):
+                    continue
+                if self.log_y and yv <= 0:
+                    continue
+                Ls.append(L)
+                ys.append(np.log(yv) if self.log_y else yv)
+                kdev.append(abs(self.ks[L][j] - kt))
+                if self.se[L] is not None:
+                    s = self.se[L][j]
+                    ses.append(s / max(abs(yv), 1e-12) if self.log_y else s)
+                else:
+                    ses.append(0.0)
+            if len(Ls) < self.min_sizes:
+                continue
+            Ls = np.asarray(Ls, float)
+            ys = np.asarray(ys, float)
+            # weight: k-proximity x inverse-SE (downweight noisy per-mode estimates)
+            w = np.exp(-(np.asarray(kdev) / (2 * np.pi / L_BASE)) ** 2)
+            ses = np.asarray(ses)
+            if np.any(ses > 0):
+                floor = np.median(ses[ses > 0])
+                w = w / np.maximum(ses, 0.25 * floor)
+            best = None
+            for p in (1, 2):
+                X = np.stack([np.ones_like(Ls), (L_BASE / Ls) ** p], axis=1)
+                A = X * w[:, None]
+                coef, *_ = np.linalg.lstsq(A, ys * w, rcond=None)
+                resid = ys - X @ coef
+                ss = float(np.sum((w * resid) ** 2))
+                n, kp = len(ys), 2
+                aicc = n * np.log(max(ss / n, 1e-300)) + 2 * kp + \
+                    (2 * kp * (kp + 1)) / max(n - kp - 1, 1e-9)
+                pred = coef[0] + coef[1] * (L_BASE / L_target) ** p
+                if best is None or aicc < best[0]:
+                    best = (aicc, pred)
+            out[i] = np.exp(best[1]) if self.log_y else best[1]
+        return out
+
+
 def interp_null(k_src, y_src, k_target, log_y=False):
     """No-flow null: PCHIP interpolation of a single-size measured curve onto the
     target grid; linear extrapolation from the two lowest points below k_src.min()."""

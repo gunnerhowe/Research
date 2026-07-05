@@ -9,39 +9,37 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
-from specext.scaling import SmoothFlow, interp_null                              # noqa: E402
+from specext.scaling import PointwiseFlow, interp_null                           # noqa: E402
 from specext.stats import (median_rel_err, median_abs_log10_ratio, rel_l2,      # noqa: E402
                            corr_from_power, power_from_density, tau_e_leading,
                            slow_set_overlap, band_mask)
 from specext.tiling import tile_power, tile_corr                                 # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import K_INRANGE_LO, K_GATE_MAX, DX                                  # noqa: E402
+from common import K_INRANGE_LO, K_FULL_LO, K_GATE_MAX, DX                       # noqa: E402
 
 R_MAX = 44.0
 
 
-def fit_edmd_flows(curves, seed):
-    """SmoothFlow fits (gamma log, omega linear, S log) over all modes of all
-    training sizes for one seed. curves: {L: analyze_measurement dict}."""
-    rows = {q: ([], [], []) for q in ("gamma", "omega", "s_density")}
-    for L, c in curves.items():
-        for q in rows:
-            y = c[q][seed]
-            rows[q][0].append(c["k"])
-            rows[q][1].append(np.full_like(c["k"], L))
-            rows[q][2].append(y)
+def fit_edmd_flows(curves, seed=None):
+    """Pointwise 1/L flows (the GATE-S recipe) for gamma, omega, S. seed=None uses
+    the seed-MEAN training curves (denoised, as GATE S did); an int uses that
+    seed's realization (for K2 uncertainty). curves: {L: analyze_measurement}."""
     flows = {}
     for q, log_y in (("gamma", True), ("omega", False), ("s_density", True)):
-        k = np.concatenate(rows[q][0])
-        L = np.concatenate(rows[q][1])
-        y = np.concatenate(rows[q][2])
-        flows[q] = SmoothFlow(log_y=log_y).fit(k, L, y)
+        size_curves = {}
+        for L, c in curves.items():
+            arr = c[q]
+            nseed = arr.shape[0]
+            y = arr.mean(axis=0) if seed is None else arr[seed]
+            se = arr.std(axis=0, ddof=1) / np.sqrt(nseed)  # seed SE per mode
+            size_curves[L] = (c["k"], y, se)
+        flows[q] = PointwiseFlow(log_y=log_y).fit(size_curves)
     return flows
 
 
 def predict_edmd_flow(flows, k_target, L_target):
-    return {"gamma": flows["gamma"].predict(k_target, L_target),
+    return {"gamma": np.maximum(flows["gamma"].predict(k_target, L_target), 0.0),
             "omega": np.maximum(flows["omega"].predict(k_target, L_target), 0.0),
             "s_density": flows["s_density"].predict(k_target, L_target)}
 
@@ -66,12 +64,14 @@ def truth_from_measurement(meas):
             "N": meas["N"], "L": meas["L"]}
 
 
-def score(pred, truth, band=(K_INRANGE_LO, K_GATE_MAX), n_top=16,
-          corr_pred_power=None):
-    """Metric suite for one predictor on the target grid. pred/truth carry
-    gamma/omega/s_density on truth['k']; NaNs in pred are scored where finite."""
+def score(pred, truth, band=(K_FULL_LO, K_GATE_MAX)):
+    """Metric suite for one predictor on the target grid, over the headline
+    full-support band [2pi/22, 2.2]. pred/truth carry gamma/omega/s_density on
+    truth['k']; NaNs in pred are scored where finite. C(r) is BAND-LIMITED to the
+    headline band on both sides (a fair bulk-correlation comparison: the flow
+    predicts the bulk modes; genuinely new long-wave modes are scored separately)."""
     k = truth["k"]
-    L, N = truth["L"], truth["N"]
+    L = truth["L"]
     mask = band_mask(k, *band)
     out = {}
     out["gamma_med_rel"] = median_rel_err(pred["gamma"][mask], truth["gamma"][mask])
@@ -81,38 +81,47 @@ def score(pred, truth, band=(K_INRANGE_LO, K_GATE_MAX), n_top=16,
     out["omega_typical"] = float(np.nanmedian(np.abs(truth["omega"][mask])))
     out["s_med_log10"] = median_abs_log10_ratio(pred["s_density"][mask],
                                                 truth["s_density"][mask])
-    # C(r): truth from the full measured power; prediction from predicted density
-    # on the retained band (power beyond k_max is negligible by dissipation)
+    # band-limited bulk correlation: reconstruct both sides from the SAME headline
+    # band so the comparison isolates the predicted modes (not unmodelled low-k)
     r = np.arange(0.0, R_MAX + DX / 2, DX)
-    c_true = corr_from_power(truth["p_mean"], L, r)
-    if corr_pred_power is not None:
-        c_pred = corr_pred_power(r)
-    else:
-        ok = np.isfinite(pred["s_density"])
-        p_pred = power_from_density(pred["s_density"][ok], L)
-        c_pred = (np.cos(np.outer(r, k[ok])) @ p_pred)
+    ok = np.isfinite(pred["s_density"]) & mask
+    p_pred = power_from_density(pred["s_density"][ok], L)
+    c_pred = np.cos(np.outer(r, k[ok])) @ p_pred
+    p_true = power_from_density(truth["s_density"][mask], L)
+    c_true = np.cos(np.outer(r, k[mask])) @ p_true
     out["c_rel_l2"] = rel_l2(c_pred, c_true)
-    # tau_e from leading resonance (PLAN: consistent definition on both sides)
     ok = np.isfinite(pred["gamma"]) & mask
     tp = tau_e_leading(np.maximum(pred["gamma"][ok], 1e-6), pred["omega"][ok])
     tt = tau_e_leading(np.maximum(truth["gamma"][ok], 1e-6), truth["omega"][ok])
     out["tau_med_rel"] = median_rel_err(tp, tt)
-    out["slow_overlap_top16"] = slow_set_overlap(
-        np.where(np.isfinite(pred["gamma"]), pred["gamma"], np.inf),
-        truth["gamma"], k, n_top=n_top)
+    # slow-mode subspace: restrict ranking to the headline band (the new-mode band
+    # is genuinely slower and is scored separately)
+    g_pred = np.where(np.isfinite(pred["gamma"]) & mask, pred["gamma"], np.inf)
+    g_true = np.where(mask, truth["gamma"], np.inf)
+    out["slow_overlap"] = slow_set_overlap(g_pred, g_true, k)
     return out
 
 
-def score_new_band(pred, truth, k_hi=K_INRANGE_LO):
-    """Separate metrics for the genuinely new slow sectors k < 2 pi / 88."""
-    k = truth["k"]
-    mask = k < k_hi
+def _band_metrics(pred, truth, mask):
     if not mask.any():
         return None
     return {"n_modes": int(mask.sum()),
             "gamma_med_rel": median_rel_err(pred["gamma"][mask], truth["gamma"][mask]),
             "s_med_log10": median_abs_log10_ratio(pred["s_density"][mask],
                                                   truth["s_density"][mask])}
+
+
+def score_new_band(pred, truth):
+    """Metrics for the two out-of-full-support regions, reported separately from
+    the headline band: partial-support [2pi/88, 2pi/22) (only larger training
+    boxes reach here) and new-mode (k < 2pi/88, no training support -> pure
+    extrapolation in k)."""
+    k = truth["k"]
+    partial = _band_metrics(pred, truth, (k >= K_INRANGE_LO) & (k < K_FULL_LO))
+    newmode = _band_metrics(pred, truth, k < K_INRANGE_LO)
+    if partial is None and newmode is None:
+        return None
+    return {"partial_support": partial, "new_mode": newmode}
 
 
 def strict_tiling_scores(curves_22, seed, truth):
@@ -127,7 +136,7 @@ def strict_tiling_scores(curves_22, seed, truth):
     c_pred = tile_corr(c22, 22.0, r, DX)
     c_true = corr_from_power(truth["p_mean"], L_t, r)
     # band-integrated spectra (variance in k-bands), comb vs truth
-    edges = np.array([K_INRANGE_LO, 0.3, 0.6, 0.9, 1.2, 1.5, 2.2])
+    edges = np.array([K_FULL_LO, 0.6, 0.9, 1.2, 1.5, 2.2])
     k_full_t = 2 * np.pi * np.arange(len(truth["p_mean"])) / L_t
     k_full_tile = 2 * np.pi * np.arange(len(p_t)) / L_t
     bi_true, bi_tile = [], []

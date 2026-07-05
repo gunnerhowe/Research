@@ -1,0 +1,361 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{natbib}
+\usepackage{caption}
+\captionsetup{font=small}
+
+\input{numbers}
+
+\newcommand{\gc}{\gamma}
+\newcommand{\Shat}{\hat S}
+\newcommand{\kmax}{k_{\max}}
+
+\title{\vspace{-3em}Finite-Size Scaling of Data-Driven Transfer-Operator Spectra:\\
+A Characterization, and an Honest Null for Spectral Domain Extension}
+\author{Gunner Levi Howe\\ \small\texttt{gunnerlevihowe@gmail.com}}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Can one predict the long-time statistics of an extensively chaotic field on a
+large domain by learning a transfer operator only on small domains and
+extrapolating its spectrum in system size? We study this for the
+one-dimensional Kuramoto--Sivashinsky (KS) equation. We first establish, as a
+pure-numerics characterization, that the leading Ruelle--Pollicott / Koopman
+resonances and the spectral density estimated by delay-embedded EDMD have a
+\emph{smooth, fittable dependence on domain size} $L$: a per-wavenumber $1/L$
+flow fit on $L\in\{22,44,66,88\}$ predicts the held-out $L=176$ spectrum to
+\GateSHoldoutGamma\ (decay rates) and \GateSHoldoutS\ (spectral density). Pushed
+to $L=1408$ ($\TargetFactor\times$ the base volume) with \emph{zero} large-domain
+data, the finite-size-scaling (FSS) flow reproduces decay rates to
+\FlowTargetGamma, spectral density to \FlowTargetSPct, two-point correlations to
+\FlowTargetC, and correlation times to \FlowTargetTau. However --- and this is
+the central, pre-registered finding --- the FSS machinery is \emph{unnecessary}
+for KS: the simplest translation-invariant null, interpolating the spectrum of
+the largest affordable small box ($L=88$) in wavenumber with no size flow at all,
+does \emph{better} (\InterpEightEightGamma\ on decay rates), because KS bulk
+spectra converge to within \ConvEightEightGamma\ of the thermodynamic limit
+already by $L=88$. We report this honestly, quantify the convergence that drives
+it, and delimit where such a null must fail. Separately, a deep translation-
+equivariant Koopman autoencoder reproduces the invariant spectral density
+(\KThreeSMedPct) but not the per-mode resonances (\KThreeOmegaMedRel\ error on
+oscillation frequencies), so the data-driven-Koopman (EDMD) operator is our
+spectral instrument. All numbers are machine-generated and regenerate byte-for-
+byte.
+\end{abstract}
+
+\section{Introduction}
+
+Extensively chaotic spatiotemporal systems have a thermodynamic limit: as the
+domain grows, intensive statistics (Lyapunov-exponent density, correlation
+lengths, spectral densities) converge, with finite-size corrections that vanish
+as the box grows~\citep{cross1993,egolf1994,manneville1985}. Transfer-operator
+(Ruelle--Pollicott, RP) resonances~\citep{ruelle1986,pollicott1985} encode the
+statistics that survive to long times in a chaotic system --- correlation-decay
+rates, power spectra, mixing --- and are, unlike trajectories, legitimately
+predictable past the Lyapunov horizon. This paper asks a scaling question about
+them: \emph{does the size-dependence of a learned operator's spectrum converge
+smoothly enough that one can fit it on small domains and extrapolate the
+statistics of a much larger one, without ever simulating or training at the
+large size?}
+
+This connects three threads of our own program: transfer-operator statistics as
+the right target for surrogate models of chaos~\citep{howe2026dbar}; long-horizon
+statistical (not trajectory) fidelity~\citep{howe2026tpp}; and scaling, rather
+than brute-force training, as the route to large systems. Two narrowings keep the
+claim honest. \textbf{(N1)} What is predicted at long horizon is
+\emph{statistics and slow modes, not trajectories}: $e^{\lambda t}$ spectral
+continuation cannot beat a positive Lyapunov exponent, but RP resonances do give
+correlation functions, power spectra, and decay rates~\citep{chekroun2020rp1}.
+\textbf{(N2)} Koopman/RP spectral \emph{estimation and forecasting} is an
+occupied field~\citep{chekroun2020rp1,arbabi2017hankel,das2019delay,williams2015edmd};
+we treat it as substrate. The only mechanism we test as novel is
+\emph{domain-size extrapolation} of a learned operator's spectrum via a learned
+finite-size-scaling flow.
+
+\paragraph{Contributions and honest outcome.}
+(i) A characterization (\S\ref{sec:e0}): the finite-size dependence of
+EDMD-estimated KS RP/Koopman spectra is smooth and $1/L$-fittable
+(\emph{GATE~S passes}); this is, to our knowledge, the first such measurement.
+(ii) A working FSS flow (\S\ref{sec:e2}) that extrapolates the spectrum to
+$\TargetFactor\times$ the base volume at single-digit-percent error from zero
+large-domain data. (iii) The pre-registered null result (\S\ref{sec:e3}):
+because KS spectra converge by $L\approx 4\times$ the base, a no-flow null
+(interpolate the largest small box) \emph{beats} the flow; the FSS mechanism adds
+nothing over translation invariance for KS. We report this as the primary finding
+and delimit where it must fail. (iv) An honest negative for deep operators
+(\S\ref{sec:e1}): a translation-equivariant Koopman autoencoder matches the
+invariant measure but not per-mode resonances.
+
+\section{Related work}
+\textbf{RP resonances of stochastic/observed systems.}
+\citet{chekroun2020rp1,tantet2020rp2,tantet2020rp3} develop reduced-state-space
+RP resonances (with an El-Ni\~no application); our substrate is this machinery,
+estimated from data. \textbf{Koopman spectral estimation and forecasting.}
+EDMD~\citep{williams2015edmd}, delay-coordinate / Hankel
+Koopman~\citep{arbabi2017hankel,das2019delay,mezic2005,takens1981}, DMD for
+analytic maps~\citep{slipantschuk2020}, and Koopman
+autoencoders~\citep{lusch2018,otto2019,azencot2020} are the fixed-domain tools we
+build on. \textbf{Domain extension for neural operators} is the named adjacent
+problem: \citet{devilleroche2026zeroshot} achieve zero-shot generalization of
+transformer neural operators to larger domains via attention locality, and
+\citet{huang2025domain} via domain-decomposition operator learning; both are
+\emph{locality} routes. Ours is a \emph{spectral / renormalization} route, and
+our finding is that for a fast-converging system the locality-free null already
+suffices --- so we cite-compare rather than reimplement. \textbf{RG $\times$ ML}:
+neural-network renormalization group~\citep{li2018nnrg} and analyses of when
+learning dynamics renormalize~\citep{zhang2025renormalize} share the RG framing
+but target sampling / training dynamics, not operator-spectrum domain extension.
+Our inspiration is Wilsonian momentum-shell scaling; empirically the KS data
+support only a smooth-in-$1/L$ fit, and we do not oversell the RG language.
+Dynamic-RG analyses of the \emph{noisy} KS equation place its long-wavelength
+field in the KPZ universality class~\citep{ueno2005noisyks}; that is a different
+object (field scaling exponents), not the finite-size dependence of the
+transfer-operator spectrum we measure.
+
+\section{Setup}
+\label{sec:setup}
+We integrate KS, $u_t = -u u_x - u_{xx} - u_{xxxx}$, periodic on $[0,L)$, with a
+pseudospectral ETDRK4 scheme~\citep{kassam2005} (2/3 dealiasing), vendored and
+regression-pinned against a prior validated implementation~\citep{howe2026dbar}.
+The grid resolution $\Delta x = 22/64$ is fixed for all sizes, $dt=0.25$, samples
+every $0.5$ time units after a $500$-unit transient; $3$ seeds per size.
+
+\paragraph{Per-sector spectra.}
+Translation invariance block-diagonalizes the dynamics over Fourier wavenumbers
+$k=2\pi m/L$. For each retained sector ($0<k\le 3$) we form the complex mode
+series $\hat u_m(t)/N$ and estimate its leading resonance by Hankel-EDMD: an
+$8$-delay dictionary at stride $s$ samples, one-step map advancing by $s$, Grams
+accumulated in a single streaming pass over $\{1,8,64,512\}$; the stride whose
+window is closest to $3\tau_e(k)$ (with an anti-aliasing guard) is selected. The
+leading resonance $\lambda(k)=\log\mu/(s\,\Delta t_s)$ gives decay rate
+$\gc(k)=-\mathrm{Re}\,\lambda$ and frequency $\omega(k)=|\mathrm{Im}\,\lambda|$.
+We also accumulate a Welch power spectrum; the spectral density is
+$\Shat(k)=P_m/(2\pi/L)$, the object with a thermodynamic limit. Over all sizes the
+EDMD-implied autocovariance matches the measured one with median $R^2$ between
+\MedRSquaredWorst\ and \MedRSquaredBest.
+
+\section{E0: finite-size scaling of KS spectra exists (GATE S)}
+\label{sec:e0}
+On the common grid $k=2\pi m/22$ (present at every training size) we fit, per
+wavenumber, $y(L)=y_\infty + c\,(22/L)^p$ with $p\in\{1,2\}$ chosen by
+AICc, seed-averaged and SE-weighted. \textbf{GATE~S} (pre-registered): a smooth
+or already-converged size-dependence exists for $\ge 5/\GateSNumK$ wavenumbers
+(passed: \GateSSOneGamma/\GateSNumK\ for $\gc$, \GateSSOneS/\GateSNumK\ for
+$\Shat$), \emph{and} fitting on $\{22,44,66,88\}$ predicts held-out $L=176$ to
+$\le 10\%$ (achieved: \GateSHoldoutGamma\ for $\gc$, \GateSHoldoutS\ for $\Shat$).
+GATE~S \textbf{passes}. Finite-size corrections are large at small $L$ --- at
+$k\approx0.57$ the decay rate grows from \GammaSmallKSmallL\ ($L=22$) to
+\GammaSmallKLargeL\ ($L=88$), a factor \GammaGrowthFactor --- and mostly
+saturate by $L=88$; AICc prefers the $1/L^2$ form for
+\AiccPowTwoS/\GateSNumK\ of the density points. This smooth, measurable
+size-dependence is the paper's foundation (Fig.~\ref{fig:dispersion}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig1_snapshots}
+\caption{KS space-time fields on the base domain ($L=22$) and the target
+($L=1408=64\times$). The intensive statistics --- correlation length, spectral
+density per unit length --- have a thermodynamic limit; this paper asks whether
+the finite-size dependence of the learned transfer-operator spectrum can be fit on
+small domains and extrapolated to the large one.}
+\label{fig:snapshots}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig2_dispersion}
+\caption{E0 characterization. Left: decay rate $\gc(k)$; middle: spectral density
+$\Shat(k)$; both vs.\ wavenumber for $L\in\{22,44,66,88,176\}$. Right: the
+per-wavenumber $1/L$ flow at two common wavenumbers, normalized; $\star$ is the
+held-out $L=176$ truth and $\times$ the flow prediction. GATE~S passes.}
+\label{fig:dispersion}
+\end{figure}
+
+\section{E1: a deep Koopman operator matches the measure, not the resonances}
+\label{sec:e1}
+We train a translation-equivariant convolutional Koopman autoencoder (circular
+convolutions, a linear circular-convolution propagator, $16$ latent channels) at
+$L=22$, $\KThreeTrainMinutes$ min/model. It reproduces the \emph{invariant
+spectral density} well --- generated fields match the measured density to
+\KThreeSMedPct\ (median) and the two-point correlation to \KThreeCRelLTwo\ --- but
+its per-sector \emph{leading resonances} do not match EDMD: even under
+generate-and-reestimate (drive the learned stochastic operator, run the identical
+estimator used on data), the decay rates are off by \KThreeGammaMedRel\ and the
+oscillation frequencies by \KThreeOmegaMedRel. The variance-dominated
+reconstruction loss pins the measure without pinning each mode's resonant phase.
+Per our pre-registered kill condition K3, we therefore build the FSS flow on the
+data-driven Koopman (EDMD) spectrum --- itself a learned transfer operator --- and
+report the deep operator as this measure-fidelity/resonance-infidelity result.
+
+\section{E2: the finite-size-scaling flow works}
+\label{sec:e2}
+The FSS flow generalizes the GATE-S recipe to arbitrary target wavenumbers:
+for each target $k$, gather the value at the nearest mode of each training size
+and fit the seed-averaged $1/L$ (or $1/L^2$, AICc) model, extrapolating to the
+target $L$. We report the headline over the \emph{full-support band}
+$k\in[2\pi/22,2.2]$ (wavenumbers present at all four training sizes); the
+partial-support band $[2\pi/88,2\pi/22)$ and the genuinely new long-wave modes
+($k<2\pi/88$) are reported separately.
+
+Fitting on $\{22,44,66,88\}$ and extrapolating with \emph{zero} large-domain
+data, the flow predicts the $L=1408$ spectrum ($\TargetSectors$ sectors,
+$\TargetFactor\times$ the base volume): decay rates to \FlowTargetGamma, spectral
+density to \FlowTargetSPct, band-limited two-point correlation to \FlowTargetC,
+correlation times to \FlowTargetTau, and a slow-mode-subspace Jaccard overlap of
+\FlowTargetSlow\ (Fig.~\ref{fig:headline}). The new long-wave band is revealing:
+its \emph{spectral density} extrapolates almost perfectly (\FlowTargetNewSPct\
+over \FlowTargetNewModes\ modes, since $\Shat$ is flat at low $k$) but its
+\emph{decay rates} do not (\FlowTargetNewGamma\ error) --- these hydrodynamic
+modes are far slower than anything in the training set, so the dynamics, unlike
+the statics, cannot be extrapolated in wavenumber. Taken alone this is a positive
+domain-extension result; \S\ref{sec:e3} shows why it is nonetheless unnecessary.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig3_headline}
+\caption{E2 domain extension to $L=1408$. Decay rate $\gc(k)$, spectral density
+$\Shat(k)$, and two-point correlation $C(r)$: truth (grey), FSS flow (red), and
+the no-flow null interp-88 (blue, left). Both are fit only on $L\le88$; the shaded
+band is the sub-$2\pi/22$ region (partial/new-mode support) reported separately.}
+\label{fig:headline}
+\end{figure}
+
+\section{E3: the honest null --- K2 fires}
+\label{sec:e3}
+The house rule is that the null control is the experiment that makes it a paper.
+We compare the flow against the strongest no-flow null: \textbf{interp-88},
+which interpolates the measured $L=88$ spectrum in wavenumber to the target grid
+with \emph{no size flow at all} (the spectral analog of evaluating a small-domain
+operator on a larger domain, the locality/zero-shot
+route~\citep{devilleroche2026zeroshot}). Table~\ref{tab:baselines} is decisive:
+interp-88 predicts the $L=1408$ decay rates to \InterpEightEightGamma, density to
+\InterpEightEightSPct, and correlations to \InterpEightEightC\ --- \emph{better}
+than the flow on all \KTwoNumMetrics\ headline metrics. Our pre-registered
+kill condition \textbf{K2 fires} (the flow wins \KTwoFlowWins/\KTwoNumMetrics):
+the FSS mechanism adds nothing over translation-invariant interpolation for KS.
+
+The mechanism is fast convergence (\S\ref{sec:e4}, Table~\ref{tab:convergence}):
+the KS bulk spectrum is within \ConvEightEightGamma\ (decay rates) and
+\ConvEightEightS\ ($\Shat$) of the $L=1408$ limit \emph{already at $L=88$}, so
+using the largest affordable box directly beats extrapolating a $1/L$ flow, which
+over-corrects past the already-converged largest size. The weaker strict-tiling
+null (periodically tile the $L=22$ field) captures band-integrated power to
+\TilingBandPower\ but fails on the two-point correlation (\TilingC) through the
+spurious $L=22$ periodicity it imposes --- a reminder that tiling, unlike
+smooth $k$-interpolation, injects artificial long-range order. A flow fit on an
+aggressive base $\{22,33,44\}$ is worse still (\SmallBaseGamma\ on decay rates;
+its density extrapolation is numerically unstable), and even there interp-44
+wins. With \emph{some} large-domain data, direct EDMD at the target reaches
+\EdmdLimLongGamma\ (decay rates) from only $10{,}000$ time units --- and the full
+oracle costs \OracleTargetMultiple$\times$ our small-domain compute, while
+interp-88 costs the same as the flow.
+
+\input{tables/baselines_wrap}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig4_convergence_baselines}
+\caption{Left: the mechanism --- the KS bulk spectrum's median distance to the
+$L=1408$ limit collapses to a few percent by $L=88$ (dotted line), so the largest
+small box is already near-converged. Right: at $L=1408$, the no-flow null
+interp-88 beats the FSS flow on every headline metric --- K2 fires.}
+\label{fig:baselines}
+\end{figure}
+
+\section{E4: boundaries --- where each route breaks}
+\label{sec:e4}
+\textbf{Convergence (the mechanism).} Table~\ref{tab:convergence} reports the
+median distance of each size's common-grid spectrum from the $L=1408$ limit. The
+decay rates are within \ConvFourFourGamma\ by $L=44$ and \ConvEightEightGamma\ by
+$L=88$; this rapid convergence is exactly why interp-88 suffices and the flow is
+redundant.
+
+\input{tables/convergence_wrap}
+
+\textbf{Extrapolation distance.} Across the ladder $L\in\{176,\dots,2816\}$
+(Table~\ref{tab:ladder}) both the flow and interp-88 stay flat in error
+(flow \LadderFlowTarget$\to$\LadderFlowFinal\ over $1408\to2816$; interp-88
+\LadderInterpTarget$\to$\LadderInterpFinal), consistent with a converged bulk
+spectrum: distance in $L$ is not the limiting factor once past $L\approx88$.
+
+\input{tables/ladder_wrap}
+
+\textbf{Boundary conditions.} Under odd-parity (Dirichlet-type $u=u_{xx}=0$)
+boundaries at $L=176$, the bulk two-point correlation heals to the periodic
+prediction within a wall layer of \OddHealingLength\ units; the periodic FSS-flow
+prediction reproduces the odd-parity \emph{bulk} correlation to \OddCVsFlow\ and
+the bulk-point temporal autocorrelation to \OddAcfVsFlow, i.e.\ the size-scaled
+periodic spectrum transfers to the bulk of a non-periodic domain.
+
+\textbf{Scale content.} Splitting $L=1408$ into an energy-containing band
+($k\le1.5$) and a microscale band ($k>1.5$), the flow's decay-rate error is
+\BandEnergyGamma\ in the energy band and \BandMicroGamma\ in the microscale band.
+
+\textbf{New long-wave modes.} The genuinely new modes ($k<2\pi/88$, absent at
+every training size) separate statics from dynamics cleanly
+(Fig.~\ref{fig:lowk}): their spectral density extrapolates in wavenumber to
+\FlowTargetNewSPct\ (the density is flat at low $k$), but their decay rates,
+being far slower than anything trained, are not recovered (\FlowTargetNewGamma).
+No method --- flow or null --- predicts the new modes' \emph{dynamics}; this is the
+honest ceiling of size-and-wavenumber extrapolation.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig5_boundary}
+\caption{E4. Left: decay-rate error vs.\ target $L$ (flat past $L\approx88$ for
+both routes). Middle: odd-parity (Dirichlet-type) bulk correlation matches the
+periodic FSS-flow prediction outside a thin wall layer. Right: flow error split by
+scale band at $L=1408$.}
+\label{fig:boundary}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig6_lowk}
+\caption{The new long-wave band at $L=1408$ ($k<2\pi/22$, dotted lines mark
+$2\pi/88$ and $2\pi/22$). Left: decay rates of the genuinely new modes are not
+extrapolated. Right: their spectral density is, because $\Shat$ is flat at low
+$k$. Statics extrapolate in wavenumber; dynamics do not.}
+\label{fig:lowk}
+\end{figure}
+
+\section{What we do not claim}
+We do not claim trajectory forecasting (N1): only statistics and slow modes. We
+do not claim that the FSS flow beats translation-invariant interpolation for KS
+--- it does not (K2 fires); we claim only that the size-dependence is smooth and
+fittable, and that both routes extrapolate the bulk statistics to
+$\TargetFactor\times$ at single-digit-percent error. We make no 2-D/3-D or
+turbulence claims (none were run). We do not claim the deep operator captures
+resonances (it does not). We do not claim the new long-wave modes' \emph{dynamics}
+are predicted --- only their spectral density.
+
+\paragraph{Where the null must fail (proposed, not claimed).} interp-88 wins
+because the KS correlation length is short relative to $L=88$, so the bulk
+spectrum is converged. A finite-size flow should be necessary precisely where the
+largest affordable box is \emph{not} converged: systems with a correlation length
+comparable to the box, long-range coupling, or size-dependent linear
+instabilities (so that new unstable modes appear as $L$ grows). Testing whether
+the FSS flow beats interpolation there --- where interpolation of a small box must
+fail --- is the natural next experiment.
+
+\section{Reproducibility}
+Every number above is emitted by \texttt{gen\_paper\_numbers.py} from committed
+JSON and regenerates byte-for-byte (\texttt{verify\_regen.py}); the integrator,
+estimators, and scaling fits are unit-tested (spectra vs.\ analytic linear
+sectors; integrator regression; scaling round-trip). Simulations use a fixed
+grid, $3$ seeds, and pre-registered gates (PLAN.md). Code and data:
+\texttt{DOI to be assigned at submission}. Recency re-sweep logged in PLAN.md.
+
+\small
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

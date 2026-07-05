@@ -69,7 +69,7 @@ class ConvKoopman(nn.Module):
         return torch.nn.functional.conv1d(zp, w)
 
 
-def train_model(datasets, seed, flow=False, steps=20000, batch=32, horizon=8,
+def train_model(datasets, seed, flow=False, steps=12000, batch=64, horizon=16,
                 lr=1e-3, device="cuda", log_every=2000, log_fn=print):
     """datasets: list of dicts {"L": float, "data": float32 memmap (T, N)} (one per
     size for the flow model, a single entry for per-size models)."""
@@ -124,25 +124,25 @@ def _sector_response(fn, base_in, kappa_idx, n_ch, N, device, eps=1e-3, batch=25
     """Linear frequency response of a translation-equivariant map at lattice bins.
 
     fn maps (B, C_in, N) -> (B, C_out, N). base_in: (C_in, N). kappa_idx: rfft bin
-    indices. Returns (n_kappa, C_out, C_in) complex response matrices."""
+    indices. Returns (n_kappa, C_out, C_in) complex response matrices.
+    Perturbations are built lazily per batch (an upfront list is O(GB) at large N).
+    """
     x = np.arange(N)
     out0 = fn(base_in.unsqueeze(0)).squeeze(0)          # (C_out, N)
     n_out = out0.shape[0]
     resp = np.zeros((len(kappa_idx), n_out, n_ch), dtype=np.complex128)
-    perts = []
-    for qi, mi in enumerate(kappa_idx):
-        kap = 2 * np.pi * mi / N
-        for a in range(n_ch):
-            for ph, f in ((0, np.cos), (1, np.sin)):
-                p = torch.zeros(n_ch, N, device=device)
-                p[a] = torch.from_numpy(eps * f(kap * x)).to(device).float()
-                perts.append((qi, a, ph, p))
-    for i0 in range(0, len(perts), batch):
-        chunk = perts[i0:i0 + batch]
-        xb = torch.stack([base_in + p for (_, _, _, p) in chunk])
+    specs = [(qi, a, ph) for qi in range(len(kappa_idx))
+             for a in range(n_ch) for ph in (0, 1)]
+    for i0 in range(0, len(specs), batch):
+        chunk = specs[i0:i0 + batch]
+        xb = base_in.unsqueeze(0).repeat(len(chunk), 1, 1)
+        for bi, (qi, a, ph) in enumerate(chunk):
+            kap = 2 * np.pi * kappa_idx[qi] / N
+            f = np.cos if ph == 0 else np.sin
+            xb[bi, a] += torch.from_numpy(eps * f(kap * x)).to(device).float()
         yb = fn(xb) - out0.unsqueeze(0)                 # (b, C_out, N)
         Y = torch.fft.rfft(yb, dim=-1).cpu().numpy() / eps
-        for (qi, a, ph, _), y in zip(chunk, Y):
+        for (qi, a, ph), y in zip(chunk, Y):
             v = 2.0 * y[:, kappa_idx[qi]] / N           # rfft -> amplitude of e^{i kap x}
             resp[qi, :, a] += v if ph == 0 else 1j * v
         del xb, yb
@@ -150,34 +150,47 @@ def _sector_response(fn, base_in, kappa_idx, n_ch, N, device, eps=1e-3, batch=25
 
 
 @torch.no_grad()
-def model_spectrum(model, ell, m_idx, N, device="cuda"):
-    """Per-sector eigenvalues + io-weight-selected leading resonance.
+def model_spectrum(model, ell, m_idx, N, device="cuda", n_half=8, mu_clip=0.999):
+    """Per-sector eigenvalues + leading resonance from the operator's own implied
+    stationary autocovariance (data-free, valid at any kappa and ell).
 
-    m_idx: rfft bin indices of the retained sectors on an N-point grid (kappa =
-    2 pi m / N; physical k = kappa/dx). Returns dict with mu (nk, M), lam (nk,),
-    weights (nk, M)."""
+    The observable-sector autocovariance implied by the learned stochastic
+    operator under isotropic sector forcing is c(n) = D_hat K^n Sigma_iso D_hat^H
+    with Sigma_iso = sum_{n>=0} K^n K^dagger^n; its poles are the eigenvalues
+    mu_j of K_hat(kappa) with amplitudes alpha_j = (D_hat V)_j (V^-1 Sigma_iso
+    D_hat^H)_j. Leading resonance = argmax |alpha_j| |mu_j|^n_half among stable
+    mu — the same persistence-weighted rule as the EDMD extractor. m_idx: rfft
+    bin indices on an N-point grid (kappa = 2 pi m / N; physical k = kappa/dx).
+    """
     model.eval()
     w = model.kernel(ell).detach().cpu().numpy().astype(np.float64)
     kappa = 2 * np.pi * np.asarray(m_idx) / N
     K = freq_response(w, kappa)                          # (nk, M, M)
     mu, V = np.linalg.eig(K)
-    base_u = torch.zeros(1, N, device=device)
-    enc_fn = lambda x: model.enc(x)
-    dec_fn = lambda x: model.dec(x)
-    E = _sector_response(enc_fn, base_u, list(m_idx), 1, N, device)   # (nk, M, 1)
-    zbar = model.encode(base_u).squeeze(0)               # (M, N)
-    D = _sector_response(dec_fn, zbar, list(m_idx), zbar.shape[0], N, device)  # (nk, 1, M)
+    # stabilized copy for the covariance sum (clip |mu| at mu_clip)
+    scale = np.minimum(1.0, mu_clip / np.maximum(np.abs(mu), 1e-12))
     Vinv = np.linalg.inv(V)
-    win = np.einsum("njm,nmi->nj", Vinv, E)              # (nk, M)  (V^-1 E)
-    wout = np.einsum("nim,nmj->nj", D, V)                # (nk, M)  (D V)
-    weights = np.abs(win) * np.abs(wout)
+    Kc = np.einsum("nij,nj,njk->nik", V, mu * scale, Vinv)
+    sig = np.tile(np.eye(K.shape[1]), (len(kappa), 1, 1)).astype(np.complex128)
+    A = Kc.copy()
+    for _ in range(13):                                   # sum of 2^13 terms
+        sig = sig + A @ sig @ np.conj(A.transpose(0, 2, 1))
+        A = A @ A
+    zbar = model.encode(torch.zeros(1, N, device=device)).squeeze(0)
+    D = _sector_response(lambda x: model.dec(x), zbar, list(m_idx),
+                         zbar.shape[0], N, device)        # (nk, 1, M)
+    dv = np.einsum("nim,nmj->nj", D, V)                   # (D V)_j
+    vsd = np.einsum("njm,nmi->nj", Vinv,
+                    sig @ np.conj(D.transpose(0, 2, 1)))  # (V^-1 Sig D^H)_j
+    alpha = dv * vsd
+    weights = np.abs(alpha) * np.abs(mu) ** n_half
     lam = np.full(len(m_idx), np.nan, dtype=np.complex128)
     mu_sel = np.full(len(m_idx), np.nan, dtype=np.complex128)
     for i in range(len(m_idx)):
         ok = np.abs(mu[i]) <= 1.005
         if not ok.any():
             continue
-        j = np.argmax(weights[i] * ok)
+        j = np.argmax(np.where(ok, weights[i], -np.inf))
         mu_sel[i] = mu[i][j]
         lam[i] = np.log(mu[i][j]) / DT_STEP
     return {"mu": mu, "weights": weights, "mu_sel": mu_sel, "lam": lam,
@@ -252,6 +265,51 @@ def generate_stationary(model, sig_z, m_all, N, n_samples=4096, seed=0,
         zb = torch.from_numpy(z).to(device).float()
         u = model.decode(zb).cpu().numpy()
         out[i0:i0 + b] = u
+    return out
+
+
+@torch.no_grad()
+def generate_and_reestimate(model, ell, m_idx, N, device="cuda", T=60000,
+                            seed=0, mu_clip=0.999, chunk=4096):
+    """Honest resonance-faithfulness probe (E1): drive the learned stochastic
+    operator with isotropic per-sector white noise, decode to physical fields,
+    and return the per-mode complex mode series (T, n_modes) so the CALLER can run
+    the identical EDMD estimator it uses on real data. The sector operator's
+    spectral radius is clipped to the unit disk (the trained operator has spurious
+    |mu|>1 latent directions that would otherwise diverge the surrogate process).
+    """
+    model.eval()
+    w = model.kernel(ell).detach().cpu().numpy().astype(np.float64)
+    kappa = 2 * np.pi * np.asarray(m_idx) / N
+    K = freq_response(w, kappa)
+    Mlat = K.shape[1]
+    mu, V = np.linalg.eig(K)
+    Vinv = np.linalg.inv(V)
+    scale = np.minimum(1.0, mu_clip / np.maximum(np.abs(mu), 1e-12))
+    K = np.einsum("nij,nj,njk->nik", V, mu * scale, Vinv)
+    Kt = torch.from_numpy(K).to(device).to(torch.complex64)
+    midx_t = torch.as_tensor(np.asarray(m_idx), device=device)
+    g = torch.Generator(device=device).manual_seed(int(seed) * 2654435761 % (1 << 31))
+    z = torch.zeros(len(kappa), Mlat, dtype=torch.complex64, device=device)
+    out = np.empty((T, len(m_idx)), dtype=np.complex128)
+    buf = []
+    written = 0
+    for n in range(T):
+        eta = (torch.randn(len(kappa), Mlat, device=device, generator=g) +
+               1j * torch.randn(len(kappa), Mlat, device=device, generator=g)) / np.sqrt(2)
+        z = torch.einsum("kij,kj->ki", Kt, z) + eta.to(torch.complex64)
+        buf.append(z.clone())
+        if len(buf) == chunk or n == T - 1:
+            Z = torch.stack(buf)
+            spec = torch.zeros(Z.shape[0], Mlat, N // 2 + 1, dtype=torch.complex64,
+                               device=device)
+            spec[:, :, midx_t] = Z.transpose(1, 2)
+            zfield = torch.fft.irfft(spec * N, n=N, dim=-1).float()
+            u = model.decode(zfield)
+            uh = (torch.fft.rfft(u, dim=-1) / N).cpu().numpy()[:, m_idx]
+            out[written:written + uh.shape[0]] = uh
+            written += uh.shape[0]
+            buf = []
     return out
 
 

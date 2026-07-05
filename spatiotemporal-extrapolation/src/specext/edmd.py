@@ -147,15 +147,24 @@ def edmd_eig(gz, npairs, reg=1e-10):
     """Eigen-decomposition of the per-sector EDMD operator from a (d+1,d+1) Gram.
 
     Returns (mu, w): eigenvalues and spectral weights of the delay-0 observable,
-    so that C(n) ~ sum_j w_j mu_j^n (autocovariance of x at multiples of the stride).
+    so that C(n) ~ sum_j w_j mu_j^n (autocovariance of x at multiples of the
+    stride). Returns NaNs if the Gram is empty/degenerate (too little data).
     """
     d = gz.shape[0] - 1
+    if npairs < d + 2 or not np.isfinite(gz).all():
+        return np.full(d, np.nan, complex), np.full(d, np.nan, complex)
     G = gz[1:, 1:] / npairs
     A = gz[1:, :d] / npairs
-    G = G + reg * np.trace(G).real / d * np.eye(d)
-    K = np.linalg.solve(G, A)
-    mu, V = np.linalg.eig(K)
-    Vinv = np.linalg.inv(V)
+    tr = np.trace(G).real
+    if not np.isfinite(tr) or tr <= 0:
+        return np.full(d, np.nan, complex), np.full(d, np.nan, complex)
+    G = G + reg * tr / d * np.eye(d)
+    try:
+        K = np.linalg.solve(G, A)
+        mu, V = np.linalg.eig(K)
+        Vinv = np.linalg.inv(V)
+    except np.linalg.LinAlgError:
+        return np.full(d, np.nan, complex), np.full(d, np.nan, complex)
     w = (G @ V)[0, :] * Vinv[:, 0]
     return mu, w
 
@@ -222,10 +231,18 @@ def edmd_autocorr_r2(gz, npairs, stride, c_meas, dt_s, t_max, reg=1e-10):
     measured one, compared at lags that are multiples of the stride, up to t_max.
     Matrix powers (not eigenvectors): stable for the near-defective delay cluster."""
     d = gz.shape[0] - 1
+    if npairs < d + 2 or not np.isfinite(gz).all():
+        return np.nan
     G = gz[1:, 1:] / npairs
     A = gz[1:, :d] / npairs
-    Greg = G + reg * np.trace(G).real / d * np.eye(d)
-    K = np.linalg.solve(Greg, A)
+    tr = np.trace(G).real
+    if not np.isfinite(tr) or tr <= 0:
+        return np.nan
+    Greg = G + reg * tr / d * np.eye(d)
+    try:
+        K = np.linalg.solve(Greg, A)
+    except np.linalg.LinAlgError:
+        return np.nan
     n_max = int(t_max / (stride * dt_s))
     lag_idx = np.arange(n_max + 1) * stride
     lag_idx = lag_idx[lag_idx < c_meas.shape[0]]

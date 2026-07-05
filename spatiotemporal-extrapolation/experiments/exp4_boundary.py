@@ -15,7 +15,6 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import torch
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import (RUNS, SEEDS, SIZES_TRAIN, L_HOLDOUT, L_TARGET, DT_S, DX,    # noqa: E402
@@ -23,13 +22,11 @@ from common import (RUNS, SEEDS, SIZES_TRAIN, L_HOLDOUT, L_TARGET, DT_S, DX,    
                     save_json, WELCH_BLOCK)
 from floweval import (fit_edmd_flows, predict_edmd_flow, predict_interp_null,   # noqa: E402
                       truth_from_measurement, score, score_new_band, R_MAX)
-from exp2_scaling_flow import neural_prediction                                  # noqa: E402
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 from specext.ks import ks_stream_batch                                           # noqa: E402
 from specext.edmd import WelchAccum                                              # noqa: E402
 from specext.stats import rel_l2, power_from_density                             # noqa: E402
 
-MODELS = RUNS / "models"
 LADDER = [176.0, 352.0, 704.0, 1408.0, 2816.0]
 
 
@@ -54,16 +51,11 @@ def error_vs_L(paths, curves):
         meas = analyze_measurement(paths[L])
         truth = truth_from_measurement(meas)
         k_t = truth["k"]
-        for name in ("fitted_flow", "learned_flow", "interp88"):
+        for name in ("fitted_flow", "interp88"):
             per_seed = []
             for seed in SEEDS:
                 if name == "fitted_flow":
                     pred = predict_edmd_flow(fit_edmd_flows(curves, seed), k_t, L)
-                elif name == "learned_flow":
-                    nb = neural_prediction(MODELS / f"flow_s{seed}.pt", L)
-                    pred = {"gamma": nb["gamma"], "omega": nb["omega"],
-                            "s_density": predict_edmd_flow(
-                                fit_edmd_flows(curves, seed), k_t, L)["s_density"]}
                 else:
                     pred = predict_interp_null(curves[88.0], seed, k_t)
                 per_seed.append(score(pred, truth))
@@ -168,27 +160,39 @@ def band_breakdown(curves):
     truth = truth_from_measurement(meas)
     k_t = truth["k"]
     bands = {"energy": (K_INRANGE_LO, 1.5), "microscale": (1.5, 3.0)}
-    out = {}
-    for name in ("fitted_flow", "learned_flow"):
-        out[name] = {}
-        for bn, band in bands.items():
-            per_seed = []
-            for seed in SEEDS:
-                if name == "fitted_flow":
-                    pred = predict_edmd_flow(fit_edmd_flows(curves, seed), k_t,
-                                             L_TARGET)
-                else:
-                    nb = neural_prediction(MODELS / f"flow_s{seed}.pt", L_TARGET)
-                    pred = {"gamma": nb["gamma"], "omega": nb["omega"],
-                            "s_density": predict_edmd_flow(
-                                fit_edmd_flows(curves, seed), k_t,
-                                L_TARGET)["s_density"]}
-                per_seed.append(score(pred, truth, band=band))
-            out[name][bn] = {m: float(np.nanmedian([s[m] for s in per_seed]))
-                             for m in per_seed[0]}
-            print(f"band {name}/{bn}: gamma {out[name][bn]['gamma_med_rel']:.4f} "
-                  f"S {out[name][bn]['s_med_log10']:.4f}")
+    out = {"fitted_flow": {}}
+    for bn, band in bands.items():
+        per_seed = [score(predict_edmd_flow(fit_edmd_flows(curves, seed), k_t,
+                                            L_TARGET), truth, band=band)
+                    for seed in SEEDS]
+        out["fitted_flow"][bn] = {m: float(np.nanmedian([s[m] for s in per_seed]))
+                                  for m in per_seed[0]}
+        print(f"band fitted_flow/{bn}: gamma {out['fitted_flow'][bn]['gamma_med_rel']:.4f} "
+              f"S {out['fitted_flow'][bn]['s_med_log10']:.4f}")
     return out
+
+
+def convergence_to_limit():
+    """Why K2 fires: median rel distance of gamma(k;L) and S(k;L) to the L=1408
+    limit, on the common grid, vs L. Quantifies how fast KS spectra converge (the
+    mechanism behind interp-88 matching the target)."""
+    from common import common_grid_indices
+    limit = analyze_measurement(RUNS / "measure_L1408.npz")
+    idxL, kc = common_grid_indices(limit["k"])
+    g_lim = limit["gamma"].mean(axis=0)[idxL]
+    s_lim = limit["s_density"].mean(axis=0)[idxL]
+    rows = []
+    for L in [22.0, 44.0, 66.0, 88.0, 176.0, 352.0, 704.0]:
+        c = analyze_measurement(RUNS / f"measure_L{L:g}.npz")
+        idx, _ = common_grid_indices(c["k"])
+        g = c["gamma"].mean(axis=0)[idx]
+        s = c["s_density"].mean(axis=0)[idx]
+        rows.append({"L": L,
+                     "gamma_rel_to_limit": float(np.nanmedian(np.abs(g - g_lim) / np.abs(g_lim))),
+                     "s_rel_to_limit": float(np.nanmedian(np.abs(s - s_lim) / np.abs(s_lim)))})
+        print(f"convergence L={L:g}: gamma {rows[-1]['gamma_rel_to_limit']:.1%} "
+              f"S {rows[-1]['s_rel_to_limit']:.1%} from L=1408 limit")
+    return rows
 
 
 def main():
@@ -198,7 +202,8 @@ def main():
     curves = {L: analyze_measurement(RUNS / f"measure_L{L:g}.npz")
               for L in SIZES_TRAIN}
     paths = ladder_measurements(skip_sim=True)
-    results = {"ladder": error_vs_L(paths, curves),
+    results = {"convergence": convergence_to_limit(),
+               "ladder": error_vs_L(paths, curves),
                "odd_parity": odd_parity_study(curves, args.skip_sim),
                "bands_1408": band_breakdown(curves)}
     save_json("exp4_boundary.json", results)

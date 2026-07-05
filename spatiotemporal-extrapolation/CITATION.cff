@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+type: software
+title: "specext: finite-size scaling of data-driven transfer-operator spectra for spectral domain extension"
+authors:
+  - family-names: Howe
+    given-names: Gunner Levi
+    email: gunnerlevihowe@gmail.com
+version: 1.0.0
+date-released: 2026-07-05
+license: MIT
+keywords:
+  - Kuramoto-Sivashinsky
+  - Ruelle-Pollicott resonances
+  - Koopman operator
+  - EDMD
+  - finite-size scaling
+  - domain extension
+  - spatiotemporal chaos
+  - transfer operator
+preferred-citation:
+  type: article
+  title: "Finite-Size Scaling of Data-Driven Transfer-Operator Spectra: A Characterization, and an Honest Null for Spectral Domain Extension"
+  authors:
+    - family-names: Howe
+      given-names: Gunner Levi
+  year: 2026
+  # arXiv identifier and DOI filled at submission

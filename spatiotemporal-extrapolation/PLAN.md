@@ -4,22 +4,36 @@ Working plan per [info.txt](info.txt). Gates, thresholds, and parameters below w
 pre-registered BEFORE running E0. Every deviation from the brief or from this plan is
 recorded in "Deviations & decisions", dated.
 
-## Status board
+## Status board — PROJECT COMPLETE (honest null: GATE S passes, K2 fires)
 
-- [ ] Package skeleton (src/specext), vendored ETDRK4 integrator, streaming estimators
-- [ ] tests green (integrator regression vs ornstein-dist; EDMD vs analytic linear
-      sectors; scaling-fit round-trip; conventions)
-- [ ] E0 ground-truth scaling study (L = 22/44/66/88 train, 176 holdout) — GATE S
-- [ ] E1 learned operator at L=22 matches EDMD spectra + statistics (K3 gate)
-- [ ] E2 scaling flow fitted on L<=88, extrapolated to 176 and 1408, validated
-- [ ] E3 baselines: tiling nulls, interpolated small-L nulls, neural zero-shot,
-      direct large-L oracle (compute multiple), limited-data EDMD (K2 check)
-- [ ] E4 honest boundary: error vs L, BC sensitivity (odd-parity), high-k band,
-      new low-k modes
-- [ ] Figures + gen_paper_numbers + verify_regen (house rule 1)
-- [ ] paper/main.tex compiled clean; "What we do not claim" present
-- [ ] Pre-submission arXiv recency re-sweep logged below
-- [ ] README + laymen.md; atlas link-back note
+- [x] Package skeleton (src/specext), vendored ETDRK4 integrator, streaming estimators
+- [x] tests green (15): integrator regression vs ornstein-dist; EDMD vs analytic
+      linear sectors; Welch autocorr; scaling round-trip; conv-Koopman equivariance
+- [x] E0 GATE S **PASS**: 1/L flow, holdout L=176 gamma 8.2%, S 2.1%; smooth-or-
+      converged 6/7 (gamma), 7/7 (S); EDMD acf median R^2 0.94-0.99
+- [x] E1 K3 **fallback invoked**: deep conv-Koopman reproduces the invariant
+      density (S ~8%) but NOT per-mode resonances (omega 328% off, generate-and-
+      reestimate) -> flow built on EDMD (a learned data-driven operator)
+- [x] E2 flow **works**: L=1408 (64x) from zero large-L data — gamma 9.8%, S 5.1%,
+      C(r) 6.6%, tau 6.1%; new-mode band: statics extrapolate (1.8%), dynamics
+      do not (395%)
+- [x] E3 **K2 FIRES** (pre-registered honest null): interp-88 beats the flow on
+      0/5 headline metrics (gamma 3.4% vs 9.8%); strict tiling fails C(r) via
+      spurious periodicity; oracle compute multiple 8x
+- [x] E4 boundary: convergence to limit hits 4.3% (gamma) by L=88 = the mechanism;
+      ladder flat past 88; odd-parity bulk transfers to 7.6% (healing 6.5 units);
+      energy/microscale band split
+- [x] Figures (6) + gen_paper_numbers (81 macros) + verify_regen **byte-identical**
+- [x] paper/main.tex compiled clean (9pp); "What we do not claim" present
+- [x] Pre-submission arXiv recency re-sweep logged below (mechanism unoccupied)
+- [x] README + laymen.md + CITATION.cff + LICENSE + requirements.txt
+
+**Atlas link-back:** card closes **negative-with-mechanism** (GREEN-cautious
+appeal was honest: the characterization E0 is positive and novel; the domain-
+extension mechanism E2 works but is unnecessary for KS — K2 fires because KS
+converges by L~4x base). Report for ingestion + honest stamping: executed =
+characterization-positive, domain-extension-null-with-mechanism. DOI to be filled
+at submission.
 
 ## Fixed numerical conventions (pre-registered)
 
@@ -142,7 +156,77 @@ recorded in "Deviations & decisions", dated.
   where a flow is needed at all. Pre-registered comparison: same headline metrics;
   flow-vs-interp-44 wins counted the same way as the main K2 test.
 
+- 2026-07-05 (training recipe, before any model consumed by a gate): first timing
+  run showed ~15.5 min/model with 20k steps x batch 32 (GPU shared with another
+  job). Recipe set to 12k steps x batch 64 (MORE window samples than before at
+  ~35% less wall) uniformly for all models; per-size models are trained at L=22
+  only, since no experiment consumes per-size models at 44/66/88 (the E2 flow
+  model trains jointly from scratch; oracle models are separate). The one model
+  trained under the old recipe was deleted and retrained — all models share one
+  recipe.
+
+- 2026-07-05 (E1 K3 gate: FAIL, one fix spent, K3 FALLBACK INVOKED). The learned
+  conv-Koopman operator reproduces the INVARIANT SPECTRAL DENSITY at L=22
+  (generative check: S med |log10| 0.023-0.057, i.e. ~3-14%; C(r) ~12%) but its
+  per-sector LEADING RESONANCES do not match EDMD. This was tested four ways and
+  the failure is robust: (a) io-weight eigenvalue selection (med rel err ~2.5);
+  (b) operator-implied stationary autocovariance c(n)=D K^n Sigma D^H with
+  data-free Sigma (~2.0); (c) effective-decoder regression D_eff on stationary
+  samples (~2.0); (d) GENERATE-AND-REESTIMATE — generate a trajectory from the
+  learned stochastic operator (spectral radius clipped to the unit disk; several
+  sectors are spuriously |mu|>1) and run the IDENTICAL EDMD estimator used on real
+  data (~1.3-2.4). gamma is order-correct but omega (per-mode oscillation
+  frequency) is systematically wrong: the reconstruction+prediction loss is
+  variance-dominated, so the operator matches the measure without pinning each
+  mode's resonant phase. This is an honest, interesting finding about what
+  conv-Koopman autoencoders learn, and it is precisely the K3 condition.
+  DECISION (pre-registered in info.txt K3): the finite-size-scaling flow — the
+  actual novel claim — is built on EDMD/data-driven-Koopman spectra (which GATE S
+  already validated). EDMD is itself a learned (data-driven) transfer operator, so
+  "domain-size extrapolation of learned operator spectra" (N2) stands; the deep
+  autoencoder was the optional embellishment and K3 says the claim survives
+  without it ("a numerics paper — allowed"). The deep operator is reported in E1
+  as the measure-fidelity/resonance-infidelity result that motivates using EDMD.
+  Consequences: E2/E3/E4 headline = the EDMD fitted flow only; the neural
+  "learned_flow" is dropped from the spectral-flow claim (kept only as the E1
+  ablation). Horizon raised 8->16 for the generative check's benefit; not retried
+  as a gate fix (the failure is an order of magnitude from the 15% bar and is
+  structural, not a tuning issue).
+
+- 2026-07-05 (E3 K2 verdict: K2 FIRES — pre-registered honest-null outcome). The
+  finite-size flow WORKS (E2: gamma 10%, S 5%, C(r) 6.6%, tau 6.9% at L=1408=64x,
+  from zero large-L data) but does NOT beat the strongest no-flow null, interp-88
+  (interpolate the L=88 spectrum in k: gamma 2.4%, S 0.2%, C(r) 1.9%, tau 2.6%):
+  the flow loses on 0/5 headline metrics. Mechanism: KS bulk spectra converge so
+  fast that by L=88 (4x base) they are within a few percent of the L=1408 values,
+  so using the largest affordable small box directly beats extrapolating a 1/L
+  flow (which over-corrects past the already-converged L=88). This is exactly
+  info.txt K2 ("naive tiling / small-L statistics match the flow -> the mechanism
+  adds nothing over translation invariance; report honestly, and note where the
+  null MUST fail"). The paper is reframed accordingly: a CHARACTERIZATION of the
+  finite-size behaviour of data-driven transfer-operator spectra (E0, positive and
+  novel) + an HONEST NULL for domain extension (E3), with E4 mapping where each
+  route breaks and a proposal (not claim) of where the flow would be necessary
+  (long correlation length relative to the affordable box; long-range coupling;
+  size-dependent instabilities). Strict tiling additionally fails on C(r)
+  (rel L2 137%) via spurious L=22 periodicity — a second, weaker null. Oracle
+  (full L=1408 EDMD) costs 8x our small-L route; interp-88 costs the same as ours.
+  This is the atlas "negative-with-mechanism" close, and per house rule it is the
+  null control that makes it a paper.
+
 ## Recency re-sweep log
 
-- (to be filled at submission; queries: "domain extension neural operator",
-  "finite-size scaling learned dynamics", newest-first)
+- 2026-07-05: queries "finite-size scaling learned dynamics operator domain
+  extension neural 2026", "domain extension neural operator", "renormalization
+  group finite-size scaling Ruelle-Pollicott Koopman transfer operator KS",
+  newest-first. Findings: (1) the named neural domain-extension baseline remains
+  arXiv:2606.14597 (de Villeroche et al., Jun 2026, attention-locality route) --
+  cited and cite-compared; domain-decomposition operator learning 2504.00510
+  cited. (2) RG applied to KS exists but targets a DIFFERENT object: dynamic RG of
+  the NOISY KS field gives KPZ-class long-wavelength scaling EXPONENTS
+  (Ueno 2005; and a Jun-2026 functional-RG inviscid-scaling paper 2605.23364) --
+  not the finite-size dependence of the transfer-operator SPECTRUM. Added Ueno
+  2005 to related work to distinguish. (3) No hit does finite-size scaling of
+  learned RP/Koopman transfer-operator spectra for domain extension: the mechanism
+  is unoccupied. The claim (as narrowed: characterization + honest null) stands;
+  no repositioning needed.
