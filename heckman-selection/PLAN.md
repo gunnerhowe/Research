@@ -58,6 +58,33 @@ Working plan per info.txt. Every deviation from the brief is recorded in the
 **PROGRAM COMPLETE 2026-07-05.** Both papers build clean and reproduce
 byte-identical. DOI slots (`10.5281/zenodo.TBD`) to fill at deposit.
 
+### Adversarial-review resolutions (2026-07-05, post-build)
+
+Both papers passed adversarial scrutiny with a "ship after 2 fixes" verdict
+each (positive-with-caveat A; honest-null B). Reviewer confirmed the
+decisive claims independently (rebuilt the IW baseline: fair, oracle
+propensities, 4M-sample MC shows IW doubles the naive bias +0.199->+0.442 at
+rho=0.9; kill condition genuinely could-have-but-didn't-fire; region-ECE
+un-gameable; E0 gate matches external Stata to 7 digits; posterior-vs-prior
+decomposition code-enforced at lc.py prediction path). Fixes applied:
+
+- A1: deleted unsubstantiated "~30% cheaper" (no timing macro; same epochs).
+- A2: cited O'Neill 2025 TOBART-2 (arXiv:2502.03600, Type-2 Tobit + BART,
+  DP-mixture non-normal errors) as nearest prior work; distinguished
+  (trees/econometric-estimation vs deep-net/epistemic-UQ-under-shift).
+- B1: corrected LKGP descriptor -- it trains on a uniformly-random UNSELECTED
+  sample (not "survivors as if unbiased"); deeper point (doesn't model
+  censoring) retained.
+- B2: emitted overshoot-triplet + sigma=0.02 residual macros (were hardcoded;
+  now JSON-sourced, mutation-safe).
+- B-should: relabeled survivor_heckman as a population-level -n log P(survive)
+  normalizer (prod p(D_i)/P(survive)^n), not the full per-curve conditional
+  likelihood (main.tex + lc.py docstring); scoped "essentially removes bias"
+  to sigma<=0.01 and disclosed the sigma=0.02 residual (0.023 vs MAR 0.029).
+
+Venues (reviewer): A -> distribution-shift/UQ workshop (NeurIPS/ICML) or
+UAI/AISTATS; B -> AutoML-Conf or a NeurIPS/ICML AutoML/meta-learning workshop.
+
 ## Atlas link-back (E:/GitHub/ai-atlas/ui/public/greens_ledger.json)
 
 Two in-progress cards feed this repo:
