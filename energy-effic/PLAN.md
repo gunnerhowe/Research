@@ -17,13 +17,24 @@ Working plan per info.txt. Every deviation from the brief is recorded in the
       predictor 0.3-10% in the deployable regime; synthetic-universal gamma
       off by up to ~50% on real traces (heavy-tailed increments) — honest
       finding, empirical curves used for allocation.
-- [ ] E1 enwik8 + formal GATE P over all three tasks
-- [ ] E2 analytic threshold allocation vs grid-search incumbent
-- [ ] E3 budget training (headline, 8 seeds SC2) — Pareto vs post-hoc
-- [ ] E4 null controls: L1-delta, rate reg, post-hoc sweep; delta histograms
-- [ ] bench_timing.py overhead; make_figures.py; gen_paper_numbers.py
-- [ ] paper/main.tex compiled; regenerate-and-diff check passes
-- [ ] Pre-submission arXiv sweep re-run (see Kill-check log)
+- [x] E1 enwik8 + formal **GATE P PASS** (empirical median 1.8/3.0/2.9%)
+- [x] E2 allocation: matches 48-cfg random-search front at ~2% tuning cost
+      (SCTwo), realized events within 4% of target; both primaries
+- [x] E3 budget training (8 seeds SC2, 3 psMNIST) — **honest negative**:
+      budget ties/loses vs post-hoc thresholding at matched events; E3b
+      shows fixed-theta comparisons overstate savings 34-36%
+- [x] E4 null controls: L1-delta, rate, plain-ft, post-hoc; increment
+      histograms — kill condition fires in strongest form (no smoothness
+      fine-tune beats post-hoc)
+- [x] bench_timing.py (fixed 23ms/layer estimator, 11x on tiny GRU, reducible
+      by MC subsample); make_figures.py; gen_paper_numbers.py (101 macros)
+- [x] paper/main.tex compiled clean (12pp); **regenerate-and-diff PASS**
+- [x] Pre-submission arXiv sweep re-run — gap holds; DeltaDPD cited (see log)
+
+**PROJECT COMPLETE.** Remaining before Zenodo deposit: fill DOI slot in
+main.tex (\texttt{10.5281/zenodo.XXXXXXX}) at submission; tell atlas
+assistant to stamp the green card executed=negative (mechanism validated,
+prediction+allocation positive, budget-training negative with mechanism).
 
 ## Task/model choices (brief allows a pick)
 

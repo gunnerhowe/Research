@@ -81,3 +81,323 @@ wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
 [sc2 s1] l1delta lam=1.0 dense acc 0.9106
   ep00 task=0.2074 reg=0.4403 val=0.9208 (1.9s)
   ep01 task=0.1970 reg=0.4392 val=0.9233 (1.8s)
+  ep02 task=0.1861 reg=0.4384 val=0.9250 (1.9s)
+  ep03 task=0.1755 reg=0.4376 val=0.9248 (1.8s)
+  ep04 task=0.1691 reg=0.437 val=0.9259 (1.8s)
+[sc2 s1] rate lam=0.03 dense acc 0.9106
+  ep00 task=0.2075 reg=0.4351 val=0.9217 (1.9s)
+  ep01 task=0.1973 reg=0.4279 val=0.9235 (1.9s)
+  ep02 task=0.1866 reg=0.4235 val=0.9249 (1.9s)
+  ep03 task=0.1759 reg=0.4203 val=0.9247 (1.9s)
+  ep04 task=0.1697 reg=0.4186 val=0.9251 (1.9s)
+[sc2 s1] rate lam=0.1 dense acc 0.9121
+  ep00 task=0.2088 reg=0.4193 val=0.9216 (2.0s)
+  ep01 task=0.2003 reg=0.3946 val=0.9239 (1.8s)
+  ep02 task=0.1908 reg=0.3799 val=0.9236 (1.8s)
+  ep03 task=0.1806 reg=0.3709 val=0.9239 (1.9s)
+  ep04 task=0.1745 reg=0.3669 val=0.9255 (1.9s)
+[sc2 s1] rate lam=0.3 dense acc 0.9141
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
+  ep00 task=0.2072 reg=0 val=0.9218 (1.7s)
+  ep01 task=0.1968 reg=0 val=0.9203 (1.7s)
+  ep02 task=0.1863 reg=0 val=0.9244 (1.7s)
+  ep03 task=0.1749 reg=0 val=0.9266 (1.6s)
+  ep04 task=0.1681 reg=0 val=0.9276 (1.6s)
+[sc2 s2] plain ft dense acc 0.9204
+  ep00 task=0.2072 reg=0.04424 val=0.9219 (2.2s)
+  ep01 task=0.1968 reg=0.04448 val=0.9203 (2.1s)
+  ep02 task=0.1864 reg=0.04454 val=0.9243 (2.1s)
+  ep03 task=0.1749 reg=0.04463 val=0.9269 (2.1s)
+  ep04 task=0.1682 reg=0.04462 val=0.9275 (2.1s)
+[sc2 s2] l1delta lam=0.03 dense acc 0.9204
+  ep00 task=0.2072 reg=0.04415 val=0.9219 (2.2s)
+  ep01 task=0.1969 reg=0.04432 val=0.9206 (2.1s)
+  ep02 task=0.1864 reg=0.04432 val=0.9245 (2.1s)
+  ep03 task=0.1750 reg=0.04438 val=0.9262 (2.1s)
+  ep04 task=0.1682 reg=0.04435 val=0.9275 (2.1s)
+[sc2 s2] l1delta lam=0.1 dense acc 0.9189
+  ep00 task=0.2072 reg=0.0439 val=0.9216 (2.1s)
+  ep01 task=0.1972 reg=0.04386 val=0.9214 (2.1s)
+  ep02 task=0.1864 reg=0.04373 val=0.9242 (2.1s)
+  ep03 task=0.1751 reg=0.04371 val=0.9261 (2.1s)
+  ep04 task=0.1684 reg=0.04363 val=0.9273 (2.1s)
+[sc2 s2] l1delta lam=0.3 dense acc 0.9194
+  ep00 task=0.2077 reg=0.04311 val=0.9225 (2.1s)
+  ep01 task=0.1978 reg=0.04238 val=0.9216 (2.0s)
+  ep02 task=0.1874 reg=0.0419 val=0.9244 (2.1s)
+  ep03 task=0.1761 reg=0.04167 val=0.9255 (2.1s)
+  ep04 task=0.1694 reg=0.04149 val=0.9270 (2.1s)
+[sc2 s2] l1delta lam=1.0 dense acc 0.9185
+  ep00 task=0.2071 reg=0.4533 val=0.9218 (1.9s)
+  ep01 task=0.1967 reg=0.4518 val=0.9209 (1.8s)
+  ep02 task=0.1862 reg=0.451 val=0.9247 (1.8s)
+  ep03 task=0.1749 reg=0.4499 val=0.9268 (1.9s)
+  ep04 task=0.1681 reg=0.4502 val=0.9270 (1.9s)
+[sc2 s2] rate lam=0.03 dense acc 0.9194
+  ep00 task=0.2072 reg=0.448 val=0.9218 (1.9s)
+  ep01 task=0.1967 reg=0.4409 val=0.9210 (1.8s)
+  ep02 task=0.1865 reg=0.4367 val=0.9240 (1.8s)
+  ep03 task=0.1754 reg=0.4333 val=0.9268 (1.8s)
+  ep04 task=0.1687 reg=0.4326 val=0.9272 (1.8s)
+[sc2 s2] rate lam=0.1 dense acc 0.9194
+  ep00 task=0.2100 reg=0.432 val=0.9207 (1.9s)
+  ep01 task=0.2001 reg=0.4073 val=0.9225 (1.8s)
+  ep02 task=0.1904 reg=0.3928 val=0.9269 (1.9s)
+  ep03 task=0.1805 reg=0.3833 val=0.9284 (1.9s)
+  ep04 task=0.1737 reg=0.38 val=0.9285 (1.9s)
+[sc2 s2] rate lam=0.3 dense acc 0.9209
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
+  ep00 task=0.2043 reg=0 val=0.9215 (1.8s)
+  ep01 task=0.1949 reg=0 val=0.9219 (1.7s)
+  ep02 task=0.1829 reg=0 val=0.9223 (1.6s)
+  ep03 task=0.1728 reg=0 val=0.9229 (1.6s)
+  ep04 task=0.1662 reg=0 val=0.9243 (1.6s)
+[sc2 s3] plain ft dense acc 0.9106
+  ep00 task=0.2043 reg=0.04451 val=0.9214 (2.2s)
+  ep01 task=0.1950 reg=0.04465 val=0.9225 (2.1s)
+  ep02 task=0.1830 reg=0.0447 val=0.9222 (2.1s)
+  ep03 task=0.1729 reg=0.04477 val=0.9227 (2.1s)
+  ep04 task=0.1662 reg=0.04481 val=0.9239 (2.1s)
+[sc2 s3] l1delta lam=0.03 dense acc 0.9111
+  ep00 task=0.2044 reg=0.04443 val=0.9217 (2.2s)
+  ep01 task=0.1945 reg=0.04449 val=0.9221 (2.1s)
+  ep02 task=0.1830 reg=0.04451 val=0.9222 (2.1s)
+  ep03 task=0.1731 reg=0.04454 val=0.9229 (2.1s)
+  ep04 task=0.1662 reg=0.04456 val=0.9242 (2.2s)
+[sc2 s3] l1delta lam=0.1 dense acc 0.9106
+  ep00 task=0.2045 reg=0.04419 val=0.9212 (2.2s)
+  ep01 task=0.1950 reg=0.04407 val=0.9227 (2.2s)
+  ep02 task=0.1832 reg=0.04394 val=0.9218 (2.1s)
+  ep03 task=0.1733 reg=0.04388 val=0.9237 (2.1s)
+  ep04 task=0.1665 reg=0.04386 val=0.9239 (2.1s)
+[sc2 s3] l1delta lam=0.3 dense acc 0.9106
+  ep00 task=0.2049 reg=0.0434 val=0.9219 (2.3s)
+  ep01 task=0.1957 reg=0.04265 val=0.9227 (2.0s)
+  ep02 task=0.1840 reg=0.04217 val=0.9224 (2.1s)
+  ep03 task=0.1743 reg=0.04187 val=0.9222 (2.1s)
+  ep04 task=0.1675 reg=0.04174 val=0.9238 (2.2s)
+[sc2 s3] l1delta lam=1.0 dense acc 0.9097
+  ep00 task=0.2044 reg=0.4485 val=0.9213 (2.0s)
+  ep01 task=0.1943 reg=0.4476 val=0.9226 (1.9s)
+  ep02 task=0.1829 reg=0.4473 val=0.9229 (1.9s)
+  ep03 task=0.1729 reg=0.4466 val=0.9231 (1.9s)
+  ep04 task=0.1661 reg=0.4463 val=0.9242 (1.9s)
+[sc2 s3] rate lam=0.03 dense acc 0.9111
+  ep00 task=0.2045 reg=0.4438 val=0.9231 (2.0s)
+  ep01 task=0.1946 reg=0.4374 val=0.9229 (1.9s)
+  ep02 task=0.1831 reg=0.4338 val=0.9219 (1.9s)
+  ep03 task=0.1732 reg=0.4311 val=0.9230 (1.8s)
+  ep04 task=0.1665 reg=0.4299 val=0.9243 (1.8s)
+[sc2 s3] rate lam=0.1 dense acc 0.9102
+  ep00 task=0.2058 reg=0.4296 val=0.9220 (2.0s)
+  ep01 task=0.1980 reg=0.4081 val=0.9224 (1.9s)
+  ep02 task=0.1870 reg=0.3946 val=0.9231 (1.9s)
+  ep03 task=0.1776 reg=0.3862 val=0.9241 (1.8s)
+  ep04 task=0.1711 reg=0.3826 val=0.9250 (1.8s)
+[sc2 s3] rate lam=0.3 dense acc 0.9111
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
+  ep00 task=0.2037 reg=0 val=0.9239 (1.8s)
+  ep01 task=0.1921 reg=0 val=0.9216 (1.6s)
+  ep02 task=0.1820 reg=0 val=0.9232 (1.6s)
+  ep03 task=0.1724 reg=0 val=0.9261 (1.7s)
+  ep04 task=0.1659 reg=0 val=0.9256 (1.7s)
+[sc2 s4] plain ft dense acc 0.9150
+  ep00 task=0.2034 reg=0.04527 val=0.9241 (2.3s)
+  ep01 task=0.1922 reg=0.04543 val=0.9210 (2.2s)
+  ep02 task=0.1820 reg=0.04553 val=0.9230 (2.1s)
+  ep03 task=0.1724 reg=0.04558 val=0.9258 (2.1s)
+  ep04 task=0.1658 reg=0.0456 val=0.9255 (2.1s)
+[sc2 s4] l1delta lam=0.03 dense acc 0.9155
+  ep00 task=0.2029 reg=0.04517 val=0.9239 (2.2s)
+  ep01 task=0.1926 reg=0.04527 val=0.9218 (2.1s)
+  ep02 task=0.1821 reg=0.04532 val=0.9234 (2.1s)
+  ep03 task=0.1723 reg=0.04536 val=0.9260 (2.1s)
+  ep04 task=0.1658 reg=0.04535 val=0.9261 (2.0s)
+[sc2 s4] l1delta lam=0.1 dense acc 0.9150
+  ep00 task=0.2026 reg=0.04493 val=0.9239 (2.3s)
+  ep01 task=0.1931 reg=0.04483 val=0.9215 (2.1s)
+  ep02 task=0.1822 reg=0.04479 val=0.9234 (2.0s)
+  ep03 task=0.1724 reg=0.04473 val=0.9255 (2.1s)
+  ep04 task=0.1659 reg=0.04468 val=0.9260 (2.1s)
+[sc2 s4] l1delta lam=0.3 dense acc 0.9160
+  ep00 task=0.2032 reg=0.04417 val=0.9243 (2.2s)
+  ep01 task=0.1937 reg=0.04345 val=0.9219 (2.1s)
+  ep02 task=0.1832 reg=0.04305 val=0.9218 (2.1s)
+  ep03 task=0.1736 reg=0.04277 val=0.9249 (2.1s)
+  ep04 task=0.1669 reg=0.04262 val=0.9251 (2.1s)
+[sc2 s4] l1delta lam=1.0 dense acc 0.9146
+  ep00 task=0.2029 reg=0.4675 val=0.9246 (2.0s)
+  ep01 task=0.1926 reg=0.465 val=0.9218 (1.8s)
+  ep02 task=0.1821 reg=0.4644 val=0.9233 (1.8s)
+  ep03 task=0.1722 reg=0.4635 val=0.9262 (1.8s)
+  ep04 task=0.1657 reg=0.4632 val=0.9258 (1.9s)
+[sc2 s4] rate lam=0.03 dense acc 0.9155
+  ep00 task=0.2037 reg=0.462 val=0.9241 (2.0s)
+  ep01 task=0.1926 reg=0.4539 val=0.9215 (1.8s)
+  ep02 task=0.1826 reg=0.4495 val=0.9233 (1.9s)
+  ep03 task=0.1729 reg=0.4463 val=0.9264 (1.8s)
+  ep04 task=0.1663 reg=0.4449 val=0.9260 (1.8s)
+[sc2 s4] rate lam=0.1 dense acc 0.9160
+  ep00 task=0.2037 reg=0.4468 val=0.9242 (1.9s)
+  ep01 task=0.1968 reg=0.4209 val=0.9208 (1.8s)
+  ep02 task=0.1866 reg=0.4061 val=0.9232 (1.8s)
+  ep03 task=0.1774 reg=0.3968 val=0.9270 (1.8s)
+  ep04 task=0.1708 reg=0.3924 val=0.9270 (1.8s)
+[sc2 s4] rate lam=0.3 dense acc 0.9180
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
+  ep00 task=0.2008 reg=0 val=0.9228 (1.7s)
+  ep01 task=0.1928 reg=0 val=0.9215 (1.6s)
+  ep02 task=0.1820 reg=0 val=0.9232 (1.6s)
+  ep03 task=0.1704 reg=0 val=0.9246 (1.6s)
+  ep04 task=0.1644 reg=0 val=0.9261 (1.6s)
+[sc2 s5] plain ft dense acc 0.9121
+  ep00 task=0.2008 reg=0.04294 val=0.9226 (2.1s)
+  ep01 task=0.1929 reg=0.0431 val=0.9208 (2.1s)
+  ep02 task=0.1819 reg=0.04324 val=0.9237 (2.1s)
+  ep03 task=0.1704 reg=0.04317 val=0.9246 (2.1s)
+  ep04 task=0.1644 reg=0.04324 val=0.9264 (2.0s)
+[sc2 s5] l1delta lam=0.03 dense acc 0.9116
+  ep00 task=0.2008 reg=0.04286 val=0.9228 (2.1s)
+  ep01 task=0.1929 reg=0.04295 val=0.9214 (2.1s)
+  ep02 task=0.1821 reg=0.04304 val=0.9236 (2.1s)
+  ep03 task=0.1704 reg=0.04295 val=0.9253 (2.1s)
+  ep04 task=0.1645 reg=0.04301 val=0.9264 (2.1s)
+[sc2 s5] l1delta lam=0.1 dense acc 0.9126
+  ep00 task=0.2009 reg=0.04264 val=0.9228 (2.1s)
+  ep01 task=0.1930 reg=0.04251 val=0.9221 (2.1s)
+  ep02 task=0.1817 reg=0.04249 val=0.9233 (2.1s)
+  ep03 task=0.1707 reg=0.04235 val=0.9247 (2.1s)
+  ep04 task=0.1645 reg=0.04236 val=0.9261 (2.0s)
+[sc2 s5] l1delta lam=0.3 dense acc 0.9126
+  ep00 task=0.2013 reg=0.0419 val=0.9236 (2.1s)
+  ep01 task=0.1933 reg=0.04117 val=0.9233 (2.1s)
+  ep02 task=0.1831 reg=0.04082 val=0.9228 (2.1s)
+  ep03 task=0.1715 reg=0.04049 val=0.9253 (2.1s)
+  ep04 task=0.1654 reg=0.04039 val=0.9254 (2.1s)
+[sc2 s5] l1delta lam=1.0 dense acc 0.9136
+  ep00 task=0.2008 reg=0.4433 val=0.9228 (1.9s)
+  ep01 task=0.1922 reg=0.4417 val=0.9236 (1.8s)
+  ep02 task=0.1807 reg=0.4412 val=0.9220 (1.8s)
+  ep03 task=0.1702 reg=0.4406 val=0.9242 (1.8s)
+  ep04 task=0.1641 reg=0.4401 val=0.9256 (1.8s)
+[sc2 s5] rate lam=0.03 dense acc 0.9121
+  ep00 task=0.2009 reg=0.4381 val=0.9233 (2.0s)
+  ep01 task=0.1924 reg=0.4308 val=0.9240 (1.8s)
+  ep02 task=0.1808 reg=0.4267 val=0.9224 (1.8s)
+  ep03 task=0.1707 reg=0.4241 val=0.9245 (1.8s)
+  ep04 task=0.1645 reg=0.4227 val=0.9264 (1.8s)
+[sc2 s5] rate lam=0.1 dense acc 0.9126
+  ep00 task=0.2023 reg=0.4228 val=0.9227 (1.9s)
+  ep01 task=0.1951 reg=0.3991 val=0.9210 (1.8s)
+  ep02 task=0.1851 reg=0.3851 val=0.9224 (1.8s)
+  ep03 task=0.1753 reg=0.3768 val=0.9268 (1.8s)
+  ep04 task=0.1693 reg=0.3725 val=0.9263 (1.8s)
+[sc2 s5] rate lam=0.3 dense acc 0.9155
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
+  ep00 task=0.2000 reg=0 val=0.9222 (1.8s)
+  ep01 task=0.1894 reg=0 val=0.9243 (1.6s)
+  ep02 task=0.1786 reg=0 val=0.9242 (1.6s)
+  ep03 task=0.1688 reg=0 val=0.9250 (1.6s)
+  ep04 task=0.1622 reg=0 val=0.9257 (1.6s)
+[sc2 s6] plain ft dense acc 0.9175
+  ep00 task=0.2000 reg=0.04449 val=0.9224 (2.1s)
+  ep01 task=0.1894 reg=0.0446 val=0.9242 (2.1s)
+  ep02 task=0.1786 reg=0.04468 val=0.9242 (2.0s)
+  ep03 task=0.1689 reg=0.04481 val=0.9253 (2.1s)
+  ep04 task=0.1622 reg=0.04477 val=0.9258 (2.1s)
+[sc2 s6] l1delta lam=0.03 dense acc 0.9175
+  ep00 task=0.2001 reg=0.0444 val=0.9217 (2.2s)
+  ep01 task=0.1893 reg=0.04445 val=0.9237 (2.1s)
+  ep02 task=0.1787 reg=0.04447 val=0.9241 (2.1s)
+  ep03 task=0.1689 reg=0.04456 val=0.9254 (2.0s)
+  ep04 task=0.1622 reg=0.04452 val=0.9253 (2.1s)
+[sc2 s6] l1delta lam=0.1 dense acc 0.9160
+  ep00 task=0.2002 reg=0.04417 val=0.9221 (2.1s)
+  ep01 task=0.1894 reg=0.04401 val=0.9240 (2.1s)
+  ep02 task=0.1792 reg=0.04389 val=0.9243 (2.1s)
+  ep03 task=0.1691 reg=0.0439 val=0.9254 (2.1s)
+  ep04 task=0.1625 reg=0.04384 val=0.9258 (2.1s)
+[sc2 s6] l1delta lam=0.3 dense acc 0.9180
+  ep00 task=0.2005 reg=0.04338 val=0.9213 (2.1s)
+  ep01 task=0.1904 reg=0.04259 val=0.9235 (2.1s)
+  ep02 task=0.1799 reg=0.04213 val=0.9244 (2.1s)
+  ep03 task=0.1701 reg=0.04191 val=0.9249 (2.1s)
+  ep04 task=0.1634 reg=0.04174 val=0.9253 (2.1s)
+[sc2 s6] l1delta lam=1.0 dense acc 0.9180
+  ep00 task=0.2000 reg=0.4417 val=0.9228 (1.9s)
+  ep01 task=0.1895 reg=0.4398 val=0.9245 (1.8s)
+  ep02 task=0.1788 reg=0.4395 val=0.9238 (1.8s)
+  ep03 task=0.1689 reg=0.4391 val=0.9248 (1.8s)
+  ep04 task=0.1622 reg=0.439 val=0.9254 (1.8s)
+[sc2 s6] rate lam=0.03 dense acc 0.9165
+  ep00 task=0.1999 reg=0.4366 val=0.9218 (1.9s)
+  ep01 task=0.1898 reg=0.4295 val=0.9240 (1.8s)
+  ep02 task=0.1790 reg=0.4256 val=0.9247 (1.8s)
+  ep03 task=0.1693 reg=0.4231 val=0.9244 (1.8s)
+  ep04 task=0.1626 reg=0.422 val=0.9259 (1.8s)
+[sc2 s6] rate lam=0.1 dense acc 0.9175
+  ep00 task=0.2007 reg=0.4218 val=0.9219 (1.9s)
+  ep01 task=0.1933 reg=0.3986 val=0.9251 (1.8s)
+  ep02 task=0.1831 reg=0.3849 val=0.9245 (1.8s)
+  ep03 task=0.1739 reg=0.3765 val=0.9250 (1.8s)
+  ep04 task=0.1674 reg=0.3725 val=0.9260 (1.8s)
+[sc2 s6] rate lam=0.3 dense acc 0.9160
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
+  ep00 task=0.2060 reg=0 val=0.9227 (1.7s)
+  ep01 task=0.1952 reg=0 val=0.9235 (1.6s)
+  ep02 task=0.1834 reg=0 val=0.9259 (1.6s)
+  ep03 task=0.1738 reg=0 val=0.9249 (1.6s)
+  ep04 task=0.1678 reg=0 val=0.9262 (1.6s)
+[sc2 s7] plain ft dense acc 0.9126
+  ep00 task=0.2060 reg=0.04489 val=0.9228 (2.2s)
+  ep01 task=0.1952 reg=0.04504 val=0.9226 (2.1s)
+  ep02 task=0.1833 reg=0.04519 val=0.9256 (2.1s)
+  ep03 task=0.1738 reg=0.04522 val=0.9251 (2.1s)
+  ep04 task=0.1678 reg=0.04525 val=0.9264 (2.1s)
+[sc2 s7] l1delta lam=0.03 dense acc 0.9136
+  ep00 task=0.2059 reg=0.04481 val=0.9226 (2.2s)
+  ep01 task=0.1951 reg=0.04488 val=0.9233 (2.1s)
+  ep02 task=0.1837 reg=0.045 val=0.9257 (2.1s)
+  ep03 task=0.1738 reg=0.045 val=0.9255 (2.1s)
+  ep04 task=0.1678 reg=0.04501 val=0.9266 (2.0s)
+[sc2 s7] l1delta lam=0.1 dense acc 0.9131
+  ep00 task=0.2059 reg=0.04456 val=0.9222 (2.1s)
+  ep01 task=0.1954 reg=0.04441 val=0.9239 (2.1s)
+  ep02 task=0.1839 reg=0.04442 val=0.9257 (2.1s)
+  ep03 task=0.1740 reg=0.04432 val=0.9252 (2.1s)
+  ep04 task=0.1679 reg=0.04432 val=0.9260 (2.1s)
+[sc2 s7] l1delta lam=0.3 dense acc 0.9121
+  ep00 task=0.2061 reg=0.04377 val=0.9227 (2.2s)
+  ep01 task=0.1966 reg=0.04299 val=0.9230 (2.0s)
+  ep02 task=0.1845 reg=0.04265 val=0.9254 (2.1s)
+  ep03 task=0.1751 reg=0.04236 val=0.9248 (2.0s)
+  ep04 task=0.1689 reg=0.04226 val=0.9266 (2.1s)
+[sc2 s7] l1delta lam=1.0 dense acc 0.9155
+  ep00 task=0.2060 reg=0.4634 val=0.9226 (2.0s)
+  ep01 task=0.1950 reg=0.4615 val=0.9235 (1.8s)
+  ep02 task=0.1835 reg=0.4609 val=0.9261 (1.8s)
+  ep03 task=0.1738 reg=0.4609 val=0.9247 (1.8s)
+  ep04 task=0.1678 reg=0.4605 val=0.9261 (1.8s)
+[sc2 s7] rate lam=0.03 dense acc 0.9111
+  ep00 task=0.2056 reg=0.4581 val=0.9223 (1.9s)
+  ep01 task=0.1956 reg=0.4503 val=0.9234 (1.9s)
+  ep02 task=0.1842 reg=0.4463 val=0.9251 (1.8s)
+  ep03 task=0.1743 reg=0.4438 val=0.9245 (1.8s)
+  ep04 task=0.1684 reg=0.4425 val=0.9263 (1.8s)
+[sc2 s7] rate lam=0.1 dense acc 0.9136
+  ep00 task=0.2070 reg=0.4423 val=0.9218 (2.0s)
+  ep01 task=0.1992 reg=0.4169 val=0.9234 (1.9s)
+  ep02 task=0.1887 reg=0.4022 val=0.9256 (1.8s)
+  ep03 task=0.1798 reg=0.3924 val=0.9258 (1.8s)
+  ep04 task=0.1738 reg=0.3883 val=0.9269 (1.8s)
+[sc2 s7] rate lam=0.3 dense acc 0.9160
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2.json
+[sc2 s0] histograms done
+[sc2 s1] histograms done
+[sc2 s2] histograms done
+[sc2 s3] histograms done
+[sc2 s4] histograms done
+[sc2 s5] histograms done
+[sc2 s6] histograms done
+[sc2 s7] histograms done
+wrote E:\GitHub\Research\energy-effic\results\exp4_sc2_histograms.json

@@ -497,10 +497,13 @@ unmodified base network.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/e4_histograms.pdf}
-\caption{\textbf{Mechanism check: increment histograms.} The budget
-compresses the entire $|\Delta h|$ distribution (scale shrink); L1-delta
-mildly sharpens it. Neither restructures the dynamics in a way that
-survives threshold re-scaling.}
+\caption{\textbf{Mechanism check: increment histograms} (density per log
+bin of $|h_t-h_{t-1}|$, mean over seeds). The crossing budget (blue) shifts
+the \emph{entire} distribution toward zero---uniform scale compression,
+$\approx$one decade---while L1-on-deltas (orange) barely departs from the
+base network (black) at comparable fine-tuning strength. Neither changes the
+distribution's \emph{shape}, which is what threshold re-scaling would need to
+find purchase on.}
 \label{fig:e4}
 \end{figure}
 
