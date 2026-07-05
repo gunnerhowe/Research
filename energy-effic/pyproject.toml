@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eventrice"
+version = "0.1.0"
+description = "Rice's formula for event-driven networks: predicting and training temporal sparsity via differentiable level-crossing rates"
+authors = [{ name = "Gunner Levi Howe", email = "gunnerlevihowe@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = ["torch", "numpy", "scipy", "matplotlib"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

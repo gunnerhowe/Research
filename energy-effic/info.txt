@@ -1,0 +1,231 @@
+PROJECT BRIEF — Rice's Formula for Event-Driven Efficiency
+===========================================================
+Read this whole file before writing any code. It is the complete handoff from the
+AI Research Atlas (idea provenance, kill-check receipts, experiment ladder, house
+discipline). You are building the project, the experiments, and the paper, end to end,
+in this repo (E:/GitHub/Research/energy-effic/). Author: Gunner Levi Howe
+(gunnerlevihowe@gmail.com), Independent Researcher. Hardware: one RTX 3080 (10GB),
+16-core CPU, Windows. Everything must be tractable on that box.
+
+THE IDEA (one paragraph)
+------------------------
+Delta/event-driven networks (delta-RNNs, sigma-delta nets, event-driven transformers)
+only spend compute when an activation CHANGES by more than a threshold: each
+threshold-crossing event triggers a MAC / memory write, i.e. a quantum of energy.
+A delta event IS a level crossing of the activation time series — definitionally.
+Rice's formula (and its empirical Kac-Rice/co-area estimator) therefore gives something
+this literature has never had: an ANALYTIC, DIFFERENTIABLE model of the event rate.
+Two deliverables follow. (1) PREDICT: model per-channel activation traces as stochastic
+processes; Rice's formula mu(u) = (1/pi) * sqrt(lambda2/lambda0) * exp(-u^2 / (2*lambda0))
+predicts the crossing rate of level u from the trace's spectral moments (lambda_k =
+k-th spectral moment; sqrt(lambda2/lambda0) = RMS angular frequency); the empirical
+smoothed crossing-density estimator needs no Gaussianity at all. Validate predicted vs
+measured event counts per layer/channel on real trained networks. (2) TRAIN: use the
+smoothed, differentiable crossing-rate estimator as a ONE-SIDED energy budget during
+training (penalize expected crossings above a per-layer budget), so temporal sparsity is
+optimized analytically instead of by post-hoc threshold sweeps.
+
+WHY THIS IS NOVEL (kill-check receipts, run 2026-07-05 vs a 3.09M-abstract local index
++ web; re-verify recency yourself before paper submission — see PAPER section)
+------------------------------------------------------------------------------
+- Delta networks are ESTABLISHED, EMPIRICAL engineering: Neil et al. 2016 "Delta
+  Networks for Optimized Recurrent Network Computation" (delta-RNN, threshold sweeps);
+  O'Connor & Welling sigma-delta networks; "Delta Activation Layer" (embedded video);
+  DeltaKWS (keyword-spotting IC); event-driven accelerators. NONE of them predict event
+  rates from activation statistics or train against an analytic rate objective — the
+  threshold is always tuned by grid search and the event count is always measured after
+  the fact. That is the gap.
+- Spiking transformers (Spikformer, SpikeGPT, spike-based FFN sparsification) are
+  SPIKE CODING — a different mechanism. Cite and distinguish; do not claim their turf.
+- Activation-sparsity literature (ReLU zeros, layer-dependent sparsity in transformers)
+  is SPATIAL sparsity; ours is TEMPORAL. Say so once, precisely.
+- Rice's formula appears in ML only in our own program (see PROVENANCE) and in
+  loss-landscape critical-point counting (Bray-Dean/Choromanska line) — never as an
+  activation-event/energy model.
+- Closest conceptual neighbor: zero-crossing-rate features in classical signal
+  processing (Kedem). That is a FEATURE for discrimination, not a differentiable
+  training objective or an energy model. Cite Kedem; the paper's novelty statement is
+  the instantiation, exactly as in the companion papers.
+
+PROVENANCE — THIS EXTENDS OUR OWN VALIDATED MACHINERY (cite all three)
+----------------------------------------------------------------------
+This is paper #4 of the Kac-Rice program (all by the same author, all with code at
+github.com/gunnerhowe/Research, directory kac-rice):
+- howe2026levelcrossing — "Level-Crossing Density as a Mesh-Free High-Frequency
+  Auxiliary Loss for Implicit Neural Representations": built + validated the smoothed
+  Monte-Carlo crossing-density estimator (co-area formula, Gaussian bump delta_eps,
+  quantile level ladder, relative normalization). REUSE THIS CODE:
+  E:/GitHub/Research/kac-rice/src/kacrice/crossing.py — field_and_grad, gaussian_delta,
+  make_levels, crossing_density, KacRiceLoss. Vendor it into src/ here (keep the
+  attribution header). For 1-D time series, "gradient norm" = |da/dt| via finite
+  differences on the sampled trace (the trace is data, not a differentiable field in x;
+  BUT it IS differentiable in the network parameters — that is what the budget needs).
+- howe2026budget — "A One-Sided Level-Crossing Budget for PINNs: Validated Mechanism,
+  Absent Pathology": built the one-sided budget L = mean_j relu(c_hat(u_j) - b_j)^2,
+  proved it contributes zero loss AND zero gradient within budget, and reported
+  honestly that PINNs' failure was under-oscillatory so the budget was inert there.
+  THE PITCH OF THIS PAPER: the budget mechanism, in the domain where excess crossings
+  are the cost BY CONSTRUCTION. This narrative arc (mechanism validated, pathology
+  absent, native domain found) is a strength — use it in the intro.
+- howe2026minkowski (paper3) — design rules that transfer: (Rule 1) dense LEVEL LADDER —
+  crossing objectives only receive gradient near active levels; place levels at
+  quantiles of the activation distribution, spacing <= eps. (Rule 4) sampling-scale
+  coverage — trivially satisfied here (time series are densely sampled 1-D; say so in
+  one sentence: the 3-D null-space failure mode of paper3 does not arise).
+- Palm calculus (information-per-event, bits-per-joule) was part of the original atlas
+  card: keep it as OPTIONAL FRAMING in the discussion (one paragraph max). It is not
+  load-bearing; do not build claims on it.
+
+REPO LAYOUT (house convention — mirror kac-rice)
+------------------------------------------------
+  src/eventrice/       estimator.py (vendored crossing.py + temporal adaptation),
+                       rice.py (spectral moments -> Rice prediction),
+                       delta.py (delta-RNN / delta-attention cells with faithful
+                       Neil-style thresholding), budget.py (one-sided crossing budget),
+                       energy.py (event -> energy accounting), data.py, train.py
+  experiments/         exp0_validation.py, exp1_prediction.py, exp2_allocation.py,
+                       exp3_budget_training.py, exp4_controls.py, common.py,
+                       make_figures.py (writes paper/figs/ AND paper/tables/ from
+                       results/*.json — EVERY number in the paper comes from here),
+                       bench_timing.py (overhead measurement, writes results/timing.json)
+  tests/               test_correctness.py — see TESTS below
+  results/             raw JSONs + run logs (committed; papers regenerate from these)
+  paper/               main.tex, references.bib, numbers.tex (auto-generated), figs/,
+                       tables/, gen_paper_numbers.py
+  info.txt             this file
+  PLAN.md              your working plan, updated as you go; record every deviation
+
+EXPERIMENT LADDER (gated — do not skip gates; a failed gate is a REPORTABLE result)
+-----------------------------------------------------------------------------------
+E0. ESTIMATOR VALIDATION (closed forms first; this is GATE V).
+    - Synthetic Gaussian processes with known spectra (sum of random-phase sinusoids;
+      an OU process): Rice prediction vs exact/dense-grid-counted crossing rates at
+      multiple levels. Target: <=3% error, 3 seeds, like the companion papers.
+    - Deterministic signals (multisine): exact crossing counts.
+    - The smoothed estimator vs hard counts on the same traces (eps sweep; document
+      the bias-variance tradeoff once).
+    GATE V: estimator and Rice predictions agree with ground truth within a few
+    percent. If not, stop and debug — nothing downstream is meaningful.
+E1. PREDICTION ON REAL NETWORKS (the "does theory meet practice" result).
+    - Train standard (non-delta) GRU/small-transformer models on the tasks below;
+      record activation traces; measure per-layer/per-channel crossing rates at a
+      grid of thresholds; compare THREE predictors: (a) Rice formula from fitted
+      spectral moments (Gaussian assumption), (b) empirical crossing-density profile
+      from a calibration split (no Gaussianity), (c) naive Gaussian-iid baseline
+      (no temporal structure — shows why spectral moments matter).
+    - Report where (a) holds and where non-Gaussianity breaks it (heavy-tailed
+      activations WILL deviate — that is a finding, not a failure; quantify it).
+    GATE P: predictor (b) tracks measured event rates within ~10% across layers and
+    thresholds. (a) is allowed to fail where activations are non-Gaussian; (b) is the
+    load-bearing one because it is also the differentiable objective.
+E2. ANALYTIC THRESHOLD ALLOCATION (the cheap practical win).
+    - Incumbent practice: grid-search per-layer delta thresholds to hit an
+      accuracy/event-rate target (expensive sweeps). Ours: given a global event
+      budget, allocate per-layer thresholds ANALYTICALLY by inverting the predicted
+      rate curves (waterfilling-style: equalize marginal accuracy cost per event,
+      or simplest: solve for thresholds hitting per-layer budget shares).
+    - Claim shape: match the sweep's accuracy-vs-events Pareto front at a small
+      fraction of its tuning cost (count both in forward passes; report both matched
+      -tuning-budget and asymptotic fronts).
+E3. BUDGET TRAINING (the headline, if it works).
+    - Fine-tune (or train) the delta network with L_task + lambda * crossing-budget
+      (one-sided, per-layer budgets b_j; levels on a quantile ladder per Rule 1;
+      budget from the E2 allocation or swept).
+    - Question: does training-for-temporal-sparsity beat post-hoc thresholding of a
+      normally-trained net at matched event budget? Report Pareto fronts
+      (accuracy vs events/step), 3+ seeds, mean±sd, paired where possible.
+E4. NULL CONTROLS (the experiment that makes it a paper — do not soften these).
+    - (i) L1 penalty on activation deltas |a_t - a_{t-1}| — the OBVIOUS cheap
+      alternative. If budget training is indistinguishable from L1-delta at matched
+      events, the crossing machinery adds nothing: report that honestly (the
+      companion papers' credibility comes from exactly this discipline).
+      Hypothesized difference: L1 shrinks ALL deltas (over-smooths, hurts the
+      information-carrying large deltas); the crossing budget prices only
+      threshold-CROSSINGS, is level-targeted, and is inactive within budget
+      (zero-gradient property from howe2026budget). Test that mechanism directly:
+      compare delta-magnitude histograms under both.
+    - (ii) Global activity/rate regularization (spiking-style rate cost).
+    - (iii) Post-hoc threshold sweep on the SAME architecture (E2's incumbent).
+E5 (stretch, only if E1-E3 land): one neuromorphic-flavored demo (e.g., DVS gesture
+    stream or keyword spotting with an energy-per-decision table) to set up the
+    hardware follow-on. Do NOT claim measured silicon energy.
+
+TASKS / MODELS (3080-tractable; pick 2 primary + 1 secondary)
+-------------------------------------------------------------
+- Google Speech Commands v2 keyword spotting with a GRU/delta-GRU (~small, canonical
+  for DeltaKWS comparisons; events map cleanly to the published energy story).
+- Sequential video or event-stream task: DVS128 Gesture OR a pixel-stream task —
+  choose whichever loads cleanly; temporal correlation is what makes delta coding win.
+- Secondary: small streaming char-LM (enwik8 slice) with a delta-attention/delta-FFN
+  transformer variant — the "transformer" half of the claim; keep it small (the SemRF
+  repo's enwik8 pipeline at E:/GitHub/Research/ignore-temp-context-info-seq may be
+  reusable for data loading).
+Energy accounting: "energy" = counted events x per-op cost model (MAC + memory-access
+costs; cite Horowitz ISSCC 2014 tables as delta-network papers do). SAY EXPLICITLY the
+paper reports event counts and modeled energy, not measured watts.
+
+HOUSE DISCIPLINE (non-negotiable — lessons from 7 shipped papers)
+-----------------------------------------------------------------
+1. EVERY number in the paper is machine-generated. gen_paper_numbers.py reads
+   results/*.json and writes paper/numbers.tex; tables via make_figures.py; the check
+   "regenerate and diff -> identical" must pass before any submission. NO hand-typed
+   ratios in prose — three of our papers had prose-ratio errors caught in review
+   (a "7/10", a "5-8x", a "15-20x"). If you write a ratio in a sentence, make it a macro.
+2. tests/test_correctness.py: estimator vs closed forms (Rice on known spectra, exact
+   multisine counts), sign/normalization conventions, gradient-flow smoke test, and a
+   faithfulness test of the delta-cell reimplementation against Neil et al.'s
+   definition. All tests must pass via plain `python -m pytest tests/ -q`.
+3. Seeds and stats: >=3 seeds everywhere (8 for the headline comparison if runtime
+   allows); mean±sd; paired tests where runs share initialization; state the Wilcoxon
+   n-floor if n is small. No claim without its variance.
+4. Noise floors where a quantity has finite-sample bias (crossing-rate estimates on
+   short traces: report same-trace split-half floors).
+5. Honest negatives are results. Pre-registered kill conditions:
+   - GATE V fails -> debug or abandon (estimator is settled tech; failure = bug).
+   - GATE P fails for BOTH (a) and (b) -> the activation-statistics premise is wrong;
+     write the characterization honestly (why real activations defeat crossing-rate
+     prediction) — that is still a publishable finding in the program's style.
+   - E4(i) ties -> report "L1-delta suffices"; the paper becomes "an analytic event-rate
+     model + why the fancier objective is unnecessary." Still worth shipping.
+6. Baseline faithfulness: the delta-RNN cell must match the published mechanism
+   (threshold on |a_t - a_hat_last|, update memory a_hat on event) — unit-test it.
+   If comparing to a published number, reimplement faithfully or cite-compare; never
+   approximate silently (CABLE lesson).
+7. Paper style (mirror the program): honest abstract that states what did NOT work;
+   a "What we do not claim" paragraph (no spiking-transformer turf, no measured watts,
+   no claims past the tested scale); explicit Limitations; Reproducibility paragraph
+   WITH the DOI/URL slot filled before shipping — two of our papers shipped without it;
+   do not repeat that. Include the reproducibility environment block (python/torch
+   versions, single-workstation statement, seeds, "every table regenerates from
+   results/*.json").
+8. Before paper submission: re-run a newest-first arXiv sweep for "delta network",
+   "temporal sparsity", "event-driven transformer", "activation change threshold",
+   "level crossing neural" — the atlas kill-check was clean on 2026-07-05 but hot
+   spaces move; document the sweep date in PLAN.md.
+9. Timing/overhead: measure the budget's training overhead with bench_timing.py
+   (back-to-back, same process, archived JSON) — expect it to be small (1-D crossing
+   estimator is O(N*L) with cheap kernels), and report it.
+
+PAPER (target shape)
+--------------------
+Title candidate: "Rice's Formula for Event-Driven Networks: Predicting and Training
+Temporal Sparsity via Differentiable Level-Crossing Rates" (feel free to improve).
+Narrative: (1) delta events are level crossings; the field tunes them empirically;
+(2) Rice/Kac-Rice gives the analytic + differentiable handle (program provenance);
+(3) validated estimator (E0) -> prediction on real nets incl. where Gaussianity breaks
+(E1) -> analytic allocation beats sweeping on tuning cost (E2) -> budget training vs
+strong nulls (E3/E4), reported straight; (4) limitations + the neuromorphic outlook
+(one paragraph, ties to event-driven hardware; no silicon claims). Bibliography must
+include: Neil et al. 2016; sigma-delta (O'Connor & Welling); DeltaKWS; Spikformer/
+SpikeGPT (distinguished); activation-sparsity line (distinguished); Rice 1944, Kac
+1943, Kedem zero-crossings; Horowitz energy tables; the three program papers.
+Length target: 8-10 pages plus appendix, same LaTeX skeleton as kac-rice/paper.
+
+ATLAS LINK-BACK (for the record, not for the paper)
+---------------------------------------------------
+This executes the atlas green card "Kac-Rice formula + Palm calculus (synthesis) ->
+Energy Efficiency" (board: E:/GitHub/ai-atlas/ui/public/greens_ledger.json). When the
+paper ships to Zenodo, tell the atlas assistant to ingest it as an own-lab node and
+stamp the card executed=positive (or =negative with the finding — either outcome is a
+valid close). The Palm-calculus half was assessed as secondary framing; if you find it
+load-bearing, kill-check it separately before claiming it.
