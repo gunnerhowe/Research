@@ -1,0 +1,192 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+
+\input{numbers}
+
+\newcommand{\loss}{\mathcal{L}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+
+\title{Rice's Formula for Event-Driven Networks:\\
+Predicting and Training Temporal Sparsity via\\ Differentiable Level-Crossing Rates}
+
+\author{Gunner Levi Howe\\
+Independent Researcher\\
+\texttt{gunnerlevihowe@gmail.com}}
+
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+% FINAL ABSTRACT WRITTEN AFTER RESULTS -- honest, states what did not work.
+\end{abstract}
+
+\section{Introduction}
+
+Delta networks---delta-RNNs, sigma--delta networks, event-driven
+transformers---spend compute only when an activation \emph{changes} by more
+than a threshold~$\theta$: each supra-threshold change transmits a delta,
+triggers the corresponding weight-column MACs and memory traffic, and is
+therefore a quantum of energy \citep{neil2017delta,oconnor2017sigmadelta,
+yousefzadeh2022delta,gao2020edgedrnn,chen2024deltakws}. In this literature
+the thresholds are tuned by post-hoc grid search and the event counts are
+always \emph{measured after the fact}; no published delta-network method
+predicts event rates from activation statistics or trains against an
+analytic rate objective.
+
+A delta event is, definitionally, a level crossing of the activation time
+series. Level-crossing statistics have an analytic theory that is a century
+old: Rice's formula \citep{rice1944,kac1943} gives the mean crossing rate of
+a stationary Gaussian process at level $u$ from two spectral moments, and
+its Monte-Carlo/co-area estimator---validated as a differentiable training
+objective in our preceding program
+\citep{howe2026levelcrossing,howe2026budget,howe2026minkowski}---needs no
+Gaussianity at all. This paper connects the two: it gives the delta-network
+literature the analytic, differentiable event-rate model it has been
+missing, and it gives the level-crossing program the domain where excess
+crossings are the cost \emph{by construction}.
+
+% narrative arc paragraph (mechanism validated, pathology absent, native
+% domain found) + contributions list -- FILLED AFTER RESULTS.
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Delta and sigma--delta networks.}
+\citet{neil2017delta} threshold changes of RNN inputs and hidden states
+against an anchor memory of the last transmitted value and accumulate
+matrix--vector products incrementally; the mechanism transfers to
+convolutional and embedded video settings \citep{yousefzadeh2022delta}, to
+silicon \citep{gao2020edgedrnn,chen2024deltakws}, and underlies sigma--delta
+quantized networks \citep{oconnor2017sigmadelta}. Throughout, thresholds are
+set by accuracy-vs-speedup sweeps. EGRU \citep{subramoney2023egru} trains
+activity-sparse GRUs with surrogate gradients through a hard threshold;
+that is spike-style training, not an analytic rate model.
+
+\paragraph{Spiking transformers and spatial activation sparsity.}
+Spikformer \citep{zhou2023spikformer} and SpikeGPT \citep{zhu2023spikegpt}
+use spike \emph{coding}---a different mechanism from delta thresholding; we
+cite and do not claim their ground. The activation-sparsity line
+\citep{li2023lazy} concerns \emph{spatial} sparsity (which units are zero);
+ours is \emph{temporal} sparsity (which units change).
+
+\paragraph{Level-crossing theory in ML and signal processing.}
+Rice's formula appears in machine learning in loss-landscape critical-point
+counting \citep{bray2007,choromanska2015} and in our own program
+\citep{howe2026levelcrossing,howe2026budget,howe2026minkowski}---never as an
+activation-event or energy model. Zero-crossing statistics are classical
+discrimination features \citep{kedem1986,kedem1994book}; send-on-delta
+sampling theory \citep{miskowicz2006} bounds event rates by total variation.
+The novelty here, as in the companion papers, is the \emph{instantiation}:
+crossing rates as a differentiable model of, and budget on, delta-network
+energy.
+
+\section{Theory: delta events as level crossings}
+\label{sec:theory}
+
+\paragraph{Setting.}
+Let $a_c(t)$, $t=1,\dots,T$ be the sampled activation trace of channel $c$
+feeding a delta-encoded matrix--vector product. The send-on-delta encoder
+\citep{neil2017delta,miskowicz2006} keeps an anchor $\hat a$ (last
+transmitted value), fires when $|a_c(t)-\hat a|>\theta$, and updates the
+anchor to $a_c(t)$. Every event costs the fan-out of the weight column in
+MACs plus the associated memory traffic (Section~\ref{sec:energy}).
+
+\paragraph{Rice's formula and its discrete-time form.}
+For a stationary process with spectral moments $\lambda_0=\operatorname{Var}
+a$ and $\lambda_2=\operatorname{Var}\dot a$, the mean rate of up- and
+down-crossings of level $u$ is
+\begin{equation}
+\mu(u) \;=\; \frac{1}{\pi}\sqrt{\frac{\lambda_2}{\lambda_0}}
+\exp\!\Big({-\frac{(u-m)^2}{2\lambda_0}}\Big),
+\label{eq:rice}
+\end{equation}
+under Gaussianity \citep{rice1944}. Sampled traces are sequences, not
+continuous paths: for a stationary Gaussian \emph{sequence} with lag-1
+autocorrelation $\rho_1$ the exact per-step crossing probability is
+\begin{equation}
+P\big[(a_t-u)(a_{t+1}-u)<0\big] \;=\; 4\,
+\mathrm{T}\!\Big(\tfrac{u-m}{\sqrt{\lambda_0}},
+\sqrt{\tfrac{1-\rho_1}{1+\rho_1}}\Big),
+\label{eq:discrete}
+\end{equation}
+with $\mathrm{T}$ Owen's T function \citep{owen1956}; at $u=m$ this is the
+classical $\arccos(\rho_1)/\pi$ \citep{kedem1994book}, and $\rho_1\to 0$
+recovers the iid baseline $2\Phi(\tilde u)(1-\Phi(\tilde u))$.
+Eq.~\eqref{eq:rice} with finite-difference moments underpredicts
+Eq.~\eqref{eq:discrete} as $\rho_1\to0$ (by up to $\sim$10\%, quantified in
+Section~\ref{sec:e0}); we use Eq.~\eqref{eq:rice} as the headline Gaussian
+predictor, as specified, and Eq.~\eqref{eq:discrete} in the appendix.
+
+\paragraph{Differentiable estimator.}
+The program's smoothed Monte-Carlo estimator
+\citep{howe2026levelcrossing} evaluates the co-area integrand
+$\delta_\epsilon(a-u)\,|\dot a|$ at sample points. On a sampled trace, the
+piecewise-linear segment $a_t\!\to\!a_{t+1}$ admits the \emph{exact}
+smoothed count
+\begin{equation}
+\hat c(u) \;=\; \frac{1}{(T-1)\,\Delta t}\sum_{t=1}^{T-1}
+\Big|\,\Phi\big(\tfrac{a_{t+1}-u}{\epsilon}\big)-
+\Phi\big(\tfrac{a_{t}-u}{\epsilon}\big)\Big|,
+\label{eq:segment}
+\end{equation}
+which converges to the hard sign-change count as $\epsilon\to0$, remains
+differentiable in the trace values---and hence in the network
+parameters---and is robust to steps that jump many $\epsilon$ in one
+$\Delta t$ (where the midpoint co-area rule undercounts;
+Section~\ref{sec:e0}).
+
+\paragraph{From crossings to delta events.}
+Summing crossing rates over the implicit ladder of transmission levels
+spaced $\theta$ apart bounds the send-on-delta event rate by total
+variation \citep{miskowicz2006}:
+\begin{equation}
+R(\theta)\;\le\;\min\!\big(\E|\Delta a|/\theta,\;1/\Delta t\big),
+\qquad \E|\dot a| = \sqrt{2\lambda_2/\pi}\ \text{(Gaussian)}.
+\label{eq:bound}
+\end{equation}
+The bound is loose by exactly the hysteresis of the anchor (re-crossing a
+level without traveling $\theta$) and by multi-level jumps. We measure this
+gap once on synthetic processes as a correction factor
+$\gamma(\theta/\sigma_\delta)$, $\sigma_\delta$ the one-step increment
+scale, and find it strikingly process-independent for
+$\theta \lesssim \sigma_\delta$ (Section~\ref{sec:e0}).
+
+\paragraph{One-sided crossing budget.}
+The training objective transplants the howe2026budget mechanism to its
+native domain: per layer $\ell$ with hidden traces $h_\ell$,
+\begin{equation}
+\loss_{\mathrm{budget}}^{(\ell)} \;=\;
+\operatorname{mean}_j\;
+\frac{\mathrm{relu}\big(\hat c_{\ell}(u_j) - b_j\big)^2}
+{(b_j + \overline{b})^2},
+\qquad b_j = \rho\, c^{\mathrm{cal}}_{\ell}(u_j),
+\label{eq:budget}
+\end{equation}
+with levels $u_j$ on a quantile ladder of the layer's calibration
+activation distribution (dense-ladder rule of \citet{howe2026minkowski}),
+budgets a $\rho$-scaled copy of the calibration profile, and $\hat c$ the
+segment estimator \eqref{eq:segment}. Within budget the loss and its
+gradient are exactly zero (one-sidedness), so compliant dynamics are
+untouched. The sampling-scale failure mode of \citet{howe2026minkowski}
+does not arise here: traces are densely sampled 1-D sequences.
+
+% Sections E0-E4, energy accounting, limitations, reproducibility --
+% FILLED AFTER RESULTS.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

@@ -5,13 +5,21 @@ Working plan per info.txt. Every deviation from the brief is recorded in the
 
 ## Status board
 
-- [ ] Package skeleton (src/eventrice), vendored estimator, delta cells
-- [ ] tests/test_correctness.py green via `python -m pytest tests/ -q`
-- [ ] E0 estimator validation — **GATE V** (<=3% vs closed forms, 3 seeds)
-- [ ] Data + base networks: SC2 GRU, psMNIST GRU, enwik8 delta-transformer
-- [ ] E1 prediction on real nets — **GATE P** (predictor (b) within ~10%)
+- [x] Package skeleton (src/eventrice), vendored estimator, delta cells
+- [x] tests/test_correctness.py green via `python -m pytest tests/ -q` (14)
+- [x] E0 estimator validation — **GATE V PASS** (Rice on known spectra
+      <=1.9%; OU discrete-Gaussian <=1.0%; multisine <=0.2%; threshold 3%)
+- [x] Data + base networks: SC2 GRU 91.6-91.9% (8 seeds), psMNIST GRU
+      98.6-98.7%, enwik8 TransformerLM (12k steps, 20M chars)
+- [x] E1 SC2 + psMNIST: **GATE P direction confirmed** — empirical (b)
+      1.6-7.5% median rel err; Rice (a) breaks with depth/non-Gaussianity
+      (14-73%), iid (c) 2.3-17x off. Event rates: open-loop calibration
+      predictor 0.3-10% in the deployable regime; synthetic-universal gamma
+      off by up to ~50% on real traces (heavy-tailed increments) — honest
+      finding, empirical curves used for allocation.
+- [ ] E1 enwik8 + formal GATE P over all three tasks
 - [ ] E2 analytic threshold allocation vs grid-search incumbent
-- [ ] E3 budget training (headline) — Pareto vs post-hoc thresholding
+- [ ] E3 budget training (headline, 8 seeds SC2) — Pareto vs post-hoc
 - [ ] E4 null controls: L1-delta, rate reg, post-hoc sweep; delta histograms
 - [ ] bench_timing.py overhead; make_figures.py; gen_paper_numbers.py
 - [ ] paper/main.tex compiled; regenerate-and-diff check passes

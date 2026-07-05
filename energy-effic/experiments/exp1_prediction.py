@@ -94,6 +94,16 @@ def profile_analysis(cal, ev):
                          mean_rel_err=float(np.mean(rel)),
                          frac_within_10pct=float(np.mean(rel <= 0.10)),
                          per_channel_median=per_ch)
+    # exemplar channels for figures: most active, median kurtosis, max kurtosis
+    ex_ids = [int(np.argmax(meas.max(axis=1))),
+              int(np.argsort(mom["kurt"])[C // 2]),
+              int(np.argmax(mom["kurt"]))]
+    out["examples"] = [dict(channel=c, kurt=float(mom["kurt"][c]),
+                            k_sigma=K_SIGMA.tolist(),
+                            levels=levels[c].tolist(),
+                            measured=meas[c].tolist(),
+                            **{n: pred[n][c].tolist() for n in pred})
+                       for c in ex_ids]
     return out, mom
 
 

@@ -1,0 +1,124 @@
+building SC2 log-mel cache ...
+SC2: train torch.Size([84843, 101, 40]) val torch.Size([9981, 101, 40]) test torch.Size([11005, 101, 40])
+  ep00 task=1.9099 reg=0 val=0.7544 (2.0s)
+  ep01 task=0.7737 reg=0 val=0.8505 (1.5s)
+  ep02 task=0.5516 reg=0 val=0.8762 (1.5s)
+  ep03 task=0.4445 reg=0 val=0.8881 (1.6s)
+  ep04 task=0.3780 reg=0 val=0.8977 (1.6s)
+  ep05 task=0.3345 reg=0 val=0.9088 (1.6s)
+  ep06 task=0.2960 reg=0 val=0.9138 (1.6s)
+  ep07 task=0.2693 reg=0 val=0.9171 (1.6s)
+  ep08 task=0.2484 reg=0 val=0.9221 (1.6s)
+  ep09 task=0.2287 reg=0 val=0.9213 (1.6s)
+  ep10 task=0.2135 reg=0 val=0.9251 (1.6s)
+  ep11 task=0.2018 reg=0 val=0.9255 (1.5s)
+  ep12 task=0.1930 reg=0 val=0.9264 (1.6s)
+  ep13 task=0.1871 reg=0 val=0.9255 (1.5s)
+  ep14 task=0.1838 reg=0 val=0.9263 (1.5s)
+SC2 seed 0: test acc 0.9186
+  ep00 task=1.9353 reg=0 val=0.7478 (1.6s)
+  ep01 task=0.8036 reg=0 val=0.8332 (1.6s)
+  ep02 task=0.5687 reg=0 val=0.8744 (1.6s)
+  ep03 task=0.4572 reg=0 val=0.8811 (1.6s)
+  ep04 task=0.3882 reg=0 val=0.9015 (1.6s)
+  ep05 task=0.3417 reg=0 val=0.9018 (1.6s)
+  ep06 task=0.3070 reg=0 val=0.9116 (1.5s)
+  ep07 task=0.2773 reg=0 val=0.9170 (1.5s)
+  ep08 task=0.2557 reg=0 val=0.9155 (1.6s)
+  ep09 task=0.2354 reg=0 val=0.9200 (1.5s)
+  ep10 task=0.2207 reg=0 val=0.9235 (1.6s)
+  ep11 task=0.2089 reg=0 val=0.9217 (1.6s)
+  ep12 task=0.2000 reg=0 val=0.9241 (1.5s)
+  ep13 task=0.1935 reg=0 val=0.9240 (1.5s)
+  ep14 task=0.1903 reg=0 val=0.9247 (1.5s)
+SC2 seed 1: test acc 0.9169
+  ep00 task=1.8821 reg=0 val=0.7604 (1.5s)
+  ep01 task=0.7782 reg=0 val=0.8402 (1.5s)
+  ep02 task=0.5573 reg=0 val=0.8695 (1.6s)
+  ep03 task=0.4567 reg=0 val=0.8872 (1.6s)
+  ep04 task=0.3871 reg=0 val=0.8989 (1.5s)
+  ep05 task=0.3399 reg=0 val=0.9091 (1.5s)
+  ep06 task=0.3058 reg=0 val=0.9078 (1.5s)
+  ep07 task=0.2777 reg=0 val=0.9151 (1.5s)
+  ep08 task=0.2546 reg=0 val=0.9182 (1.5s)
+  ep09 task=0.2369 reg=0 val=0.9221 (1.5s)
+  ep10 task=0.2191 reg=0 val=0.9229 (1.5s)
+  ep11 task=0.2067 reg=0 val=0.9254 (1.6s)
+  ep12 task=0.1977 reg=0 val=0.9248 (1.5s)
+  ep13 task=0.1920 reg=0 val=0.9242 (1.6s)
+  ep14 task=0.1888 reg=0 val=0.9252 (1.5s)
+SC2 seed 2: test acc 0.9163
+wrote E:\GitHub\Research\energy-effic\results\base_training.json
+psMNIST: train torch.Size([55000, 28, 28])
+  ep00 task=0.8193 reg=0 val=0.9508 (0.7s)
+  ep01 task=0.1605 reg=0 val=0.9692 (0.7s)
+  ep02 task=0.0994 reg=0 val=0.9782 (0.7s)
+  ep03 task=0.0713 reg=0 val=0.9772 (0.6s)
+  ep04 task=0.0570 reg=0 val=0.9834 (0.7s)
+  ep05 task=0.0460 reg=0 val=0.9852 (0.7s)
+  ep06 task=0.0386 reg=0 val=0.9880 (0.7s)
+  ep07 task=0.0313 reg=0 val=0.9868 (0.8s)
+  ep08 task=0.0267 reg=0 val=0.9886 (0.8s)
+  ep09 task=0.0220 reg=0 val=0.9892 (0.8s)
+  ep10 task=0.0194 reg=0 val=0.9880 (0.8s)
+  ep11 task=0.0164 reg=0 val=0.9896 (0.8s)
+  ep12 task=0.0147 reg=0 val=0.9888 (0.8s)
+  ep13 task=0.0137 reg=0 val=0.9902 (0.8s)
+  ep14 task=0.0131 reg=0 val=0.9896 (0.7s)
+psMNIST seed 0: test acc 0.9861
+  ep00 task=0.8022 reg=0 val=0.9480 (0.7s)
+  ep01 task=0.1565 reg=0 val=0.9774 (0.7s)
+  ep02 task=0.0968 reg=0 val=0.9818 (0.7s)
+  ep03 task=0.0733 reg=0 val=0.9836 (0.7s)
+  ep04 task=0.0565 reg=0 val=0.9832 (0.7s)
+  ep05 task=0.0470 reg=0 val=0.9878 (0.7s)
+  ep06 task=0.0391 reg=0 val=0.9880 (0.8s)
+  ep07 task=0.0320 reg=0 val=0.9868 (0.8s)
+  ep08 task=0.0271 reg=0 val=0.9874 (0.8s)
+  ep09 task=0.0227 reg=0 val=0.9882 (0.8s)
+  ep10 task=0.0192 reg=0 val=0.9894 (0.8s)
+  ep11 task=0.0168 reg=0 val=0.9882 (0.8s)
+  ep12 task=0.0150 reg=0 val=0.9888 (0.8s)
+  ep13 task=0.0139 reg=0 val=0.9894 (0.7s)
+  ep14 task=0.0132 reg=0 val=0.9894 (0.7s)
+psMNIST seed 1: test acc 0.9868
+  ep00 task=0.8032 reg=0 val=0.9488 (0.6s)
+  ep01 task=0.1543 reg=0 val=0.9734 (0.7s)
+  ep02 task=0.0945 reg=0 val=0.9826 (0.6s)
+  ep03 task=0.0707 reg=0 val=0.9818 (0.7s)
+  ep04 task=0.0553 reg=0 val=0.9852 (0.7s)
+  ep05 task=0.0461 reg=0 val=0.9848 (0.7s)
+  ep06 task=0.0372 reg=0 val=0.9872 (0.7s)
+  ep07 task=0.0304 reg=0 val=0.9886 (0.7s)
+  ep08 task=0.0267 reg=0 val=0.9888 (0.7s)
+  ep09 task=0.0224 reg=0 val=0.9896 (0.7s)
+  ep10 task=0.0190 reg=0 val=0.9906 (0.7s)
+  ep11 task=0.0164 reg=0 val=0.9906 (0.7s)
+  ep12 task=0.0147 reg=0 val=0.9902 (0.8s)
+  ep13 task=0.0134 reg=0 val=0.9902 (0.8s)
+  ep14 task=0.0128 reg=0 val=0.9900 (0.8s)
+psMNIST seed 2: test acc 0.9873
+wrote E:\GitHub\Research\energy-effic\results\base_training.json
+enwik8: vocab 200, train 5000000
+  step 500 loss=2.582 val_bpc=3.669
+  step 1000 loss=2.549 val_bpc=3.530
+  step 1500 loss=2.494 val_bpc=3.470
+  step 2000 loss=2.429 val_bpc=3.432
+  step 2500 loss=2.437 val_bpc=3.416
+  step 3000 loss=2.388 val_bpc=3.412
+enwik8 seed 0: test bpc 3.425
+  step 500 loss=2.597 val_bpc=3.675
+  step 1000 loss=2.517 val_bpc=3.540
+  step 1500 loss=2.467 val_bpc=3.484
+  step 2000 loss=2.356 val_bpc=3.455
+  step 2500 loss=2.400 val_bpc=3.440
+  step 3000 loss=2.390 val_bpc=3.435
+enwik8 seed 1: test bpc 3.435
+  step 500 loss=2.527 val_bpc=3.712
+  step 1000 loss=2.499 val_bpc=3.582
+  step 1500 loss=2.414 val_bpc=3.512
+  step 2000 loss=2.449 val_bpc=3.479
+  step 2500 loss=2.429 val_bpc=3.461
+  step 3000 loss=2.365 val_bpc=3.458
+enwik8 seed 2: test bpc 3.425
+wrote E:\GitHub\Research\energy-effic\results\base_training.json

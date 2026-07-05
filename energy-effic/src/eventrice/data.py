@@ -124,7 +124,7 @@ def load_psmnist(split, device="cpu"):
     return x.to(device), y.to(device)
 
 
-def load_enwik8(n_train=5_000_000, n_val=500_000, n_test=500_000):
+def load_enwik8(n_train=20_000_000, n_val=500_000, n_test=500_000):
     """Byte-level enwik8 slice from the SemRF repo cache. Returns
     (train, val, test) int64 tensors and vocab size (contiguous ids)."""
     raw = np.load(ENWIK8_NPY)
