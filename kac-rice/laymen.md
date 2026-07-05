@@ -1,326 +1,307 @@
-# The Kac–Rice Project, In Plain English
+# The Kac–Rice Trilogy, In Plain English — and How to Whiteboard It Cold
 
-## Part 1 — What we did, for anyone
-
-### The problem, with no jargon
-
-There's a kind of neural network that stores a picture (or a sound, or a 3D shape)
-as a *formula* instead of a file. You give it a location — "what color is the pixel
-at (0.3, 0.7)?" — and it answers. These are called **implicit neural
-representations (INRs)**, and they're used in things like NeRF (the "turn photos
-into a 3D scene" technology) and neural 3D shape models.
-
-They have one famous flaw: **they learn the blurry version first and the fine
-detail last — or never.** Train one on a photo and you get the shapes and shading
-quickly, but the grass texture, the hair, the sharp edges take forever to appear.
-Researchers call this *spectral bias*. It's arguably THE central annoyance of this
-whole subfield.
-
-### The old fixes, and their blind spot
-
-The best existing fixes either redesign the network itself, or add a "detail
-police" term to the training objective: take the network's output and the real
-image, run both through a **Fourier transform** (the math that splits a signal
-into bass/treble frequencies), and punish the network for missing treble.
-
-Here's the blind spot: a Fourier transform needs the data on a **neat, regular
-grid** — like a full spreadsheet with every cell filled. But lots of real data
-isn't like that. A laser scan of a statue is a cloud of scattered points. Sensor
-readings come from wherever the sensors happen to sit. If you only know 12% of the
-pixels, scattered randomly and unevenly, you must first *guess* the full grid by
-smearing your scattered samples — and that smearing destroys exactly the fine
-detail you were trying to protect.
-
-### Our idea: count crossings instead
-
-We dug up a piece of 1940s mathematics from Bell Labs telephone engineering:
-**Rice's formula**. The intuition is simple enough to explain to a kid:
-
-> Draw a horizontal line through a wiggly signal. **Count how many times the
-> signal crosses that line.** A lazy, smooth signal crosses it a few times. A
-> detailed, rapidly-wiggling signal crosses it constantly. *Crossing counts are a
-> frequency meter that needs no Fourier transform.*
-
-(Think of a guitar string: the higher the pitch, the more often it whips past its
-resting line each second. Rice proved the precise version of this in 1944 for
-telephone noise.)
-
-The beautiful part: to count crossings, you don't need a grid. You just need to
-check the signal's value and slope at whatever scattered points you happen to
-have. Neural networks give you slopes for free (that's what backpropagation
-computes). So we turned "how often does the field cross each level" into a
-**training penalty**: the network is told, "your reconstruction should cross the
-brightness level 0.5 about as often as the real image does — and level 0.3, and
-0.7, and so on." If its answer is too blurry, it crosses every level too rarely,
-and it gets pushed to add detail.
-
-We're the first to use this as a training objective for these networks — we
-checked the literature carefully.
-
-### What we found (the honest version)
-
-We built it, mathematically verified the counting machinery is exact, and ran a
-fair tournament against the best existing training-objective fixes, giving every
-method identical information.
-
-- **When data is scarce and scattered, every "detail police" method is a huge
-  win** — ours included. Adding any of them took reconstructions from a smeary
-  mess to visibly coherent (+2–3 dB, which is a big, visible jump).
-- **On ordinary photos, ours ties the Fourier method. It does not beat it.** We
-  set out hoping it would, and we say plainly in the paper that it didn't.
-- **On texture — content that's statistically "the same all over," like fabric,
-  grass, or noise patterns — ours beats the Fourier method.** That's satisfying,
-  because texture is exactly the kind of signal the 1940s theory was built for.
-- **Ours is the low-maintenance one.** It's the only method in the tournament
-  that never needs a grid at any step, and — this was the neatest experiment — it
-  performs the same whether you feed it sloppy slope estimates or perfect ones.
-  The competing slope-matching method gets better with perfect slopes, meaning it
-  *depends* on information you usually can't get. Ours only uses slope
-  *statistics*, so individual errors wash out.
-- **When data is plentiful and on a grid, none of these methods help** — and the
-  slope-based ones (ours included) actually hurt. Detail-police objectives are
-  tools for scarcity, not abundance.
-
-### Why this matters
-
-1. **For scattered-data AI**: 3D shape networks trained on raw laser scans,
-   irregular sensor networks, adaptively-sampled scientific data — settings where
-   the Fourier option literally doesn't exist without a lossy preprocessing step.
-   We now know a grid-free detail objective works there, and how well.
-2. **For the science itself**: we imported a whole toolbox (the "geometry of level
-   sets" of random fields — crossing counts are just its first tool) into neural
-   network training, and published exact, reproducible measurements of where it
-   helps, where it ties, and where it hurts. Negative and boundary results, stated
-   plainly, save the field wasted effort — and the positive results (texture,
-   robustness, composability with better architectures) point at where to dig next.
-3. **A model of honest reporting**: the paper's claims were pre-registered in
-   spirit ("here's the kill condition"), the tournament information was strictly
-   equalized, and every number in the paper regenerates from raw logs in this
-   repo with one script.
+Three papers, one idea, honestly measured. This document has two parts: Part 1 is
+the explanation you could give anyone; Part 2 is everything you need to stand at a
+whiteboard in front of Anthropic and own it.
 
 ---
 
-## Part 2 — The whiteboard version (for presenting without notes)
+# Part 1 — What we did, for anyone
 
-This section is a script. Draw what it says to draw, in order. Formulas are kept
-to the four that matter. Anticipated hard questions at the end.
+## The one idea underneath all three papers
 
-### 2.1 Frame the problem (2 minutes)
+Take a wiggly signal. Draw a horizontal line through it. **Count how many times the
+signal crosses the line.** A lazy, smooth signal crosses a few times; a detailed,
+rapidly-wiggling one crosses constantly. That count — proven precisely by Stephen
+Rice at Bell Labs in 1944 while studying telephone noise — is a *frequency meter
+that needs no Fourier transform, no grid, no mesh*. Just values and slopes at
+whatever scattered points you happen to have.
 
-Draw a wiggly 1D signal (a few big slow humps with fast ripples on top). Next to
-it, draw a smooth curve through just the humps.
+Neural networks give you slopes for free (that's what backpropagation computes).
+So this 1940s counting trick can be turned into a *training signal* for modern
+neural networks — and it turns out to be the first rung of a whole ladder:
 
-> "An INR is a network `f_θ(x) → value`: feed in a coordinate, get the signal.
-> Spectral bias: trained on the true signal [point at wiggly], gradient descent
-> finds the smooth version [point at smooth] fast, and takes forever to add the
-> ripples. Every fix either changes the architecture (SIREN, Fourier features) or
-> adds a loss term that *measures missing detail* and pushes on it."
+- **Rung 1 (Paper 1):** how often the field crosses a level → *how detailed it is*
+- **Rung 2 (Paper 2):** the same count, used as a *speed limit* instead of a demand
+- **Rung 3 (Paper 3):** climb from counting crossings to measuring the full
+  *geometry and topology* of the level sets — areas, boundary lengths, and the
+  number of blobs and holes ("Euler characteristic")
 
-Draw a grid of dots, then a scattered splatter of dots.
+By the end, we had built the complete differentiable "integral geometry" of neural
+fields — a family of rulers that measure a network's output the way a
+mathematician would measure a landscape — and, just as importantly, we mapped
+**exactly where each ruler can be trusted and where it breaks.**
 
-> "The standard measuring stick is the FFT — which needs *this* [grid]. Real data
-> is often *this* [splatter]: point clouds, sensors, partial observations. To use
-> an FFT loss here you first interpolate the splatter onto a grid, which smears
-> away exactly the high frequencies you wanted to police. That's the gap we aim at."
+## Paper 1: teaching networks fine detail (the demand direction)
 
-### 2.2 The object: crossing density (3 minutes)
+**Problem:** Networks that store images/signals as formulas (used in NeRF-style 3D
+graphics and neural shape models) learn the blurry version first and fine detail
+last or never — "spectral bias." The best loss-based fixes need data on a neat
+grid; real data (laser scans, scattered sensors) often isn't.
 
-Redraw the wiggly signal. Draw a horizontal dashed line at height `u` and put fat
-dots wherever the signal pierces it.
+**What we did:** Made the crossing count differentiable and told the network:
+"your reconstruction should cross each brightness level about as often as the real
+image does." No grid needed, ever.
 
-> "Pick a level u. Count crossings per unit length: call it c(u). Claim: c(u) is a
-> frequency meter."
+**Honest result:** Where data is scarce and scattered, every detail-promoting loss
+helps enormously (+2–3 dB — visibly sharper); ours *ties* the grid-based champion
+on photos, *beats* it on texture (the kind of content the 1944 theory is actually
+about), and is the only method that doesn't care how sloppy its slope estimates
+are. It did not broadly beat the champion — we said so in the abstract.
 
-Write **Rice's formula (1944)** — for a stationary Gaussian process:
+## Paper 2: the same tool as a speed limiter (the cap direction)
+
+**Problem:** Physics-informed neural networks (PINNs) — networks that learn to
+solve physics equations — are widely reported to blow up in "runaway
+high-frequency oscillation" on hard equations. If that's the disease, our counter
+is the natural cure: penalize crossings only *above* the physical budget.
+
+**What we did:** Built the one-sided budget (provably silent when the field
+behaves — zero loss, zero gradient), rebuilt a published benchmark exactly, and
+went looking for the disease.
+
+**Honest result:** The disease never showed up. Our PINNs failed *every* time —
+but always by being too smooth and losing track of the solution, never by
+oscillating. The budget was verifiably inert (on one seed, bit-for-bit identical
+training with and without it). We proved the cure works where the disease exists
+(a lab-controlled over-oscillator gets clamped, and gets *better*), and published
+the mismatch — plus a one-plot diagnostic that tells anyone which failure their
+PINN actually has *before* they buy a stabilizer. Reported failure modes can be
+artifacts of a particular software stack; the field should know that.
+
+## Paper 3: from detail to topology (the big swing)
+
+**Problem:** Controlling the *topology* of a learned 3D shape — "one piece, two
+handles, no hidden bubbles" — currently requires persistent homology: powerful,
+grid-bound machinery that costs ~1 second per training step.
+
+**What we did:** Extended our counting trick up the ladder using a classical
+theorem (Gauss–Bonnet): the number of blobs minus holes of a shape can be written
+as a curvature integral, which we can sample at scattered points, differentiably,
+for ~3 milliseconds per step — **250× cheaper**. Validated it to 1–3% accuracy
+against exact topology in 2D and 3D. Along the way we discovered four design rules
+the hard way (each from a documented failure), including the elegant one: the
+Euler characteristic is blobs *minus* holes, so an optimizer asked to reduce it
+will happily manufacture a fake hole to cancel a fake blob — unless you also
+charge it for perimeter. **The full measurement vector, not the single invariant,
+is the loss.**
+
+**Honest result:** In 2D it's the only method in a controlled comparison that
+fixes topology (3/3) *and* preserves the signal — the smoothing alternative pays
+11–17× in fidelity, the naive version repairs nothing. In 3D it fails, and the
+failure is the most interesting finding of the trilogy: **gradient descent
+adversarially hides topological junk below the sampling density** — tens of
+thousands of microscopic bubbles exactly where the estimator is blind, invariant
+to 4× more samples. Persistent homology has no such blind spot (its grid *is* the
+evaluation), and that is precisely what its 250× cost buys. We measured the
+boundary instead of hiding it.
+
+## Why this matters for AI
+
+1. **A new tool family, imported and validated.** Random-field theory (Rice,
+   Kac, Adler–Taylor) is now wired into neural network training with working
+   code, exact validation, and known limits. Mesh-free detail losses, PINN
+   diagnostics, and 250×-cheaper topology measurement are all real, usable today
+   — within their mapped domains.
+2. **A measured case study of specification gaming.** Paper 3's failure is
+   Goodhart's law caught on camera: give an optimizer a sampled objective, and it
+   doesn't just fail to satisfy the *intent* — it actively locates the measuring
+   instrument's null space and stuffs the violation there. We produced this in a
+   fully controlled setting, diagnosed the mechanism, quantified its invariance
+   to naive fixes, and identified what eliminates it (a measurement with no null
+   space — at 250× the price). That's an alignment-relevant parable with
+   receipts, not a metaphor.
+3. **A demonstration of how AI-accelerated science should behave.** Every paper
+   pre-registered its kill conditions, reported the negative halves in the
+   abstract, gave every method identical information, and ships every number
+   regenerable from raw logs by one script. Two of three headline hypotheses
+   partially or fully failed — and all three papers are stronger for saying so.
+
+---
+
+# Part 2 — Whiteboard mastery (present it cold at Anthropic)
+
+## 2.0 The 90-second arc (memorize this cold)
+
+> "I took one piece of 1940s Bell Labs math — the Rice formula, which says
+> *counting how often a signal crosses a line measures its frequency content* —
+> and pushed it through three questions. **Can it teach networks detail?** Yes:
+> ties the state of the art without ever needing a grid. **Can it cap runaway
+> oscillation in physics networks?** The cap works — but the famous disease
+> didn't exist in our faithful reproduction, so we published the absence, with a
+> diagnostic. **Can it climb to full topology control and displace persistent
+> homology at 250× less cost?** In 2D yes, uniquely; in 3D the optimizer
+> adversarially hides junk below the sampling density — Goodhart's law, measured
+> in a controlled setting. Three papers, every kill condition pre-registered,
+> every number regenerable from raw logs. The epistemics are as much the product
+> as the math."
+
+## 2.1 Whiteboard choreography — draw in this order
+
+**Board 1: the object.** Draw a wiggly 1D signal, a dashed horizontal line at
+height *u*, fat dots at crossings. Write Rice's formula:
 
 ```
-c(u) = (1/π) · √(λ₂/λ₀) · exp(−u² / 2λ₀)
+c(u) = (1/π)·√(λ₂/λ₀)·exp(−u²/2λ₀)      λ₀ = Var f,  λ₂ = Var f′
 ```
 
-> "λ₀ is the signal's variance; λ₂ is the *derivative's* variance. In spectral
-> terms λ₀ = ∫S(ω)dω and λ₂ = ∫ω²S(ω)dω, so √(λ₂/λ₀) is literally the RMS
-> frequency of the signal. More treble → more crossings, at every level,
-> in closed form. No Fourier transform was harmed in making this measurement."
+Say: "√(λ₂/λ₀) is literally the RMS frequency. Crossings = spectrum, no Fourier
+transform. And the modern enabler: autograd gives me f′ anywhere, for free."
 
-Key preemption — say this before anyone asks:
-
-> "Zero-crossing rate as a frequency feature is textbook signal processing
-> (Kedem '86). What's new is using it as a *differentiable training objective*
-> for neural fields, and measuring whether it does the job frequency losses do —
-> off the grid."
-
-### 2.3 The deterministic backbone: co-area (2 minutes)
-
-> "Rice needs 'stationary Gaussian'. Our images aren't. So the loss actually
-> stands on a *deterministic* identity — the co-area formula. No probability
-> anywhere:"
+**Board 2: the engine.** Write the co-area formula and the estimator:
 
 ```
-∫ g(f(x)) · ‖∇f(x)‖ dx  =  ∫ g(u) · (size of the level set {f = u}) du
+∫ g(f(x))·‖∇f(x)‖ dx  =  ∫ g(u) · (size of level set {f=u}) du
+
+ĉ_ε(u) = (1/N) Σᵢ δ_ε(f(xᵢ)−u)·‖∇f(xᵢ)‖
 ```
 
-Draw a 2D contour plot (like a topographic map).
+Say: "Deterministic identity — no Gaussian assumptions, works in any dimension:
+crossings in 1D, contour length in 2D, surface area in 3D. Monte-Carlo over ANY
+scattered points. Differentiable in the network weights. This one line is the
+whole trilogy's engine."
 
-> "In 2D, 'size of level set' = total *length of the contour line* at height u.
-> The formula says: integrate any function of the field's value, weighted by
-> gradient magnitude, and you're secretly integrating over contour lines. Choose
-> g = a narrow Gaussian bump centered at u, and the left side becomes something I
-> can estimate by averaging over ANY set of sample points — my scattered splatter
-> included."
-
-### 2.4 The estimator and the loss (3 minutes) — the core slide
-
-Write the estimator:
+**Board 3: the ladder.** Draw three rungs, label left-to-right:
 
 ```
-ĉ_ε(u) = (1/N) Σᵢ  δ_ε( f_θ(xᵢ) − u ) · ‖∇ₓ f_θ(xᵢ)‖
+M₁ demand (P1: INR detail)  →  M₁ cap (P2: PINN budget)  →  (M₀,M₁,M₂) vector (P3: topology)
 ```
 
-Walk it left to right:
-
-> "Average over my training points, wherever they are. δ_ε is a Gaussian bump of
-> width ε — 'is the field near level u here?'. Times the gradient norm — that's
-> the co-area weighting, and autograd gives it to me *exactly*, at any point, no
-> finite differences. Everything is differentiable in θ, so this isn't just a
-> measurement, it's a loss."
-
-Write the loss:
+Under rung 3 write Gauss–Bonnet:
 
 ```
-L_KR = (1/L) Σⱼ  [ ĉ_ε(uⱼ) − c_gt(uⱼ) ]²  /  [ c_gt(uⱼ) + mean(c_gt) ]²
-total = MSE + β · L_KR
+χ(A_u) = (1/2π) ∮ κ ds        κ = div(∇f/‖∇f‖)     (2D; 3D uses Gaussian curvature K)
 ```
 
-Three design decisions, one line each:
+Say: "Same engine, three payloads. The third rung measures blobs-minus-holes as a
+curvature integral I can sample."
 
-> "Levels uⱼ sit at quantiles of the ground-truth values, so every level has data.
-> The target profile is computed *on the same batch of points* — estimator and
-> target share their Monte-Carlo noise, so it partially cancels. And it's
-> normalized because crossing densities scale linearly with frequency content, so
-> raw squared error scales *quadratically* — unnormalized, one β can't serve two
-> different signals. We learned that the hard way; it's in the paper."
+**Board 4: the results ladder** (draw the two number-columns from §2.3's tables
+below — scattered-image PSNR for P1; the 2D-repair quartet and 3D table for P3).
 
-The one conceptual sentence to land:
+**Board 5: the punchline drawing.** Draw a big shape with a few honest sample
+dots, then dozens of tiny bubbles BETWEEN the dots. Say: "Asked to fix topology
+it can't reach honestly, gradient descent puts the violations exactly where my
+sampled measurement is blind. 4× more samples — debris unchanged, it just
+relocates. Closing the window needs a million points; that's cubic, and it
+erases my 250× cost win. Persistence has no blind window — its complex IS the
+eval grid. Its cost is the price of no null space. **Optimizers hunt null
+spaces.** That sentence is the trilogy's deepest export."
 
-> "Note what this loss is: L numbers per batch — a *distributional* statistic. It
-> says 'you need this much contour length at each gray level', never *where*. The
-> MSE term places it. That's both its weakness and its superpower."
+## 2.2 The four design rules (know the *failure* behind each)
 
-### 2.5 The experiments — draw the ladder (4 minutes)
+1. **Level ladder.** Topology is a step function of the weights — smoothed
+   estimators only feel gradients within ε of a transition. Receipt: a cap probing
+   levels ≤0.4 against a peak at 0.7 sat at exactly zero loss for 2,000
+   iterations. Fix: dense levels spanning the range, spacing ≈ ε — a ratchet where
+   the topmost active level always has its hand on the offending peak.
+2. **C² backbone.** ReLU nets hide their curvature in kinks (measure-zero sets MC
+   sampling never hits) — the Gauss–Bonnet integral silently undercounts. Receipt:
+   same field, ReLU → loss never fires; SIREN → reads topology correctly.
+3. **The vector, not the invariant.** χ = blobs − holes is gameable by
+   cancellation. Receipt: asked for χ=1, the optimizer built 4 blobs + 3 holes.
+   Charging perimeter (M₁ — literally Paper 2's budget reused) makes cheating
+   expensive; honest deletion becomes the cheapest descent path.
+4. **Sampling-scale coverage.** All sampled estimators are blind below sample
+   spacing — and rule 4 is the one 3D can't afford. This isn't a bug in our code;
+   it's a theorem about sampled objectives, and it's why the 3D result is a
+   finding rather than an embarrassment.
 
-Draw a vertical PSNR ladder for the scattered natural-image test (the "blobs"
-sampling, 12.5% of pixels, clumped):
+## 2.3 Numbers to memorize (the only table you need)
 
-```
-21.8  ← plain interpolation of the samples ("the ceiling")
-21.6  ← + FFL (Fourier loss on interpolated grid)
-21.6  ← + Sobolev (match gradients pointwise)
-21.1  ← + Kac–Rice (ours)
-18.9  ← MSE only
-```
-
-> "Three honest observations. One: every auxiliary loss is a big win over plain
-> MSE — this regime is where detail objectives matter. Two: we hoped to beat the
-> Fourier loss off-grid; we *tied* it — within half a dB, slightly better SSIM,
-> slightly worse PSNR. Say it plainly: the headline hypothesis did not confirm.
-> Three: everything crowds under the interpolation ceiling — at this sample
-> budget, no loss extracts more than the samples' information content."
-
-Now the two twists. Draw a texture patch (hatch marks):
-
-> "Twist one: on a *statistically homogeneous* texture, we win — 27.2 vs 26.6
-> against FFL, and we edge past the ceiling. That's the regime Rice's theory is
-> actually *about* — stationary fields. Edges are non-stationary; texture is the
-> theory's home turf, and the data agrees with the theory about where its own
-> claim applies. I find that genuinely satisfying."
-
-> "Twist two — my favorite experiment: everyone's gradient targets come from the
-> smeared interpolant. Feed Sobolev *perfect* oracle gradients instead: it
-> improves, 21.6 → 21.8. It was bottlenecked on target quality. Feed ours perfect
-> gradients: nothing — 21.1 → 20.9. Ours only consumes gradient *statistics*, so
-> the sloppiness was already washing out. It's the only method here that doesn't
-> care how good your derivative estimates are. On scattered real-world data,
-> derivative estimates are never good."
-
-And the boundary result (draw a dense grid, all pixels known):
-
-> "On a full grid with dense supervision, MSE alone wins, and gradient-target
-> losses — ours *and* Sobolev — actively hurt, about −10 dB, because
-> finite-difference targets conflict with exact pixel reconstruction at high
-> fidelity. Detail objectives are medicine for scarcity, and we mapped the
-> dosage boundary."
-
-### 2.6 The close (30 seconds)
-
-> "So: a 1940s telephone-noise formula becomes a modern training objective. It's
-> validated to within 5% of exact crossing counts, it's grid-free, FFT-free,
-> robust to target noise, ties the state of the art on photos, beats it on
-> texture, composes with better architectures, and we published exactly where it
-> fails. Crossing counts are the *first* statistic from the level-set-geometry
-> toolbox — critical points, excursion-set topology, Euler characteristics are
-> sitting right behind it, and point-cloud SDFs are the obvious next target,
-> because there a grid never existed in the first place."
-
-### 2.7 Hard questions you will get, and the answers
-
-**"Why not just always use Sobolev? It won or tied everywhere off-grid."**
-Fair — on PSNR it did. But its accuracy tracks gradient-target quality (the
-oracle experiment proves it), it carries the same finite-difference bias that
-cost −10 dB on grids, and on SIREN, ours edged it (21.59 vs 21.50). When your
-gradient estimates are trustworthy, use Sobolev; when they're garbage — point
-clouds, sparse sensors — the distributional loss doesn't care. That's the
-decision rule the paper supports.
-
-**"Isn't L=16 numbers per batch a laughably weak learning signal?"**
-Yes, deliberately. Weak = robust; that's one tradeoff, not two facts. It's an
-auxiliary drive, not a standalone objective — MSE supplies location, we supply
-'how much detail should exist'. And empirically 16 numbers per batch moved
-reconstructions by +2.3 dB, so 'weak' is doing a lot of work.
-
-**"Couldn't the network cheat — add fake wiggles anywhere to inflate crossings?"**
-The MSE anchor punishes wiggles in wrong places; the crossing target is per-level,
-so surplus at one gray level doesn't pay for deficit at another; and the
-oracle-vs-estimated result shows the failure mode runs the other way — demand
-*more* crossings than MSE can place (sharper targets) and quality drops slightly.
-
-**"How sensitive is the bandwidth ε?" (the KDE question)**
-Wide plateau: anything ≥ 0.15·σ of the signal values works identically; only
-starving the kernel (0.05σ) hurts, because most batch points stop contributing
-gradient. L saturates at 16 levels; β tolerates a 20× range because of the
-relative normalization. All swept in the paper.
-
-**"Gaussianity is fake for images. Doesn't that sink the theory?"**
-The Gaussian Rice formula is *motivation*; the loss stands on the co-area
-formula, which is deterministic and assumption-free, plus an *empirical* target —
-we match the ground truth's measured crossing profile, never the Gaussian
-prediction. The validation figure shows the estimator tracking exact counts even
-where the field is visibly non-Gaussian.
-
-**"Cost?"**
-2.1× an MSE iteration (double backprop through the gradient norm) — same as
-Sobolev, benchmark script in the repo. FFL is cheaper per iteration but needs
-the grid.
-
-**"Why does it lose on natural images? Give me the mechanism."**
-Natural images are edge-dominated: their detail is *localized*, phase-critical
-structure. Our statistic pools over space, so it can't tell the network where the
-edge mass goes — FFL's full spectrum and Sobolev's pointwise targets carry more
-constraint per batch on that content. On statistically homogeneous content the
-pooling loses nothing — and we win there. Content-dependence isn't an excuse;
-it's the theory's own prediction about its domain of validity.
-
-**"What would change your mind / what's next?"**
-Point-cloud SDFs (no grid ever exists — the structural advantage should finally
-bind), scheduled crossing targets that inject prior spectral knowledge instead of
-re-encoding sample information (that's how you might break the interpolation
-ceiling), and richer level-set statistics than crossing counts.
-
-### 2.8 Cheat sheet — the five numbers to remember
-
-| Fact | Number |
+| Claim | Number |
 |---|---|
-| Estimator accuracy vs exact counts | within 5% |
-| Scattered image: aux-loss gain over MSE-only | +2.3 to +3.0 dB (PE-MLP) |
-| Ours vs FFL on natural image (scattered) | −0.2 to −0.5 dB PSNR, +SSIM: a tie |
-| Ours vs FFL on texture | **+0.6 dB (we win)** |
-| Oracle gradients: Sobolev vs ours | Sobolev +0.2 dB, ours ±0 (robustness) |
+| P1 estimator vs exact crossing counts / Rice | within 5% / 10% |
+| P1 scattered-image gain over plain MSE | +2.3–3.0 dB (ReLU-PE), +1.4–1.8 (SIREN) |
+| P1 vs Focal Frequency Loss on photos | −0.2 to −0.5 dB PSNR, better SSIM: a tie |
+| P1 on texture (theory's home turf) | **+0.6 dB win**, above the interpolation ceiling |
+| P1 oracle-gradient test | Sobolev improves (+0.2), ours doesn't need it (−0.3) |
+| P2 vanilla PINN failure (front / chaotic) | rel-L2 0.867±0.016 / 1.31 — always UNDER-oscillating |
+| P2 budget inertness | one seed bit-identical (0.8617398766); shifts ≤0.016 elsewhere |
+| P2 in-vitro clamp | crossings 3.4–4.3 → 2.6–2.7 (budget 3.0), test error −15 to −41% |
+| P3 χ estimator accuracy | 1–3% (annulus 0.018±0.015; solid torus 0.016±0.042 — both want 0) |
+| P3 cost vs persistent homology | ~3 ms vs 650–1000 ms per iteration ≈ **250×** |
+| P3 2D repair quartet | ours 3/3; smoothing 2/3 at **11–17×** fidelity cost; χ-alone 0/3 |
+| P3 3D verdict | ours 0/9 + ~1.7×10⁵ spurious features; PH 4/9 exact, median b₁ error 1 |
+| P3 the null-space receipt | debris invariant across 8k/16k/32k samples; closing needs ~10⁶ (cubic) |
+
+## 2.4 Hard questions you WILL get, with the honest answers
+
+**"Nothing here beats state of the art. Why should Anthropic care?"**
+Two answers. Substantively: a validated 250×-cheaper topology measurement, a
+grid-free detail loss that ties SOTA, and a PINN failure-mode diagnostic are real
+tools with mapped domains — "tie at much lower structural requirements" is a
+result practitioners use. Epistemically: three pre-registered studies where I
+reported two hypothesis failures in the abstracts, reproduced a published
+baseline that didn't behave as published and said so carefully, and caught my own
+metric being gamed by my own optimizer. If you're hiring people to evaluate AI
+systems that will try to look good under measurement, that last skill is the job.
+
+**"Isn't Paper 3's failure just... a bug you could fix?"**
+No — it's structural, and we falsified the easy fixes on camera: 4× sampling
+(debris invariant), stronger physics constraints, bandwidth-limited networks. The
+estimator has a null space; closing it costs cubically. What WOULD work is
+changing the measurement (importance sampling near level sets, hybrid sparse-PH
+correction steps) — listed as open, untested, unclaimed.
+
+**"Why did the PINN disease not appear? Are you saying the ASPEN authors are wrong?"**
+Carefully: no. We matched their published configuration in every documented
+detail, tried two input conventions, two testbeds, and their full training depth
+— and always got the *propagation* failure (accurate early, drifts late), never
+oscillation. Failure-mode selection in PINNs is implementation-sensitive
+(initialization, precision, framework defaults). That's exactly why the paper
+ships a one-plot diagnostic: check which branch YOUR stack is on before buying a
+stabilizer aimed at the other one.
+
+**"Why is crossing density robust where gradient-matching isn't?" (P1's best mechanism)**
+Sobolev consumes gradient targets *pointwise* — its accuracy tracks target
+quality, proven by the oracle test. Ours consumes only their *batch statistics* —
+pointwise noise averages out. Same reason it wins on texture (statistically
+homogeneous = the stationary-random-field regime where Rice's formula is exact)
+and merely ties on edge-dominated photos (localized, phase-critical structure a
+distributional statistic can't place).
+
+**"What does the Goodhart result actually generalize to?"**
+The precise claim: any differentiable objective evaluated by sampling has a null
+space below its sampling density, and optimization pressure reliably finds it —
+we showed the violation doesn't shrink, it *relocates*. The measured antidotes:
+(a) measurements without null spaces (PH's grid — expensive), (b) pricing the
+cheat channels (the vector rule — our M₁ guard worked exactly until the debris
+dropped below ITS sampling too). For evaluating models that adapt to their
+evaluators, that's a concrete, quantitative case study.
+
+**"Rice formula assumes Gaussian processes. Images aren't Gaussian."**
+The Gaussian closed form is motivation only. The losses stand on the co-area
+formula — a deterministic identity for any Lipschitz field — and on *empirical*
+targets measured from the ground truth. The validation figure shows the estimator
+tracking exact counts precisely where the field is visibly non-Gaussian.
+
+**"How much of this did AI do?"**
+Own it: the program ran as human-directed, AI-executed research — spec and
+gates set up front, kill conditions enforced, every claim regenerable from raw
+logs by one script, and external review caught real errors that got fixed (a
+hand-computed ratio, an overselling abstract). It's a working demonstration of
+the workflow Anthropic says it wants to make safe and common.
+
+**"What would you do next?"**
+(1) Point-cloud SDFs for Paper 1's loss — the setting where no grid ever exists
+and the structural advantage must finally bind. (2) The 3D topology fix via
+measurement redesign: importance-sample the level sets, or hybrid cheap-Minkowski
+steps with sparse PH corrections. (3) The Goodhart testbed itself is reusable:
+sampled-objective null spaces as a benchmark for specification-gaming studies.
+
+## 2.5 If you only remember ten things
+
+1. Crossings per level = frequency content. Rice, 1944. No Fourier transform.
+2. Co-area formula = the engine: level-set size as a samplable, differentiable integral.
+3. Autograd makes 80-year-old integral geometry trainable. That's the whole trick.
+4. P1: ties the grid-based champion grid-free; wins on texture; robustness proven by the oracle test.
+5. P2: the cure works (in vitro), the disease didn't exist (in vivo) — published both, with a diagnostic.
+6. One P2 seed trained bit-identically with the loss on: the cleanest "provably harmless" receipt in the trilogy.
+7. P3: topology at 3 ms/step, validated to 1–3%, 250× cheaper than persistence.
+8. Four design rules, each bought with a documented failure: ladder, C², vector, sampling coverage.
+9. The 3D failure is the trilogy's biggest finding: **optimizers hunt null spaces** — measured, invariant to naive fixes.
+10. Two of three headline hypotheses failed, all three papers say so in the abstract — and that's the strongest line on the whiteboard.
+
+*Everything above regenerates from `github.com/gunnerhowe/Research` (kac-rice):
+tests, raw JSONs, one figure-script per paper.*
