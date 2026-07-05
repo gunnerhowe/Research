@@ -45,7 +45,7 @@ the full \emph{Minkowski vector} (the Euler characteristic alone is an alternati
 and is gamed by debris--hole cancellation; pricing perimeter closes the channel), and
 \emph{sampling-scale coverage}. In 2D, the resulting vector-valued cap is the only
 method in a controlled comparison that both repairs topology (3/3 seeds) and preserves
-signal fidelity---uniform smoothing repairs at $15$--$20\times$ the fidelity cost, and
+signal fidelity---uniform smoothing repairs at $11$--$17\times$ the fidelity cost, and
 the Euler term alone repairs nothing. In 3D neural-SDF fitting, however, we measure a
 failure mode we believe generalizes to any sampled soft topology objective: gradient
 descent adversarially concentrates topological noise \emph{below the sampling
@@ -195,8 +195,9 @@ affordably in 3D, and Section~\ref{sec:sdf} measures the consequence.
 A SIREN field is polluted with a spurious component, then repaired under an anchor on
 clean-signal samples plus one of four regularizers; ground truth topology is read from
 a $256^2$ grid, never from the estimator itself. Table~\ref{tab:exp9}: the anchor
-alone never repairs; Hessian smoothing repairs 2/3 but pays $15$--$20\times$ in
-fidelity when it does (it smears the signal along with the blob); the $\chi$-cap alone
+alone never repairs; Hessian smoothing repairs 2/3 but pays $11$--$17\times$ in
+fidelity when it does (same-seed MSE ratios $17.0$ and $11.5$; it smears the signal
+along with the blob); the $\chi$-cap alone
 repairs 0/3 (Rule~3's cancellation, observed on every seed); the vector cap repairs
 \textbf{3/3} with the best or near-best fidelity throughout, and drives the spurious
 region below the lowest probed level. In 2D---where $12$k samples resolve everything a
@@ -237,8 +238,11 @@ iterations; its topo cost is per-iteration.}
 \paragraph{Result.} In the hard regime every method fails topologically---including
 PH (1/12)---establishing that the benchmark is genuinely difficult. In the matched
 regime PH separates: 4/9 exact (3/3 on the sphere) with median $b_1$ error 1. Our
-vector match does not merely fail there; it fails \emph{spectacularly}, with
-$\sim$$7\times10^4$ spurious features at the $96^3$ evaluation.
+vector match does not merely fail there; it fails \emph{spectacularly}. Throughout,
+``spurious features'' means the summed Betti excess $b_0{+}b_1{+}b_2$ over ground
+truth at the $96^3$ evaluation: the vector match accumulates $\sim$$1.7\times10^5$ in
+total, of which $\sim$$7\times10^4$ are components ($b_0$) and the table's median
+$b_1$ error alone exceeds $9\times10^4$---one field, three views of the same debris.
 
 \paragraph{Diagnosis: the null space is found, not stumbled into.} Three facts
 localize the mechanism. First, the debris is loss-induced: Eikonal-only runs show
@@ -274,8 +278,13 @@ inference \citep{marsh2022sect}; differentiable Minkowski surrogates exist for p
 grids via relaxed morphology \citep{minkloss2026}. Topology control for implicit
 surfaces is dominated by persistence \citep{stitch2024,dong2022topologycad}.
 Curvature-based (non-topological) energies for neural SDFs include the Eikonal term
-\citep{gropp2020igr} and zero-Gaussian-curvature CAD priors \citep{neurcadrecon2024}.
-The co-area/Gauss--Bonnet Monte-Carlo route for \emph{continuous neural fields at
+\citep{gropp2020igr}, its divergence-stabilized refinement \citep{yang2023steik}, and
+zero-Gaussian-curvature CAD priors \citep{neurcadrecon2024}. On the theory side, the
+\emph{expected} Minkowski functionals of Gaussian-related fields are the subject of
+the Gaussian kinematic formula \citep{adler2007random,azais2009level}---the same
+random-field-theory lineage as the Rice formula that seeded this program; our
+estimators are its deterministic, per-field, trainable counterpart. The
+co-area/Gauss--Bonnet Monte-Carlo route for \emph{continuous neural fields at
 scattered points}, and its use as a training loss, is to our knowledge new here---as
 is the negative half of its characterization. The estimators extend the Kac--Rice
 program of \citep{howe2026levelcrossing,howe2026budget}, whose $M_1$ machinery this

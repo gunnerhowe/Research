@@ -20,7 +20,7 @@
   3. VECTOR ANTI-GOODHART: chi alone gamed by debris (4 comps + 3 holes = chi 1);
      M1 (perimeter) budget prices out cancellation -> honest deletion.
 - exp9 (3 seeds) FINAL: anchor_only 0/3 repaired; smooth_null 2/3 but fidelity
-  0.053-0.062 in its successes (~15-20x worse); chi_only 0/3 (Goodhart); vector_cap
+  0.053-0.062 in its successes (~11-17x (per-seed: 17.0, 11.5) worse); chi_only 0/3 (Goodhart); vector_cap
   3/3, spur<=0.110, mse 0.003-0.005. JSON: results/phase3/exp9.json.
 - exp10 RUNNING (GPU, tag _full, 3000 iters, ph_loss at 1500): smoke numbers:
   topo cost ours 2.8-3.1 ms/it vs PH (gudhi 48^3) 926-1072 ms/it => ~340x.
@@ -94,3 +94,4 @@
   All JSONs final: results/phase3/{exp9,exp10_full,exp10_bw,exp10_scal32}.json
   (glob exp9*.json / exp10*.json; dedup by (shape,config,seed,iters,omega,n_dom)).
   Regime labels: _full=omega15/eik0.1/8k, _bw=omega8/eik1.0/16k, _scal32=32k.
+
