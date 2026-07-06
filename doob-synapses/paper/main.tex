@@ -446,6 +446,49 @@ exponent \SiliconNumSendsExp) --- the on-chip effective-noise knob.}
 \label{fig:silicon}
 \end{figure}
 
+\subsection{E6 --- the hardware-faithful forward-noise realization}\label{sec:forward}
+
+Sections \ref{sec:gatef}--\ref{sec:bss2} inject the diffusion on the weights. On
+analog silicon the intrinsic noise is not on the stored weight but in the
+\emph{multiply-accumulate} --- the forward pass, and hence the gradient, is noisy.
+We therefore test the mechanism in that realization: Gaussian noise on the
+pre-activations, a stand-in for the analog MAC noise (Fig.~\ref{fig:forward}).
+
+\textbf{The mechanism survives, and it is the same signature.} With forward noise,
+the barrier-conditioned rule is \FwdDoobWord\ (lift \FwdDoobLiftPts\ pts at
+$\sigstar=\FwdDoobSigStar$, paired Wilcoxon $p=\FwdDoobP$, \NumSeeds\ seeds), while
+the matched OU control is flat (\FwdOuLiftPts\ pts; Fig.~\ref{fig:forward}a). The
+noise the chip provides for free is the right kind of noise.
+
+\textbf{One stability fix is load-bearing.} Porting to hardware first failed: the
+diagonal-Fisher importance is heavy-tailed, so the anchored drift blows the weights
+up and both methods collapse to chance. Normalizing and \emph{clamping} the
+importance fixes it; without the clamp, retention is a flat \FwdNoclampRet\ (chance)
+at every noise level (Fig.~\ref{fig:forward}a, dotted), with the clamp it recovers to
+\FwdClampRetPeak. We report this because it is the difference between the mechanism
+working on device and not.
+
+\textbf{The optimum is tunable to the device.} The retention optimum's noise level
+is set by the Doob-steering coupling: increasing it moves $\sigstar$ down to
+\FwdMinSigStar\ (Fig.~\ref{fig:forward}b), i.e.\ into the few-percent-CV band the
+measured BSS-2 noise occupies (\S\ref{sec:silicon}). So the mechanism does not
+require a specific noise amplitude --- it can be matched to a given chip's intrinsic
+noise. This is what makes an on-chip realization reachable in principle; carrying it
+out (hardware-in-the-loop training with measured retention and joules) remains the
+open step.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{figs/fig8_forward.pdf}
+\caption{\textbf{Forward-noise (hardware-faithful) realization.} (a) With noise in
+the forward pass, Doob is \FwdDoobWord\ (lift \FwdDoobLiftPts\ pts, $p=\FwdDoobP$)
+and OU is flat; \emph{without} the importance clamp both collapse to chance (dotted).
+(b) The Doob-steering coupling tunes the retention optimum down to $\sigstar=$
+\FwdMinSigStar\ --- into the device-reachable noise band (shaded) --- so the
+mechanism is portable to a given chip's intrinsic-noise level.}
+\label{fig:forward}
+\end{figure}
+
 \section{What we do not claim}
 
 \begin{itemize}\itemsep2pt

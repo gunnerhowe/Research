@@ -280,9 +280,42 @@ def fig7_silicon():
     save(fig, "fig7_silicon")
 
 
+def fig8_forward():
+    e6 = load("exp6_forward.json")
+    if not e6:
+        return
+    sig = e6["config"]["sigmas"]
+    fig, axes = plt.subplots(1, 2, figsize=(8.4, 3.5))
+    # (a) forward-noise inverted-U + clamp ablation
+    ax = axes[0]
+    d = e6["forward"]["doob"]; o = e6["forward"]["ou"]
+    _band(ax, sig, d["retention_mean"], d["retention_sd"], C["doob"], "Doob (ours)", lw=2.4)
+    _band(ax, sig, o["retention_mean"], o["retention_sd"], C["ou"], "OU (control)")
+    nc = e6["clamp_ablation"]["noclamp"]["retention_mean"]
+    ax.plot(sig, nc, ":", color="#999999", label="Doob, no clamp (collapses)")
+    ax.set_xlabel("forward (activation / MAC) noise $\\sigma$")
+    ax.set_ylabel("retention")
+    ax.set_title("(a) mechanism survives forward noise\n(the hardware-relevant case)")
+    ax.legend(fontsize=7)
+    # (b) coupling tunes the optimum to reachable noise
+    ax = axes[1]
+    lo = e6["config"]["low_sigmas"]; cs = e6["coupling_scan"]
+    cols = plt.cm.viridis(np.linspace(0.15, 0.85, len(cs)))
+    for (k, dd), col in zip(sorted(cs.items(), key=lambda kv: float(kv[0])), cols):
+        ax.plot(lo, dd["retention_mean"], "-o", ms=3, color=col,
+                label=f"$\\kappa$-coupling={k} ($\\sigma^*$={dd['sigma_star']:g})")
+        ax.axvline(dd["sigma_star"], color=col, ls=":", lw=0.7, alpha=0.6)
+    ax.axvspan(0.02, 0.12, color="#e07a00", alpha=0.12)
+    ax.set_xlabel("forward noise $\\sigma$ (device-reachable band shaded)")
+    ax.set_ylabel("retention")
+    ax.set_title("(b) coupling tunes the optimum\nto the chip's noise level")
+    ax.legend(fontsize=7)
+    save(fig, "fig8_forward")
+
+
 def main():
     fig1_gate_f(); fig2_isolation(); fig3_bss2()
-    fig4_baselines(); fig5_modality(); fig6_mechanism(); fig7_silicon()
+    fig4_baselines(); fig5_modality(); fig6_mechanism(); fig7_silicon(); fig8_forward()
 
 
 if __name__ == "__main__":

@@ -122,6 +122,27 @@ try:
 except FileNotFoundError:
     pass
 
+# ------------------------------------------------------------------ E6 forward realization
+try:
+    e6 = load("exp6_forward.json")
+    fd = e6["forward"]["doob"]["inverted_u"]
+    fo = e6["forward"]["ou"]["inverted_u"]
+    macro("FwdDoobLiftPts", pts(fd["lift_over_zero"]))
+    macro("FwdDoobSigStar", g(fd["sigma_star"]))
+    macro("FwdDoobP", num(fd["p_peak_gt_zero"], 3))
+    macro("FwdDoobWord", "an inverted-U" if fd["inverted_u"] else "monotone")
+    macro("FwdOuLiftPts", pts(fo["lift_over_zero"]))
+    macro("FwdNoclampRet", num(e6["clamp_ablation"]["noclamp"]["retention_mean"][0], 3))
+    macro("FwdClampRetPeak", num(max(e6["clamp_ablation"]["clamp"]["retention_mean"]), 3))
+    cs = e6["coupling_scan"]
+    macro("FwdMinSigStar", g(min(cs[k]["sigma_star"] for k in cs)))
+    kbest = max(cs, key=lambda k: cs[k]["lift"])
+    macro("FwdBestCoupling", g(float(kbest)))
+    macro("FwdBestCouplingLiftPts", pts(cs[kbest]["lift"]))
+    macro("FwdBestCouplingSigStar", g(cs[kbest]["sigma_star"]))
+except FileNotFoundError:
+    pass
+
 # ------------------------------------------------------------------ emit
 lines = [f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(M.items())]
 OUT.write_text("\n".join(lines) + "\n")

@@ -56,6 +56,14 @@ whole paper rests on (a) AND (b).
       "What we do not claim" (drift, emulation-not-silicon, benefit-only-at-optimum,
       replay); Limitations; Reproducibility (DOI at submission)
 
+- [x] E6 FORWARD-noise realization (hardware-faithful): with the intrinsic noise in
+      the MAC/forward pass (not injected on weights), the mechanism SURVIVES --
+      doob inverted-U (+12.9 pts, sig*=0.6, p=0.004, 8 seeds), ou flat. The
+      importance CLAMP is load-bearing: without it both collapse to chance (0.494) --
+      this was the on-hardware-port failure mode. The Doob-steering coupling tunes
+      the optimum down to sig*=0.05 (few-% CV, the measured BSS-2 noise band), so the
+      mechanism is portable to a given chip's intrinsic-noise level.
+
 **Outcome: POSITIVE; K2 first half now resolved on real silicon.** The conjunction
 (a)+(b) holds in simulation and in an emulation calibrated to MEASURED BrainScaleS-2
 noise; isolated to the barrier conditioning. The intrinsic device noise was measured
