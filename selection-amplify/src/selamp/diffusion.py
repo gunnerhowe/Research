@@ -31,6 +31,7 @@ class _ScoreMLP(nn.Module):
     def __init__(self, d=2, n_classes=2, tdim=64, cdim=32, hidden=128, depth=3):
         super().__init__()
         self.tdim = tdim
+        self.d = d
         self.cls = nn.Embedding(n_classes, cdim)
         layers, di = [], d + tdim + cdim
         for _ in range(depth):
@@ -46,15 +47,17 @@ class _ScoreMLP(nn.Module):
 
 
 class Diffusion:
-    def __init__(self, T=200, n_classes=2, hidden=128, depth=3, device=DEVICE):
+    def __init__(self, T=200, n_classes=2, hidden=128, depth=3, d=2,
+                 device=DEVICE):
         self.T = T
         self.device = device
         self.n_classes = n_classes
+        self.d = d
         betas = torch.tensor(_cosine_abar(T), dtype=torch.float32, device=device)
         self.betas = betas
         self.alphas = 1 - betas
         self.abar = torch.cumprod(self.alphas, 0)
-        self.model = _ScoreMLP(2, n_classes, hidden=hidden, depth=depth).to(device)
+        self.model = _ScoreMLP(d, n_classes, hidden=hidden, depth=depth).to(device)
         self._mu = None
         self._sd = None
 
@@ -114,7 +117,7 @@ class Diffusion:
         """Unconditional (unguided) ancestral sampling for class y_class.
         temperature>1 broadens the reverse noise (the B2-diversity knob)."""
         g = torch.Generator(device=self.device).manual_seed(seed)
-        z = torch.randn(n, 2, device=self.device, generator=g)
+        z = torch.randn(n, self.d, device=self.device, generator=g)
         y = torch.full((n,), y_class, device=self.device, dtype=torch.long)
         for i in reversed(range(self.T)):
             eps = self.eps(z, i, y)

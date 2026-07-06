@@ -31,9 +31,9 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class _MLP(nn.Module):
-    def __init__(self, hidden=64, depth=2):
+    def __init__(self, hidden=64, depth=2, in_dim=2):
         super().__init__()
-        layers, d = [], 2
+        layers, d = [], in_dim
         for _ in range(depth):
             layers += [nn.Linear(d, hidden), nn.SiLU()]
             d = hidden
@@ -66,6 +66,7 @@ class SelectionEstimator:
     def fit(self, X_obs, X_ref, obs_frac, seed=0):
         self.obs_frac = float(np.clip(obs_frac, 1e-3, 1 - 1e-3))
         self._obs_tree = cKDTree(X_obs)
+        self.in_dim = X_ref.shape[1]
         # standardize inputs on the reference pool (full support)
         self._mu = X_ref.mean(0)
         self._sd = X_ref.std(0) + 1e-8
@@ -103,7 +104,7 @@ class SelectionEstimator:
 
         Xtr_t = torch.tensor(Xtr, dtype=torch.float32, device=self.device)
         ytr_t = torch.tensor(ytr, dtype=torch.float32, device=self.device)
-        model = _MLP(self.hidden, self.depth).to(self.device)
+        model = _MLP(self.hidden, self.depth, in_dim=self.in_dim).to(self.device)
         opt = torch.optim.Adam(model.parameters(), lr=self.lr,
                                weight_decay=self.wd)
         lossf = nn.BCEWithLogitsLoss()

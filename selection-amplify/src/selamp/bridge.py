@@ -67,10 +67,10 @@ def guided_sample(diffusion, selector, gate_kde, y_class, n, cfg: RewardConfig,
     """
     dev = diffusion.device
     g = torch.Generator(device=dev).manual_seed(seed)
-    z = torch.randn(n, 2, device=dev, generator=g)
+    z = torch.randn(n, diffusion.d, device=dev, generator=g)
     y = torch.full((n,), y_class, device=dev, dtype=torch.long)
     mu = torch.tensor(selector._mu, dtype=torch.float32, device=dev)
-    R = _rot(cfg.rotate_deg, dev)
+    R = _rot(cfg.rotate_deg, dev) if diffusion.d == 2 else None
 
     diag = BridgeDiag()
     gn_acc, bn_acc, cap_acc = [], [], 0.0
@@ -128,7 +128,7 @@ def _guidance_eps(diffusion, selector, gate_kde, z, eps, i, mu, R, cfg, decoy):
 
     # --- selection term (the decoyable direction) ---
     x_sel = x0
-    if decoy == "rotate":
+    if decoy == "rotate" and R is not None:
         x_sel = (x0 - mu) @ R.T + mu
     s_hat = selector.s_hat_torch(x_sel).clamp(1e-4, 1 - 1e-4)
     sel_term = s_hat if decoy == "negate" else (1 - s_hat)
