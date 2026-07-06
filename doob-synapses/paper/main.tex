@@ -48,8 +48,11 @@ zero noise and vs.\ high noise), while the matched OU, EWC and MESU anchors are
 monotone-decreasing in noise. Ablating the conditioning removes the effect; the
 optimum tracks the barrier; the inverted-U survives a device-faithful
 BrainScaleS-2 noise model (colored, multiplicative, fixed-pattern, $6$-bit) and
-reproduces on a second task stream. At its optimum the rule is the strongest
-\emph{rehearsal-free} consolidation method we test --- matching MESU and
+reproduces on a second task stream. It also survives the hardware-faithful
+realization in which the noise enters the forward pass (the analog MAC) rather than
+the weights, with the retention optimum \emph{tunable} to a device's few-percent
+intrinsic noise. At its optimum the rule is the strongest \emph{rehearsal-free}
+consolidation method we test --- matching MESU and
 significantly beating OU, EWC and Benna--Fusi; plain replay, which stores data,
 scores higher but exhibits none of the mechanism. We further \emph{measure} the
 intrinsic noise on real BrainScaleS-2 silicon (chip \SiliconChip): it is additive,
