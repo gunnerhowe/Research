@@ -97,6 +97,26 @@ def make_noise_model(model, params: Bss2NoiseParams, device, seed=0):
     return Bss2NoiseModel(shapes, params, device, seed=seed)
 
 
+def measured_bss2_params():
+    """Noise-model parameters set from the ON-SILICON measurement (chip
+    hxcube7fpga3chip61_1; results/bss2_silicon_noise.json). What the chip's
+    intrinsic analog-MAC noise actually looks like:
+      * ADDITIVE-dominant: trial-to-trial std ~ signal-independent (~1.2 output
+        units over an 8x signal range) -> multiplicative fraction ~6% at mid
+        signal, so `multiplicative` is small.
+      * WHITE at the update timescale: batched-repeat noise == separate-call noise
+        (independent hardware integrations) -> `color` ~ 0.
+      * Gaussian CADC readout; 6-bit weights.
+      * static fixed-pattern comparable to the temporal noise (absorbed by
+        training; kept modest here).
+    num_sends averages the RELATIVE noise as ~1/sqrt(num_sends) (measured
+    exponent ~0.48), i.e. num_sends is the on-chip effective-noise knob and
+    num_sends=1 is the intrinsic-noise ceiling (CV up to ~12%). This preset makes
+    the E2 emulation reflect the real device rather than assumed parameters."""
+    return Bss2NoiseParams(color=0.0, multiplicative=0.1, fixed_pattern=0.4,
+                           weight_bits=6)
+
+
 # --------------------------------------------------------------------------- #
 #  (2) Real-hardware port hooks (require the BSS-2 software stack)             #
 # --------------------------------------------------------------------------- #

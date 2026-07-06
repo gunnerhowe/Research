@@ -21,9 +21,13 @@ Doob barrier-conditioning as a synaptic rule and (b) the inverted-U. See
   anchors are monotone-decreasing in noise.
 - **Mechanism isolation:** ablating the conditioning removes the effect; the
   optimum tracks the barrier.
-- **BSS-2:** the inverted-U survives a device-faithful noise **emulation** (colored,
-  multiplicative, fixed-pattern, 6-bit). **No silicon is measured** — the on-chip
-  run is the pre-registered remaining step (K2).
+- **BSS-2 emulation:** the inverted-U survives a device-faithful noise emulation
+  (colored, multiplicative, fixed-pattern, 6-bit).
+- **BSS-2 silicon:** the chip's intrinsic MAC noise was **measured on real
+  BrainScaleS-2** (via EBRAINS; `results/bss2_silicon_noise.json`) — additive,
+  white, CV 1.6–12%, `num_sends` averages as 1/√N. The emulation re-calibrated to
+  the measurement keeps the inverted-U. On-chip **training** (measured retention +
+  joules) is the remaining step (K2).
 - **Second modality:** reproduces on continual Yin-Yang.
 
 ## Layout

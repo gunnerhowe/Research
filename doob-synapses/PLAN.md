@@ -37,7 +37,15 @@ whole paper rests on (a) AND (b).
 - [x] E1 isolation **PASS**: kappa 1->0 flattens (lift 13.0->0.0 pts, U vanishes);
       sigma* tracks barrier_scale. K3 does not fire.
 - [x] E2 BSS-2 EMULATION: inverted-U **survives** (lift 11.0 pts) at every noise
-      color rho in {0,0.3,0.6,0.9}. Real silicon = pending (K2); no joules claimed.
+      color rho in {0,0.3,0.6,0.9}.
+- [x] E5 ON-SILICON noise MEASURED (chip hxcube7fpga3chip61_1, EBRAINS-25.10):
+      intrinsic MAC noise is **additive** (94.6%, trial-std ~1.24 output units,
+      signal-independent), **white** (independent integrations), CV 1.6-12%,
+      num_sends averages as ~1/sqrt(N) (exponent 0.47). Emulation re-calibrated to
+      the measurement -> inverted-U **survives** (lift 13.2 pts). K2 first half
+      (noise structure/scale) RESOLVED positive. On-chip TRAINING (retention +
+      joules) = the remaining step (K2 second half); no on-chip retention/joules
+      claimed.
 - [x] E3 baselines: doob* = best REHEARSAL-FREE method (68.3%); ties MESU (65.2%,
       p=0.25), beats OU/EWC/Benna-Fusi/naive (p<=0.008). **Replay (stores data)
       beats us (83.0%)** -- reported openly, different budget class, no mechanism.
@@ -48,11 +56,15 @@ whole paper rests on (a) AND (b).
       "What we do not claim" (drift, emulation-not-silicon, benefit-only-at-optimum,
       replay); Limitations; Reproducibility (DOI at submission)
 
-**Outcome: POSITIVE with two honest caveats.** The conjunction (a)+(b) holds in
-simulation and device-faithful emulation; isolated to the barrier conditioning. The
-two caveats stated up front: (i) BSS-2 is EMULATION, not measured silicon (K2 open);
-(ii) plain replay out-retains us -- our standing is among rehearsal-free methods and
-our contribution is the mechanism/signature, not a retention SOTA.
+**Outcome: POSITIVE; K2 first half now resolved on real silicon.** The conjunction
+(a)+(b) holds in simulation and in an emulation calibrated to MEASURED BrainScaleS-2
+noise; isolated to the barrier conditioning. The intrinsic device noise was measured
+on-chip and is the benign (additive/white) class the mechanism needs, at a reachable
+amplitude. Two honest caveats remain: (i) we measured the noise but did NOT train
+the network on-chip -- the on-silicon retention curve + joules are the remaining
+step (K2 second half); (ii) plain replay out-retains us -- our standing is among
+rehearsal-free methods and our contribution is the mechanism/signature, not a
+retention SOTA.
 
 ## Fixed numerical conventions (pre-registered)
 
@@ -191,6 +203,21 @@ our contribution is the mechanism/signature, not a retention SOTA.
   plasticity is roughly noise-INSENSITIVE and the retention inverted-U coincides with
   a FORGETTING MINIMUM at sigma* (not a plasticity/protection tradeoff). Prose and
   caption were corrected to the forgetting-minimum reading before the results commit.
+
+- 2026-07-06 (E5 added -- ON-SILICON noise measured; author gained BSS-2 access
+  mid-project). Ran hxtorch.perceptron.matmul on real BrainScaleS-2 (EBRAINS,
+  lab.jsc.ebrains.eu, EBRAINS-25.10 kernel, stable quiggeldy servers, chip
+  hxcube7fpga3chip61_1, hagen ebrains-stable calibration; 128 repeats/point).
+  Access notes for reproduction: the EBRAINS-experimental kernel + experimental
+  quiggeldy servers were mutually version-skewed (hwdb ZeroMockEntry
+  deserialization error); the working combination is a STABLE release kernel
+  (25.10) pointed at the STABLE quiggeldy CSV (quiggeldy_setups.csv, not
+  _experimental) with the per-chip ebrains-stable hagen calibration downloaded
+  from openproject.bioai.eu. Result: intrinsic MAC noise is additive (94.6%),
+  white, CV 1.6-12%, num_sends ~ 1/sqrt(N). This is the noise class the mechanism
+  needs; E2 re-calibrated to it keeps the inverted-U (lift 13.2 pts). K2 first half
+  resolved. On-chip training (retention + joules) remains. bss2.py
+  measured_bss2_params() and results/bss2_silicon_noise.json record the measurement.
 
 ## Recency re-sweep log
 

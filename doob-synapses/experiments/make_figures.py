@@ -248,9 +248,41 @@ def fig6_mechanism():
     save(fig, "fig6_mechanism")
 
 
+def fig7_silicon():
+    sil, e5 = load("bss2_silicon_noise.json"), load("exp5_silicon.json")
+    if not sil:
+        return
+    fig, axes = plt.subplots(1, 2, figsize=(8.4, 3.5))
+    # (a) trial_std (additive) and CV vs signal
+    ax = axes[0]
+    s = sil["noise_vs_signal"]["signal"]
+    ts = sil["noise_vs_signal"]["trial_std"]
+    cv = sil["noise_vs_signal"]["cv"]
+    ax.plot(s, ts, "o-", color=C["bss2"], label="trial-to-trial std")
+    ax.set_xlabel("MAC signal (output units)")
+    ax.set_ylabel("intrinsic noise std", color=C["bss2"])
+    ax.set_ylim(0, max(ts) * 1.6)
+    ax2 = ax.twinx(); ax2.plot(s, [100 * c for c in cv], "s--", color=C["doob"], label="CV")
+    ax2.set_ylabel("CV (%)", color=C["doob"]); ax2.grid(False)
+    ax.set_title("(a) real BSS-2 noise is ADDITIVE\n(std flat vs signal; CV falls)")
+    # (b) CV vs num_sends (the averaging knob)
+    ax = axes[1]
+    ns = sil["noise_vs_num_sends"]["num_sends"]
+    cvn = [100 * c for c in sil["noise_vs_num_sends"]["cv"]]
+    ax.loglog(ns, cvn, "o-", color=C["bss2"], label="measured CV")
+    ref = [cvn[0] * (n / ns[0]) ** -0.5 for n in ns]
+    ax.loglog(ns, ref, "k:", label="$\\propto 1/\\sqrt{N}$")
+    p = e5["silicon_fit"]["num_sends_exponent"] if e5 else 0.5
+    ax.set_xlabel("num_sends $N$ (effective-noise knob)")
+    ax.set_ylabel("CV (%)")
+    ax.set_title(f"(b) num_sends averages the noise\n(measured exponent {p:.2f})")
+    ax.legend()
+    save(fig, "fig7_silicon")
+
+
 def main():
     fig1_gate_f(); fig2_isolation(); fig3_bss2()
-    fig4_baselines(); fig5_modality(); fig6_mechanism()
+    fig4_baselines(); fig5_modality(); fig6_mechanism(); fig7_silicon()
 
 
 if __name__ == "__main__":

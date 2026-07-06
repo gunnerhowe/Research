@@ -1,0 +1,20 @@
+{
+ "provenance": "Measured on real BrainScaleS-2 silicon via EBRAINS (lab.jsc.ebrains.eu), EBRAINS-25.10 kernel, stable quiggeldy servers. Chip hxcube7fpga3chip61_1, hagen (analog-MAC) calibration ebrains-stable. hxtorch.perceptron.matmul; 128 repeats per point; input value 15 on 100 active rows, 128 output neurons.",
+ "chip": "hxcube7fpga3chip61_1",
+ "measured": true,
+ "self_check": {"batched_trial_std": 1.182, "loop_trial_std": 1.262,
+   "note": "batched-repeat noise matches separate-call noise -> each repeat is an independent hardware integration"},
+ "noise_vs_signal": {
+  "weight":    [4,     8,     15,    21,    28,    35],
+  "signal":    [10.0,  19.5,  35.9,  50.5,  67.6,  82.5],
+  "trial_std": [1.201, 1.195, 1.235, 1.259, 1.253, 1.322],
+  "fixed_pat": [1.546, 1.738, 2.023, 2.567, 3.083, 3.580],
+  "cv":        [0.1197,0.0613,0.0344,0.0249,0.0185,0.0160]
+ },
+ "noise_vs_num_sends": {
+  "num_sends": [1,     2,     4,     8],
+  "signal":    [10.0,  19.6,  37.9,  70.2],
+  "trial_std": [1.200, 1.440, 2.063, 3.141],
+  "cv":        [0.1203,0.0736,0.0545,0.0447]
+ }
+}

@@ -102,6 +102,26 @@ macro("YYLiftPts", pts(yy["lift_over_zero"]))
 macro("YYSigStar", g(yy["sigma_star"]))
 macro("YYSurviveWord", "reproduces" if yy["inverted_u"] else "does not reproduce")
 
+# ------------------------------------------------------------------ E5 on-silicon
+try:
+    sil = load("bss2_silicon_noise.json")
+    e5 = load("exp5_silicon.json")
+    fit = e5["silicon_fit"]
+    macro("SiliconChip", sil["chip"].replace("_", "\\_"))
+    macro("SiliconAdditivePct", pct(fit["additive_frac_at_median"]))
+    macro("SiliconMultPct", pct(fit["mult_frac_at_median"]))
+    macro("SiliconCVMaxPct", pct(fit["cv_max"]))
+    macro("SiliconCVMinPct", pct(fit["cv_min"]))
+    macro("SiliconNumSendsExp", num(fit["num_sends_exponent"], 2))
+    macro("SiliconTrialStd", num(fit["trial_std_mean"], 2))
+    macro("SiliconRepeats", str(sil.get("config", {}).get("R", 128)))
+    siu = e5["measured_noise_sweep"]["inverted_u"]
+    macro("SiliconMeasLiftPts", pts(siu["lift_over_zero"]))
+    macro("SiliconMeasSigStar", g(siu["sigma_star"]))
+    macro("SiliconMeasWord", "survives" if siu["inverted_u"] else "does not survive")
+except FileNotFoundError:
+    pass
+
 # ------------------------------------------------------------------ emit
 lines = [f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(M.items())]
 OUT.write_text("\n".join(lines) + "\n")
