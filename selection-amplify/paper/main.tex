@@ -1,0 +1,230 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+
+\input{numbers}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\shat}{\hat s}
+\newcommand{\phat}{\hat p}
+\newcommand{\Dobs}{\mathcal{D}_{\mathrm{obs}}}
+\newcommand{\Dref}{\mathcal{D}_{\mathrm{ref}}}
+\newcommand{\Dfull}{\mathcal{D}_{\mathrm{full}}}
+\newcommand{\IOX}{I(O;X)}
+
+\title{Manufacturing the Censored Complement:\\
+Selection-Guided Generation Locates It but Does Not Beat Reweighting}
+
+\author{Gunner Levi Howe\\
+Independent Researcher\\
+\texttt{gunnerlevihowe@gmail.com}}
+
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{abstract_body}
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Real corpora are missing-not-at-random (MNAR). Curation, filtering, dedup, and
+the mere logistics of collection do not thin the input space uniformly: they
+\emph{censor} whole regions of it. A loan dataset never contains the applicants
+the bank declined; a labeled image set inherits whatever the scraper's filters
+let through; a curated pretraining mix systematically drops the styles, domains,
+and long-tail combinations a quality filter scores low. The field's default
+fixes for distribution shift --- importance weighting, covariate-shift
+adaptation, MAR imputation, and the econometric selection corrections that
+handle even selection on unobservables \citep{heckman1979,shimodaira2000,%
+sugiyama2007,swaminathan2015} --- share one structural limitation: they
+\emph{reweight or correct the observed points}. No reweighting scheme, however
+exact its propensities, can put probability mass where there are \emph{zero}
+observed samples. Where the corpus shows nothing, a reweighted estimator has
+nothing to upweight.
+
+This paper asks the complementary question: once you have estimated the
+selection mechanism, can you \emph{manufacture} the censored region rather than
+only reweight around it? We (1) \textbf{locate} the selection function
+$s(x)=P(\text{observed}\mid x)$ by density-ratio-via-classification, (2)
+\textbf{generate} whole new labeled units in the region the corpus implies but
+never shows, using a Doob-$h$-transform bridge whose guidance signal is the
+\emph{estimated selection propensity} itself, and (3) \textbf{characterize} the
+recoverable gain against the corpus's \emph{selection entropy}
+$\IOX$ --- the mutual information between the observation indicator and the
+covariate. Generation buys nothing under ignorable missingness ($\IOX\!\to\!0$)
+and buys a bounded, $\shat$-reliability-limited \emph{collar} of advantage
+beyond $1/\shat$ reweighting under strong MNAR.
+
+\paragraph{The distinguishing statement.}
+Prior MNAR/selection work either reweights estimates
+(Heckman/IPW/counterfactual-risk-minimization) or imputes labels for units whose
+features are \emph{already observed} (reject inference); prior guided-diffusion
+out-of-support generation is driven by classifiers, rewards, conditions, or the
+model's own likelihood. We are the only approach that uses an \emph{estimated
+selection function} to locate a never-observed feature-space region and a Doob
+bridge to \emph{synthesize whole new units} in the short-extrapolation collar of
+that region --- and we show that the advantage of this selection-targeting over
+identically-strong \emph{misdirected} guidance rises with the corpus's selection
+entropy. Selection entropy provably upper-bounds and vanishes with the
+achievable gain; the discriminating evidence is the method-minus-decoy gap, not
+the method's own curve.
+
+\paragraph{What this is and is not.} The honest contribution is a
+\emph{characterization}, not a clean theorem or a blowout over generic
+augmentation. Two load-bearing novelties carry it: (i) unit-level generation of
+a never-observed feature region located by an estimated selection function (as
+opposed to label imputation of observed units), and (ii) the
+method-minus-misdirected-guidance gap tracking selection entropy. We prove only
+the left end (the gain vanishes as $\IOX\!\to\!0$); the rise is empirical and,
+on its own, nearly trivial (more MNAR mechanically creates more test-shift
+headroom), which is exactly why our pre-registered discriminator is the
+method-minus-\emph{decoy} slope and not the method's own slope. We do not claim
+the synthetic go/no-go transfers to real corpora; the real-data rung is
+assumption-gated and reported as limits-characterization only.
+
+\input{results_intro}
+
+\section{Related work and the two load-bearing distinctions}
+\label{sec:related}
+
+\paragraph{Reweight / correct only (the baseline-to-beat, not prior art).}
+Heckman's selection model \citep{heckman1979,tobin1958}, inverse-probability
+weighting, counterfactual risk minimization \citep{swaminathan2015}, and modern
+censored-selection distribution regression \citep{distreg2025} all
+\emph{reweight the loss or correct inference}. They are the sharpest possible
+baseline for the observed support --- and structurally unable to fabricate a
+censored unit. Our $1/\shat$-reweighting baseline (B3) is exactly this family;
+the companion paper \citep{howe2026heckman} pushes the correction side to its
+limit for deep uncertainty. We ask what generation adds \emph{beyond} it.
+
+\paragraph{Impute the label for observed-feature units (feature/label-level).}
+Deep generative reject inference \citep{mancisidor2020}, RMT-style reject-aware
+correction \citep{rmtnet2022}, and MNAR imputation nets
+\citep{ipsen2021notmiwae,gnr2023} model the selection mechanism but impute the
+\emph{outcome or missing entries} for units whose \emph{features are already
+observed}. Recent reject-inference work even finds reported gains are often
+illusory \citep{rejectillusion2026}. The unit-level-vs-feature-level distinction
+is load-bearing: we generate whole units in a feature region with \emph{no}
+observed members, not labels for members already present.
+
+\paragraph{Out-of-support / low-density guided diffusion (nearest neighbor).}
+A active line steers diffusion into low-density or out-of-support regions
+\citep{selfguided2024,steinguidance2025,lowdensity2026,doobtrainingfree2026},
+including training-free Doob-$h$-transform adaptation \citep{doobtrainingfree2026}
+and self-guided minority generation whose signal is the model's \emph{own}
+likelihood \citep{selfguided2024}. These are the nearest neighbors on the
+generation side and are adjacent-distinguishable: the guidance is a classifier,
+a reward, a condition, or a self-likelihood --- never an \emph{estimated
+selection propensity}. That single substitution, guidance $=\,$estimated
+selection function, is the unoccupied move. We also cite bias-corrected minority
+synthesis \citep{biascorrsynth2025} to preempt pattern-matching: it
+distribution-matches within an existing minority class, with no selection model,
+no Doob bridge, and no entropy relationship.
+
+\section{Method}
+\label{sec:method}
+
+\paragraph{Setup.} A population $p(x)$ over $\R^2$ (Testbed-A) carries a binary
+label $y$. An MNAR selector $s_\beta(x)=\sigma(-\beta\,\phi(x))$, with $\phi$ a
+fixed feature standardized on the population, keeps each population draw with
+probability $s_\beta(x)$ to form the curated corpus $\Dobs$ (labeled). At
+$\beta{=}0$ the selector is a uniform $50\%$ thinning (MCAR, $\IOX{=}0$); as
+$\beta$ grows it censors the high-$\phi$ tail ever harder. A separate,
+uncensored, \emph{unlabeled} pool $\Dref\sim p(x)$ is the full-support reference
+cover --- an affordance we treat as available here and interrogate in
+\S\ref{sec:real}.
+
+\paragraph{(1) Locate: $\shat$ by density-ratio classification.}
+A calibrated $5$-member deep ensemble separates $\Dobs$ (label $1$) from $\Dref$
+(label $0$), trained balanced so the calibrated classifier $c(x)$ satisfies
+$c/(1-c)=p_{\mathrm{obs}}(x)/p(x)=s(x)/Z$ with $Z=\E_p[s]$ the known marginal
+selection rate; hence $\shat(x)=\mathrm{clip}\!\big(Z\,c(x)/(1-c(x)),0,1\big)$
+(the Sugiyama density-ratio reduction \citep{sugiyama2012}). \emph{The
+identifiability caveat is load-bearing.} In the deep censored region $\Dobs$ has
+zero points, so every member drives $c\!\to\!0$ by \emph{default} (reference-only)
+rather than by measurement, and $\shat$ there is off-support extrapolation.
+Members disagree about \emph{how} they extrapolate, so the epistemic uncertainty
+--- the ensemble standard deviation of the calibrated \emph{log-odds}, which
+unlike the std of $\shat$ does not saturate as $\shat\!\to\!0$ --- spikes there.
+The trustworthy region, the recoverable \textbf{collar}, is gated by
+$\{\phat\!\ge\!\tau\}$ (on-manifold) $\wedge$ $\{$proximity to observed
+support$\}$ $\wedge$ $\{$low log-odds uncertainty$\}$.
+
+\paragraph{(2) Generate: a Doob bridge steered by $1-\shat$.}
+A class-conditional DDPM base (score $s_\theta$) is trained on $\Dobs$. The
+reverse VP dynamics acquire an added drift $\gamma\,g^2\nabla_x\log h(x,t)$ with
+$h(x,t)=\E_{\text{base}}[r(x_0)\mid x_t]$ approximated by Tweedie/reconstruction
+guidance $h\approx r(\hat x_0(x_t,t))$, and the reward is the estimated selection
+propensity restricted to the manifold collar,
+\begin{equation}
+r(x_0) = \big(1-\shat(x_0)\big)\cdot\mathbf 1[\phat(x_0)\!\ge\!\tau]\cdot
+         \mathbf 1[u(x_0)\!\le\!u_{\max}]\cdot\mathbf 1[\text{prox}(x_0)\!\le\!d_{\max}].
+\label{eq:reward}
+\end{equation}
+The unoccupied move is $r\propto 1-\shat$: guidance $=$ estimated selection
+function. We state plainly that this is a \emph{biased guided approximation}, not
+exact Doob conditioning --- both reconstruction guidance and twisted SMC ride the
+same biased $r(\hat x_0)$ proxy. Because maximizing $1-\shat$ alone would march
+to low-$s$ \emph{and} low-$p$ garbage, five guards are mandatory: (i) the density
+gate inside the reward; (ii) \emph{low-$t$-only} guidance (query $\shat,\phat$
+only near the manifold, where $\hat x_0$ is not a blurry off-manifold average);
+(iii) a \emph{hard} density veto during sampling; (iv) a guidance-to-score norm
+clip $\le 1$; and (v) an \emph{independent} density${+}$nearest-neighbour
+validator (a different estimator on a fresh full-population pool) that scores
+every batch, with rejections reported as a diagnostic. Because the generator is
+class-conditional, each synthesized $x$ arrives with the label it was
+conditioned on: we manufacture whole \emph{labeled units}.
+
+\paragraph{The sharp control (false-GO catcher).} The discriminating baseline is
+a \emph{misdirected} selector at \emph{matched} guidance strength: the identical
+bridge, identical $\gamma$, identical manifold gates, with $\shat$ precomposed
+with a fixed rotation (a $90^\circ$ rotation in 2D; a random orthogonal rotation
+of the latent in higher dimensions). It holds the guidance machinery and the
+diversity injection fixed and varies \emph{only} whether guidance points at the
+real complement. Beating the selection-agnostic $\gamma{=}0$ sampler is not
+enough; the method must beat the matched-strength decoy.
+
+\paragraph{(3) Characterize: selection entropy.} The headline axis is the mutual
+information $\IOX=H_b(\E_p[s])-\E_p[H_b(s(X))]$ (bits), zero under ignorable
+missingness and an upper bound on the recoverable gain; we report the complement
+driver $D_{\mathrm{comp}}=\mathrm{KL}(p(x\mid O{=}0)\,\|\,p(x))$ alongside. We
+deliberately do \emph{not} use propensity-spread entropy $H(s(X))$ alone. The
+provable left end is a covariate-shift bound in the spirit of
+\citet{bendavid2010}: the recoverable gain is upper-bounded by a term that
+vanishes with $\IOX$, so under MCAR/MAR there is nothing to recover. The right
+end --- that the gain rises and is \emph{captured} by our method --- is empirical
+and, being nearly trivial on its own, is adjudicated only through the
+method-minus-decoy gap.
+
+\input{results_body}
+
+\section{Limitations --- what we do not claim}
+\label{sec:limits}
+\input{limitations_body}
+
+\section{Reproducibility}
+Every number in this paper is a machine-generated macro (\texttt{numbers.tex},
+regenerated and byte-diffed at submission by \texttt{verify\_regen.py}); the
+pre-registration (\texttt{PLAN.md}: beta grid, seeds, operating point, and all
+kill-condition thresholds) was committed to version control \emph{before} the
+results commit, so it is git-verifiable. Code, tests ($28$ green), and the
+committed result JSONs accompany the paper.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

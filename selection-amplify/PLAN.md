@@ -39,17 +39,19 @@ guidance-induced diversity.
       self-likelihood guidance, on-manifold minority — distinguished.
 - [x] tests green (28)
 - [x] Operating point FIXED by a coarse pre-gate calibration (see Decisions)
-- [ ] E0 GATE (estimation): s_hat recovers a KNOWN 2D selector globally AND on
-      the complement; ECE small; plug-in I(O;X) tracks analytic
-- [ ] E1 (bridge): synth lands in the collar-complement, method>decoy>~B2, low
-      off-manifold rejection
-- [ ] E2 GO/NO-GO CURVE: method-minus-DECOY censored-slice gap rises with I(O;X)
-      and is >0 at high beta (K1 + K2)
-- [ ] E3 perceptual testbed (MNIST subpop censoring)
-- [ ] E4 central squeeze (vs B3) + K4 foreign-structure control + robustness
-- [ ] E5 (stretch) real-corpus pilot, cover-blind gated (K5), limits only
-- [ ] Figures + gen_paper_numbers (all macros) + verify_regen byte-identical
-- [ ] paper/main.tex; honest abstract (characterization, not theorem/blowout);
+- [x] E0 GATE **PASS**: s_hat recovers the selector globally AND on the
+      complement (Spearman >=0.97, ECE <=0.015, plug-in I(O;X) tracks analytic r=0.998)
+- [x] E1 **PASS** (mechanism): synth lands in the collar-complement,
+      method(0.30)>decoy(0.17)>B2(0.13), off-manifold reject <1%
+- [x] E2 GO/NO-GO **FAIL (K1+K2)**: the method-minus-DECOY slice gap does NOT
+      rise with I(O;X) (Spearman -0.18, p=0.84) and does not exceed the decoy at
+      beta=8 (p=0.59); method also trails B3. => honest NEGATIVE.
+- [~] E3 perceptual testbed DESCOPED to future work (see Deviations)
+- [x] E4 central squeeze (bounded collar) + K4 foreign control PASS (foreign
+      gain 0.0) + robustness
+- [x] E5 real-corpus pilot (California housing), K5 not triggered, limits only
+- [x] Figures + gen_paper_numbers (102 macros) + verify_regen byte-identical
+- [x] paper/main.tex; honest abstract (negative-with-characterization);
       "What we do not claim"; Limitations; Reproducibility
 
 ## Fixed numerical conventions (pre-registered)
@@ -190,6 +192,32 @@ RULES that adapt per fit (no per-run tuning inside the sweep):
 - 2026-07-06 (real-corpus rung scope). E5 is limits-characterization only and
   gated by K5; a synthetic GO is never read as a real-corpus GO. E3 (MNIST) is
   the structured-data confirmation that does not rest on the 2D density.
+
+## Outcome & deviations (dated, AFTER results)
+
+- 2026-07-06 (VERDICT: honest negative-with-characterization). E0 and E1 pass:
+  estimation is clean and the bridge demonstrably targets the censored complement
+  ~2x more than the matched decoy. But the pre-registered E2 discriminator fails
+  both kill conditions: K1 (no positive trend of the method-minus-decoy slice gap
+  vs I(O;X); Spearman -0.18, p=0.84) and K2 (method does not exceed the matched
+  decoy at beta=8; p=0.59, effect -0.07). The method also trails 1/s_hat
+  reweighting (B3) by 3.8 pts. Diagnosed: synth label purity is 0.99 (NOT a
+  mislabel bug); the negative is the honest central squeeze the design
+  anticipated -- the identifiability gates confine useful generation to a collar
+  that coincides with where B3 already works, while the recoverable headroom sits
+  in the deep complement the gates (correctly) refuse. Reported as the negative
+  headline + the central-squeeze characterization, per the atlas stamp rule
+  ("negative-with-characterization ... is a shippable honest result").
+- 2026-07-06 (E3 DESCOPED to future work). The cheap perceptual proxy we tried
+  (MNIST {3,8} run through a PCA(16) latent with the same pipeline) was
+  uninformative on both ends: the thickness-censored subpopulation stays easily
+  classifiable (no downstream headroom to contest, B0 slice ~0.965) and a small
+  latent diffusion is flagged fully off-manifold by the independent validator
+  (reject ~1.0). We do not report it as evidence; the faithful pixel-space rung
+  (EDM/twisted-SMC) is stated future work. The 2D go/no-go (decisive) plus the
+  real-tabular limit already establish the negative-with-characterization. The
+  src modules were made dimension-general (default d=2 preserves the pre-
+  registered 2D behavior; 28 tests still green) for that proxy.
 
 ## Recency re-sweep log
 

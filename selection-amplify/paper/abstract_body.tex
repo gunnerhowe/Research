@@ -1,0 +1,33 @@
+Curation, filtering, and dedup make real corpora missing-not-at-random: they
+censor whole regions of input space, not just thin them. Reweighting fixes
+(Heckman, IPW, counterfactual-risk-minimization) can only correct the observed
+points --- they cannot place mass where there are zero observed samples. We ask
+whether, once the selection mechanism is estimated, one can \emph{manufacture}
+the censored region rather than only reweight around it. We estimate
+$s(x)=P(\text{observed}\mid x)$ by a calibrated density-ratio deep ensemble
+(recovering a known 2D selector globally and on the complement, Spearman
+$\ge\EZeroRhoCompMin$, ECE $\le\EZeroEceMax$), and steer a Doob-$h$-transform
+diffusion bridge whose guidance signal is the \emph{estimated selection
+propensity} $1-\shat$ --- to our knowledge the only method that uses a selection
+function to \emph{locate and synthesize whole new units} in a never-observed
+feature region, rather than reweighting or imputing labels for observed units.
+The bridge works \emph{as a generator}: it steers synthesis into the censored
+complement roughly twice as often as an identically-strong misdirected control
+(complement-hit $\EOneCompHitMethod$ vs $\EOneCompHitDecoy$) while keeping
+off-manifold rejection under $\EOneRejectMethod$. Yet our pre-registered
+discriminator --- the method-minus-\emph{misdirected}-guidance gap on the
+censored slice as a function of selection entropy $\IOX$ --- is a
+\textbf{negative}: the gap does not rise with $\IOX$ (Spearman $\KOneSpearman$,
+$p{=}\KOneSpearmanP$), the method does not exceed the matched decoy at strong
+censoring ($p{=}\KTwoMethodVsDecoyP$), and it underperforms $1/\shat$ reweighting
+by $\MethodVsBThreeGap$ points. A central-squeeze analysis explains why, and this
+is the paper's contribution: the region where $\shat$ is trustworthy --- the
+short-extrapolation collar the identifiability gates confine generation to ---
+is exactly where reweighting already succeeds, while the recoverable headroom
+lies in the deep complement where $\shat$ is off-support extrapolation and
+steering is (correctly) forbidden. Selection-guided generation thus buys, at
+most, a bounded collar of advantage whose width is set by $\shat$ extrapolation
+reliability, and on our testbeds that collar is too narrow to beat reweighting.
+We report the negative honestly with its characterization, provide the
+left-end-zero theorem and a foreign-structure positive control, and do not claim
+the synthetic result transfers to real corpora.

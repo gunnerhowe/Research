@@ -1,0 +1,29 @@
+\paragraph{Real-corpus pilot (limits only).} As a limits check we curate a real
+tabular corpus --- California housing, two standardized features, target
+above-median value --- with a \emph{real} covariate driving the MNAR selection
+($s_\beta$ on standardized median income, censoring high-income tracts), taking
+the raw unfiltered pool as the reference cover. A cover-blind check confirms the
+reference is not co-censored on the target region (the selector retains signal
+there, slice $\shat$ spread $\EFiveCoverStd$; K5 not triggered). At strong
+censoring the method attains $\EFiveSliceMethod$ slice accuracy versus
+$\EFiveSliceBZero$ for the obs-only floor and $\EFiveSliceDecoy$ for the
+misdirected decoy --- and here it \emph{does} beat $1/\shat$ reweighting
+($\EFiveSliceBThree$), which becomes high-variance when a few heavily-censored
+tail points carry enormous weights. The lesson is not that generation wins: the
+method-minus-\emph{decoy} margin --- the selection-targeting signal --- remains
+within noise, exactly as in 2D. It is that generation's advantage over
+\emph{reweighting} is dataset-dependent (it appears precisely where reweighting
+is ill-behaved), whereas its advantage over matched misdirected guidance is the
+invariant, and invariantly small. We report this as characterization, not a
+real-corpus go: three seeds, a synthetic-style selector on real features, and a
+full-support reference cover a genuine corpus would not hand us.
+
+\paragraph{The perceptual rung.} A faithful perceptual testbed (pixel-space
+subpopulation censoring with an EDM/twisted-SMC bridge) is the natural next rung.
+A cheap latent-space proxy we ran (PCA of MNIST with the same pipeline) was
+uninformative on both ends --- the digit subpopulation the thickness selector
+censors remains easily classifiable, so no downstream headroom exists to
+contest, and a small latent diffusion is flagged off-manifold by the independent
+validator --- so we do not report it as evidence and leave the faithful
+pixel-space version, which the 2D and real-tabular findings already frame, to
+future work.

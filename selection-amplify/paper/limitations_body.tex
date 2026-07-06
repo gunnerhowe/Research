@@ -1,0 +1,40 @@
+This section is the honesty of the paper; each item is a claim we explicitly do
+\emph{not} make.
+
+\paragraph{Identifiability.} $s(x)=P(\text{observed}\mid x)$ is not
+pointwise-identified in the censored region: there $\Dobs$ has zero points, so
+$\shat$ is classifier off-support extrapolation, not a measurement. The
+recoverable deliverable is the observed-support \emph{collar} (density- and
+uncertainty-gated) --- censored \emph{combinations} of present structure, not
+arbitrary deep-complement structure.
+
+\paragraph{The central squeeze.} Where generation provably beats $1/\shat$
+reweighting (B3) is \emph{beyond} the collar, exactly where $\shat$ is least
+reliable; where $\shat$ is reliable, B3 nearly matches. The contribution is a
+\emph{bounded} collar of advantage whose width is set by $\shat$ extrapolation
+reliability --- we own this as the central finding (Fig.~\ref{fig:squeeze}), not
+a blowout.
+
+\paragraph{The theorem is a bound plus an empirical hypothesis.} Only the left
+end (gain $\to 0$ as $\IOX\to 0$) is proven; the rise is empirical and, on its
+own, nearly trivial, so we do not state ``gain tracks selection entropy'' as a
+theorem. The discriminating evidence is the method-minus-misdirected-guidance
+gap.
+
+\paragraph{The Doob bridge is approximate.} Reconstruction guidance and twisted
+SMC both ride the biased $r(\hat x_0)$ proxy; we describe the procedure as
+``guided generation toward an estimated-low-selection collar,'' not exact Doob
+conditioning.
+
+\paragraph{Scope fence.} The method recovers only structure on the manifold
+spanned by the observed data (interpolative, censored combinations); it does not
+generate foreign structure. Our K4 probe is a positive control that the method
+\emph{must} fail on a genuinely non-recombinable censored mode, and it does
+(\S\ref{sec:scope}).
+
+\paragraph{Feasibility/realism gap.} The cheap decisive experiment is synthetic,
+and its advantage partly rests on a full-support reference cover --- a controlled
+affordance not available on real corpora. The real-corpus rung
+(\S\ref{sec:real}) is assumption-gated by a cover-blind check and is
+limits-characterization only; a synthetic go/no-go must never be read as a
+real-corpus go.

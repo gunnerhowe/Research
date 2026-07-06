@@ -1,0 +1,25 @@
+"""House rule 1 check: regenerate numbers.tex and confirm it is byte-identical to
+the committed one (no hand-edited numbers). Exit nonzero on drift."""
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+NUM = ROOT / "paper" / "numbers.tex"
+
+old = NUM.read_text()
+subprocess.run([sys.executable, str(ROOT / "paper" / "gen_paper_numbers.py")],
+               check=True)
+new = NUM.read_text()
+
+if old == new:
+    print("OK: numbers.tex is reproducible (byte-identical on regeneration)")
+    sys.exit(0)
+
+print("DRIFT: numbers.tex changed on regeneration. Diff:")
+o = dict(l.split("}{", 1) for l in old.splitlines() if l.startswith("\\newcommand"))
+n = dict(l.split("}{", 1) for l in new.splitlines() if l.startswith("\\newcommand"))
+for k in sorted(set(o) | set(n)):
+    if o.get(k) != n.get(k):
+        print(f"  {k}: {o.get(k)} -> {n.get(k)}")
+sys.exit(1)
