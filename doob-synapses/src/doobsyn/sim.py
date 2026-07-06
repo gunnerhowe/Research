@@ -75,6 +75,7 @@ def run_sequence(testbed, tasks, *, method="doob", sigma=0.0, seed=0,
         noise_model = make_noise_model(model, bss2_noise, dev, seed=7000 + seed)
     bf = None
     buf_X, buf_y = None, None
+    clamp_hits = clamp_total = 0
     t0 = time.time()
 
     for t in range(T):
@@ -111,6 +112,8 @@ def run_sequence(testbed, tasks, *, method="doob", sigma=0.0, seed=0,
                     consol.step()
                 if bf is not None:
                     bf.relax()
+        if consol is not None:
+            clamp_hits += consol.clamp_hits; clamp_total += consol.clamp_total
 
         # evaluate on all tasks seen so far
         for j in range(t + 1):
@@ -135,7 +138,9 @@ def run_sequence(testbed, tasks, *, method="doob", sigma=0.0, seed=0,
                 buf_y = torch.cat([buf_y, yb_all[sel]], 0)
 
     wall = time.time() - t0
-    return summarize(A, wall, n_params(model))
+    out = summarize(A, wall, n_params(model))
+    out["clamp_frac"] = (clamp_hits / clamp_total) if clamp_total > 0 else 0.0
+    return out
 
 
 def summarize(A, wall, nparams):

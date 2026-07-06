@@ -142,12 +142,20 @@ methods and the contribution is the mechanism/signature, not a retention SOTA.
 - **K1.** GATE F fails (no inverted-U, or noise does not help retention beyond the
   unconditioned anchor). => the mechanism is OUA/MESU/EWC renamed. Honest negative,
   project dead; pivot noted to the atlas.
-- **K2.** The inverted-U appears in sim/emulation but the real intrinsic BSS-2
-  noise is the wrong color/structure to consolidate. This session cannot run
-  silicon; E2 is the device-faithful EMULATION and the on-silicon measurement is
-  the STATED remaining step. If a future silicon run kills the U, report the
-  sim-vs-silicon gap; the moat claim fails. We do NOT claim measured-silicon
-  results here.
+- **K2 (as pre-registered).** The inverted-U appears in sim/emulation but the real
+  intrinsic BSS-2 noise is the wrong color/structure to consolidate. At
+  pre-registration this session could not run silicon; E2 is the device-faithful
+  EMULATION and the on-silicon measurement was the STATED remaining step; we claimed
+  NO measured-silicon results at that point.
+  **K2 UPDATE (2026-07-06, hardware access obtained mid-project):** the premise
+  changed -- the author gained EBRAINS BrainScaleS-2 access. K2 is now ADDRESSED on
+  silicon: E5 measured the intrinsic noise (additive / trial-to-trial independent /
+  reachable amplitude -- NOT the wrong color) and E7 trained on the chip (retention
+  +15.6 pts vs the matched control). E5--E7 are honestly labelled post-access
+  additions (not git-verifiable pre-registration; see Reproducibility + Deviations),
+  and the paper now claims measured-silicon RETENTION (single-seed PoC) but still NO
+  measured joules. The moat holds; the remaining study is a full on-silicon noise
+  sweep with energy.
 - **K3.** The barrier-conditioning is inert (ablating kappa does not change the
   curve). => "noise helps" generically (adjacent to Kolesnikov-Semenova 2025), not
   the Doob mechanism. Reframe or kill.

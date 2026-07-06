@@ -176,6 +176,9 @@ class Consolidator:
         self.quantize = quantize
         # MESU keeps a per-weight variance; initialised lazily.
         self._mesu_var = None
+        # finite-force cap diagnostics (how often the Doob step hits the clamp)
+        self.clamp_hits = 0
+        self.clamp_total = 0
 
     @torch.no_grad()
     def _add_noise(self, params):
@@ -226,6 +229,8 @@ class Consolidator:
                     # finite restoring force: cap the per-step move at a fraction
                     # of the barrier half-width (physical + stabilises Euler).
                     cap = m.max_step_frac * bi
+                    self.clamp_hits += int((step.abs() > cap).sum().item())
+                    self.clamp_total += step.numel()
                     p.add_(torch.clamp(step, -cap, cap))
             # intrinsic noise (identical injection across ou/ewc/doob)
             if m.noise_on_all:

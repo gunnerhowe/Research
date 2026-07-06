@@ -4,9 +4,11 @@ numbers; macro names contain no digits). verify_regen.py checks byte-identity.""
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 RES = ROOT / "results"
 OUT = ROOT / "paper" / "numbers.tex"
 M = {}
@@ -95,6 +97,18 @@ macro("AnchoredMaxP", num(max(_beaten), 3) if _beaten else "n/a")
 macro("ReplayMinusOursPts", pts(Mm["replay"]["retention_mean"] - Mm["doob*"]["retention_mean"]))
 macro("ReplayBuffer", str(e3["config"]["replay_buffer"]))
 macro("NoiseTaxPct", pct(Mm["doob*"]["noise_tax_gpu"], 0))
+# the noise-tax is NOT robust to the assumed per-op energies: report its span as
+# the MAC-energy constant varies (noise_tax = noise_ops / (fwd/bwd MACs + consol))
+from doobsyn import energy as _en
+_np, _sig = e3["config"]["n_params"], e3["config"]["sigma_star"]
+_fb = _en.forward_backward_macs(_np)
+_con, _con0 = _en.consolidation_cost("doob", _np, _sig), _en.consolidation_cost("doob", _np, 0.0)
+_noiseE = ((_con.adds - _con0.adds) * _en.E_ADD_PJ + (_con.rng - _con0.rng) * _en.E_RNG_PJ)
+_conE = _con.adds * _en.E_ADD_PJ + _con.rng * _en.E_RNG_PJ + _con.tanh * _en.E_TANH_PJ
+_taxes = [_noiseE / (_fb * emac + _conE) for emac in (0.5, 1.0, 3.1, 10.0, 30.0)]
+macro("NoiseTaxLoPct", pct(min(_taxes), 0))
+macro("NoiseTaxHiPct", pct(max(_taxes), 0))
+macro("CapBindPct", pct(load("clamp_frac.json")["clamp_frac_mean"], 1))
 
 # ------------------------------------------------------------------ E4 modality
 yy = e4["yin_yang"]["doob"]["inverted_u"]
@@ -114,6 +128,9 @@ try:
     macro("SiliconCVMinPct", pct(fit["cv_min"]))
     macro("SiliconNumSendsExp", num(fit["num_sends_exponent"], 2))
     macro("SiliconTrialStd", num(fit["trial_std_mean"], 2))
+    _ssig = sil["noise_vs_signal"]["signal"]
+    macro("SiliconSignalRange", num(max(_ssig) / min(_ssig), 1) + "\\times")
+    macro("SiliconNumSendsPts", str(len(sil["noise_vs_num_sends"]["num_sends"])))
     macro("SiliconRepeats", str(sil.get("config", {}).get("R", 128)))
     siu = e5["measured_noise_sweep"]["inverted_u"]
     macro("SiliconMeasLiftPts", pts(siu["lift_over_zero"]))
@@ -151,6 +168,8 @@ try:
     macro("SilTrainDoobTaskOne", pct(st["doob"]["task1_acc"]))
     macro("SilTrainOuTaskOne", pct(st["ou"]["task1_acc"]))
     macro("SilTrainRetGainPts", pts(st["retention_doob_minus_ou"]))
+    macro("SilTrainDoobAvgPct", pct((st["doob"]["task0_retention"] + st["doob"]["task1_acc"]) / 2))
+    macro("SilTrainOuAvgPct", pct((st["ou"]["task0_retention"] + st["ou"]["task1_acc"]) / 2))
     macro("SilTrainWallMin", num(st["config"]["wall_s"] / 60.0, 0))
 except FileNotFoundError:
     pass

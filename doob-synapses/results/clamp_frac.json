@@ -1,0 +1,19 @@
+{
+ "sigma_star": 0.02,
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "clamp_frac_by_seed": [
+  0.07715664132001532,
+  0.09373442813787977,
+  0.08722407012229454,
+  0.10801373772550167,
+  0.076303707968289
+ ],
+ "clamp_frac_mean": 0.08848651705479606,
+ "note": "Fraction of Doob steering steps that hit the finite-force cap (max_step_frac*b), doob at the operating point on Split-MNIST."
+}

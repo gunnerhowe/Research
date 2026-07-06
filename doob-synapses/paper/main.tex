@@ -55,17 +55,18 @@ intrinsic noise. At its optimum the rule is the strongest \emph{rehearsal-free}
 consolidation method we test --- matching MESU and
 significantly beating OU, EWC and Benna--Fusi; plain replay, which stores data,
 scores higher but exhibits none of the mechanism. We further \emph{measure} the
-intrinsic noise on real BrainScaleS-2 silicon (chip \SiliconChip): it is additive,
-white and Gaussian, with a coefficient of variation up to \SiliconCVMaxPct\ that
-the chip's \texttt{num\_sends} knob averages as $1/\sqrt{N}$ --- the benign
-noise class the mechanism needs, at a reachable amplitude --- and the inverted-U
-\SiliconMeasWord\ an emulation calibrated to it. Finally we run the rule on real
-BrainScaleS-2 silicon with the chip in the training loop: its own intrinsic noise,
-steered by the barrier-conditioning, retains a prior task \SilTrainRetGainPts\ points
-better than the matched unconditioned control (single seed, one operating point;
-retention measured, energy not yet). Within these limits the mechanism reframes
-analog noise from a tax into a consolidation dividend that a von-Neumann
-accelerator must spend energy to fake.
+intrinsic noise on real BrainScaleS-2 silicon (chip \SiliconChip): it is additive
+and trial-to-trial-independent, with a coefficient of variation up to
+\SiliconCVMaxPct\ that the chip's \texttt{num\_sends} knob averages as
+$\approx1/\sqrt{N}$ --- the benign noise class the mechanism needs, at a reachable
+amplitude --- and the inverted-U \SiliconMeasWord\ an emulation calibrated to it.
+Finally we run the rule on real BrainScaleS-2 silicon with the chip in the training
+loop: its own intrinsic noise, steered by the barrier-conditioning, retains a prior
+task \SilTrainRetGainPts\ points better than the matched unconditioned control at
+matched average accuracy --- a stability-plasticity shift, not a net-accuracy win
+(single seed, one operating point; retention measured, energy modelled). Within these
+limits the mechanism reframes analog noise from a tax into a consolidation dividend
+that a von-Neumann accelerator must spend energy to \emph{generate}.
 \end{abstract}
 
 \section{Introduction}
@@ -137,10 +138,17 @@ fixed-pattern + $6$-bit) and reproduces on continual Yin-Yang
 silicon.
 \item \textbf{Baselines and an energy argument.} At its optimum the rule is the
 strongest \emph{rehearsal-free} consolidation method we test (ties MESU, beats
-OU/EWC/Benna--Fusi); replay, which stores data, does better but lacks the
-mechanism. Because the diffusion is the device's own noise, an analog substrate
-pays no energy to generate it, whereas a digital accelerator does
-(\S\ref{sec:baselines}).
+OU/EWC/naive); replay, which stores data, does better but lacks the mechanism.
+Because the diffusion is the device's own noise, an analog substrate pays no energy
+to \emph{generate} it, whereas a digital accelerator does; the barrier steering costs
+digital energy on either (\S\ref{sec:baselines}).
+\item \textbf{Real silicon: measured noise and an on-chip demonstration.} We
+\emph{measure} the intrinsic noise on real BrainScaleS-2 (additive, trial-to-trial
+independent, \texttt{num\_sends} $\approx1/\sqrt{N}$ knob; \S\ref{sec:silicon}), show
+the mechanism survives the hardware-faithful forward-noise realization, tunable to a
+device's few-percent noise (\S\ref{sec:forward}), and \emph{run} the rule on the chip
+with its noise in the loop --- retaining a prior task \SilTrainRetGainPts\ pts better
+than the matched control (single-seed proof of concept; \S\ref{sec:ontraining}).
 \end{enumerate}
 
 \paragraph{The distinguishing statement.} We re-derive the anchored-consolidation
@@ -242,21 +250,27 @@ swept noise act on tasks $1$ onward. Retention is the mean final accuracy on the
 past tasks; we also report plasticity (accuracy just after learning each task) and
 forgetting.
 
-\paragraph{BrainScaleS-2 noise model and the honesty boundary.}
+\paragraph{BrainScaleS-2 noise model, and the emulation/measurement boundary.}
 For E2 we replace the white diffusion in Eq.~\eqref{eq:sde} with a device-faithful
 BSS-2 noise model built from the published characterization
 \citep{weis2020,pehle2022}: temporally \emph{colored} (AR(1)) trial-to-trial
 variability, a \emph{multiplicative} (signal-dependent) component, a static
-\emph{fixed-pattern} per-synapse offset, and $6$-bit weight quantization. This is an
-\emph{emulation} on a GPU. We measure no silicon and no joules. Our energy statements
-come from a transparent operation-count model (per-operation constants from
-\citealp{horowitz2014}); the load-bearing point is a ratio, robust to the constants:
-on a digital accelerator the diffusion noise must be \emph{generated} (an RNG draw
-and a scaled add per weight per step) and the barrier drift computed, whereas on
-analog silicon the same stochastic term is the device's own physics --- free. The
-on-chip reproduction with measured energy, via the port outlined in our code
-(hxtorch/pynn onto the analog array), is the pre-registered remaining step; the
-software stack is absent in our environment, so we neither run it nor claim it.
+\emph{fixed-pattern} per-synapse offset, and $6$-bit weight quantization. We are
+explicit about where the substrate changes. The GPU experiments E0--E4 are
+\emph{emulations}. E5 (\S\ref{sec:silicon}) \emph{measures} the intrinsic noise on
+real BrainScaleS-2, and E7 (\S\ref{sec:ontraining}) \emph{trains} on the chip with
+the analog MAC in the loop; those are real-silicon results. What we do \emph{not}
+measure anywhere is energy: our energy statements come from an operation-count model
+(per-op constants from \citealp{horowitz2014}). That model is \emph{not} robust to
+its constants --- the noise-generation fraction of a consolidation step ranges from
+\NoiseTaxLoPct\ to \NoiseTaxHiPct\ as the assumed per-op energies vary --- so we
+report the \NoiseTaxPct\ figure as one modelled point, not a constant-free ratio. Its
+qualitative content is the narrow, robust part: on a digital accelerator the
+diffusion noise must be \emph{generated} (an RNG draw and a scaled add per weight per
+step), whereas on analog silicon that noise is the device's own physics and costs
+nothing to produce. The barrier drift (a \texttt{tan} per synapse) still costs
+digital energy on either substrate, so the chip removes the noise-\emph{generation}
+cost, not the whole mechanism.
 
 \section{Experiments}
 
@@ -348,11 +362,13 @@ to the measurement there.
 \caption{\textbf{Baselines (Split-MNIST, \NumSeeds\ seeds).} (a) At its noise
 optimum the barrier-conditioned rule (Doob$^{*}$, \DoobStarRetPct) is the strongest
 \emph{rehearsal-free} method: it matches MESU (\BestRFRetPct) and significantly
-beats OU, EWC, Benna--Fusi and naive. Plain replay stores exemplars and scores
+beats OU, EWC and naive (our Benna--Fusi did not learn in this configuration,
+\BennaRetPct\ $\approx$ chance --- flagged, not counted). Plain replay stores exemplars and scores
 higher (\ReplayRetPct) --- a different, memory-based budget class, shown for
-reference. (b) Retention vs.\ modelled compute-energy: a digital accelerator pays a
-\NoiseTaxPct\ per-step energy tax to \emph{fabricate} the diffusion noise; on BSS-2
-(emulated energy) the same noise is intrinsic and free.}
+reference. (b) Retention vs.\ modelled compute-energy: a digital accelerator spends a modelled
+\NoiseTaxPct\ (range \NoiseTaxLoPct--\NoiseTaxHiPct) of each step \emph{generating}
+the diffusion noise; on analog silicon that generation is free (the barrier steering
+still costs).}
 \label{fig:baselines}
 \end{figure}
 
@@ -360,18 +376,22 @@ At $\sigstar$ the rule reaches retention \DoobStarRetPct. Among rehearsal-free
 consolidation methods (which store no data) it is the best: it matches the strongest,
 MESU (\MesuRetPct; ours$-$MESU $=+\OursMinusRFPts$ pts, paired Wilcoxon
 $p=\BestRFP$, not significant), and significantly beats unconditioned OU
-\OuRetPct, EWC \EwcRetPct, Benna--Fusi \BennaRetPct\ and naive \NaiveRetPct\ (all
-$p\le\AnchoredMaxP$; Fig.~\ref{fig:baselines}a). We are explicit about the honest
+\OuRetPct, EWC \EwcRetPct\ and naive \NaiveRetPct\ (all $p\le\AnchoredMaxP$;
+Fig.~\ref{fig:baselines}a). Our Benna--Fusi cascade did not learn in this
+configuration (\BennaRetPct, at chance across all seeds), so we flag it as an
+uninformative baseline rather than one we ``beat.'' We are explicit about the honest
 comparison: \emph{plain reservoir replay}, which stores \ReplayBuffer\ raw exemplars,
 reaches \ReplayRetPct\ --- \ReplayMinusOursPts\ points above ours. Replay is a
 memory-based method in a different budget class, and, more to the point, it neither
 exhibits nor exploits the noise-consolidation mechanism that is our subject: our
 contribution is the noise$\to$retention \emph{signature}, and the rule's standing is
 realized \emph{at its optimum}, exploiting a resource the anchored-drift methods are
-only harmed by. On the energy axis (Fig.~\ref{fig:baselines}b), generating the
-diffusion noise costs a digital accelerator a \NoiseTaxPct\ fraction of each
-consolidation step; on analog silicon that fraction is physics, not compute --- the
-dividend a von-Neumann machine must pay to fake.
+only harmed by. On the energy axis (Fig.~\ref{fig:baselines}b), \emph{generating} the
+diffusion noise costs a digital accelerator a modelled \NoiseTaxPct\ fraction of each
+consolidation step (a constant-sensitive figure, range \NoiseTaxLoPct--\NoiseTaxHiPct);
+on analog silicon that generation is physics, not compute. The barrier steering still
+costs digital energy on either substrate, so this is a saving on noise generation, not
+on the whole rule.
 
 \subsection{E4 --- second modality and the noise-optimum vs.\ task similarity}
 \label{sec:modality}
@@ -419,20 +439,22 @@ times per operating point and reading the trial-to-trial statistics
 
 \textbf{What the device noise is.} It is \emph{additive}: the trial-to-trial
 standard deviation is essentially signal-independent (\SiliconTrialStd\ output units
-across an $8\times$ signal range; \SiliconAdditivePct\ additive, only
+across a $\SiliconSignalRange$ signal range; \SiliconAdditivePct\ additive, only
 \SiliconMultPct\ multiplicative), so the coefficient of variation \emph{falls} with
-signal (\SiliconCVMaxPct\ down to \SiliconCVMinPct). It is \emph{white} at the
-update timescale --- batched-repeat noise equals separate-call noise, i.e.\
-independent integrations. And \texttt{num\_sends} (sending the input $N$ times)
-averages the relative noise as $\approx N^{-\SiliconNumSendsExp}$ ($1/\sqrt{N}$;
-Fig.~\ref{fig:silicon}b), so it is a genuine on-chip effective-noise knob, with
-$N{=}1$ the intrinsic-noise ceiling.
+signal (\SiliconCVMaxPct\ down to \SiliconCVMinPct). It is \emph{trial-to-trial
+independent} at the update timescale --- the batched-repeat standard deviation
+matches the separate-call standard deviation (a single independence check, not a
+full autocorrelation spectrum). And \texttt{num\_sends} (sending the input $N$ times)
+averages the relative noise as $\approx N^{-\SiliconNumSendsExp}$ (close to
+$1/\sqrt{N}$, from \SiliconNumSendsPts\ points; Fig.~\ref{fig:silicon}b), so it is a
+genuine on-chip effective-noise knob, with $N{=}1$ the intrinsic-noise ceiling.
 
-\textbf{What this settles (K2, first half).} The intrinsic noise is additive,
-Gaussian and white --- precisely the class our simulation assumed, not a
+\textbf{What this settles (K2, first half).} The intrinsic noise is additive and
+trial-to-trial independent --- close to the class our simulation assumed, not a
 pathologically colored or signal-locked noise that could not consolidate --- and its
 CV range brackets the relative noise at our simulated optimum, so the operating
-point is reachable. Re-running the retention sweep with the BSS-2 emulator
+point is reachable. (We do not test normality; ``additive'' and the independence
+check are what the data support.) Re-running the retention sweep with the BSS-2 emulator
 \emph{calibrated to these measured values}, the inverted-U \SiliconMeasWord\ (lift
 \SiliconMeasLiftPts\ pts at $\sigstar=\SiliconMeasSigStar$). This upgrades E2 from
 assumed-parameter emulation to a measured-noise-calibrated result. It does
@@ -455,8 +477,10 @@ exponent \SiliconNumSendsExp) --- the on-chip effective-noise knob.}
 Sections \ref{sec:gatef}--\ref{sec:bss2} inject the diffusion on the weights. On
 analog silicon the intrinsic noise is not on the stored weight but in the
 \emph{multiply-accumulate} --- the forward pass, and hence the gradient, is noisy.
-We therefore test the mechanism in that realization: Gaussian noise on the
-pre-activations, a stand-in for the analog MAC noise (Fig.~\ref{fig:forward}).
+We therefore test the mechanism in that realization: additive noise on the
+pre-activations (Gaussian by construction here --- our tractable stand-in for the
+analog MAC's additive trial-to-trial noise, whose additivity E5 measured but whose
+exact distribution we do not) (Fig.~\ref{fig:forward}).
 
 \textbf{The mechanism survives, and it is the same signature.} With forward noise,
 the barrier-conditioned rule is \FwdDoobWord\ (lift \FwdDoobLiftPts\ pts at
@@ -513,10 +537,11 @@ memory the control loses.
 \textbf{Honest scope.} This is a single-seed proof of concept at one operating point
 (\SilTrainWallMin~min of chip time), not a tuned optimum or a statistical study. The
 rule here leans toward stability: it pays for the retention with current-task
-plasticity (task~2 \SilTrainDoobTaskOne\ vs.\ \SilTrainOuTaskOne), so average
-accuracy is about matched while retention strongly favours ours --- the
-stability-plasticity trade at an un-tuned point, which E6 (Fig.~\ref{fig:forward})
-shows can be balanced. We measured retention, not joules. A multi-seed noise sweep
+plasticity (task~2 \SilTrainDoobTaskOne\ vs.\ \SilTrainOuTaskOne), so the two-task
+\emph{average} accuracy is essentially matched (ours \SilTrainDoobAvgPct\ vs.\ the
+control's \SilTrainOuAvgPct) while retention strongly favours ours. This is a
+stability-plasticity shift, not a net-accuracy win, at an un-tuned point --- one E6
+(Fig.~\ref{fig:forward}) shows can be balanced. We measured retention, not joules. A multi-seed noise sweep
 tracing the full on-silicon inverted-U, with measured energy, is the natural next
 study; the mechanism itself now demonstrably operates on the chip.
 
@@ -558,29 +583,39 @@ standing are.
 \section{Limitations}
 Small single-head MLP testbeds; a diagonal-Fisher barrier; a ground-state (infinite
 horizon) $h$-transform rather than a finite-horizon survival function; a
-finite-force cap that softens the exact barrier divergence; an emulated rather than
-measured device. Each is a place the on-silicon step (K2) or a larger study could
-overturn or extend the result; the pre-registered kill conditions name the failure
-modes.
+finite-force cap that removes the noise ($\sigma^2$) amplification of the steering
+where it binds (the tight-barrier tail --- \CapBindPct\ of Doob steps at the
+operating point); a single-seed, single-operating-point
+on-silicon demonstration with energy modelled rather than measured; and no test of
+the device-noise distribution beyond additivity and a trial-to-trial independence
+check. Each is a place a larger study could overturn or extend the result; the
+pre-registered kill conditions name the failure modes.
 
 \section{Reproducibility}
-All code, the pre-registered \texttt{PLAN.md} (committed before results), the
-committed \texttt{results/*.json}, and the figure/number generators are released.
-Every number in this paper is a machine-generated macro (\texttt{numbers.tex} from
-\texttt{gen\_paper\_numbers.py}); \texttt{verify\_regen.py} checks that
-\texttt{numbers.tex} is byte-identical on regeneration. Seeds, the noise grid, the
-operating point, and the inverted-U test are fixed in \texttt{PLAN.md}. DOI at
+All code, \texttt{PLAN.md}, the committed \texttt{results/*.json}, and the
+figure/number generators are released. The pre-registration (GATE F, K1--K3, the
+fixed operating point, the noise grid, the inverted-U test) is git-verifiable for
+\textbf{E0--E4}: \texttt{PLAN.md} was committed before those results. \textbf{E5--E7}
+were added \emph{after} BrainScaleS-2 access was obtained mid-project; they are
+post-access additions (dated in \texttt{PLAN.md}'s deviations log), not
+pre-registered in the same git-verifiable sense. Every number is a machine-generated
+macro (\texttt{numbers.tex} from \texttt{gen\_paper\_numbers.py}), and
+\texttt{verify\_regen.py} checks it is byte-identical on regeneration. DOI at
 submission.
 
 \section{Conclusion}
 Casting per-synapse consolidation as a Doob $h$-transform makes a sharp, falsifiable
 prediction --- intrinsic noise should non-monotonically improve retention --- that
-the anchored-drift methods whose drift we share cannot make. The prediction holds,
-in simulation and in a device-faithful emulation, and is isolated to the barrier
-conditioning. If it survives on silicon, intrinsic analog noise becomes a
-consolidation resource that gets \emph{cheaper} as devices get noisier --- the
-opposite of the usual tax. That last step is the one we have not taken, and we have
-been careful to say so.
+the anchored-drift methods whose drift we share cannot make. The prediction holds in
+simulation, in a device-faithful emulation, and in the hardware-faithful forward-noise
+realization, is isolated to the barrier conditioning, and --- on real BrainScaleS-2,
+with the chip's own noise in the training loop --- consolidates a memory the matched
+control loses. So intrinsic analog noise can be a consolidation resource that gets
+\emph{cheaper} as devices get noisier, the opposite of the usual tax. What remains is
+to make that on-silicon demonstration a full study --- a multi-seed noise sweep
+tracing the inverted-U on the device, with measured joules --- and we have been
+careful to mark exactly where the single-seed proof of concept ends and that study
+begins.
 
 \small
 \bibliographystyle{plainnat}
