@@ -1,0 +1,140 @@
+PROJECT BRIEF — Intrinsic-Noise Consolidation: A Barrier-Conditioned Diffusion for On-Chip Continual Learning
+============================================================================================================
+Read this whole file before writing any code. It is the complete handoff from the AI Research Atlas,
+AFTER a revolutionary-mechanism hunt (this cleared REVOLUTIONARY) AND a dedicated adversarial
+re-derivation kill-test. The kill-test verdict was GREEN_CAUTIOUS with a MANDATORY narrowing that this
+brief encodes as hard constraints. Do NOT claim the parts the kill-test surrendered.
+Author: Gunner Levi Howe (gunnerlevihowe@gmail.com). Hardware: one RTX 3080 + REAL BrainScaleS-2 access.
+
+THE ONE-LINE IDEA
+-----------------
+Cast per-synapse consolidation and plasticity as two regimes of ONE Doob-h-transform / barrier-conditioned
+diffusion: condition each weight's stochastic dynamics on the event of NOT crossing its memory-critical
+level, so a synapse that encodes an important memory has its OWN intrinsic analog noise steered to keep it
+there. On neuromorphic silicon the chip's intrinsic device noise, normally an accuracy tax, becomes the
+consolidation mechanism -- a continual-learning dividend a GPU has to PAY to fake.
+
+WHAT THE KILL-TEST KILLED, AND WHAT SURVIVED (read first -- these are hard constraints, not suggestions)
+------------------------------------------------------------------------------------------------------
+The mechanism has THREE parts. The kill-test surrendered one and kept two, and the paper lives or dies on
+owning that split honestly.
+
+- SURRENDER THE DRIFT (do NOT claim it as novel). The closed-form consolidation drift -s_i*(w_i - L_i)
+  (uncertainty-scaled pull toward an anchor) is a re-derivation, and the kill-test PROVED it, not just
+  "structurally similar":
+    * OUA -- Ornstein-Uhlenbeck Adaptation (Garcia Fernandez, Ahmad, van Gerven, arXiv:2410.13563, Oct
+      2024): learning as a mean-reverting OU diffusion d(theta)=lambda(mu-theta)dt + Sigma dW -- the EXACT
+      anchored-diffusion drift, as a stochastic-process learning rule.
+    * MESU (Nat Commun 2025 / PMC12575836, Eq. 11): the uncertainty(variance)-scaled anchor pull toward
+      mu_prior, verbatim, as a Bayesian-continual-learning update.
+    * EWC (Kirkpatrick et al. 2017): the Fisher-weighted quadratic anchor, the regularization ancestor.
+  State in the paper, UP FRONT, that the drift is a known limit of OUA/MESU/EWC. Owning this as identity
+  (not dressing it as novelty) is what keeps the paper credible; a reviewer WILL know OUA.
+
+- KEEP (the two-piece conjunction that is the entire contribution):
+  (a) THE DOOB / BARRIER-CONDITIONING FRAMING AS A SYNAPTIC RULE. Casting per-synapse consolidation as a
+      Doob-h-transform / first-passage-conditioned diffusion (condition on not crossing the memory-critical
+      barrier) is genuinely unclaimed -- every Doob-h-transform use found is generative modeling /
+      Schrodinger bridge / transition-path / filtering; ZERO synaptic/plasticity/CL use. This absence IS
+      the moat; cite the generative-Doob corpus to prove it.
+  (b) THE FALSIFIABLE HARDWARE CURVE: "increasing the chip's OWN intrinsic analog noise NON-MONOTONICALLY
+      IMPROVES retention across SEQUENTIAL tasks (an inverted-U optimum)" -- measured on real BSS-2 silicon.
+      No candidate claims this (checked OUA, MESU, EWC, Kolesnikov-Semenova 2504.13778 = single-task
+      test-noise robustness, Shaham 2022 = replay/noise-as-harmful/monotonic, NVRM/ANV = injected GPU
+      weight noise for scale-robustness). This is the LOAD-BEARING result.
+
+  THE WHOLE PAPER RESTS ON THE CONJUNCTION (a) AND (b). Absent (a) it is OUA/MESU. Absent (b) it is
+  repackaged Bayesian-online CL. If the noise-helps-retention curve does not materialize, the mechanism
+  reduces to OUA/MESU/EWC and THE PAPER HAS NO CORE -- so the curve is not a nice-to-have, it is the thesis.
+
+THE DISTINGUISHING STATEMENT (put a version of this sentence in the intro, verbatim in spirit)
+---------------------------------------------------------------------------------------------
+"We re-derive the anchored-consolidation drift as a known limit of OUA/MESU/EWC, and claim novelty ONLY in
+(i) casting per-synapse consolidation as a Doob-h-transform barrier-conditioned diffusion, and (ii)
+demonstrating on BrainScaleS-2 silicon that increasing the chip's own intrinsic analog noise
+non-monotonically improves sequential-task retention -- a signature these anchored-drift methods cannot
+produce."
+
+EXPERIMENT LADDER (gated; the FIRST gate is a one-afternoon go/no-go for the whole project)
+------------------------------------------------------------------------------------------
+E0. THE AFTERNOON FALSIFIER (GATE F -- run this BEFORE writing anything else). Pure Euler-Maruyama
+    simulation on the 3080, hours not days: a small continual-learning testbed (Split-MNIST single head, or
+    the Yin-Yang dataset; 3-5 sequential tasks). Implement the barrier-conditioned diffusion per weight
+    (drift toward the anchor + intrinsic noise term conditioned on the memory barrier). SWEEP the intrinsic
+    noise level from 0 upward; PLOT retention (mean accuracy on past tasks) vs noise level, >=5 seeds,
+    mean+-sd. GATE F: a NON-MONOTONIC 'more noise -> better retention' curve (an inverted-U with a
+    retention optimum at noise > 0) that the matched OU/EWC/MESU anchors WITHOUT the barrier-conditioning
+    do NOT produce (run them as the control on the same testbed).
+    - If the inverted-U appears: GO. This is the thesis; everything downstream confirms + scales it.
+    - If retention is flat or monotonically-decreasing in noise: the mechanism reduces to OUA/MESU/EWC.
+      STOP. Report the honest negative (an afternoon spent) -- and this project is dead; the companion swing
+      (Selection-corrected data amplification, E:/GitHub/Research/selection-amplify) runs independently, and
+      the ready backup swing is Kac-Rice Informative-Crossing Halting (GREEN_CAUTIOUS, not yet written).
+E1. MECHANISM ISOLATION (sim). Show the effect is the BARRIER-CONDITIONING, not just any noise: ablate the
+    conditioning (plain OU + unconditioned noise) -> curve should flatten; vary the barrier level L_i and
+    the conditioning strength -> retention optimum should track them. Establish that noise HELPS only when
+    steered by the not-crossing condition.
+E2. REAL BSS-2 SILICON (the moat; the result a GPU-only researcher cannot produce). Port the rule to
+    BrainScaleS-2, de-risked by the author's ALREADY-VALIDATED intrinsic-noise node-perturbation pipeline
+    (0.90-0.95). Use the chip's OWN intrinsic analog noise as the diffusion term; tune the effective noise
+    via the knobs the chip exposes. Reproduce the inverted-U retention curve ON SILICON with MEASURED
+    energy. This is the headline: intrinsic device noise as free consolidation, energy moat that STRENGTHENS
+    as devices get noisier.
+E3. BASELINES (matched-budget, on the same sequential-task suite): OUA (2410.13563), MESU, EWC, Benna-Fusi
+    complex synapses, plain replay, and -- critically -- the UNCONDITIONED OU anchor (to prove the
+    conditioning is what buys retention). Metric: retention vs energy/compute; and on BSS-2, retention vs
+    measured joules.
+E4. (stretch) longer task sequences; a second modality; the noise-optimum vs task-similarity relationship.
+
+PRE-REGISTERED KILL CONDITIONS (commit to PLAN.md BEFORE running; and COMMIT that file before results)
+------------------------------------------------------------------------------------------------------
+K1. GATE F fails (no inverted-U; noise does not help retention beyond the unconditioned anchor) -> the
+    mechanism is OUA/MESU/EWC renamed; honest negative, project dead.
+K2. The inverted-U appears in sim but VANISHES on BSS-2 (the real intrinsic noise is the wrong
+    color/structure to consolidate) -> report the sim-vs-silicon gap honestly; the moat claim fails.
+K3. The barrier-conditioning is inert (ablating it does not flatten the curve) -> then it is "noise helps"
+    generically (adjacent to Kolesnikov-Semenova), not the Doob mechanism; reframe or kill.
+
+CITE-AND-DISTINGUISH (mandatory; the kill-test's list)
+------------------------------------------------------
+- OUA (arXiv:2410.13563, Oct 2024): the drift's source as an OU learning rule -- CITE AS THE DRIFT'S ORIGIN;
+  distinguish: no Doob/h-transform, no barrier/first-passage, names catastrophic forgetting as future work.
+- MESU (Nat Commun 2025 / PMC12575836, Eq. 11): the Bayesian-CL anchor verbatim; distinguish: not
+  OU/Doob/first-passage; hardware stochastic devices only as a sampling-implementation, no noise-helps claim.
+- EWC (Kirkpatrick 2017): the Fisher-anchor ancestor; distinguish: static penalty, no diffusion/conditioning.
+- Kolesnikov & Semenova (arXiv:2504.13778, Apr 2025): internal hardware noise -> test-noise RESILIENCE;
+  distinguish: single-task robustness, not sequential-task retention, no inverted-U.
+- Shaham et al., Stochastic consolidation of lifelong memory (Sci Rep 2022, PMC9339009); distinguish:
+  replay/rehearsal, noise-as-harmful, monotonic, no hardware, no per-synapse conditioning.
+- Benna-Fusi complex synapses / MESU / probabilistic metaplasticity: the boundary-free-consolidation
+  incumbents to beat; distinguish on the noise-as-resource + hardware axis.
+- Doob-h-transform generative corpus (Variationally Stable Doob's Matching; Reflected Schrodinger Bridge for
+  Constrained Generative Modeling; boundary-crossing-probability diffusions): the ONLY Doob uses found --
+  cite to PROVE the synaptic use is absent (this absence is the moat).
+
+FRAMING / HOUSE DISCIPLINE (mirror the program's 11 shipped papers)
+-------------------------------------------------------------------
+Frame as 'noise-as-consolidator on real neuromorphic silicon,' NOT 'a new continual-learning regularizer'
+(that framing invites the OUA/MESU/EWC reduction). Repo layout mirrors energy-effic: src/<pkg>/
+(diffusion.py barrier-conditioned rule, sim.py CL testbeds, bss2.py the silicon port, energy.py),
+experiments/ (exp0_falsifier ... exp4 + make_figures.py), tests/, results/ (committed JSONs), paper/
+(main.tex, numbers.tex AUTO-GENERATED, verify_regen.py). Every number a machine-generated MACRO; every prose
+ratio a macro; regenerate-and-diff at submission. >=3 seeds (8 for the headline retention curve),
+mean+-sd, paired tests, Wilcoxon floors. Honest abstract that SURRENDERS the drift and states the
+conjunction; "What we do not claim" (the drift is not novel; single substrate; no claim the mechanism helps
+outside the noise-optimum); Limitations; Reproducibility with DOI FILLED at submission. Pre-register
+GATE F + K1-K3 in PLAN.md and COMMIT PLAN.md BEFORE the results commit (a program review flagged that
+'pre-registered' is not git-verifiable when everything lands in one commit -- fix it here). Recency
+re-sweep before submission ('noise continual learning retention', 'Doob synapse', 'intrinsic noise
+consolidation neuromorphic', newest-first); the frozen index missed OUA -- a live web sweep is mandatory.
+
+ATLAS LINK-BACK
+---------------
+This executes a REVOLUTIONARY-verdict swing (revolutionary-mechanism hunt) that passed a GREEN_CAUTIOUS
+re-derivation kill-test. Companion swing running concurrently: Selection-corrected data amplification
+(E:/GitHub/Research/selection-amplify) -- a data/generation-theory swing that is domain-ORTHOGONAL to this
+continual-learning one (decorrelated failure: a null in one does not predict a null in the other). NOTE:
+the Resonance-Space World Models swing named in an earlier draft was DEMOTED to incremental on its own
+kill-test and was never written; do not look for that repo. On Zenodo ship, tell the atlas assistant to
+ingest as an own-lab node and stamp the outcome (positive if the inverted-U holds on silicon /
+negative-with-mechanism if GATE F or the silicon curve fails -- both are shippable honest results).
