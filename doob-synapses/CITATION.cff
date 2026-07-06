@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+type: software
+title: "doobsyn: intrinsic-noise consolidation via a Doob-barrier-conditioned diffusion for continual learning"
+authors:
+  - family-names: Howe
+    given-names: Gunner Levi
+    email: gunnerlevihowe@gmail.com
+version: 1.0.0
+date-released: 2026-07-06
+license: MIT
+keywords:
+  - continual learning
+  - catastrophic forgetting
+  - Doob h-transform
+  - barrier-conditioned diffusion
+  - synaptic consolidation
+  - intrinsic noise
+  - neuromorphic
+  - BrainScaleS-2
+  - Ornstein-Uhlenbeck
+  - inverted-U
+preferred-citation:
+  type: article
+  title: "Intrinsic-Noise Consolidation: A Doob-Barrier-Conditioned Diffusion Turns Analog Device Noise into a Continual-Learning Resource"
+  authors:
+    - family-names: Howe
+      given-names: Gunner Levi
+  year: 2026
+  # arXiv identifier and DOI filled at submission
