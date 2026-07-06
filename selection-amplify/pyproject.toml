@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "selamp"
+version = "0.1.0"
+description = "Selection-corrected data amplification: manufacturing the censored complement a curated corpus implies"
+authors = [{ name = "Gunner Levi Howe", email = "gunnerlevihowe@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy", "scikit-learn", "matplotlib", "torch"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

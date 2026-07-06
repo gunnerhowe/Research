@@ -1,0 +1,263 @@
+PROJECT BRIEF — Selection-Corrected Data Amplification: Manufacturing the Censored Complement a Curated Corpus Implies
+====================================================================================================================
+Read this whole file before writing any code. It is the complete handoff from the AI Research Atlas, AFTER a
+revolutionary-mechanism hunt, a dedicated adversarial re-derivation KILL-TEST (verdict GREEN_CAUTIOUS,
+recommended as the second concurrent swing), AND a dedicated design-HARDENING pass (design -> adversarial
+technical critique -> synthesis) that closed two silent false-GO paths and re-centered the claim. This brief
+encodes the survivors of BOTH gauntlets as hard constraints. Do NOT re-inflate the parts they narrowed.
+Author: Gunner Levi Howe (gunnerlevihowe@gmail.com). Hardware: one RTX 3080 (the decisive experiment fits it).
+Companion swing running concurrently and DOMAIN-ORTHOGONAL: Intrinsic-Noise Consolidation / Doob-Quenched
+Synapses (E:/GitHub/Research/doob-synapses) -- continual learning on BSS-2. This swing is data/generation
+theory; a null in one does not predict a null in the other (decorrelated failure -- that is why they are run
+as a pair).
+
+THE ONE-LINE IDEA
+-----------------
+Real corpora are massively missing-not-at-random (MNAR): curation, filtering, dedup, and collection
+systematically CENSOR whole regions of input space. Standard fixes (Heckman correction, IPW, counterfactual-
+risk-minimization) only REWEIGHT the observed points -- they can never represent a region with ZERO observed
+samples. This swing instead (1) ESTIMATES the selection mechanism s(x)=P(observed|x) to LOCATE the censored
+complement the corpus implies but never shows, (2) uses a Doob-h-transform bridge to GENERATE whole new
+training units in that region (not impute labels for observed units), and (3) ties the recoverable gain to
+SELECTION ENTROPY -- generation buys nothing under ignorable missingness and buys a bounded, s_hat-reliability-
+limited COLLAR of advantage under strong MNAR. Leverage grows with scale because bigger curated corpora
+censor harder.
+
+WHAT THE KILL-TEST CONFIRMED (the moat) AND WHAT THE HARDENING NARROWED (read first -- hard constraints)
+-------------------------------------------------------------------------------------------------------
+KILL-TEST (re-derivation gauntlet, all four axes returned CONFIRMED-EMPTY, no shrinkage under pressure):
+- No generative/counterfactual augmentation LOCATES the MNAR complement via an ESTIMATED SELECTION FUNCTION
+  and GENERATES it at the UNIT level. Reject-inference generative work (1904.11376) and MNAR nets (RMT-Net
+  2206.00568, SMART/GAIN) impute the LABEL/entries for units whose FEATURES are already observed
+  (feature/label-level), not whole never-observed units. The unit-level-vs-feature-level distinction is
+  load-bearing.
+- Heckman / IPW / CRM (and 2505.10814 censored-selection distribution regression) only REWEIGHT or correct
+  inference -- never fabricate censored units. They are the baseline-to-beat, not prior art.
+- ALL Doob-h-transform / guided-diffusion out-of-support generation (DOIT 2602.16198, low-density-region
+  exploration 2606.13347, Stein guidance 2507.05482, support-robustness 2605.07220) is driven by rewards /
+  classifiers / conditions -- NEVER by an estimated selection propensity. THE UNOCCUPIED MOVE IS: guidance
+  signal = estimated selection function. This is the moat.
+- No prior states the selection-entropy-gain relationship.
+
+DESIGN-HARDENING (the adversarial critique found NO fatal flaw but closed two silent FALSE-GO paths; both are
+non-negotiable or the project ships a false positive):
+- FALSE-GO #1, IDENTIFIABILITY HOLE (narrows scope, does not kill). s(x) is NOT pointwise-identified in the
+  censored region: there D_obs has zero points, so the density-ratio classifier c(x) is driven entirely by the
+  reference density + class prior and s_hat is pure CLASSIFIER OFF-SUPPORT EXTRAPOLATION (a modeling artifact,
+  not a measurement) -- exactly where the method acts. THE NARROWING THAT SAVES IT: target only the
+  RECOVERABLE COLLAR (censored region reachable by SHORT extrapolation from observed support), gated by
+  {density p_hat>=tau} AND {observed-support proximity} AND {LOW classifier epistemic uncertainty}. This
+  collar IS the "censored COMBINATIONS of present structure" the scope always fenced to. Make it the honest
+  deliverable, not a bug.
+- FALSE-GO #2, TRIVIAL CURVE + WEAK CONTROL (re-centers the claim, does not kill). "Gain rises with beta" is
+  over-determined: more MNAR mechanically creates more test-shift HEADROOM, so ANY tail-filling generator's
+  gain rises -- consistent with the null. And gamma=0 unconditional sampling confounds selection-targeting
+  with guidance-induced diversity. THE FIX: the pre-registered discriminator is the METHOD-MINUS-CONTROL SLOPE
+  vs selection entropy (NOT the method's own slope), and the control is a PERMUTED / MISDIRECTED-SELECTOR at
+  MATCHED guidance strength (NOT unconditional sampling).
+
+THE HONEST CONTRIBUTION IS A CHARACTERIZATION, NOT A CLEAN THEOREM OR A BLOWOUT:
+  "Selection-guided generation buys a BOUNDED, s_hat-reliability-limited COLLAR of advantage beyond 1/s_hat
+   reweighting, and the method-minus-misdirected-guidance gap TRACKS selection entropy."
+Do NOT write "training gain tracks selection entropy" as a theorem (the rise is nearly trivial). Do NOT claim
+a blowout over generic augmentation. Do NOT let a SYNTHETIC go/no-go be read as a real-corpus GO.
+
+THE DISTINGUISHING STATEMENT (put a version of this in the intro, verbatim in spirit)
+------------------------------------------------------------------------------------
+"Prior MNAR/selection work either reweights estimates (Heckman/IPW/CRM) or imputes labels for units whose
+features are already observed (reject inference); prior guided-diffusion out-of-support generation is driven
+by classifiers/rewards/conditions. We are the only approach that uses an ESTIMATED SELECTION FUNCTION to
+locate a never-observed feature-space region and a Doob bridge to SYNTHESIZE whole new units in the
+short-extrapolation collar of that region -- and we show that the advantage of this selection-targeting over
+identically-strong MISDIRECTED guidance rises with the corpus's selection entropy. Selection entropy provably
+upper-bounds and vanishes with the achievable gain; the discriminating evidence is the method-minus-decoy
+gap, not the method's own curve."
+
+THE MECHANISM (three parts, precise)
+------------------------------------
+1. LOCATE -- s(x)=P(observed|x) by density-ratio-via-classification (Sugiyama 2012 reduction). Train a
+   CALIBRATED binary classifier c(x) separating D_obs (label 1) from a REFERENCE pool D_ref covering the full
+   support (label 0), built WITHOUT peeking at the true selector: (a) uniform/Gaussian cover of the bounding
+   box (2D/tabular), (b) temperature-broadened base-prior samples, or (c) a held-out unlabeled same-domain
+   pool not run through the selector (MNIST/CIFAR). s_hat(x) ∝ c/(1-c) up to an x-independent class-balance
+   factor; calibrate (isotonic/Platt, held-out), report ECE. Estimate epistemic uncertainty from a >=5-member
+   deep ensemble (or MC-dropout variance). IDENTIFIABILITY CAVEAT (load-bearing): s_hat is trustworthy ONLY
+   on the collar where both classes overlap; deeper in the complement it is prior-driven extrapolation, so the
+   bridge is steered ONLY into the collar (density + proximity + low-uncertainty gate) and NEVER by
+   high-variance s_hat.
+
+2. GENERATE -- Doob-h-transform bridge (stated honestly as a BIASED GUIDED APPROXIMATION, not exact
+   conditioning). Base VP/EDM diffusion trained on D_obs, score s_theta(x,t). Reverse SDE
+   dx=[f - g^2 s_theta]dt + g dW. Soft terminal reward encoding the collar-restricted complement:
+     r(x_0) = (1 - s_hat(x_0)) * 1[p_hat(x_0)>=tau] * 1[uncertainty(s_hat,x_0)<=u_max].
+   h(x,t)=E_base[r(x_0)|x_t]; conditioned drift ADDS g^2 grad_x log h. THE UNOCCUPIED MOVE: r = estimated
+   selection propensity (1 - s_hat). Estimate grad log h by reconstruction/Tweedie guidance
+   (h≈r(x_hat_0(x_t,t)), default, ~free) or twisted SMC (Wu 2023 / Trippe FrameDiff, K=64-256, report ESS) for
+   headline runs -- BOTH ride the same biased r(x_hat_0) proxy, so state plainly this is a surrogate not the
+   exact twist. OFF-MANIFOLD GUARD (mandatory -- maximizing (1-s_hat) alone marches to low-s AND low-p garbage):
+   (i) density gate inside the reward; (ii) LOW-t-ONLY guidance (query s_hat/p_hat only near the manifold,
+   disable at high noise where x_hat_0 is a blurry off-manifold average); (iii) HARD density veto during
+   sampling; (iv) clip guidance-to-score norm ratio <=1; (v) INDEPENDENT validation -- every synthesized batch
+   scored by a separate density estimator + nearest-neighbor-in-D_full distance, rejections counted as a
+   reported diagnostic.
+
+3. THE HONEST THEOREM -- a BOUND plus a DEMOTED empirical hypothesis. PROVABLE (left end): gain is
+   upper-bounded by a covariate-shift term (Ben-David et al.) that vanishes as selection entropy -> 0, so under
+   MCAR/MAR there is nothing to recover and any augmentation gain -> 0. NOT PROVABLE (right end): that the gain
+   grows and is CAPTURED by our method in proportion to selection entropy -- this is empirical and nearly
+   trivial as evidence. Selection-entropy axis = MUTUAL INFORMATION I(O;X) (headline scalar; zero under
+   ignorable missingness, upper-bounds recoverable gain), reported with D_comp=KL(p(x|O=0)||p(x)) as the
+   complement-specific driver. NOT propensity-spread entropy H(s(X)) alone (a uniform 50% thinning has high
+   spread but zero censoring). THE DISCRIMINATING QUANTITY is the METHOD-MINUS-MISDIRECTED-GUIDANCE GAP vs
+   I(O;X), never the method's own curve.
+
+EXPERIMENT LADDER (gated; E0 is the afternoon go/no-go for the ESTIMATION step, E2 is the go/no-go CURVE)
+-------------------------------------------------------------------------------------------------------
+E0. AFTERNOON SANITY (Testbed-A, 2D; the FIRST go/no-go). 8-Gaussian ring / two-moons / pinwheel with a KNOWN
+    closed-form p(x). MNAR selector s_beta(x)=sigmoid(-beta*phi(x)), phi a fixed feature that also carries
+    label info (e.g. phi=x_1 censors high-x_1 modes). Fit s_hat by density-ratio classifier (>=5-member deep
+    ensemble). GATE (REGION-SPLIT -- this is the fix for false-GO #1): Spearman(s_hat,s_beta)>0.7 BOTH overall
+    AND on-the-complement-only; small ECE; I(O;X)/D_comp from-s_hat agrees with analytic and moves with beta.
+    No generation yet. If s_hat cannot recover a KNOWN 2D selector, or complement-Spearman ~0 while global
+    passes (the silent false-GO), STOP and fix estimation before spending anything downstream.
+E1. BRIDGE ON 2D (hours). Train base diffusion on D_obs; implement the reconstruction-guidance Doob bridge
+    with LOW-t-only guidance, density gate + hard veto, uncertainty gate, guidance-norm cap. Confirm
+    synthesized points land in the collar-complement (high D_full density, low s_hat, low uncertainty) and NOT
+    off-manifold. GATE: complement-hit-rate and off-manifold-rejection within pre-registered bounds (early
+    test of K3 + K3b).
+E2. THE GO/NO-GO CURVE (2D, ~1 day). Full beta sweep {0,0.5,1,2,4,8} x >=3 seeds. Downstream classifier on
+    D_obs vs D_obs ∪ synthesized; evaluate on frozen full test AND censored slice. Plot THREE curves:
+    (i) method gain full, (ii) method gain censored slice, (iii) THE DISCRIMINATING PANEL -- the
+    method-minus-control gap on the censored slice vs I(O;X). Run baselines B0-B4 PLUS the sharp permuted-
+    selector control AND the diversity-matched B2. Paired Wilcoxon. GATE = left-end-zero confirmed (theorem)
+    AND the method-minus-DECOY censored-slice gap RISES with beta and is >0 at high beta with p<0.05. Pass K1
+    (rewritten) + K2 (vs the sharp control) here or the project stops.
+E3. PERCEPTUAL TESTBED-B (MNIST/CIFAR subpop censoring, 2-3 days). s_beta censors a subpopulation (rotated/
+    thick-stroke 8s, or one CIFAR visual mode). Small EDM/DDPM base (~1-2 GPU-hrs); twisted-SMC bridge
+    (K=64-256, report ESS) for headline numbers; same three curves + full baseline ladder + sharp control +
+    independent density/NN validators + visual off-manifold check. Confirms the mechanism survives structured
+    data, not just 2D density.
+E4. SCOPE + ROBUSTNESS (1 day). FOREIGN-STRUCTURE PROBE (K4): hold out a genuinely non-recombinable mode;
+    the method MUST fail to recover it (positive control for the interpolative-only honesty claim). THE CENTRAL-
+    SQUEEZE plot: (method - B3 1/s_hat reweighting) gain AGAINST distance-from-observed-support AND AGAINST
+    s_hat epistemic uncertainty -- the thesis "generation buys a bounded collar beyond reweighting, width set
+    by s_hat extrapolation reliability." Ablate gamma, tau, guidance-norm cap; inject noise into s_hat and
+    watch gain degrade gracefully.
+E5. (STRETCH, LIMITS-CHARACTERIZATION ONLY) Real-corpus pilot. One curated-vs-uncurated pair (filtered-vs-raw
+    tabular or a small filtered image set) with the COVER-BLIND check (K5). Report honestly as "as good as the
+    uncurated pool's coverage," NEVER a clean synthetic-strength claim. The synthetic GO must NOT be read as a
+    real-corpus GO. Explicitly not a single point of failure for the paper.
+
+Baseline ladder (E2/E3): B0 D_obs-only (floor); B1 SMOTE/oversampling of low-density D_obs; B2 selection-
+AGNOSTIC generative augmentation (gamma=0) + a DIVERSITY-MATCHED B2 (temperature-broadened, tuned to the
+guided sampler's entropy so B2 is not beaten merely on spread); B3 1/s_hat importance-reweighting (classical
+MNAR fix, no generation -- the central squeeze); B4 oracle trained on D_full (upper bound). THE SHARPEST
+CONTROL (false-GO catcher) = PERMUTED/MISDIRECTED-SELECTOR: identical bridge at identical guidance strength,
+s_hat replaced by a decoy (fit against a randomly rotated feature, or complement direction negated, or a
+label-permuted classifier). Holds the diversity confound FIXED; varies only whether guidance points at the
+REAL complement.
+
+PRE-REGISTERED KILL CONDITIONS (commit to PLAN.md BEFORE running; COMMIT that file BEFORE the results commit)
+------------------------------------------------------------------------------------------------------------
+K1. (REWRITTEN) The censored-region METHOD-MINUS-MISDIRECTED-SELECTOR gap shows no significant positive trend
+    across the beta sweep (Spearman(gap,I(O;X)) not sig >0, OR beta=0-vs-beta=max gap fails paired Wilcoxon
+    p<0.05 over >=3 seeds). The method's OWN rise is trivial (more MNAR = more headroom); the discriminating
+    prediction is the rising method-minus-CONTROL gap.
+K2. (CORE FALSIFIER) At high beta the method does not exceed the PERMUTED/MISDIRECTED-SELECTOR control (and the
+    diversity-matched B2) on the censored slice (paired Wilcoxon p>=0.05 or effect within noise). Then the
+    selection guidance is inert and any gain is generic guidance-induced diversity. Beating gamma=0 B2 ALONE
+    is NOT sufficient -- must beat the matched-guidance decoy.
+K3. OFF-MANIFOLD GARBAGE. Synthesized complement fails the independent density/NN-distance validator above
+    pre-registered thresholds, OR twisted-SMC ESS collapses below a preset floor. Even if downstream accuracy
+    moves, do NOT claim success.
+K3b. (REGION-SPLIT IDENTIFIABILITY) On-complement Spearman(s_hat,s_beta) not sig >0 while global passes, OR the
+    bridge is steered by high-epistemic-uncertainty s_hat (guidance mass outside the low-uncertainty collar).
+    Catches the silent false-GO where the pipeline passes on the easy region and hallucinates in the deep
+    complement.
+K4. SCOPE OVER-CLAIM ON FOREIGN STRUCTURE. If the method appears to recover a genuinely foreign (non-
+    recombinable) held-out mode, that is eval leakage/artifact, not capability -- investigate; the
+    interpolative-only scope is retracted only with extraordinary evidence.
+K5. (REAL-CORPUS ONLY) COVER-BLIND. If the background/reference pool is co-censored on the target region
+    (classifier confidence collapses to the class prior there), the real-corpus result is uninterpretable --
+    report ONLY the synthetic result, never a real-data claim.
+
+CITE-AND-DISTINGUISH (mandatory; the kill-test's list)
+------------------------------------------------------
+- Heckman selection correction (1979) / IPW / counterfactual-risk-minimization (Swaminathan-Joachims): REWEIGHT
+  the loss, never fabricate censored units. The baseline-to-beat (B3), not prior art.
+- Distribution Regression with Censored Selection (arXiv:2505.10814): relaxes Heckman parametrics but still
+  corrects estimates/inference under selection; baseline, not prior art.
+- Deep Generative Models for Reject Inference in Credit Scoring (arXiv:1904.11376): canonical Heckman-selection
+  generative work, but IMPUTES the OUTCOME/label for existing rejected applicants whose FEATURES are observed;
+  does not generate whole new units in a never-observed feature region. The unit-level-vs-feature-level
+  distinction is load-bearing -- cite and draw it explicitly.
+- RMT-Net (arXiv:2206.00568) and SMART/GAIN (PMC12041391): model MNAR selection but are reject-AWARE
+  correction / feature-level imputation, not unit-level generation of the complement.
+- Amortized Bayesian Inference for selection bias (arXiv:2604.18319): embeds selection into a simulator but
+  CORRECTS posterior inference (calibrated posteriors); emits no censored samples as data, no bridge, no
+  entropy relationship.
+- Bias-Corrected Data Synthesis for Imbalanced Learning (arXiv:2510.26046): nearest-sounding "bridge +
+  complement," but on inspection distribution-matching within the EXISTING minority class with an explicit
+  correction term -- no estimated selection model, no Doob bridge, no entropy relationship. Cite to PREEMPT
+  reviewer pattern-matching (this is the chief presentational risk).
+- Out-of-support / low-density guided diffusion (arXiv:2605.07220 support-robustness under guidance,
+  2507.05482 Stein guidance, 2606.13347 low-density-region exploration; DOIT/training-free Doob 2602.16198,
+  infinite-dim Doob 2602.06621): steer generation into low-density/out-of-support regions but driven by
+  classifiers/rewards/conditions, NEVER an estimated selection propensity. The nearest neighbor on the
+  GENERATION side -- adjacent-distinguishable; the distinguishing axis is "guidance = estimated selection
+  function."
+
+FRAMING / HOUSE DISCIPLINE (mirror the program's 11 shipped papers)
+-------------------------------------------------------------------
+Frame as "manufacturing the censored complement a selection-biased corpus implies" / "recovering the data a
+curated corpus systematically hides," NOT "a new data-augmentation method" (that framing invites the generic-
+augmentation reduction the sharp control exists to kill). FOREGROUND the two load-bearing novelties: (i)
+unit-level generation of a never-observed feature region located by an estimated selection function (vs
+label imputation of observed units), and (ii) the method-minus-misdirected-guidance gap tracking selection
+entropy. Repo layout mirrors the program: src/<pkg>/ (selection.py the density-ratio estimator + uncertainty,
+bridge.py the Doob guided sampler + off-manifold guards, entropy.py I(O;X)/D_comp, validate.py the independent
+density/NN validators), experiments/ (exp0_sanity ... exp5 + make_figures.py), tests/, results/ (committed
+JSONs), paper/ (main.tex, numbers.tex AUTO-GENERATED, verify_regen.py). Every number a machine-generated
+MACRO; every prose ratio a macro; regenerate-and-diff at submission. >=3 seeds (target 5 for the headline
+curve), mean+-sd, paired Wilcoxon with effect sizes + CIs. Pre-register the beta grid {0,0.5,1,2,4,8}, N, and
+all kill-condition numeric thresholds in PLAN.md and COMMIT PLAN.md BEFORE the results commit (a program
+review flagged that "pre-registered" is not git-verifiable when everything lands in one commit -- fix it here).
+Honest abstract that states the CHARACTERIZATION (bounded collar beyond reweighting; method-minus-decoy gap
+tracks selection entropy), NOT a clean theorem or a blowout. A "What we do not claim" section (see limitations
+below). Recency re-sweep before submission ("MNAR generative augmentation", "selection-guided diffusion",
+"Doob bridge selection bias", "reject inference generative", newest-first) -- the frozen index missed OUA in
+the companion project, so a LIVE web sweep is mandatory.
+
+LIMITATIONS TO DISCLOSE (verbatim in spirit -- these ARE the honesty of the paper)
+---------------------------------------------------------------------------------
+- IDENTIFIABILITY: s(x)=P(observed|x) is NOT pointwise-identified in the censored region; s_hat there is
+  classifier off-support extrapolation, not a measurement. The recoverable deliverable is the observed-support
+  COLLAR (density + uncertainty-gated), i.e. censored COMBINATIONS of present structure -- not arbitrary
+  deep-complement structure.
+- THE CENTRAL SQUEEZE: where generation provably beats 1/s_hat reweighting (B3) is beyond the collar, exactly
+  where s_hat is least reliable; where s_hat is reliable, B3 nearly matches. The contribution is a BOUNDED
+  collar of advantage whose width is set by s_hat extrapolation reliability -- own this as the central finding.
+- THE THEOREM is a BOUND + EMPIRICAL HYPOTHESIS: only the left end (gain->0 as selection entropy->0) is proven;
+  the rise is empirical AND nearly trivial, so do NOT claim "gain tracks selection entropy" as a theorem. The
+  discriminating evidence is the method-minus-misdirected-guidance gap.
+- THE DOOB BRIDGE IS APPROXIMATE: reconstruction guidance and twisted SMC both ride the biased r(x_hat_0)
+  proxy; described as "guided generation toward an estimated-low-selection collar," not exact Doob
+  conditioning.
+- SCOPE FENCE: recovers only structure on the manifold spanned by the observed data (interpolative, censored
+  combinations); does NOT generate foreign structure. K4 is a positive control that the method MUST fail on
+  genuinely non-recombinable modes.
+- FEASIBILITY/REALISM GAP: the cheap decisive experiment is SYNTHETIC and its advantage partly rests on a
+  full-support reference cover -- a controlled affordance NOT available on real corpora. The real-corpus rung
+  (E5) is assumption-gated (K5) and limits-characterization only.
+
+ATLAS LINK-BACK
+---------------
+This executes a STRONG-tier revolutionary-hunt swing (GREEN_CAUTIOUS on the re-derivation kill-test; the
+recommended second swing) hardened by a design critique. Companion swing running concurrently: Doob-Quenched
+Synapses (E:/GitHub/Research/doob-synapses), domain-orthogonal. Ready BACKUP swing if this or Doob dies:
+Kac-Rice Informative-Crossing Halting (GREEN_CAUTIOUS, not yet written; adaptive test-time compute; heavier
+lift because it must empirically dissociate from four halting families and the "threshold-crossing" vocabulary
+is a reviewer-confusion trap). On Zenodo ship, tell the atlas assistant to ingest as an own-lab node and stamp
+the outcome (positive if the method-minus-decoy gap rises with selection entropy on Testbed-A/B / negative-
+with-characterization if it does not -- BOTH are shippable honest results; the central-squeeze plot is a
+publishable characterization even under a negative headline).
