@@ -64,15 +64,24 @@ whole paper rests on (a) AND (b).
       the optimum down to sig*=0.05 (few-% CV, the measured BSS-2 noise band), so the
       mechanism is portable to a given chip's intrinsic-noise level.
 
-**Outcome: POSITIVE; K2 first half now resolved on real silicon.** The conjunction
-(a)+(b) holds in simulation and in an emulation calibrated to MEASURED BrainScaleS-2
-noise; isolated to the barrier conditioning. The intrinsic device noise was measured
-on-chip and is the benign (additive/white) class the mechanism needs, at a reachable
-amplitude. Two honest caveats remain: (i) we measured the noise but did NOT train
-the network on-chip -- the on-silicon retention curve + joules are the remaining
-step (K2 second half); (ii) plain replay out-retains us -- our standing is among
-rehearsal-free methods and our contribution is the mechanism/signature, not a
-retention SOTA.
+- [x] E7 ON-SILICON TRAINING (hardware-in-the-loop): ran the barrier-conditioned
+      consolidation on REAL BrainScaleS-2 (hxtorch, chip's analog-MAC forward in the
+      loop -> intrinsic noise IS the diffusion), continual Yin-Yang 2 tasks, avg=1.
+      doob retains task0 at 0.696 vs ou 0.540 -> **+15.6 pts retention ON SILICON**.
+      Single seed, one operating point (~79 min chip time); leans to stability (doob
+      task1 0.47 vs ou 0.64), retention measured not joules. THE MOAT REALIZED: the
+      chip's own noise, steered by the conditioning, consolidates a memory the
+      control loses. Key enabler: normalize+CLAMP the importance (E6 fix) and set
+      task-learning lr to the hxtorch weight scale.
+
+**Outcome: POSITIVE; mechanism DEMONSTRATED ON REAL SILICON.** The conjunction
+(a)+(b) holds in simulation, in an emulation calibrated to MEASURED BrainScaleS-2
+noise, in the hardware-faithful forward-noise realization, and --- the headline ---
+on real BrainScaleS-2 silicon with the chip in the training loop (+15.6 pts retention
+vs the matched control). Honest caveats: (i) the on-silicon result is single-seed,
+one operating point, retention-not-joules -- a full noise sweep with energy is the
+next study; (ii) plain replay out-retains us -- our standing is among rehearsal-free
+methods and the contribution is the mechanism/signature, not a retention SOTA.
 
 ## Fixed numerical conventions (pre-registered)
 

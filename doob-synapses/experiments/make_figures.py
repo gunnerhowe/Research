@@ -313,9 +313,33 @@ def fig8_forward():
     save(fig, "fig8_forward")
 
 
+def fig9_silicon_training():
+    st = load("bss2_silicon_training.json")
+    if not st:
+        return
+    fig, ax = plt.subplots(figsize=(4.6, 3.4))
+    groups = ["task0\n(retain)", "task1\n(learn)"]
+    doob = [st["doob"]["task0_retention"], st["doob"]["task1_acc"]]
+    ou = [st["ou"]["task0_retention"], st["ou"]["task1_acc"]]
+    x = np.arange(2); w = 0.36
+    ax.bar(x - w/2, doob, w, color=C["doob"], label="Doob (chip noise + conditioning)")
+    ax.bar(x + w/2, ou, w, color=C["ou"], label="OU (chip noise, no conditioning)")
+    ax.axhline(0.5, color="k", ls=":", lw=0.8, alpha=0.5)
+    ax.annotate("", xy=(-w/2, doob[0]), xytext=(w/2, ou[0]),
+                arrowprops=dict(arrowstyle="<->", color=C["doob"], lw=1.3))
+    ax.text(0.0, (doob[0]+ou[0])/2, f" +{100*st['retention_doob_minus_ou']:.1f}\n pts",
+            fontsize=9, color=C["doob"], fontweight="bold", va="center")
+    ax.set_xticks(x); ax.set_xticklabels(groups)
+    ax.set_ylabel("accuracy"); ax.set_ylim(0, 1.0)
+    ax.set_title("On real BrainScaleS-2 silicon\n(hardware-in-the-loop, chip noise in the loop)")
+    ax.legend(fontsize=7, loc="upper right")
+    save(fig, "fig9_silicon_training")
+
+
 def main():
     fig1_gate_f(); fig2_isolation(); fig3_bss2()
-    fig4_baselines(); fig5_modality(); fig6_mechanism(); fig7_silicon(); fig8_forward()
+    fig4_baselines(); fig5_modality(); fig6_mechanism(); fig7_silicon()
+    fig8_forward(); fig9_silicon_training()
 
 
 if __name__ == "__main__":

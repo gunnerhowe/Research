@@ -1,0 +1,14 @@
+{
+ "provenance": "Measured on real BrainScaleS-2 silicon via EBRAINS (hxtorch hardware-in-the-loop training; the analog-MAC forward pass runs on the chip so the intrinsic device noise is in the training loop). Continual Yin-Yang, 2 tasks (rot 0 -> rot 90deg, strong interference), shared 4-128-3 head, avg=1 (the chip's maximum intrinsic noise). Single seed, proof-of-concept. Wall time 4738 s (~79 min including quiggeldy queueing).",
+ "measured_on_silicon": true,
+ "hardware_in_the_loop": true,
+ "config": {"testbed": "continual_yin_yang", "tasks": 2, "avg_train": 1,
+            "hidden": 128, "seed": 0, "wall_s": 4738,
+            "note": "importance normalized+CLAMPED (the fix); barrier + Doob steering auto-calibrated to the noise-driven weight drift"},
+ "task0_trained_acc": 0.770,
+ "weight_drift": [1.91, 1.57, 1.96, 0.25],
+ "doob": {"task0_retention": 0.696, "task1_acc": 0.466},
+ "ou":   {"task0_retention": 0.540, "task1_acc": 0.640},
+ "retention_doob_minus_ou": 0.156,
+ "note": "Barrier-conditioning retains the prior task 15.6 pts better than the matched unconditioned control, with the chip's intrinsic noise in the loop. At this single un-tuned operating point the rule leans toward stability (doob trades task1 plasticity 0.47 vs 0.64); average accuracy is ~matched (doob 0.581 vs ou 0.590) while retention strongly favours doob. Single seed; joules not measured."
+}

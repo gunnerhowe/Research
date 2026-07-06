@@ -59,9 +59,11 @@ intrinsic noise on real BrainScaleS-2 silicon (chip \SiliconChip): it is additiv
 white and Gaussian, with a coefficient of variation up to \SiliconCVMaxPct\ that
 the chip's \texttt{num\_sends} knob averages as $1/\sqrt{N}$ --- the benign
 noise class the mechanism needs, at a reachable amplitude --- and the inverted-U
-\SiliconMeasWord\ an emulation calibrated to it. We stop short of on-chip training:
-mapping the network onto the analog array and measuring the retention curve and its
-energy there is the remaining step. Within these limits the mechanism reframes
+\SiliconMeasWord\ an emulation calibrated to it. Finally we run the rule on real
+BrainScaleS-2 silicon with the chip in the training loop: its own intrinsic noise,
+steered by the barrier-conditioning, retains a prior task \SilTrainRetGainPts\ points
+better than the matched unconditioned control (single seed, one operating point;
+retention measured, energy not yet). Within these limits the mechanism reframes
 analog noise from a tax into a consolidation dividend that a von-Neumann
 accelerator must spend energy to fake.
 \end{abstract}
@@ -434,9 +436,8 @@ point is reachable. Re-running the retention sweep with the BSS-2 emulator
 \emph{calibrated to these measured values}, the inverted-U \SiliconMeasWord\ (lift
 \SiliconMeasLiftPts\ pts at $\sigstar=\SiliconMeasSigStar$). This upgrades E2 from
 assumed-parameter emulation to a measured-noise-calibrated result. It does
-\emph{not} replace on-chip training: mapping the network onto the analog array and
-measuring the retention curve (and joules) on silicon is the remaining step (K2,
-second half).
+\emph{not} replace on-chip training, which we carry out in \S\ref{sec:ontraining};
+measuring the full on-silicon retention curve and its joules is the remaining study.
 
 \begin{figure}[t]
 \centering
@@ -476,9 +477,8 @@ is set by the Doob-steering coupling: increasing it moves $\sigstar$ down to
 \FwdMinSigStar\ (Fig.~\ref{fig:forward}b), i.e.\ into the few-percent-CV band the
 measured BSS-2 noise occupies (\S\ref{sec:silicon}). So the mechanism does not
 require a specific noise amplitude --- it can be matched to a given chip's intrinsic
-noise. This is what makes an on-chip realization reachable in principle; carrying it
-out (hardware-in-the-loop training with measured retention and joules) remains the
-open step.
+noise. This is what makes the on-chip realization reachable; we carry it out on real
+silicon in \S\ref{sec:ontraining}.
 
 \begin{figure}[t]
 \centering
@@ -492,18 +492,58 @@ mechanism is portable to a given chip's intrinsic-noise level.}
 \label{fig:forward}
 \end{figure}
 
+\subsection{E7 --- on-silicon demonstration (hardware-in-the-loop)}\label{sec:ontraining}
+
+We ran the barrier-conditioned consolidation on real BrainScaleS-2 silicon, with the
+chip in the training loop: the analog-MAC forward pass executes on the device
+(hxtorch), so the intrinsic device noise perturbs the forward pass and hence the
+gradient --- the diffusion is the chip's own noise. A network learns a first
+continual-Yin-Yang task, then a second (a $90^\circ$ rotation, strong interference)
+at the chip's maximum intrinsic noise (\texttt{avg}=1), once with the
+barrier-conditioning and once without (the matched OU control), and we measure how
+much of the first task survives (Fig.~\ref{fig:ontraining}).
+
+\textbf{Result.} On silicon, the barrier-conditioning retains the prior task at
+\SilTrainDoobRet\ versus \SilTrainOuRet\ for the unconditioned control --- a
+\SilTrainRetGainPts-point retention gain from steering the chip's own noise. This is
+the mechanism's load-bearing claim, realized on the device a GPU cannot emulate for
+free: the intrinsic analog noise, conditioned on the memory barrier, consolidates a
+memory the control loses.
+
+\textbf{Honest scope.} This is a single-seed proof of concept at one operating point
+(\SilTrainWallMin~min of chip time), not a tuned optimum or a statistical study. The
+rule here leans toward stability: it pays for the retention with current-task
+plasticity (task~2 \SilTrainDoobTaskOne\ vs.\ \SilTrainOuTaskOne), so average
+accuracy is about matched while retention strongly favours ours --- the
+stability-plasticity trade at an un-tuned point, which E6 (Fig.~\ref{fig:forward})
+shows can be balanced. We measured retention, not joules. A multi-seed noise sweep
+tracing the full on-silicon inverted-U, with measured energy, is the natural next
+study; the mechanism itself now demonstrably operates on the chip.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.52\textwidth]{figs/fig9_silicon_training.pdf}
+\caption{\textbf{On real BrainScaleS-2 silicon} (hardware-in-the-loop; the chip's
+intrinsic noise is the diffusion). After learning task~2, the barrier-conditioned
+rule retains task~1 at \SilTrainDoobRet\ vs.\ \SilTrainOuRet\ for the matched
+unconditioned control (+\SilTrainRetGainPts\ pts). Single seed, one operating point;
+the rule trades some task-2 plasticity for the retention (stated in text).}
+\label{fig:ontraining}
+\end{figure}
+
 \section{What we do not claim}
 
 \begin{itemize}\itemsep2pt
 \item \textbf{The drift is not novel.} $-s\wmu$ is a re-derived limit of
 OUA/MESU/EWC \citep{oua2024,mesu2025,ewc2017}. Our contribution is the Doob
 barrier-conditioning (a) and the inverted-U (b), only in conjunction.
-\item \textbf{Measured noise, not on-chip training.} We \emph{measured} the
-intrinsic noise on real BrainScaleS-2 silicon (\S\ref{sec:silicon}) and calibrated
-the emulation to it, but we did \emph{not} train the continual-learning network
-on-chip: we report no measured on-chip \emph{retention} and no measured joules (the
-energy numbers are an operation-count model). The on-silicon retention curve and its
-energy (K2, second half) are pre-registered and remain.
+\item \textbf{On-chip demonstration is a single-seed proof of concept.} We
+\emph{did} train on real BrainScaleS-2 silicon with the chip in the loop
+(\S\ref{sec:ontraining}) and measured a retention gain, but at one seed and one
+operating point --- not a tuned optimum, not a statistical sweep, and with the
+stability-plasticity trade stated. We measured retention, \emph{not} joules (the
+energy numbers remain an operation-count model). A multi-seed on-silicon noise sweep
+with measured energy is the natural next study, not a claim we make here.
 \item \textbf{Benefit only at the optimum.} We do not claim the mechanism helps at
 arbitrary noise; it helps in an inverted-U window and hurts outside it. We report
 the whole curve, including the down-slope.

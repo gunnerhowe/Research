@@ -143,6 +143,18 @@ try:
 except FileNotFoundError:
     pass
 
+# ------------------------------------------------------------------ E7 on-silicon training
+try:
+    st = load("bss2_silicon_training.json")
+    macro("SilTrainDoobRet", pct(st["doob"]["task0_retention"]))
+    macro("SilTrainOuRet", pct(st["ou"]["task0_retention"]))
+    macro("SilTrainDoobTaskOne", pct(st["doob"]["task1_acc"]))
+    macro("SilTrainOuTaskOne", pct(st["ou"]["task1_acc"]))
+    macro("SilTrainRetGainPts", pts(st["retention_doob_minus_ou"]))
+    macro("SilTrainWallMin", num(st["config"]["wall_s"] / 60.0, 0))
+except FileNotFoundError:
+    pass
+
 # ------------------------------------------------------------------ emit
 lines = [f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in sorted(M.items())]
 OUT.write_text("\n".join(lines) + "\n")
