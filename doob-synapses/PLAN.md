@@ -31,14 +31,28 @@ whole paper rests on (a) AND (b).
       force cap; inverted-U adjudicator (detects planted U, rejects monotone);
       BSS-2 colored/quantized/fixed-pattern noise; energy noise-tax; hardware guard
 - [x] Operating point FIXED by a coarse pre-gate calibration (see Decisions)
-- [ ] E0 GATE F (8 seeds): inverted-U for doob, monotone for ou/ewc/mesu/none
-- [ ] E1 mechanism isolation: kappa ablation flattens; optimum tracks barrier_scale
-- [ ] E2 BSS-2 noise EMULATION (labeled; real silicon = pending, K2)
-- [ ] E3 baselines (matched-budget): OUA/MESU/EWC/Benna-Fusi/replay/unconditioned-OU
-- [ ] E4 second modality (continual Yin-Yang); noise-optimum vs task similarity
-- [ ] Figures + gen_paper_numbers (all macros) + verify_regen byte-identical
-- [ ] paper/main.tex; abstract SURRENDERS the drift; "What we do not claim";
-      Limitations; Reproducibility (DOI at submission)
+- [x] E0 GATE F (8 seeds) **PASS**: doob inverted-U +10.9 pts at sigma*=0.02
+      (p=0.004 both ends); ou/ewc/mesu/none monotone (>=0.78 decreasing steps).
+      K1 does not fire.
+- [x] E1 isolation **PASS**: kappa 1->0 flattens (lift 13.0->0.0 pts, U vanishes);
+      sigma* tracks barrier_scale. K3 does not fire.
+- [x] E2 BSS-2 EMULATION: inverted-U **survives** (lift 11.0 pts) at every noise
+      color rho in {0,0.3,0.6,0.9}. Real silicon = pending (K2); no joules claimed.
+- [x] E3 baselines: doob* = best REHEARSAL-FREE method (68.3%); ties MESU (65.2%,
+      p=0.25), beats OU/EWC/Benna-Fusi/naive (p<=0.008). **Replay (stores data)
+      beats us (83.0%)** -- reported openly, different budget class, no mechanism.
+- [x] E4 Yin-Yang (8 seeds): inverted-U **reproduces** (+7.4 pts); lift grows with
+      task dissimilarity (0.6 pts at 45deg -> ~7 pts at 90-180deg).
+- [x] Figures (6) + gen_paper_numbers (32 macros) + verify_regen **byte-identical**
+- [x] paper/main.tex compiled clean (10pp); abstract SURRENDERS the drift;
+      "What we do not claim" (drift, emulation-not-silicon, benefit-only-at-optimum,
+      replay); Limitations; Reproducibility (DOI at submission)
+
+**Outcome: POSITIVE with two honest caveats.** The conjunction (a)+(b) holds in
+simulation and device-faithful emulation; isolated to the barrier conditioning. The
+two caveats stated up front: (i) BSS-2 is EMULATION, not measured silicon (K2 open);
+(ii) plain replay out-retains us -- our standing is among rehearsal-free methods and
+our contribution is the mechanism/signature, not a retention SOTA.
 
 ## Fixed numerical conventions (pre-registered)
 
@@ -162,6 +176,21 @@ whole paper rests on (a) AND (b).
   are produced or claimed. Corrected a brief citation: the "node-perturbation on
   BSS-2 (0.90-0.95)" reference could not be verified (lit_notes.md) and is NOT
   cited; the port is framed against Pehle 2022 / Weis 2020 / Cramer 2022.
+
+- 2026-07-06 (E3 outcome: honest reframing to rehearsal-free). Plain reservoir
+  replay (250 stored exemplars) reaches 83.0% retention, beating ours (68.3%) by
+  14.6 pts (Wilcoxon p=0.008). This was expected -- replay stores raw data. The
+  paper's comparison of record is therefore reframed to REHEARSAL-FREE consolidation
+  methods (store no data), where ours is best: it ties the strongest (MESU 65.2%,
+  ours+3.1 pts, p=0.25 -- not significant) and significantly beats OU/EWC/Benna-Fusi/
+  naive (p<=0.008). Replay is reported openly in the abstract, E3, and
+  "What we do not claim". The contribution remains the noise->retention SIGNATURE and
+  the mechanism, not a retention leaderboard entry. An earlier draft's "exceeds the
+  best baseline" was corrected to this before the results commit.
+- 2026-07-06 (mechanism decomposition corrected to match the data). fig6 shows
+  plasticity is roughly noise-INSENSITIVE and the retention inverted-U coincides with
+  a FORGETTING MINIMUM at sigma* (not a plasticity/protection tradeoff). Prose and
+  caption were corrected to the forgetting-minimum reading before the results commit.
 
 ## Recency re-sweep log
 
