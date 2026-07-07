@@ -45,6 +45,19 @@ intrinsic device noise and continual-learning retention.
   Networks*. arXiv:2401.07387; Nat Commun 16 (2025), DOI 10.1038/s41467-025-64232-1.
   Neural-SDE digital twins to train THROUGH device stochasticity, SINGLE-TASK
   temporal. No continual learning, no inverted-U, no Doob.
+- **ANV** (nearest neighbor on the FORGETTING axis) — Xie, He, Fu, Sato, Tao,
+  Sugiyama, *Artificial Neural Variability for Deep Learning: On Overfitting, Noise
+  Memorization, and Catastrophic Forgetting*. Neural Computation 2021;
+  arXiv:2011.06220. INJECTED artificial variability (digital regularizer) that
+  provably reduces catastrophic forgetting -- but MONOTONE (no inverted-U optimum),
+  not intrinsic device noise, no Doob/barrier/first-passage. Verified 2026-07-06.
+- **Caston et al.** (nearest neighbor on the NOISE-OPTIMUM axis) — Caston, Wilson,
+  Comeaux, Dorval, *Stochastic Resonance Governs Memory Consolidation Accuracy in a
+  Neural Network Model*. EMBC 2022 (PubMed 36085728). A stochastic-resonance noise
+  OPTIMUM for memory-consolidation accuracy -- but SINGLE-task storage accuracy (2
+  memory nodes, tic-tac-toe), NOT sequential-task retention/catastrophic forgetting;
+  no hardware, no Doob/barrier. Verified 2026-07-06. Neither ANV nor Caston has the
+  conjunction (intrinsic noise + inverted-U for cross-task retention + Doob rule).
 - **Probabilistic Metaplasticity** — Zohora, Karia, Soures, Kudithipudi,
   *Probabilistic Metaplasticity for Continual Learning with Memristors*.
   arXiv:2403.08718; Sci Rep 14 (2024), DOI 10.1038/s41598-024-78290-w. Modulates

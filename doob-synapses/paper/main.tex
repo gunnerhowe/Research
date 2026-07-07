@@ -53,7 +53,7 @@ realization in which the noise enters the forward pass (the analog MAC) rather t
 the weights, with the retention optimum \emph{tunable} to a device's few-percent
 intrinsic noise. At its optimum the rule is the strongest \emph{rehearsal-free}
 consolidation method we test --- matching MESU and
-significantly beating OU, EWC and Benna--Fusi; plain replay, which stores data,
+significantly beating OU and EWC; plain replay, which stores data,
 scores higher but exhibits none of the mechanism. We further \emph{measure} the
 intrinsic noise on real BrainScaleS-2 silicon (chip \SiliconChip): it is additive
 and trial-to-trial-independent, with a coefficient of variation up to
@@ -182,10 +182,20 @@ not intrinsic per-synapse device noise, and with no hardware or barrier. NADO
 twins for single-task temporal tasks. Probabilistic Metaplasticity
 \citep{probmetaplast2024} consolidates on memristors by modulating update
 \emph{probability} (a stochastic gate) while treating device noise as an obstacle.
-None claims that raising intrinsic noise non-monotonically improves cross-task
-retention. \textbf{Benna--Fusi} complex synapses \citep{bennafusi2016} consolidate
-without a barrier via a deterministic multi-timescale cascade --- an incumbent we
-compare against.
+The two closest neighbors sit on our two axes but on the wrong side of each.
+\textbf{ANV} \citep{xie2021anv} is closest on the \emph{forgetting} axis: it
+\emph{injects} artificial neural variability that provably reduces catastrophic
+forgetting --- but the variability is injected (a digital regularizer, not intrinsic
+device noise), the benefit is \emph{monotone} (no inverted-U optimum), and there is
+no barrier or first-passage conditioning. \textbf{Caston et al.} \citep{caston2022}
+is closest on the \emph{noise-optimum} axis: a stochastic-resonance optimum for
+memory-consolidation accuracy --- but for \emph{single-task} storage accuracy, not
+sequential-task retention (no catastrophic forgetting across tasks), and with no
+hardware and no barrier conditioning. So none combines the two: raising
+\emph{intrinsic} noise to non-monotonically improve \emph{cross-task} retention, via
+a barrier-conditioned (Doob) rule. \textbf{Benna--Fusi} complex synapses
+\citep{bennafusi2016} consolidate without a barrier via a deterministic
+multi-timescale cascade --- an incumbent we compare against.
 
 \paragraph{Doob's $h$-transform lives in generative modeling.}
 Conditioning a diffusion on a rare event via the $h$-transform underlies
