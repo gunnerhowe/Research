@@ -13,6 +13,13 @@
 \newtheorem{definition}{Definition}[section]
 \newtheorem{remark}{Remark}[section]
 
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.7}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{totalnumber}{4}
+\setcounter{topnumber}{3}
+
 \newcommand{\dbar}{\bar d}
 \newcommand{\Hb}{H_{\mathrm b}}
 \newcommand{\E}{\mathbb E}
@@ -49,11 +56,14 @@ within $\calibCEmaxPct\%$). A 50\%-pruned, fine-tuned twin with indistinguishabl
 (CKA $= \ckaPrune$; DSA inside its own null range) is separated from its base by
 $\dbar$ at $\ratioPrune\times$ the same-process floor ($5/5$ seeds, $\ge
 \ratioPruneMin\times$). Independent training seeds --- called identical by CKA
-($\ckaSeed$) and DSA ($\dsaSeed$) --- differ by $\ratioSeed\times$ floor. Conversely
-$\dbar$ correctly reports distillation as process-preserving at the output level, and
-a different-computation control with \emph{identical} entropy rate and unigram
-marginal is separated at $\ratioDifftask\times$ floor while DSA cannot distinguish it
-from its own null. We report the pre-registered gate verdict (which failed as
+($\ckaSeed$) and DSA ($\dsaSeed$) --- differ by $\ratioSeed\times$ floor; sweeping the
+prune fraction from 0.1 to 0.9 keeps DSA at its null throughout while $\dbar$
+separates at every fraction. Conversely $\dbar$ correctly certifies GRU distillation
+as process-preserving at the output level (transformer distillation is not: students
+separate on every seed of two grammars, while DSA rates them as \emph{more} different
+than models of entirely different tasks), and a different-computation control with
+\emph{identical} entropy rate and unigram marginal is separated at
+$\ratioDifftask\times$ floor while DSA cannot distinguish it from its own null. We report the pre-registered gate verdict (which failed as
 written), the two disclosed analysis amendments that repair it, every same-process
 floor, and the block-length consistency wall $n \lesssim \log_2 N/\hat h$ that bounds
 all claims. Per Ornstein--Weiss, $\dbar$ is not a general isomorphism detector; the
@@ -540,7 +550,68 @@ merely retrain it to the same loss.
 
 \section{E2: beyond toy RNNs --- transformer readouts}\label{sec:e2}
 
-%%E2_RESULTS%%
+E2 repeats the design with 2-layer causal Transformer-LMs (3 seeds; states = the
+final-layer residual stream; free-running generation over a sliding window, so the
+emitted stream is an order-255 stationary Markov process), on GM and on
+\textsc{mess3} \citep{marzen2017nearly, shai2024transformers} --- a 3-symbol,
+non-unifilar generator whose $\varepsilon$-machine is infinite-state, with
+$\hat h \approx \messHhat$ bits, hence a much tighter wall
+($k_{\mathrm{wall}} \approx \messWall$): claims there live at $n \le 8$. All models
+train to their task optimum (GM: CE $\le \tfValCEGMMax$; \textsc{mess3}: CE
+$\le \tfValCEMessMax$). Twins: noise into the residual stream
+($\sigma^\ast = \tfSigmaStarGM$, calibration again never binding) and a distilled
+twin; the GM-vs-\textsc{mess3} cross pair anchors ``genuinely different'' for
+CKA/DSA.
+
+\begin{table}[t]
+\centering\small
+\caption{E2: transformers (mean $\pm$ std over 3 seeds; $\dbar$ at the amended
+plateau, multiples of same-process floors). Cross anchor (GM vs.\ \textsc{mess3}
+models): CKA $= \crossCKA$, DSA $= \crossDSA$.}
+\label{tab:e2}
+\begin{tabular}{lcccc}
+\toprule
+pair & CKA $\uparrow$ & DSA $\downarrow$ & $\dbar_1$ (TV) & $\dbar_{n^*}/$floor\\
+\midrule
+\eTwoTableRows
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Distillation separates, on both grammars.} Transformer distillation
+(same architecture, fresh init, KL to teacher) is \emph{less} process-faithful than
+its GRU counterpart: the students separate from their teachers on every seed ---
+$\tfDistillRatioGMMin$--$\tfDistillRatioGMMax\times$ floor on GM (CKA
+$= \tfDistillCKAGM$, above the similarity line) and $\tfDistillRatioMess\times$
+floor on \textsc{mess3}, all within the (tight) walls. DSA is again uninformative
+in the direction that matters: its distill score ($\tfDistillDSAGM$) \emph{exceeds}
+its different-computation anchor ($\crossDSA$) --- under DSA, a distilled twin of the
+same model looks more different than a model of another task. The cross anchor also
+calibrates CKA here: transformers on \emph{different} grammars score CKA
+$\crossCKA$ --- higher than some same-task distill pairs --- so on this testbed
+neither baseline ranks ``how different is the computation'' correctly, while
+$\dbar$'s ordering (noise $<$ distill $\ll$ cross-task) is consistent on every
+seed.
+
+\textbf{Residual noise: the readout hierarchy again.} With fresh noise injected into
+the residual stream at every forward pass, the emitted process is essentially
+unchanged (separation on $\tfNoiseEmitSepGM/3$ seeds only; $\dbar_1 \le 0.001$) ---
+and here even DSA stays quiet ($\tfNoiseDSAGM$; no recurrent state means the noise
+does not propagate through fitted dynamics, so the errors-in-variables artifact of
+\S\ref{sec:e0} largely disappears). The belief readout still separates on every
+seed ($\tfBeliefNoiseGM\times$ floor): the twin computes visibly noisier
+conditional probabilities while emitting statistically indistinguishable symbols.
+No baseline, and no static statistic of the emitted stream, sees this distinction;
+the process metric at the right readout does.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figs/fig_e2.pdf}
+\caption{E2 summary: three metrics on transformer pairs (bars = mean over 3 seeds,
+points = seeds; dotted line = GM-vs-\textsc{mess3} cross anchor). $\dbar$ shown at
+the amended plateau as a multiple of the same-process floor.}
+\label{fig:e2}
+\end{figure}
 
 \section{What $\dbar$ does not do}\label{sec:limits}
 
@@ -577,12 +648,15 @@ directions.
 \section{Conclusion}
 We imported a fifty-year-old ergodic-theory metric into model comparison and found
 that, on the restricted domain where its estimator is honest, it sees what the
-field's current tools do not: pruned twins, independent seeds, and noise-injected
-twins with matched outputs are all different \emph{processes}, invisibly to CKA and
-DSA; different computations with identical static statistics are separated by two
-orders of magnitude; recoded models and faithful distillates are correctly certified
-as process-identical. The pre-registered gate verdict, its failure, and the two
-amendments that repair it are all in the repository, with every number
+field's current tools do not: pruned twins (at every fraction), independent seeds,
+transformer distillates, and noise-injected twins with matched outputs are all
+different \emph{processes}, invisibly to CKA and DSA; different computations with
+identical static statistics are separated by two orders of magnitude; recoded models
+and faithful (GRU) distillates are correctly certified as process-identical. Along
+the way the baselines' failure modes became data: DSA responds to process noise more
+strongly than to a change of computation, and rates transformer distillates as more
+different than cross-task model pairs. The pre-registered gate verdict, its failure,
+and the two amendments that repair it are all in the repository, with every number
 machine-generated from committed results.
 
 \paragraph{Reproducibility.} Code, pre-registration (\texttt{PLAN.md}, committed
@@ -591,6 +665,7 @@ in this paper (\texttt{gen\_paper\_numbers.py}, verified by
 \texttt{verify\_regen.py}) are in the project repository. All experiments run on one
 consumer GPU (RTX 3080, 10\,GB).
 
+\clearpage
 \bibliographystyle{plainnat}
 \bibliography{references}
 

@@ -222,8 +222,16 @@ def fig_e2():
     axes[1].set_ylabel("DSA distance")
     axes[1].axhline(np.mean([c["dsa"] for c in E2["cross"]]), color="k",
                     lw=0.8, ls=":", label="GM vs MESS3")
-    ratio = [[r["plateau"]["dbar"] / max(r["plateau"]["floor"], 1e-12)
-              for r in E2[t][p]] for t, p in groups]
+
+    def am_ratio(r):
+        ok = [row for row in r["dbar_curve"]
+              if 2 <= row["n"] <= r["k_wall"] and row["dbar"] >= 2 * row["floor"]]
+        if not ok:
+            return 1.0
+        w = max(ok, key=lambda x: x["delta"])
+        return w["dbar"] / max(w["floor"], 1e-12)
+
+    ratio = [[am_ratio(r) for r in E2[t][p]] for t, p in groups]
     _bar_with_points(axes[2], xs, ratio, C["dbar"])
     axes[2].set_yscale("log")
     axes[2].axhline(2.0, color="k", lw=0.6, ls="--")
