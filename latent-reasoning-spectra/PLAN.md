@@ -68,6 +68,16 @@ ProsQA's known ground-truth DAG with matched null controls.
 - **Linear-chain null instances.** Test/valid problems whose ground-truth path has NO
   branch step (out-degree of every v_0..v_{L-1} equals 1). If < 20 such instances exist in
   test+valid, mine additional ones from prosqa_train.json (inference only; no training).
+  **AMENDMENT (2026-07-08, before E0 was run):** mining found 0 linear-chain instances in
+  test+valid and only 5 in the 17,886-problem train split (branching is intrinsic to the
+  ProsQA generator). The instance-level null is therefore constructed as a PAIRED
+  PRUNED-REAL control: for ≥100 test problems, delete from the question exactly those
+  off-path out-edges of ground-truth path nodes (so every path node has out-degree 1),
+  keeping all other statements, ordering, phrasing, and the final question intact; skip
+  problems where the pruning removes every mention of neg_target. This yields a
+  linear-chain twin of each real problem and enables paired (within-problem)
+  branch-signature comparisons. The 5 natural train linear chains are run as a secondary
+  check. Model accuracy on the pruned set is reported (distribution-shift guard).
 - **Answer margin.** log-prob difference of the full tokenized correct answer
   `### {root} is a {target}.` vs `### {root} is a {neg_target}.`, teacher-forced after
   `<|end-latent|>`.
