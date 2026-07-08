@@ -1,0 +1,700 @@
+{
+ "configs": {
+  "pre8r32": {
+   "n_delays": "8",
+   "rank": "32",
+   "score_method": "angular"
+  },
+  "deep16r64": {
+   "n_delays": "16",
+   "rank": "64",
+   "score_method": "angular"
+  },
+  "flat1r32": {
+   "n_delays": "1",
+   "rank": "32",
+   "score_method": "angular"
+  },
+  "rrr8r32": {
+   "n_delays": "8",
+   "rank": "32",
+   "score_method": "angular",
+   "reduced_rank_reg": "True"
+  },
+  "wass8r32": {
+   "n_delays": "8",
+   "rank": "32",
+   "score_method": "wasserstein"
+  }
+ },
+ "iters": 800,
+ "rows": [
+  {
+   "seed": 0,
+   "pair": "null",
+   "config": "pre8r32",
+   "dsa": 0.041006870567798615
+  },
+  {
+   "seed": 0,
+   "pair": "null",
+   "config": "deep16r64",
+   "dsa": 0.04307876154780388
+  },
+  {
+   "seed": 0,
+   "pair": "null",
+   "config": "flat1r32",
+   "dsa": 0.15408144891262054
+  },
+  {
+   "seed": 0,
+   "pair": "null",
+   "config": "rrr8r32",
+   "dsa": 0.20356282591819763
+  },
+  {
+   "seed": 0,
+   "pair": "null",
+   "config": "wass8r32",
+   "dsa": 5.587935447692871e-09
+  },
+  {
+   "seed": 0,
+   "pair": "noise",
+   "config": "pre8r32",
+   "dsa": 0.9552922248840332
+  },
+  {
+   "seed": 0,
+   "pair": "noise",
+   "config": "deep16r64",
+   "dsa": 0.9142709970474243
+  },
+  {
+   "seed": 0,
+   "pair": "noise",
+   "config": "flat1r32",
+   "dsa": 0.8894246816635132
+  },
+  {
+   "seed": 0,
+   "pair": "noise",
+   "config": "rrr8r32",
+   "dsa": 0.2753506302833557
+  },
+  {
+   "seed": 0,
+   "pair": "noise",
+   "config": "wass8r32",
+   "dsa": 0.4953956604003906
+  },
+  {
+   "seed": 0,
+   "pair": "prune",
+   "config": "pre8r32",
+   "dsa": 0.06193890422582626
+  },
+  {
+   "seed": 0,
+   "pair": "prune",
+   "config": "deep16r64",
+   "dsa": 0.17207647860050201
+  },
+  {
+   "seed": 0,
+   "pair": "prune",
+   "config": "flat1r32",
+   "dsa": 0.1969217211008072
+  },
+  {
+   "seed": 0,
+   "pair": "prune",
+   "config": "rrr8r32",
+   "dsa": 0.20104427635669708
+  },
+  {
+   "seed": 0,
+   "pair": "prune",
+   "config": "wass8r32",
+   "dsa": 0.002140057273209095
+  },
+  {
+   "seed": 0,
+   "pair": "difftask",
+   "config": "pre8r32",
+   "dsa": 0.0952320471405983
+  },
+  {
+   "seed": 0,
+   "pair": "difftask",
+   "config": "deep16r64",
+   "dsa": 0.09500988572835922
+  },
+  {
+   "seed": 0,
+   "pair": "difftask",
+   "config": "flat1r32",
+   "dsa": 0.27915775775909424
+  },
+  {
+   "seed": 0,
+   "pair": "difftask",
+   "config": "rrr8r32",
+   "dsa": 0.22709515690803528
+  },
+  {
+   "seed": 0,
+   "pair": "difftask",
+   "config": "wass8r32",
+   "dsa": 0.012244771234691143
+  },
+  {
+   "seed": 1,
+   "pair": "null",
+   "config": "pre8r32",
+   "dsa": 0.03718853369355202
+  },
+  {
+   "seed": 1,
+   "pair": "null",
+   "config": "deep16r64",
+   "dsa": 0.03979530185461044
+  },
+  {
+   "seed": 1,
+   "pair": "null",
+   "config": "flat1r32",
+   "dsa": 0.16343654692173004
+  },
+  {
+   "seed": 1,
+   "pair": "null",
+   "config": "rrr8r32",
+   "dsa": 0.20048296451568604
+  },
+  {
+   "seed": 1,
+   "pair": "null",
+   "config": "wass8r32",
+   "dsa": 1.1175870895385742e-08
+  },
+  {
+   "seed": 1,
+   "pair": "noise",
+   "config": "pre8r32",
+   "dsa": 0.9901114702224731
+  },
+  {
+   "seed": 1,
+   "pair": "noise",
+   "config": "deep16r64",
+   "dsa": 0.9767848253250122
+  },
+  {
+   "seed": 1,
+   "pair": "noise",
+   "config": "flat1r32",
+   "dsa": 0.9150069952011108
+  },
+  {
+   "seed": 1,
+   "pair": "noise",
+   "config": "rrr8r32",
+   "dsa": 0.27938026189804077
+  },
+  {
+   "seed": 1,
+   "pair": "noise",
+   "config": "wass8r32",
+   "dsa": 0.5311506390571594
+  },
+  {
+   "seed": 1,
+   "pair": "prune",
+   "config": "pre8r32",
+   "dsa": 0.08197932690382004
+  },
+  {
+   "seed": 1,
+   "pair": "prune",
+   "config": "deep16r64",
+   "dsa": 0.12773197889328003
+  },
+  {
+   "seed": 1,
+   "pair": "prune",
+   "config": "flat1r32",
+   "dsa": 0.2681773602962494
+  },
+  {
+   "seed": 1,
+   "pair": "prune",
+   "config": "rrr8r32",
+   "dsa": 0.22082069516181946
+  },
+  {
+   "seed": 1,
+   "pair": "prune",
+   "config": "wass8r32",
+   "dsa": 0.0019870270043611526
+  },
+  {
+   "seed": 1,
+   "pair": "difftask",
+   "config": "pre8r32",
+   "dsa": 0.11553993076086044
+  },
+  {
+   "seed": 1,
+   "pair": "difftask",
+   "config": "deep16r64",
+   "dsa": 0.15059073269367218
+  },
+  {
+   "seed": 1,
+   "pair": "difftask",
+   "config": "flat1r32",
+   "dsa": 0.29636237025260925
+  },
+  {
+   "seed": 1,
+   "pair": "difftask",
+   "config": "rrr8r32",
+   "dsa": 0.22603166103363037
+  },
+  {
+   "seed": 1,
+   "pair": "difftask",
+   "config": "wass8r32",
+   "dsa": 0.016553472727537155
+  },
+  {
+   "seed": 2,
+   "pair": "null",
+   "config": "pre8r32",
+   "dsa": 0.11904268711805344
+  },
+  {
+   "seed": 2,
+   "pair": "null",
+   "config": "deep16r64",
+   "dsa": 0.04576587304472923
+  },
+  {
+   "seed": 2,
+   "pair": "null",
+   "config": "flat1r32",
+   "dsa": 0.18838876485824585
+  },
+  {
+   "seed": 2,
+   "pair": "null",
+   "config": "rrr8r32",
+   "dsa": 0.2145911604166031
+  },
+  {
+   "seed": 2,
+   "pair": "null",
+   "config": "wass8r32",
+   "dsa": 9.313225746154785e-09
+  },
+  {
+   "seed": 2,
+   "pair": "noise",
+   "config": "pre8r32",
+   "dsa": 0.9467571377754211
+  },
+  {
+   "seed": 2,
+   "pair": "noise",
+   "config": "deep16r64",
+   "dsa": 0.9704433083534241
+  },
+  {
+   "seed": 2,
+   "pair": "noise",
+   "config": "flat1r32",
+   "dsa": 0.9029001593589783
+  },
+  {
+   "seed": 2,
+   "pair": "noise",
+   "config": "rrr8r32",
+   "dsa": 0.27879130840301514
+  },
+  {
+   "seed": 2,
+   "pair": "noise",
+   "config": "wass8r32",
+   "dsa": 0.4912393093109131
+  },
+  {
+   "seed": 2,
+   "pair": "prune",
+   "config": "pre8r32",
+   "dsa": 0.07830048352479935
+  },
+  {
+   "seed": 2,
+   "pair": "prune",
+   "config": "deep16r64",
+   "dsa": 0.11945352703332901
+  },
+  {
+   "seed": 2,
+   "pair": "prune",
+   "config": "flat1r32",
+   "dsa": 0.2325771600008011
+  },
+  {
+   "seed": 2,
+   "pair": "prune",
+   "config": "rrr8r32",
+   "dsa": 0.21807967126369476
+  },
+  {
+   "seed": 2,
+   "pair": "prune",
+   "config": "wass8r32",
+   "dsa": 0.007316607981920242
+  },
+  {
+   "seed": 2,
+   "pair": "difftask",
+   "config": "pre8r32",
+   "dsa": 0.121009960770607
+  },
+  {
+   "seed": 2,
+   "pair": "difftask",
+   "config": "deep16r64",
+   "dsa": 0.12077123671770096
+  },
+  {
+   "seed": 2,
+   "pair": "difftask",
+   "config": "flat1r32",
+   "dsa": 0.33821994066238403
+  },
+  {
+   "seed": 2,
+   "pair": "difftask",
+   "config": "rrr8r32",
+   "dsa": 0.22073794901371002
+  },
+  {
+   "seed": 2,
+   "pair": "difftask",
+   "config": "wass8r32",
+   "dsa": 0.021366819739341736
+  },
+  {
+   "seed": 3,
+   "pair": "null",
+   "config": "pre8r32",
+   "dsa": 0.043121643364429474
+  },
+  {
+   "seed": 3,
+   "pair": "null",
+   "config": "deep16r64",
+   "dsa": 0.06727597862482071
+  },
+  {
+   "seed": 3,
+   "pair": "null",
+   "config": "flat1r32",
+   "dsa": 0.04058010131120682
+  },
+  {
+   "seed": 3,
+   "pair": "null",
+   "config": "rrr8r32",
+   "dsa": 0.1917334347963333
+  },
+  {
+   "seed": 3,
+   "pair": "null",
+   "config": "wass8r32",
+   "dsa": 9.313225746154785e-09
+  },
+  {
+   "seed": 3,
+   "pair": "noise",
+   "config": "pre8r32",
+   "dsa": 0.9402546286582947
+  },
+  {
+   "seed": 3,
+   "pair": "noise",
+   "config": "deep16r64",
+   "dsa": 0.97258061170578
+  },
+  {
+   "seed": 3,
+   "pair": "noise",
+   "config": "flat1r32",
+   "dsa": 0.9074810743331909
+  },
+  {
+   "seed": 3,
+   "pair": "noise",
+   "config": "rrr8r32",
+   "dsa": 0.2965986132621765
+  },
+  {
+   "seed": 3,
+   "pair": "noise",
+   "config": "wass8r32",
+   "dsa": 0.47838708758354187
+  },
+  {
+   "seed": 3,
+   "pair": "prune",
+   "config": "pre8r32",
+   "dsa": 0.12762431800365448
+  },
+  {
+   "seed": 3,
+   "pair": "prune",
+   "config": "deep16r64",
+   "dsa": 0.06959626823663712
+  },
+  {
+   "seed": 3,
+   "pair": "prune",
+   "config": "flat1r32",
+   "dsa": 0.2361678183078766
+  },
+  {
+   "seed": 3,
+   "pair": "prune",
+   "config": "rrr8r32",
+   "dsa": 0.24541187286376953
+  },
+  {
+   "seed": 3,
+   "pair": "prune",
+   "config": "wass8r32",
+   "dsa": 0.0007957099005579948
+  },
+  {
+   "seed": 3,
+   "pair": "difftask",
+   "config": "pre8r32",
+   "dsa": 0.1254245787858963
+  },
+  {
+   "seed": 3,
+   "pair": "difftask",
+   "config": "deep16r64",
+   "dsa": 0.1260884553194046
+  },
+  {
+   "seed": 3,
+   "pair": "difftask",
+   "config": "flat1r32",
+   "dsa": 0.2986707389354706
+  },
+  {
+   "seed": 3,
+   "pair": "difftask",
+   "config": "rrr8r32",
+   "dsa": 0.2394605427980423
+  },
+  {
+   "seed": 3,
+   "pair": "difftask",
+   "config": "wass8r32",
+   "dsa": 0.024564441293478012
+  },
+  {
+   "seed": 4,
+   "pair": "null",
+   "config": "pre8r32",
+   "dsa": 0.03937812149524689
+  },
+  {
+   "seed": 4,
+   "pair": "null",
+   "config": "deep16r64",
+   "dsa": 0.06643731147050858
+  },
+  {
+   "seed": 4,
+   "pair": "null",
+   "config": "flat1r32",
+   "dsa": 0.21127313375473022
+  },
+  {
+   "seed": 4,
+   "pair": "null",
+   "config": "rrr8r32",
+   "dsa": 0.21072101593017578
+  },
+  {
+   "seed": 4,
+   "pair": "null",
+   "config": "wass8r32",
+   "dsa": 5.587935447692871e-09
+  },
+  {
+   "seed": 4,
+   "pair": "noise",
+   "config": "pre8r32",
+   "dsa": 0.9823501706123352
+  },
+  {
+   "seed": 4,
+   "pair": "noise",
+   "config": "deep16r64",
+   "dsa": 0.995978057384491
+  },
+  {
+   "seed": 4,
+   "pair": "noise",
+   "config": "flat1r32",
+   "dsa": 0.9242892861366272
+  },
+  {
+   "seed": 4,
+   "pair": "noise",
+   "config": "rrr8r32",
+   "dsa": 0.29490530490875244
+  },
+  {
+   "seed": 4,
+   "pair": "noise",
+   "config": "wass8r32",
+   "dsa": 0.5370136499404907
+  },
+  {
+   "seed": 4,
+   "pair": "prune",
+   "config": "pre8r32",
+   "dsa": 0.10594242066144943
+  },
+  {
+   "seed": 4,
+   "pair": "prune",
+   "config": "deep16r64",
+   "dsa": 0.11986695230007172
+  },
+  {
+   "seed": 4,
+   "pair": "prune",
+   "config": "flat1r32",
+   "dsa": 0.22796213626861572
+  },
+  {
+   "seed": 4,
+   "pair": "prune",
+   "config": "rrr8r32",
+   "dsa": 0.2165595144033432
+  },
+  {
+   "seed": 4,
+   "pair": "prune",
+   "config": "wass8r32",
+   "dsa": 0.0006360402330756187
+  },
+  {
+   "seed": 4,
+   "pair": "difftask",
+   "config": "pre8r32",
+   "dsa": 0.13021686673164368
+  },
+  {
+   "seed": 4,
+   "pair": "difftask",
+   "config": "deep16r64",
+   "dsa": 0.1392683982849121
+  },
+  {
+   "seed": 4,
+   "pair": "difftask",
+   "config": "flat1r32",
+   "dsa": 0.2973422706127167
+  },
+  {
+   "seed": 4,
+   "pair": "difftask",
+   "config": "rrr8r32",
+   "dsa": 0.23654861748218536
+  },
+  {
+   "seed": 4,
+   "pair": "difftask",
+   "config": "wass8r32",
+   "dsa": 0.012794730253517628
+  }
+ ],
+ "verdicts": {
+  "pre8r32": {
+   "null_mean": 0.05594757124781609,
+   "null_std": 0.03160750152930026,
+   "null_max": 0.11904268711805344,
+   "difftask_mean": 0.11748467683792115,
+   "difftask_std": 0.012137049847386642,
+   "difftask_min": 0.0952320471405983,
+   "noise_mean": 0.9629531264305115,
+   "prune_mean": 0.09115709066390991,
+   "difftask_above_null": false,
+   "n_difftask_seeds_above_null_max": 3,
+   "noise_over_difftask": 8.196414650388638
+  },
+  "deep16r64": {
+   "null_mean": 0.052470645308494566,
+   "null_std": 0.011900348244029411,
+   "null_max": 0.06727597862482071,
+   "difftask_mean": 0.1263457417488098,
+   "difftask_std": 0.01880367949657486,
+   "difftask_min": 0.09500988572835922,
+   "noise_mean": 0.9660115599632263,
+   "prune_mean": 0.12174504101276398,
+   "difftask_above_null": true,
+   "n_difftask_seeds_above_null_max": 5,
+   "noise_over_difftask": 7.645778532716765
+  },
+  "flat1r32": {
+   "null_mean": 0.1515519991517067,
+   "null_std": 0.05896772664450311,
+   "null_max": 0.21127313375473022,
+   "difftask_mean": 0.30195061564445497,
+   "difftask_std": 0.019484359006934748,
+   "difftask_min": 0.27915775775909424,
+   "noise_mean": 0.9078204393386841,
+   "prune_mean": 0.23236123919487,
+   "difftask_above_null": true,
+   "n_difftask_seeds_above_null_max": 5,
+   "noise_over_difftask": 3.006519584009185
+  },
+  "rrr8r32": {
+   "null_mean": 0.20421828031539918,
+   "null_std": 0.00800169712367286,
+   "null_max": 0.2145911604166031,
+   "difftask_mean": 0.22997478544712066,
+   "difftask_std": 0.006962104539674294,
+   "difftask_min": 0.22073794901371002,
+   "noise_mean": 0.2850052237510681,
+   "prune_mean": 0.2203832060098648,
+   "difftask_above_null": true,
+   "n_difftask_seeds_above_null_max": 5,
+   "noise_over_difftask": 1.2392890081273753
+  },
+  "wass8r32": {
+   "null_mean": 8.195638656616212e-09,
+   "null_std": 2.2351741790771484e-09,
+   "null_max": 1.1175870895385742e-08,
+   "difftask_mean": 0.017504847049713133,
+   "difftask_std": 0.004806483430877786,
+   "difftask_min": 0.012244771234691143,
+   "noise_mean": 0.5066372692584992,
+   "prune_mean": 0.002575088478624821,
+   "difftask_above_null": true,
+   "n_difftask_seeds_above_null_max": 5,
+   "noise_over_difftask": 28.942684721532707
+  }
+ }
+}

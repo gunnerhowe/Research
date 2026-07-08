@@ -167,6 +167,27 @@ E1/E2 proceed under the amended gate; their designs are unchanged except that th
 sweep also records the (pre-registered, secondary) quantized-belief readout, where the noise
 separation is largest.
 
+## AMENDMENT 3 (2026-07-08, same session; formalizing what analysis/amended_gate.py computes)
+
+The pre-registered seed-consistency inequality "mean Δ − 2·std(Δ) > 0" penalizes effect-size
+heterogeneity: a pair can separate on every seed and still fail it because one seed separates
+*more*. The amended gate therefore records BOTH verdicts: `PASS_strict` (the pre-registered
+inequality, unchanged) and `PASS_sign_consistent` (all seeds have an eligible plateau with
+d̄ ≥ 2× floor, all Δ > 0 — binomial p = 1/32 at 5 seeds — and min ratio ≥ 2). The
+sign-consistent criterion is the one used for gating E1/E2 and is always labeled as amended
+wherever cited. Note also that the amended n* (argmax Δ among per-row-significant block
+lengths) remains a post-hoc maximum; the V3 convergence study is the pre-registered guard
+that the selected separations are budget-stable, below-the-wall signals.
+
+## ADDENDUM (2026-07-08, post-hoc robustness analysis, no gate role)
+
+Because the E0/E1 argument leans on DSA being uninformative on this testbed, a DSA
+configuration-robustness check (`experiments/exp3_dsa_robustness.py`) recomputes DSA on the
+four argument-carrying pairs (null, prune, noise, difftask) under five configurations
+(pre-registered; deeper/higher-rank; no delay embedding; reduced-rank regression; Wasserstein
+score). Scores are compared within-config only. This is diagnostic, not a gate criterion; all
+DSA claims in the paper are scoped to "DSA as configured, on models at this scale."
+
 ## AMENDMENT 2 (2026-07-08, before E1 results existed; E1 was restarted)
 
 The E1 sweep at the E0 budget projected to >12 h under GPU contention. E1/E2 are

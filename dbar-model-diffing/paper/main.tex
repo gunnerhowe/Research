@@ -54,8 +54,8 @@ GRUs trained to emit hidden-Markov processes, we constructed twins of each base 
 measure (unigram total variation $\le \tvSameTaskMax$, next-symbol cross-entropy
 within $\calibCEmaxPct\%$). A 50\%-pruned, fine-tuned twin with indistinguishable outputs
 (CKA $= \ckaPrune$; DSA inside its own null range) is separated from its base by
-$\dbar$ at $\ratioPrune\times$ the same-process floor ($5/5$ seeds, $\ge
-\ratioPruneMin\times$). Independent training seeds --- called identical by CKA
+$\dbar$ at $\ge \ratioPruneMin\times$ the same-process floor on every one of 5 seeds
+(sign-consistent, $p = 1/32$; mean $\ratioPrune\times$). Independent training seeds --- called identical by CKA
 ($\ckaSeed$) and DSA ($\dsaSeed$) --- differ by $\ratioSeed\times$ floor; sweeping the
 prune fraction from 0.1 to 0.9 keeps DSA at its null throughout while $\dbar$
 separates at every fraction. Conversely $\dbar$ correctly certifies GRU distillation
@@ -63,8 +63,12 @@ as process-preserving at the output level (transformer distillation is not: stud
 separate on every seed of two grammars, while DSA rates them as \emph{more} different
 than models of entirely different tasks), and a different-computation control with
 \emph{identical} entropy rate and unigram marginal is separated at
-$\ratioDifftask\times$ floor while DSA cannot distinguish it from its own null. We report the pre-registered gate verdict (which failed as
-written), the two disclosed analysis amendments that repair it, every same-process
+$\ratioDifftask\times$ floor while the pre-registered DSA configuration cannot
+distinguish it from its own null (a configuration-robustness check shows alternative
+configurations separate that control, yet every tested configuration still ranks the
+noise twin above the genuinely different computation --- none yields scores readable
+as a process distance). We report the pre-registered gate verdict (which failed as
+written), the disclosed analysis amendments that repair it, every same-process
 floor, and the block-length consistency wall $n \lesssim \log_2 N/\hat h$ that bounds
 all claims. Per Ornstein--Weiss, $\dbar$ is not a general isomorphism detector; the
 claim is a process-level distance within a fixed readout --- and at that level it sees
@@ -132,18 +136,25 @@ Hamming cost, with same-process floors and a consistency-wall guard inherited fr
 use on chaotic systems \citep{howe2026beyond}.
 \item \textbf{An existence proof.} On GRUs emitting hidden-Markov processes, a
 50\%-pruned and fine-tuned twin whose outputs are indistinguishable from its base
-(unigram TV $\le 0.008$; cross-entropy recovered to the base level; CKA $=\ckaPrune$;
-DSA $=\dsaPrune$, inside DSA's null spread $[\dsaNullMin, \dsaNullMax]$) is separated
-by $\dbar$ at $\ratioPrune\times$ its same-process floor, on every seed. Independent
+(unigram TV $\le \tvSameTaskMax$; cross-entropy recovered to the base level; CKA
+$=\ckaPrune$; DSA $=\dsaPrune$, inside DSA's null spread
+$[\dsaNullMin, \dsaNullMax]$) is separated by $\dbar$ at $\ge \ratioPruneMin\times$
+its same-process floor on every seed (mean $\ratioPrune\times$). Independent
 seeds --- ``the same model'' to every baseline --- differ at $\ratioSeed\times$ floor.
 \item \textbf{Failure modes of the incumbent, in both directions.} On a control pair
 built to have \emph{identical} entropy rate and unigram marginal but provably
 different processes (golden-mean vs.\ flipped-even), $\dbar$ reports
 $\ratioDifftask\times$ floor while DSA's score ($\kappaDSA$) is statistically inside
-its own null distribution. Conversely, hidden-state noise that leaves the deterministic
+its own null distribution. A configuration-robustness check (\S\ref{sec:limits})
+shows this specific blindness is a property of the pre-registered configuration ---
+most alternatives do separate the control --- but that \emph{no} tested
+configuration recovers a process-distance ordering: all five rank the noise twin
+above the genuinely different computation. Conversely, hidden-state noise that leaves the deterministic
 dynamics and the emitted process nearly unchanged saturates DSA ($\dsaNoise$) --- an
 errors-in-variables artifact of fitting a linear propagator through process noise ---
-while $\dbar$ reports a calibrated, modest process change.
+while $\dbar$ reports a calibrated, modest process change. Throughout, ``DSA''
+means the authors' public implementation on models at this scale; we make no claim
+about DSA on larger systems.
 \item \textbf{A certification use-case.} For distilled twins, $\dbar$ at the emitted
 readout sits at the same-process floor: distillation here \emph{did} preserve the
 output process, and $\dbar$ certifies that --- while the belief-state readout reveals
@@ -337,8 +348,15 @@ spread $[\dsaDifftaskMin, \dsaDifftaskMax]$), so the threshold ($\preregDSAThres
 sits inside DSA's own null noise. Amendment~1 (committed with the results, evaluated
 by a separate script on the unmodified JSONs) makes the two minimal repairs: plateau
 candidates must individually clear $2\times$ their floor, and DSA-similar means
-``inside DSA's empirical null distribution'' ($\le \dsaSimThresh$). We report
-pre-registered and amended verdicts side by side below; no data were re-collected.
+``inside DSA's empirical null distribution'' ($\le \dsaSimThresh$). Amendment~3
+additionally records a sign-consistency verdict (all seeds separate with ratio
+$\ge 2$; binomial $p = 1/32$) alongside the pre-registered
+``mean $- 2\,$std $> 0$'' inequality, which penalizes effect-size heterogeneity.
+Two caveats on the amended analysis itself: the amended $n^\ast$ is still a post-hoc
+maximum over (per-row significant) block lengths --- the V3 convergence study
+(Fig.~\ref{fig:conv}) is the guard that what it selects is a budget-stable signal,
+not a lucky row --- and we report pre-registered and amended verdicts side by side
+below; no data were re-collected.
 
 \section{E0: the existence proof}\label{sec:e0}
 
@@ -400,7 +418,9 @@ CKA also sees this pair ($\ckaDifftask$); DSA does not (next paragraph).
 
 \textbf{DSA fails in both directions.} Its different-task scores
 ($\kappa = \kappaDSA$) lie within its own null spread ($[\dsaNullMin, \dsaNullMax]$):
-under DSA, GM-vs-FEVEN looks like a change of basis. Its noise-twin scores
+under the pre-registered DSA configuration, GM-vs-FEVEN looks like a change of basis
+(this particular blindness is configuration-specific --- see the robustness check in
+\S\ref{sec:limits}; the noise inversion below is not). Its noise-twin scores
 ($\dsaNoise$) are an order of magnitude above everything else --- yet the noise twin's
 \emph{deterministic} dynamics are identical to its base by construction; what DSA
 measures there is the errors-in-variables bias that process noise induces in a fitted
@@ -580,7 +600,10 @@ pair & CKA $\uparrow$ & DSA $\downarrow$ & $\dbar_1$ (TV) & $\dbar_{n^*}/$floor\
 
 \textbf{Distillation separates, on both grammars.} Transformer distillation
 (same architecture, fresh init, KL to teacher) is \emph{less} process-faithful than
-its GRU counterpart: the students separate from their teachers on every seed ---
+its GRU counterpart. This is not a contradiction of E0's distillation null: whether
+distillation preserves the emitted process is an empirical property of the
+architecture, objective, and readout --- and resolving it per case is exactly what
+the metric is for. Here the students separate from their teachers on every seed ---
 $\tfDistillRatioGMMin$--$\tfDistillRatioGMMax\times$ floor on GM (CKA
 $= \tfDistillCKAGM$, above the similarity line) and $\tfDistillRatioMess\times$
 floor on \textsc{mess3}, all within the (tight) walls. DSA is again uninformative
@@ -637,13 +660,57 @@ entropy-reducing readouts (extracted automata \citep{weiss2018extracting,
 adriaensen2024extracting}, constrained decoding, or task-restricted vocabularies),
 which we flag as the main open engineering problem.
 
-\textbf{DSA's defense.} DSA answers ``same deterministic linearized flow?'' --- a
-question $\dbar$ cannot answer (it never sees the vector field). On pairs where
-determinism is the object of interest, DSA is the right tool and $\dbar$ is silent.
-Our results say only: for \emph{process-level} sameness --- the version of ``same
-computation'' relevant to noise, pruning, distillation, and seed variation at matched
-outputs --- the conjugacy question and the process question come apart, in both
-directions.
+\textbf{DSA's defense, and the scope of the DSA claims.} DSA answers ``same
+deterministic linearized flow?'' --- a question $\dbar$ cannot answer (it never sees
+the vector field). On pairs where determinism is the object of interest, DSA is the
+right tool and $\dbar$ is silent. Our results say only: for \emph{process-level}
+sameness --- the version of ``same computation'' relevant to noise, pruning,
+distillation, and seed variation at matched outputs --- the conjugacy question and
+the process question come apart, in both directions. Because this argument leans on
+DSA being uninformative here, we recomputed DSA on the four argument-carrying pairs
+under \eThreeNConfigs{} configurations spanning embedding depth, rank, the
+reduced-rank-regression variant, and the score function (Table~\ref{tab:e3};
+post-hoc, disclosed in \texttt{PLAN.md}). The check \emph{partially vindicates DSA}
+and sharpens our claim. Configuration-specific: the failure to separate the
+different-task control from the null is a property of the pre-registered
+configuration ($\eThreePreSeedsAbove/5$ seeds above the null maximum); most
+alternatives separate it cleanly. Configuration-universal: \emph{no} tested
+configuration produces scores readable as a process distance. All five rank the
+noise twin --- whose deterministic dynamics are identical to its base --- above the
+genuinely different computation (by $\eThreeNoiseOverDiffMin\times$ to
+$\eThreeWassNoiseOverDiff\times$); and the configurations that do flag the pruned
+twin flag it at the level of a full task change (deep: $\eThreeDeepPrune$ vs.\
+$\eThreeDeepDiff$; no-delay: $\eThreeFlatPrune$ vs.\ $\eThreeFlatDiff$), where
+$\dbar$ places the two nearly two orders of magnitude apart in absolute distance.
+The one partial exception --- the Wasserstein score, which does order the pruned
+twin ($\eThreeWassPrune$) below the control ($\eThreeWassDiff$) --- still ranks pure
+noise $\eThreeWassNoiseOverDiff\times$ above the control. Consequently the E0
+statement ``DSA-similar'' for the pruned twin is scoped to the pre-registered
+configuration; the configuration-robust statement is the ordering failure. What
+remains untested, and is explicitly outside our claims, is DSA's behavior on larger,
+higher-dimensional systems (the regime its authors target): every DSA statement in
+this paper is scoped to \emph{DSA as configured, on width-64 recurrent models over
+2--3-symbol grammars}. A testbed where DSA is strong and $\dbar$ still adds
+discriminative power is the right next experiment.
+
+\begin{table}[t]
+\centering\small
+\caption{DSA configuration-robustness check (post-hoc; PLAN.md Addendum). Mean DSA
+over $\nSeeds$ seeds per pair; comparisons are within-config only. Last column:
+seeds on which the different-task control exceeds the config's own null maximum.
+Most alternative configurations \emph{do} separate the control (the pre-registered
+config's blindness is configuration-specific) --- but every configuration ranks the
+deterministically-identical noise twin above the genuinely different computation,
+and none reproduces the process-distance ordering.}
+\label{tab:e3}
+\begin{tabular}{lccccc}
+\toprule
+config & null & diff.\ task & noise & prune & diff $>$ null\\
+\midrule
+\eThreeTableRows
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Conclusion}
 We imported a fifty-year-old ergodic-theory metric into model comparison and found

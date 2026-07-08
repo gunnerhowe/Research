@@ -30,7 +30,15 @@ model pairs that CKA and DSA both miss.
    6.7–12.5× within the tight wall ≈12) while DSA rates them (0.265) as *more* different
    than cross-task model pairs (0.228) — no ranking information. Residual noise: emitted
    process and even DSA quiet; only the belief readout separates (50–68× floor, 3/3).
-9. Paper written (`paper/main.tex`, 14+ pages), every number auto-generated
+9. **E3 (post-hoc, reviewer-proofing; PLAN.md Addendum)**: DSA config-robustness check —
+   5 configs (pre-registered / deep 16×64 / no-delay / RRR / Wasserstein) on the four
+   argument-carrying pairs. Verdict: the different-task blindness is CONFIG-SPECIFIC
+   (4/5 alternatives separate the control), but NO config yields a process-distance
+   ordering — all five rank the noise twin (identical deterministic dynamics) above the
+   genuinely different computation (1.2–29×), and configs that flag the pruned twin flag
+   it at the level of a full task change. All paper DSA claims scoped to "as configured,
+   at this scale" accordingly; Amendment 3 formalizes the sign-consistency criterion.
+10. Paper written (`paper/main.tex`, 16 pages), every number auto-generated
    (`gen_paper_numbers.py` → `numbers.tex`, checked by `verify_regen.py`), figures from
    `make_figures.py`. Built with latexmk.
 
