@@ -1,12 +1,13 @@
-"""Repo-relative paths."""
+"""Repo-relative paths (LRSPEC_RESULTS/LRSPEC_FIGS overridable for dry-runs)."""
 
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 MODELS = ROOT / "models"
-RESULTS = ROOT / "results"
-FIGS = ROOT / "paper" / "figs"
+RESULTS = Path(os.environ.get("LRSPEC_RESULTS", ROOT / "results"))
+FIGS = Path(os.environ.get("LRSPEC_FIGS", ROOT / "paper" / "figs"))
 
 CHECKPOINTS = {
     "M1": MODELS / "cot-baseline_best.pt",

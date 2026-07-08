@@ -32,7 +32,8 @@ from lrspec.paths import DATA, RESULTS, ROOT  # noqa: E402
 from lrspec.prosqa import load_problems  # noqa: E402
 from lrspec import stats  # noqa: E402
 
-RUNS = ROOT / "runs"
+import os as _os
+RUNS = Path(_os.environ.get("LRSPEC_RUNS", ROOT / "runs"))
 N_PROBLEMS = 120
 STEPS = [1, 2, 3, 4, 5]
 EPS = [0.1, 0.3]

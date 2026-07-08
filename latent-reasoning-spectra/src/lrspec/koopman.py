@@ -78,7 +78,10 @@ class PooledEDMD:
         """Oblique spectral projector onto modes with |lambda| in band."""
         sel = (np.abs(self.eigvals_) >= band[0]) & (np.abs(self.eigvals_) <= band[1])
         V = self.eigvecs_
-        W = np.linalg.inv(V)  # rows: left eigenvectors
+        try:
+            W = np.linalg.inv(V)  # rows: left eigenvectors
+        except np.linalg.LinAlgError:
+            W = np.linalg.pinv(V)
         P = (V[:, sel] @ W[sel, :]).real
         return P
 

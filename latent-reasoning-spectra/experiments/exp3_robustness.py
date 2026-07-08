@@ -22,7 +22,8 @@ from lrspec.paths import DATA, MODELS, RESULTS, ROOT  # noqa: E402
 from lrspec.prosqa import load_problems  # noqa: E402
 from lrspec import stats  # noqa: E402
 
-RUNS = ROOT / "runs"
+import os as _os
+RUNS = Path(_os.environ.get("LRSPEC_RUNS", ROOT / "runs"))
 EPOCHS = [10, 20, 30, 40]
 N_EPOCH_PROBLEMS = 100
 

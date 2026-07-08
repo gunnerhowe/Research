@@ -62,15 +62,33 @@ def eval_cot_model(problems) -> dict:
 
 
 def main():
-    problems = load_problems(DATA / "prosqa_test.json")
-    out = {"published": {"M1": 0.830, "M2": 0.970, "M3": 0.966, "M4": 0.948}}
-    for key in ["M2", "M3", "M4"]:
-        out[key] = eval_latent_model(key, problems)
-        print(key, out[key], flush=True)
-    out["M1"] = eval_cot_model(problems)
-    print("M1", out["M1"], flush=True)
+    """One model per process (VRAM discipline): merge into the JSON incrementally.
+
+    Usage: python scripts/sanity_accuracy.py M2   (or M1/M3/M4, or 'all' to spawn
+    one subprocess per model)."""
+    import subprocess
+
+    which = sys.argv[1] if len(sys.argv) > 1 else "all"
     RESULTS.mkdir(exist_ok=True)
-    json.dump(out, open(RESULTS / "sanity_accuracy.json", "w"), indent=2)
+    path = RESULTS / "sanity_accuracy.json"
+
+    if which == "all":
+        for key in ["M2", "M3", "M4", "M1"]:
+            r = subprocess.run([sys.executable, "-X", "utf8", "-W", "ignore",
+                                __file__, key])
+            if r.returncode != 0:
+                sys.exit(r.returncode)
+        return
+
+    problems = load_problems(DATA / "prosqa_test.json")
+    out = json.load(open(path)) if path.exists() else {}
+    out.setdefault("published", {"M1": 0.830, "M2": 0.970, "M3": 0.966, "M4": 0.948})
+    if which == "M1":
+        out["M1"] = eval_cot_model(problems)
+    else:
+        out[which] = eval_latent_model(which, problems)
+    print(which, out[which], flush=True)
+    json.dump(out, open(path, "w"), indent=2)
 
 
 if __name__ == "__main__":

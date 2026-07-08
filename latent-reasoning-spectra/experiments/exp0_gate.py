@@ -27,7 +27,8 @@ from lrspec.prosqa import load_problems, prune_to_linear  # noqa: E402
 from lrspec.spectra import invariants, top_eig_subspace  # noqa: E402
 from lrspec import stats  # noqa: E402
 
-RUNS = ROOT / "runs"
+import os as _os
+RUNS = Path(_os.environ.get("LRSPEC_RUNS", ROOT / "runs"))
 RUNS.mkdir(exist_ok=True)
 
 SCALAR_KEYS = ["rho", "sigma1", "sigma2", "n_expanding", "henrici", "henrici_norm",
@@ -173,6 +174,36 @@ def _branch_auroc(cap, score: np.ndarray, seed=0) -> dict:
     return stats.pooled_auroc_ci(ls, ss, seed=seed)
 
 
+def _branch_auroc_stratified(cap, score: np.ndarray, seed=0) -> dict:
+    """Step-index-confound control: z-score the predictor WITHIN each step column
+    (across problems), then pool.  Also per-step AUROCs.  Secondary analysis."""
+    labels = cap["labels"]
+    z = np.full_like(score, np.nan, dtype=float)
+    per_step = {}
+    for t in range(labels.shape[1]):
+        m = labels[:, t] >= 0
+        if m.sum() < 10:
+            continue
+        col = score[m, t]
+        mu, sd = np.nanmean(col), np.nanstd(col)
+        z[m, t] = (col - mu) / (sd if sd > 0 else 1.0)
+        lab_t = labels[m, t].astype(int)
+        if lab_t.min() != lab_t.max():
+            from sklearn.metrics import roc_auc_score
+            per_step[f"t{t+1}"] = {
+                "auroc": float(roc_auc_score(lab_t, col)),
+                "n": int(m.sum()), "n_pos": int(lab_t.sum()),
+            }
+    ls, ss = [], []
+    for i in range(labels.shape[0]):
+        m = (labels[i] >= 0) & np.isfinite(z[i])
+        ls.append(labels[i][m].astype(int))
+        ss.append(z[i][m])
+    out = stats.pooled_auroc_ci(ls, ss, seed=seed)
+    out["per_step"] = per_step
+    return out
+
+
 def _anchor_stats(cap, abl, score: np.ndarray, seed=0) -> dict:
     """Spearman + top-tercile AUROC of score vs ablation influence I_mean."""
     I = abl["I_mean"]
@@ -204,6 +235,13 @@ def analyze(seed: int = 0):
         preds = _predictor_matrix(cap)
         branch[name] = {k: _branch_auroc(cap, v, seed=seed) for k, v in preds.items()}
     out["branch"] = branch
+
+    # ---- step-index-confound control (secondary): within-step z-scored AUROC ----
+    predsM2 = _predictor_matrix(capM2)
+    out["branch_stratified"] = {
+        k: _branch_auroc_stratified(capM2, predsM2[k], seed=seed)
+        for k in ["sigma1", "henrici_norm", "unit_mass", "baseline_cnorm", "baseline_dc"]
+    }
 
     # ---- anchor prediction (E0b, M2) ----
     preds2 = _predictor_matrix(capM2)

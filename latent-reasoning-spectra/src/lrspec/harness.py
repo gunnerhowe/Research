@@ -68,8 +68,12 @@ class Harness:
         model.resize_token_embeddings(len(self.tok))
         sd = torch.load(checkpoint_path or CHECKPOINTS[model_key], map_location="cpu",
                         weights_only=True)
-        base_sd = {k[len("base_causallm."):]: v for k, v in sd.items()
-                   if k.startswith("base_causallm.")}
+        if any(k.startswith("base_causallm.") for k in sd):
+            base_sd = {k[len("base_causallm."):]: v for k, v in sd.items()
+                       if k.startswith("base_causallm.")}
+        else:
+            # M1 (CoT) was trained as a bare GPT2LMHeadModel, no Coconut wrapper
+            base_sd = dict(sd)
         missing, unexpected = model.load_state_dict(base_sd, strict=False)
         # lm_head is tied to wte; "missing" entries must be none, unexpected none
         assert not missing and not unexpected, (missing, unexpected)
