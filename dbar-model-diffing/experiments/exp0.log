@@ -1,0 +1,87 @@
+[seed 0] base ready (72s)
+[train] base_gm_s1
+  val CE = 0.6637 bits (task h = 0.6667)
+[seed 1] base ready (229s)
+[train] base_gm_s2
+  val CE = 0.6636 bits (task h = 0.6667)
+[seed 2] base ready (644s)
+[train] base_gm_s3
+  val CE = 0.6635 bits (task h = 0.6667)
+[seed 3] base ready (723s)
+[train] base_gm_s4
+  val CE = 0.6648 bits (task h = 0.6667)
+[seed 4] base ready (862s)
+[seed 0] sigma* = 0.2
+[train] distill_gm_s0
+  val CE = 0.6642 bits (task h = 0.6667)
+[train] prune_gm_s0_frac0.5
+  val CE = 0.6635 bits (task h = 0.6667)
+[train] feven-base_feven_s0
+  val CE = 0.6690 bits (task h = 0.6667)
+[seed 0] null: dbar*=0.0005 (floor 0.0004, n*=6) CKA=1.0000 DSA=0.1176 tv1=0.0004 (1154s)
+[seed 0] noise: dbar*=0.0423 (floor 0.0412, n*=16) CKA=0.9965 DSA=0.9553 tv1=0.0007 (1410s)
+[seed 0] distill: dbar*=0.0422 (floor 0.0420, n*=16) CKA=0.9987 DSA=0.0693 tv1=0.0003 (1639s)
+[seed 0] prune: dbar*=0.0034 (floor 0.0002, n*=4) CKA=1.0000 DSA=0.0433 tv1=0.0017 (2113s)
+[seed 0] difftask: dbar*=0.2085 (floor 0.0011, n*=12) CKA=0.4570 DSA=0.0924 tv1=0.0013 (2343s)
+[seed 0] seed-pair vs 1: dbar*=0.0026 CKA=0.9991 DSA=0.0840
+[seed 1] sigma* = 0.2
+[train] distill_gm_s1
+  val CE = 0.6639 bits (task h = 0.6667)
+[train] prune_gm_s1_frac0.5
+  val CE = 0.6637 bits (task h = 0.6667)
+[train] feven-base_feven_s1
+  val CE = 0.6687 bits (task h = 0.6667)
+[seed 1] null: dbar*=0.0003 (floor 0.0003, n*=3) CKA=1.0000 DSA=0.0279 tv1=0.0003 (3392s)
+[seed 1] noise: dbar*=0.0008 (floor 0.0003, n*=4) CKA=0.9968 DSA=0.9897 tv1=0.0008 (3799s)
+[seed 1] distill: dbar*=0.0005 (floor 0.0004, n*=8) CKA=0.9998 DSA=0.0912 tv1=0.0003 (4273s)
+[seed 1] prune: dbar*=0.0032 (floor 0.0003, n*=4) CKA=0.9999 DSA=0.1255 tv1=0.0004 (4585s)
+[seed 1] difftask: dbar*=0.2085 (floor 0.0011, n*=12) CKA=0.4129 DSA=0.1156 tv1=0.0067 (4913s)
+[seed 1] seed-pair vs 2: dbar*=0.0031 CKA=0.9996 DSA=0.0972
+[seed 2] sigma* = 0.2
+[train] distill_gm_s2
+  val CE = 0.6639 bits (task h = 0.6667)
+[train] prune_gm_s2_frac0.5
+  val CE = 0.6634 bits (task h = 0.6667)
+[train] feven-base_feven_s2
+  val CE = 0.6686 bits (task h = 0.6667)
+[seed 2] null: dbar*=0.0415 (floor 0.0413, n*=16) CKA=1.0000 DSA=0.0322 tv1=0.0001 (5689s)
+[seed 2] noise: dbar*=0.0418 (floor 0.0407, n*=16) CKA=0.9960 DSA=0.9466 tv1=0.0008 (6497s)
+[seed 2] distill: dbar*=0.0414 (floor 0.0406, n*=16) CKA=0.9998 DSA=0.1262 tv1=0.0003 (6651s)
+[seed 2] prune: dbar*=0.0417 (floor 0.0408, n*=16) CKA=0.9999 DSA=0.0572 tv1=0.0003 (6796s)
+[seed 2] difftask: dbar*=0.2093 (floor 0.0009, n*=12) CKA=0.3656 DSA=0.1225 tv1=0.0045 (6949s)
+[seed 2] seed-pair vs 3: dbar*=0.0022 CKA=0.9999 DSA=0.0628
+[seed 3] sigma* = 0.2
+[train] distill_gm_s3
+  val CE = 0.6638 bits (task h = 0.6667)
+[train] prune_gm_s3_frac0.5
+  val CE = 0.6633 bits (task h = 0.6667)
+[train] feven-base_feven_s3
+  val CE = 0.6688 bits (task h = 0.6667)
+[seed 3] null: dbar*=0.0412 (floor 0.0411, n*=16) CKA=1.0000 DSA=0.0688 tv1=0.0000 (7224s)
+[seed 3] noise: dbar*=0.0013 (floor 0.0002, n*=3) CKA=0.9958 DSA=0.9399 tv1=0.0013 (7393s)
+[seed 3] distill: dbar*=0.0010 (floor 0.0008, n*=12) CKA=0.9999 DSA=0.1352 tv1=0.0003 (7552s)
+[seed 3] prune: dbar*=0.0031 (floor 0.0001, n*=2) CKA=1.0000 DSA=0.0602 tv1=0.0030 (7704s)
+[seed 3] difftask: dbar*=0.2116 (floor 0.0010, n*=12) CKA=0.4210 DSA=0.1498 tv1=0.0072 (7866s)
+[seed 3] seed-pair vs 4: dbar*=0.0093 CKA=0.9998 DSA=0.0913
+[seed 4] sigma* = 0.2
+[train] distill_gm_s4
+  val CE = 0.6650 bits (task h = 0.6667)
+[train] prune_gm_s4_frac0.5
+  val CE = 0.6634 bits (task h = 0.6667)
+[train] feven-base_feven_s4
+  val CE = 0.6687 bits (task h = 0.6667)
+[seed 4] null: dbar*=0.0891 (floor 0.0888, n*=24) CKA=1.0000 DSA=0.0277 tv1=0.0004 (8138s)
+[seed 4] noise: dbar*=0.0012 (floor 0.0003, n*=3) CKA=0.9950 DSA=0.9816 tv1=0.0012 (8305s)
+[seed 4] distill: dbar*=0.0008 (floor 0.0004, n*=8) CKA=0.9998 DSA=0.0598 tv1=0.0002 (8458s)
+[seed 4] prune: dbar*=0.0104 (floor 0.0004, n*=8) CKA=0.9999 DSA=0.0848 tv1=0.0076 (8607s)
+[seed 4] difftask: dbar*=0.2023 (floor 0.0012, n*=12) CKA=0.4063 DSA=0.1068 tv1=0.0068 (8771s)
+[seed 4] seed-pair vs 0: dbar*=0.0101 CKA=0.9999 DSA=0.0656
+[saved] E:\GitHub\Research\dbar-model-diffing\results\exp0_existence.json
+
+================ E0 GATE ================
+noise    PASS=False (CKAsim=True DSAsim=False dbar_sep=False checks={'sep_2sigma': True, 'twice_floor': False, 'within_wall': True, 'marginal_ok': True})
+distill  PASS=False (CKAsim=True DSAsim=False dbar_sep=False checks={'sep_2sigma': False, 'twice_floor': False, 'within_wall': True, 'marginal_ok': True})
+prune    PASS=False (CKAsim=True DSAsim=False dbar_sep=False checks={'sep_2sigma': False, 'twice_floor': False, 'within_wall': True, 'marginal_ok': True})
+V1 null ok: [True, True, True, True, True]
+V2 difftask ok: [False, False, False, False, False]
+E0 FAILS -> K1 (honest negative) (9062s total)

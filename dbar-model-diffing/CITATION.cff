@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software or the d-bar model-diffing metric, please cite the paper below."
+type: software
+title: "dbar-model-diffing: Ornstein's d-bar distance as a computational-equivalence metric for model diffing"
+authors:
+  - family-names: Howe
+    given-names: Gunner Levi
+    email: gunnerlevihowe@gmail.com
+version: 0.1.0
+date-released: 2026-07-08
+license: MIT
+keywords:
+  - model comparison
+  - model diffing
+  - Ornstein d-bar distance
+  - ergodic theory
+  - optimal transport
+  - dynamical similarity analysis
+  - representation similarity
+  - stochastic processes

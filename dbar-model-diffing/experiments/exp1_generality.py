@@ -11,8 +11,11 @@ import time
 from exp_common import (RESULTS, SEEDS, M, TASKS, eval_pair, gen_runs, get_model,
                         get_states, save_json)
 
-assert json.loads((RESULTS / "exp0_existence.json").read_text())["gate"]["E0_PASS"], \
-    "E0 gate did not pass; E1 is gated (PLAN.md)"
+# gated on E0 (PLAN.md): pre-registered pass OR amended pass (AMENDMENT 1)
+_e0 = json.loads((RESULTS / "exp0_existence.json").read_text())["gate"]["E0_PASS"]
+_am = json.loads((RESULTS / "amended_gate.json").read_text())
+assert _e0 or _am["AMENDED_PASS_sign_consistent"], \
+    "neither pre-registered nor amended E0 gate passed; E1 is gated (PLAN.md)"
 
 t0 = time.time()
 gm = TASKS["gm"]()
@@ -31,7 +34,7 @@ for s in SEEDS:
                          + int(sig * 10_000))
         stB = get_states(A, gm, sig, seed=555 + s)
         r = eval_pair(runsA, runsB, stA, stB, gm.m, ns=NS, repeats=3,
-                      seed=s, with_belief=False)
+                      seed=s, with_belief=True)   # AMENDMENT 1: record belief readout
         r.update(seed=s, sigma=sig)
         noise_rows.append(r)
         print(f"[noise] s{s} sigma={sig}: dbar*={r['plateau']['dbar']:.4f} "

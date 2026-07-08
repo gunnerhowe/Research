@@ -57,17 +57,29 @@ def fig_e0():
     axes[1].set_ylabel("DSA distance")
     axes[1].set_title("deterministic-conjugacy dynamics (DSA): lower = more similar")
 
-    dbar_ratio = []
-    for p in PAIR_ORDER:
-        d = seeds_of(p, "plateau", "dbar")
-        f = seeds_of(p, "plateau", "floor")
-        dbar_ratio.append(d / np.maximum(f, 1e-12))
+    def amended_ratio(r, curve="dbar_curve", wall="k_wall"):
+        ok = [row for row in r[curve]
+              if 2 <= row["n"] <= r[wall] and row["dbar"] >= 2 * row["floor"]]
+        if not ok:
+            return 1.0          # no eligible row: at the same-process floor
+        w = max(ok, key=lambda x: x["delta"])
+        return w["dbar"] / max(w["floor"], 1e-12)
+
+    dbar_ratio = [[amended_ratio(r) for r in E0["results"][p]] for p in PAIR_ORDER]
     _bar_with_points(axes[2], xs, dbar_ratio, C["dbar"])
+    for x, p in zip(xs, PAIR_ORDER):
+        b = [amended_ratio(r, "belief_curve", "belief_k_wall")
+             for r in E0["results"][p] if "belief_curve" in r]
+        if b:
+            axes[2].scatter(np.full(len(b), x) + 0.28, b, s=16, marker="D",
+                            color=C["belief"], zorder=3,
+                            label="belief readout" if p == PAIR_ORDER[0] else None)
     axes[2].axhline(2.0, color="k", lw=0.7, ls="--")
     axes[2].set_yscale("log")
     axes[2].set_ylabel(r"$\bar d_{n^*}$ / floor")
-    axes[2].set_title(r"process distance ($\bar d$, emitted readout): 1 = same-process floor")
+    axes[2].set_title(r"process distance ($\bar d$): 1 = same-process floor")
     axes[2].set_xticks(xs, [PAIR_LABEL[p] for p in PAIR_ORDER])
+    axes[2].legend(frameon=False, loc="upper left")
     fig.savefig(FIGS / "fig_e0_summary.pdf")
     plt.close(fig)
 

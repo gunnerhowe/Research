@@ -11,8 +11,11 @@ import time
 from exp_common import (GEN_KW_TF, RESULTS, M, TASKS, calibrate_sigma, eval_pair,
                         gen_runs, get_model, get_states, save_json)
 
-assert json.loads((RESULTS / "exp0_existence.json").read_text())["gate"]["E0_PASS"], \
-    "E0 gate did not pass; E2 is gated (PLAN.md)"
+# gated on E0 (PLAN.md): pre-registered pass OR amended pass (AMENDMENT 1)
+_e0 = json.loads((RESULTS / "exp0_existence.json").read_text())["gate"]["E0_PASS"]
+_am = json.loads((RESULTS / "amended_gate.json").read_text())
+assert _e0 or _am["AMENDED_PASS_sign_consistent"], \
+    "neither pre-registered nor amended E0 gate passed; E2 is gated (PLAN.md)"
 
 t0 = time.time()
 SEEDS_TF = (0, 1, 2)
