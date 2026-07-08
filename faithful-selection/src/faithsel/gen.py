@@ -145,8 +145,13 @@ def restricted_logprob(letter_logps: np.ndarray, idx: int) -> float:
 def process_chunk(model, tok, specs: list[PromptSpec],
                   max_new_tokens: int = 448, gen_bs: int = 8,
                   read_bs: int = 8, lens_bs: int = 4,
-                  do_lens: bool = True) -> list[dict]:
-    """Run the full measurement pipeline for a chunk of instances."""
+                  do_lens: bool = True,
+                  concise_max_new_tokens: int = 256) -> list[dict]:
+    """Run the full measurement pipeline for a chunk of instances.
+
+    Generation batches are grouped by instrument arm: mixed batches run to
+    the slowest member, and the concise arm needs roughly half the budget.
+    """
     text_h = [chat_text(tok, build_user_prompt(s, hinted=True)) for s in specs]
     text_u = [chat_text(tok, build_user_prompt(s, hinted=False)) for s in specs]
 
@@ -156,10 +161,21 @@ def process_chunk(model, tok, specs: list[PromptSpec],
             out.extend(fn(model, tok, texts[i:i + bs], **kw))
         return out
 
-    gen_h = batched(generate_batch, text_h, gen_bs,
-                    max_new_tokens=max_new_tokens)
-    gen_u = batched(generate_batch, text_u, gen_bs,
-                    max_new_tokens=max_new_tokens)
+    def gen_by_arm(texts):
+        out = [None] * len(specs)
+        for arm, budget, bs in ((0, concise_max_new_tokens, gen_bs + 4),
+                                (1, max_new_tokens, gen_bs)):
+            idx = [j for j, s in enumerate(specs) if s.z == arm]
+            if not idx:
+                continue
+            gens = batched(generate_batch, [texts[j] for j in idx], bs,
+                           max_new_tokens=budget)
+            for j, g in zip(idx, gens):
+                out[j] = g
+        return out
+
+    gen_h = gen_by_arm(text_h)
+    gen_u = gen_by_arm(text_u)
 
     cot_h = [split_cot(t).strip() for t in gen_h]
     cot_u = [split_cot(t).strip() for t in gen_u]

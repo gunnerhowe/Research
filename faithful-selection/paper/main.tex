@@ -1,0 +1,358 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+
+\input{numbers}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\IMR}{\lambda}
+\newcommand{\ind}[1]{\mathbf{1}\!\left[#1\right]}
+
+\title{Chain-of-Thought Faithfulness as Endogenous Sample Selection:\\
+A Heckman-Style Test and Correction for the Verbalization Confound}
+
+\author{Gunner Levi Howe\\
+Independent Researcher\\
+\texttt{gunnerlevihowe@gmail.com}}
+
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The field has established that a model's chain-of-thought (CoT) is a
+selected, often post-hoc projection of its latent computation, and,
+separately, that verbalization-based faithfulness metrics are confounded by
+the lossy selectivity of that projection. We give the first formal account
+of this as \emph{endogenous sample selection} \citep{heckman1979}: a probit
+selection equation for \emph{what gets verbalized} and an outcome equation
+for the \emph{underlying computational reliance}, linked by correlated
+errors. The model yields (a) a scalar test for the verbalization-selection
+confound ($H_0\!:\rho=0$) and (b) an inverse-Mills-ratio correction to
+naive verbalization-based faithfulness estimates, including a closed-form
+estimate of the reliance hidden in non-verbalizing CoTs---the quantity
+verbalization counts silently set to zero. We validate the estimator against
+causal hint-excision ground truth on open-weight models (Qwen2.5-7B,
+Mistral-7B, Phi-3.5-mini), where hint reliance is measurable for every
+instance: the test detects the confound ($\hat\rho=\QrhoMain$,
+LR $p=\QrhoLRpMain$), the corrected population and hidden-reliance
+estimates recover ground truth better than the naive estimators, a
+randomized verbosity instruction validates as an instrument (moves
+verbalization, leaves reliance balanced), and a placebo hint yields no
+detection. We then apply the correction in the observation-only regime the
+method is designed for---a reasoning model (Llama-3.1-Nemotron-Nano-8B)
+analyzed from text alone and then unblinded, and Claude Haiku 4.5 via API---
+where it moves the faithfulness verdict in the direction the open-model
+ground truth says it should. The estimator, not the phenomenon, is the
+contribution: a drop-in audit for any faithfulness metric that counts
+verbalizations.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Chain-of-thought faithfulness asks whether the stated reasoning of a
+language model reflects the computation that actually produced its answer.
+The dominant measurement paradigm injects a hint into the prompt, checks
+whether the answer moves, and scores the CoT faithful when it verbalizes the
+hint it used \citep{turpin2023,lanham2023,chen2025reasoning}. Measured this
+way, frontier reasoning models look strikingly unfaithful: CoTs reveal the
+hints that drive their answers in fewer than 20\% of cases in the settings
+of \citet{chen2025reasoning}.
+
+A recent cluster of work undermines the naive reading of those counts from
+two directions. First, the \emph{phenomenon}: models often commit to an
+answer before a single reasoning token is emitted, and the trace is then a
+performative, post-hoc narration
+\citep{performative2026,commitment2026,rationalization2026}. Second, the
+\emph{metric}: verbalization is a lossy, selective compression of a
+distributed computation, so absence of a hint word does not certify absence
+of hint use \citep{zaman2025,young2026measuring}. \citet{zaman2025} show
+with causal mediation that non-verbalized hints still causally influence
+predictions through the CoT, and argue the Biasing-Features metric conflates
+unfaithfulness with incompleteness.
+
+What this cluster lacks is an estimator. If the trace is a selected sample
+of the computation, then verbalization counts are a \emph{selected-sample
+statistic}, and their bias is not a rhetorical concern but a quantity with
+seventy years of econometric machinery behind it. This paper supplies the
+bridge. We cast \emph{what-gets-verbalized} as the selection equation and
+\emph{latent reliance} as the outcome equation of a Heckman
+selection-on-unobservables model \citep{heckman1979}: the two equations
+share correlated errors, and the correlation $\rho$ \emph{is} the
+verbalization confound. The framing buys three things the qualitative
+critique cannot:
+
+\begin{itemize}
+\item \textbf{A test.} $H_0\!:\rho=0$ is a one-degree-of-freedom likelihood
+ratio test of whether verbalization is endogenously selected on the latent
+computation. If it is not rejected, naive counts are fine and no correction
+is needed.
+\item \textbf{A correction.} The inverse Mills ratio converts naive
+selected-sample means into consistent population estimates, including a
+closed-form estimate of $\E[\text{reliance}\mid\text{not verbalized}]$ ---
+the reliance that verbalization counts implicitly score as zero.
+\item \textbf{A deployment path.} The correction needs only the observable
+channel (traces and answers), so it transfers to API models where causal
+ground truth is unmeasurable --- exactly the regime where faithfulness
+audits matter.
+\end{itemize}
+
+We are explicit about what we do \emph{not} claim. Latent commitment
+preceding verbalization is established prior work, not our finding; we take
+it as background and supply the statistical lens that says \emph{because} of
+it, naive faithfulness metrics are confounded, testably and correctably.
+\citet{zaman2025} reach for exactly this intuition (``lossy compression and
+selectivity'') and stop short of a selection equation, a correlated-error
+model, or a test; ours is the estimator behind their reinterpretation.
+\citet{rationalization2026} detect the latent event with activation probes;
+detection is not correction. Relative to missing-not-at-random mediation
+analysis \citep{zuo2024mediation}, which identifies direct and indirect
+effects under mediator missingness, the selection-model packaging delivers
+what a faithfulness auditor actually consumes: a scalar confound test and a
+closed-form corrected rate, at the price of a parametric error model whose
+sensitivity we chart explicitly.
+
+On open-weight models we can measure ground-truth reliance for
+\emph{every} instance via hint-excision counterfactuals, so the whole
+selection machinery is validatable end-to-end: fit the model as if reliance
+were observable only through verbalizing traces, then unblind. The test
+detects the confound, the correction recovers population and hidden reliance
+better than the naive estimators, the randomized verbosity instrument
+validates, and a placebo hint yields no detection
+(Section~\ref{sec:results}). We then run the estimator in the
+observation-only regime it is designed for (Section~\ref{sec:e2}).
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Faithfulness by verbalization counts.} \citet{turpin2023}
+introduced biasing-feature injection and showed CoTs systematically omit
+influential features; \citet{lanham2023} formalized a perturbation metric
+family; \citet{chen2025reasoning} scaled the audit to reasoning models with
+six hint types, finding verbalization rates below 20\% and non-verbalized
+reward hacks. Benchmarks now target instance-level faithfulness
+\citep{arcese2025faithcot}, and \citet{young2026measuring} show the measured
+rate depends heavily on the verbalization classifier --- metric fragility
+consistent with a selection process nobody models.
+
+\paragraph{Latent commitment.} Pre-verbalization commitment theory
+\citep{commitment2026}, step-level performativity \citep{performative2026},
+and pre-generation rationalization probes \citep{rationalization2026}
+establish that the computation often finishes before the narration starts.
+We treat this as the mechanism generating nonzero $\rho$.
+
+\paragraph{The incompleteness critique.} \citet{zaman2025} is closest in
+spirit: verbalization is lossy compression, and causal mediation shows
+non-verbalizing CoTs still mediate hint influence. They propose broader
+toolkits (faithful@k, mediation, corruption); we propose the missing
+statistical object --- the joint selection-outcome model --- and derive the
+test and correction their critique implies.
+
+\paragraph{Selection econometrics.} Heckman's two-step and MLE estimators
+\citep{heckman1979,puhani2000} and the binary-outcome variant
+\citep{vandeven1981} are textbook; our contribution is the mapping
+(verbalization $\to$ selection; reliance $\to$ outcome; verbosity
+instruction $\to$ instrument) and its validation against mechanistic ground
+truth. To our knowledge no prior work imports selection-on-unobservables
+correction into CoT faithfulness or XAI metrics generally; a companion
+paper by the author develops the machinery for epistemic-uncertainty
+estimation \citep{heckesel2026}. MNAR mediation \citep{zuo2024mediation}
+is the nearest statistical line; Section~\ref{sec:method} positions the
+estimator against it.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Setup and estimands}
+
+For hinted instance $i$ let $R_i^*\in\mathbb{R}$ denote \emph{latent
+reliance}: the causal influence of the injected hint on the model's answer
+distribution (operationalized in Section~\ref{sec:setup}). Let $V_i\in\{0,1\}$
+indicate that the emitted CoT \emph{verbalizes} the hint. The observation
+rule of every verbalization-count metric is: reliance is read off the trace
+only when the trace talks about the hint. Formally the auditor observes
+$R_i = R_i^*$ iff $V_i=1$, and codes $R_i=0$ (or ignores $i$) otherwise.
+
+The two-equation model \citep{heckman1979}:
+\begin{align}
+V_i &= \ind{w_i^\top\gamma + \delta Z_i + u_i > 0} && u_i\sim\mathcal N(0,1)
+\label{eq:sel}\\
+R_i^* &= x_i^\top\beta + \varepsilon_i && \varepsilon_i\sim\mathcal N(0,\sigma^2),
+\quad \mathrm{Corr}(u_i,\varepsilon_i)=\rho, \label{eq:out}
+\end{align}
+with $x_i$ instance covariates (hint type, dataset, question length,
+difficulty), $w_i = x_i$, and $Z_i$ an instrument entering only the
+selection equation. $\rho\neq 0$ is the \emph{verbalization confound}:
+instances rely more (or less) on the hint precisely when they are more
+likely to verbalize it, for reasons not captured by observables.
+
+Under \eqref{eq:sel}--\eqref{eq:out},
+\begin{equation}
+\E[R^*\mid x, V{=}1] = x^\top\beta + \rho\sigma\,\IMR(w^\top\gamma+\delta Z),
+\qquad
+\E[R^*\mid x, V{=}0] = x^\top\beta - \rho\sigma\,\IMR(-(w^\top\gamma+\delta Z)),
+\label{eq:imr}
+\end{equation}
+with $\IMR(t)=\phi(t)/\Phi(t)$ the inverse Mills ratio. Three estimands:
+the \emph{population mean reliance} $\mu=\E[R^*]$; the \emph{hidden
+reliance} $\mu_0=\E[R^*\mid V{=}0]$ (what verbalization counts set to
+zero); and $\rho$ itself. The naive estimators are the selected-sample mean
+$\hat\mu_{\text{naive}}=\overline{R}_{V=1}$ and the zero-fill mean
+$\overline{V\!R}$; both are inconsistent for $\mu$ when $\rho\neq0$, with
+bias $\rho\sigma\,\E[\IMR]$ in the selected-sample case --- the exact
+selection bias term of \citet{heckman1979}.
+
+We estimate \eqref{eq:sel}--\eqref{eq:out} by the two-step estimator
+(probit, then OLS on $[x,\hat\IMR]$) and by full-information MLE with exact
+gradients; $H_0\!:\rho=0$ is tested by likelihood ratio against the
+$\rho$-frozen model (equivalently probit + OLS) and by a Wald test on
+$\operatorname{artanh}\hat\rho$. For deployments where the reliance proxy
+readable from a verbalizing trace is binary (adopted the hinted answer or
+not), we use the probit-with-selection variant \citep{vandeven1981} with a
+Gauss--Legendre bivariate-normal likelihood; the hidden adoption rate has
+the closed form
+$\Pr(y{=}1\mid V{=}0)=[\Phi(x^\top\beta)-\Phi_2(x^\top\beta, w^\top\gamma;\rho)]/\Phi(-w^\top\gamma)$.
+
+\subsection{Identification: instrument and sensitivity}
+\label{sec:ident}
+
+The load-bearing assumption is an exclusion restriction: a variable that
+moves \emph{what gets said} but not \emph{what is computed}. We randomize a
+\textbf{verbosity instruction} per instance (fair coin): the verbose arm
+asks the model to mention every consideration that influenced it; the
+concise arm caps the reasoning at two sentences. Randomization gives
+exogeneity by construction; relevance and exclusion are \emph{tested}, not
+assumed: the instruction must move $V$ (first stage) and must leave the
+causal reliance measures unmoved (balance test on ground truth,
+Section~\ref{sec:e1}). This choice is motivated by \citet{zaman2025}, whose
+faithful@k shows inference budget strongly modulates verbalization. Because
+joint normality plus exclusion is still a parametric identification, we
+follow econometric practice \citep{puhani2000} and report a
+$\rho$-\emph{sensitivity} analysis --- corrected estimands across a frozen-%
+$\rho$ grid --- so every conclusion can be read off bounds rather than point
+identification. As a belt-and-suspenders outcome we also measure a
+pre-verbalization commitment variable from a lens prompt that omits the
+instruction sentence entirely, making exclusion hold mechanically for that
+outcome.
+
+\subsection{Relation to MNAR mediation}
+
+One can view $R^*$ as a mediator observed MNAR through the verbalization
+channel and reach for missing-mediator machinery \citep{zuo2024mediation}.
+The selection-model packaging is deliberately different in its deliverables:
+(i) a scalar, interpretable confound parameter with a 1-df test; (ii)
+closed-form corrected rates \eqref{eq:imr} that drop into existing
+faithfulness pipelines; (iii) a standard instrument-validation protocol. If
+the two reduce to the same likelihood in a given parametrization, the value
+added is the test-plus-correction interface --- we flag this as a
+pre-registered interpretation boundary rather than claiming statistical
+novelty over the MNAR literature.
+
+\section{Experimental setup}
+\label{sec:setup}
+
+\paragraph{Models and data.} Open-weight: Qwen2.5-7B-Instruct (primary),
+Mistral-7B-Instruct-v0.3, Phi-3.5-mini-instruct, 4-bit NF4, greedy
+decoding throughout (deterministic pipeline). Observation-only (E2):
+Llama-3.1-Nemotron-Nano-8B (reasoning model; run locally but analyzed from
+text alone, then unblinded) and Claude Haiku 4.5 via API. Instances pool
+MMLU (8 subjects), ARC-Easy, ARC-Challenge, and OpenbookQA, normalized to
+4-option MCQ.
+
+\paragraph{Hints and placebo.} Four prompt-injectable hint types following
+\citet{turpin2023,chen2025reasoning}: sycophancy, authority, metadata
+leak, and consistency, each pointing at a uniformly random \emph{wrong}
+option; plus a placebo arm with the sycophancy wrapper and no option
+information, for which the estimator must find nothing.
+
+\paragraph{Verbalization $V$.} A deterministic, hint-type-specific lexical
+detector over the reasoning span (final-answer line removed); merely naming
+the hinted option letter does not count. The committed detector is validated
+against an LLM judge on a stratified subsample
+(agreement \QjudgeAgree{}, Cohen's $\kappa=\QjudgeKappa$).
+
+\paragraph{Ground-truth reliance (open models).} Primary, $R^{\mathrm{TE}}$:
+restricted log-odds of the hinted letter at a canonical answer position
+(``\texttt{Final answer: (}''), hinted run minus matched unhinted run ---
+an input-level $do(\text{hint})$ contrast capturing the hint's total causal
+effect on the answer distribution. Secondary, $R^{\mathrm{NDE}}$:
+hint-excision splice --- the hinted CoT is held fixed and re-read under the
+unhinted prompt, isolating the direct, not-through-CoT-text path
+\citep{zaman2025}. Tertiary, $R^{\mathrm{pre}}$: logit-lens
+\citep{nostalgebraist2020} commitment shift toward the hinted letter,
+averaged over the upper half of layers, from a no-CoT prompt that excludes
+the instrument sentence by construction. All three are forward-pass-only
+and deterministic.
+
+\paragraph{Protocol.} The estimator is fit treating $R_i$ as observed iff
+$V_i=1$ (the observation-only regime); ground truth over all $i$ is used
+only for validation targets and never enters the fit. Bootstrap CIs
+(B=1000) resample instances. Pre-registration (PLAN.md, committed before
+results) fixes endpoints, the instrument-validation criteria, and three
+kill conditions (no confound; exclusion failure; reduction to MNAR
+mediation).
+
+\section{Results: the confound exists and the correction works}
+\label{sec:results}
+
+%%RESULTS-E0-TBD%%
+
+\subsection{Identification checks}
+\label{sec:e1}
+
+%%RESULTS-E1-TBD%%
+
+\subsection{Robustness: models, hint types, placebo}
+\label{sec:e3}
+
+%%RESULTS-E3-TBD%%
+
+\section{Observation-only deployment}
+\label{sec:e2}
+
+%%RESULTS-E2-TBD%%
+
+\section{Limitations}
+\label{sec:limits}
+
+The exclusion restriction is contestable despite randomization and the
+balance test: an instruction that changes reasoning length could in
+principle change the computation in ways our reliance measures miss; this
+is why every headline claim is accompanied by the $\rho$-sensitivity table
+and why $R^{\mathrm{pre}}$ (mechanically instrument-free) is reported.
+Identification also leans on bivariate normality of $(u,\varepsilon)$;
+non-normal latent reliance distorts $\hat\rho$. Our reliance measures are
+letter-level log-odds contrasts, not full computational attribution, and
+$R^{\mathrm{TE}}$ conflates through-CoT and direct paths (which is why
+$R^{\mathrm{NDE}}$ is reported). The verbalization detector is lexical;
+we bound its error by judge agreement. Scale is limited to $\le$8B open
+models and one API model; hint types are four of the six in
+\citet{chen2025reasoning}. Finally, this is a measurement-methodology
+contribution: it corrects the estimate of reliance given selection, it does
+not make CoTs faithful.
+
+\section{Reproducibility}
+
+All code, committed raw run records (JSONL), results JSONs, and this paper
+regenerate end-to-end: \texttt{numbers.tex} is machine-generated
+(\texttt{paper/gen\_paper\_numbers.py}; byte-identity checked by
+\texttt{paper/verify\_regen.py}); figures regenerate from committed raw
+data; the estimator core is gated by 36 tests including agreement with
+\texttt{statsmodels} and synthetic parameter recovery. Total compute:
+single-digit RTX-3080 GPU-hours plus one API model.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

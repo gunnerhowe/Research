@@ -69,15 +69,16 @@ def augment(df: pd.DataFrame) -> pd.DataFrame:
     out["ans_h"] = [parse_answer(t) for t in out["gen_hinted"]]
     out["ans_u"] = [parse_answer(t) for t in out["gen_unhinted"]]
 
-    r_te, r_nde = [], []
-    for j in range(len(out)):
-        hh = _rlogit(out["lp_hh"].iloc[j], h_idx[j])
-        uu = _rlogit(out["lp_uu"].iloc[j], h_idx[j])
-        uh = _rlogit(out["lp_uh"].iloc[j], h_idx[j])
-        r_te.append(hh - uu)
-        r_nde.append(hh - uh)
-    out["R_TE"] = r_te
-    out["R_NDE"] = r_nde
+    if "lp_hh" in out.columns:
+        r_te, r_nde = [], []
+        for j in range(len(out)):
+            hh = _rlogit(out["lp_hh"].iloc[j], h_idx[j])
+            uu = _rlogit(out["lp_uu"].iloc[j], h_idx[j])
+            uh = _rlogit(out["lp_uh"].iloc[j], h_idx[j])
+            r_te.append(hh - uu)
+            r_nde.append(hh - uh)
+        out["R_TE"] = r_te
+        out["R_NDE"] = r_nde
 
     if "lens_h" in out.columns and out["lens_h"].notna().all():
         r_pre, ent, direct_ok = [], [], []
@@ -304,10 +305,14 @@ def heckprob_report(df: pd.DataFrame, unblind_outcome: str | None = "R_TE",
     only when the trace verbalizes the hint. Fits heckprob, reports the
     corrected population/hidden adoption rates; when reliance ground truth
     exists (local models), unblinds against it.
+
+    The FIT never uses white-box covariates (lens-derived entropy /
+    direct-answer correctness), even when the raw file has them: the point
+    is the regime where only text is observable. Ground truth enters only
+    the clearly-labeled unblind fields.
     """
     d = df[df["parse_ok"] & (df["hint_type"] != "placebo")].copy()
-    use_lens = "direct_entropy" in d.columns
-    X, W, names = design(d, use_lens_covs=use_lens)
+    X, W, names = design(d, use_lens_covs=False)
     s = d["V"].values.astype(float)
     y_full = d["followed"].values.astype(float)
     y = np.where(s > 0.5, y_full, np.nan)
