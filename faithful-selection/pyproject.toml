@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "faithsel"
+version = "0.1.0"
+description = "CoT faithfulness as endogenous sample selection: Heckman-style test and correction for the verbalization confound"
+authors = [{ name = "Gunner Levi Howe", email = "gunnerlevihowe@gmail.com" }]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "scipy",
+    "torch",
+    "transformers",
+    "datasets",
+    "accelerate",
+    "bitsandbytes",
+    "pandas",
+    "matplotlib",
+    "statsmodels",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
