@@ -44,8 +44,9 @@ for task_name in ("gm", "mess3"):
                              seed_base=s * 100_000 + 40_000
                              + 3_000 * list(twins).index(name))
             stB = get_states(mB, task, sigB, arch="tf", seed=555 + s)
-            r = eval_pair(runsA, runsB, stA, stB, task.m, ns=NS, repeats=3,
-                          seed=s, with_belief=(task.m == 2))
+            r = eval_pair(runsA, runsB, stA, stB, task.m, ns=NS, repeats=2,
+                          seed=s, with_belief=(task.m == 2), belief_ns_max=8,
+                          dsa_kw={"iters": 800})   # AMENDMENT 2 budget
             r.update(seed=s, pair=name, task=task_name)
             results[task_name][name].append(r)
             print(f"[{task_name} s{s}] {name}: dbar*={r['plateau']['dbar']:.4f} "

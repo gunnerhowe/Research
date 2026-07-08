@@ -167,6 +167,16 @@ E1/E2 proceed under the amended gate; their designs are unchanged except that th
 sweep also records the (pre-registered, secondary) quantized-belief readout, where the noise
 separation is largest.
 
+## AMENDMENT 2 (2026-07-08, before E1 results existed; E1 was restarted)
+
+The E1 sweep at the E0 budget projected to >12 h under GPU contention. E1/E2 are
+characterization experiments, not the existence claim, so their budget is reduced (disclosed):
+generation B=64 × T=8192 per run (same-budget floors per condition keep the honesty device),
+d̄ blocks n ∈ {1, 2, 4, 8, 12} (E0 located every same-task separation at n ≤ 8; the reduced
+wall is log2(5.2e5)/ĥ ≈ 28 ≫ 12), belief blocks n ≤ 8, OT repeats 2, DSA iters 800 (config
+otherwise identical). E0's results and claims are untouched. The partially-completed E1 run at
+the old budget was discarded before its results were seen (it saved nothing to results/).
+
 ## What would make us wrong (a priori)
 
 - The noise twin's marginal may drift (TV > 0.01) before d-bar_n≥2 separates ⇒ smaller σ*, weaker

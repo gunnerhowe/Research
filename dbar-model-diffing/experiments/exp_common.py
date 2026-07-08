@@ -140,7 +140,8 @@ def stream_diag(sym, m):
 
 
 def eval_pair(runs_a, runs_b, states_a, states_b, m, ns=NS_FULL, repeats=4,
-              seed=0, with_belief=True, with_dsa=True):
+              seed=0, with_belief=True, with_dsa=True, belief_ns_max=16,
+              dsa_kw=None):
     """The three metrics side-by-side for one pair, plus diagnostics."""
     out = {}
     sym_a, sym_b = runs_a[0]["sym"], runs_b[0]["sym"]
@@ -162,7 +163,7 @@ def eval_pair(runs_a, runs_b, states_a, states_b, m, ns=NS_FULL, repeats=4,
     if with_belief and runs_a[0]["belief"] is not None:
         brows = dbar_pair_curve(runs_a[0]["belief"], runs_b[0]["belief"],
                                 runs_a[1]["belief"], runs_b[1]["belief"], 4,
-                                ns=tuple(n for n in ns if n <= 16),
+                                ns=tuple(n for n in ns if n <= belief_ns_max),
                                 repeats=repeats, seed=seed + 3)
         out["belief_curve"] = brows
         bwall = min(estimation_wall(runs_a[0]["belief"], 4)[0],
@@ -172,7 +173,8 @@ def eval_pair(runs_a, runs_b, states_a, states_b, m, ns=NS_FULL, repeats=4,
 
     out["cka"] = cka_states(states_a, states_b, skip=SKIP)
     if with_dsa:
-        out["dsa"] = dsa_distance(states_a, states_b, device=M.DEVICE, skip=SKIP)
+        out["dsa"] = dsa_distance(states_a, states_b, device=M.DEVICE, skip=SKIP,
+                                  **(dsa_kw or {}))
     return out
 
 

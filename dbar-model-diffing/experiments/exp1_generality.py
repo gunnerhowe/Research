@@ -19,22 +19,27 @@ assert _e0 or _am["AMENDED_PASS_sign_consistent"], \
 
 t0 = time.time()
 gm = TASKS["gm"]()
-NS = (1, 2, 4, 8, 16, 24)
+# AMENDMENT 2 (PLAN.md): reduced characterization budget for the sweeps
+# (GPU contention): shorter runs with their own matched floors, n <= 12
+# (signal lives at n <= 8), 800 DSA iters, belief blocks <= 8.
+NS = (1, 2, 4, 8, 12)
+GEN1 = dict(B=64, T=8192, burn=512)
+EVAL_KW = dict(ns=NS, repeats=2, with_belief=True, belief_ns_max=8,
+               dsa_kw={"iters": 800})
 SIGMAS = (0.0, 0.01, 0.02, 0.05, 0.1, 0.2)
 FRACS = (0.1, 0.3, 0.5, 0.7, 0.9)
 
 noise_rows, prune_rows = [], []
 for s in SEEDS:
     A, _ = get_model("base", "gm", s)
-    runsA = gen_runs(A, gm, 0.0, seed_base=s * 100_000 + 1)
+    runsA = gen_runs(A, gm, 0.0, seed_base=s * 100_000 + 1, gen_kw=GEN1)
     stA = get_states(A, gm, 0.0)
 
     for sig in SIGMAS:
         runsB = gen_runs(A, gm, sig, seed_base=s * 100_000 + 60_000
-                         + int(sig * 10_000))
+                         + int(sig * 10_000), gen_kw=GEN1)
         stB = get_states(A, gm, sig, seed=555 + s)
-        r = eval_pair(runsA, runsB, stA, stB, gm.m, ns=NS, repeats=3,
-                      seed=s, with_belief=True)   # AMENDMENT 1: record belief readout
+        r = eval_pair(runsA, runsB, stA, stB, gm.m, seed=s, **EVAL_KW)
         r.update(seed=s, sigma=sig)
         noise_rows.append(r)
         print(f"[noise] s{s} sigma={sig}: dbar*={r['plateau']['dbar']:.4f} "
@@ -44,10 +49,9 @@ for s in SEEDS:
     for frac in FRACS:
         P, _ = get_model("prune", "gm", s, frac=frac)
         runsB = gen_runs(P, gm, 0.0, seed_base=s * 100_000 + 80_000
-                         + int(frac * 100))
+                         + int(frac * 100), gen_kw=GEN1)
         stB = get_states(P, gm, 0.0, seed=555 + s)
-        r = eval_pair(runsA, runsB, stA, stB, gm.m, ns=NS, repeats=3,
-                      seed=s + 7, with_belief=False)
+        r = eval_pair(runsA, runsB, stA, stB, gm.m, seed=s + 7, **EVAL_KW)
         r.update(seed=s, frac=frac, ce=M.val_ce_bits(P, gm))
         prune_rows.append(r)
         print(f"[prune] s{s} frac={frac}: dbar*={r['plateau']['dbar']:.4f} "
