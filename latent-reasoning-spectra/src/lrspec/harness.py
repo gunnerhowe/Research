@@ -65,7 +65,6 @@ class Harness:
         self.eos_id = self.tok.eos_token_id
 
         model = GPT2LMHeadModel.from_pretrained("openai-community/gpt2")
-        model.resize_token_embeddings(len(self.tok))
         sd = torch.load(checkpoint_path or CHECKPOINTS[model_key], map_location="cpu",
                         weights_only=True)
         if any(k.startswith("base_causallm.") for k in sd):
@@ -74,6 +73,8 @@ class Harness:
         else:
             # M1 (CoT) was trained as a bare GPT2LMHeadModel, no Coconut wrapper
             base_sd = dict(sd)
+        # match the checkpoint's vocab (M1: 50257, latent models: 50260)
+        model.resize_token_embeddings(base_sd["transformer.wte.weight"].shape[0])
         missing, unexpected = model.load_state_dict(base_sd, strict=False)
         # lm_head is tied to wte; "missing" entries must be none, unexpected none
         assert not missing and not unexpected, (missing, unexpected)

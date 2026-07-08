@@ -166,7 +166,7 @@ def analyze():
         }
     if sweep:
         # matched-subset AUROC for the final model (first N_EPOCH_PROBLEMS problems)
-        n_sub = N_EPOCH_PROBLEMS
+        n_sub = min(N_EPOCH_PROBLEMS, int(capM2["n_done"][0]))
         sub_labels = capM2["labels"][:n_sub]
         sub_score = preds["sigma1"][:n_sub]
         ls = [sub_labels[i][sub_labels[i] >= 0].astype(int) for i in range(n_sub)]
