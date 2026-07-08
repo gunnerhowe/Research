@@ -1,0 +1,7 @@
+numpy>=2.0
+scipy>=1.14
+matplotlib>=3.9
+pot>=0.9.4
+torch>=2.4
+dsa-metric>=2.0        # pip install git+https://github.com/mitchellostrow/DSA.git
+pytest>=8.0

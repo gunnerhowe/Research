@@ -1,0 +1,176 @@
+PROJECT BRIEF — Ornstein d-bar as a Computational-Equivalence Metric: Separating Same-Output-
+Different-Process Model Pairs a Static (and Deterministic-Conjugacy) Metric Misses
+==============================================================================================
+Read this whole file before writing any code. Complete handoff, AFTER a dedicated adversarial kill-check +
+feasibility study (verdict: OPEN-AND-WORTH-BUILDING in a RESTRICTED form; genuinely un-scooped; one
+existence-proof experiment away from a real methods paper OR an honest footnote).
+Author: Gunner Levi Howe (gunnerlevihowe@gmail.com). Hardware: one RTX 3080 (10GB) + Claude/Nemotron API.
+The researcher already OWNS the estimator (OT between empirical n-block distributions under Hamming cost,
+from the Ornstein d-bar chaos paper "Beyond the Invariant Measure").
+
+THE ONE-LINE IDEA
+-----------------
+Ornstein's d-bar (dbar) is an ergodic-theory metric on stationary PROCESSES that decides when two processes
+are dynamically/isomorphically equivalent -- the SAME process, not merely sharing one-time marginals (two
+systems can share an invariant measure exactly yet differ in every dynamical property). Current model-
+comparison tools (CKA, SVCCA, representational similarity, crosscoders, Platonic) compare representations
+STATICALLY; even the best dynamical competitor (DSA) compares DETERMINISTIC linear conjugacy. CLAIM: dbar on
+a LOW-ENTROPY SYMBOLIC READOUT of a model's computation can separate "same output / same marginals, but
+DIFFERENT process" model pairs -- notably a model vs its NOISE-INJECTED, DISTILLED, or PRUNED twin -- that
+static metrics and deterministic-conjugacy metrics do not distinguish.
+
+WHAT THE KILL-CHECK FOUND (read first -- HARD constraints; one is fatal to the ambitious version)
+------------------------------------------------------------------------------------------------
+UN-SCOOPED: no work applies Ornstein dbar, or ANY ergodic-isomorphism/finitary-coding process metric, to
+comparing neural networks / circuits / fine-tunes / distillates / pruned models. (The only "d-bar" x NN
+collisions are false friends: Ornstein-UHLENBECK, an SDE; and the D-bar operator in impedance-tomography
+imaging. Ignore both.)
+
+THE AMBITIOUS VERSION IS DEAD -- DO NOT ATTEMPT IT. "dbar on raw high-dimensional activation streams" is sunk
+by a real published theorem: the empirical k(n)-block distribution is a consistent dbar estimator ONLY for
+k(n) <~ (log n)/h, where h = entropy rate. A raw activation stream, even coarsely symbolized, has HIGH h
+(~2-4 bits/step); with n~1e5-1e6 affordable samples you get k(n)~4-10 symbols of reliable block length =
+far too short for any interesting long-range structure, and the dbar estimate degrades SILENTLY (no error --
+it just converges to garbage). A reviewer WILL kill this. Do not naively symbolize a residual stream.
+
+THE SECOND BLADE (state it FIRST in the paper, before a referee does). Ornstein-Weiss (arXiv:math/0608310):
+entropy is essentially the ONLY finitely-observable isomorphism invariant -- any invariant computable from
+finite data that is constant on isomorphism classes is a continuous function of entropy. dbar is NOT finitely
+observable in general and NOT isomorphism-invariant, so this does not kill the idea, but it BOUNDS the claim:
+you CANNOT advertise dbar as "detecting whether two models are the same computation (isomorphic) from finite
+data in general." The honest claim is: "dbar estimates a process-level distance that SEPARATES specific
+same-output/different-process pairs static and conjugacy metrics miss, WITHIN a fixed low-entropy readout."
+
+WHAT SURVIVES (the sound, restricted version): dbar on a DELIBERATELY LOW-ENTROPY, low-dimensional SYMBOLIC
+READOUT where k(n) <~ (log n)/h buys enough block length to matter. Three readouts:
+  (1) EXTRACTED-AUTOMATON alphabet (RNN/transformer -> DFA/Moore-machine extraction, Weiss et al.
+      arXiv:1711.09576; Adriaensen & Maene arXiv:2410.06045): the emitted small-alphabet symbol stream has
+      low h -> k(n) reaches tens of symbols. dbar on this is well-posed. PREFERRED.
+  (2) ARGMAX-TOKEN readout on a tiny-vocab controlled task (formal languages, modular arithmetic, small
+      synthetic grammars / HMMs) -- genuinely low-entropy output process.
+  (3) QUANTIZED 1-2D latent (project to a 1-2D bottleneck; symbolize with a coarse/generating partition).
+
+CITE-AND-DISTINGUISH (mandatory)
+--------------------------------
+- DSA -- Dynamical Similarity Analysis, Ostrow/Eisen/Kozachkov/Fiete, arXiv:2306.10168 (NeurIPS 2023):
+  THE COMPETITOR TO BEAT/DISTINGUISH. Explicitly claims to measure whether two networks "perform the same
+  computation with equivalent dynamics" even when geometry differs; disentangles conjugate-vs-non-conjugate
+  RNNs via delay-embedding + DMD/reduced-rank-regression + extended Procrustes. RUN ITS PUBLIC CODE. Your
+  edge: DSA tests conjugacy of a DETERMINISTIC LINEARIZED system; dbar tests isomorphism of the FULL
+  NONPARAMETRIC STOCHASTIC process. They DISAGREE exactly on the noise-injected case (DSA's deterministic
+  linear route is blind to stochastic sameness). You must DEMONSTRATE this disagreement, not assert it.
+  (Fast-DSA arXiv:2511.22828; Koopman-DSA variant ICLR-2024 OpenReview cfO9qeHrKU.)
+- OT between noisy neural dynamics, Nejatbakhsh/Geadah/Williams/Lipshutz, arXiv:2412.14421: CLOSEST ON
+  MECHANISM (OT between stochastic processes) but GAUSSIAN/second-order geometry, not symbolic ergodic
+  isomorphism. Distinguish: full nonparametric block distribution vs Gaussian 2nd-order.
+- Belief-state geometry, Shai et al., arXiv:2405.15943 (computational mechanics / mixed-state presentations in
+  a transformer residual stream): characterizes the PROCESS one model computes vs a ground-truth generator --
+  does NOT compare two models via a process metric. Clearest evidence the field is adjacent without taking it;
+  ALSO the source of your task generators (HMM/epsilon-machine).
+- Crosscoders / model diffing, arXiv:2602.11729 (+ 2603.04426, 2510.13900): diff FEATURES base-vs-finetune
+  STATICALLY -- exactly the "same output, is it same computation?" question, answered at the representation
+  level. Your pitch is the dynamical analog.
+- CKA (Kornblith, arXiv:1905.00414), SVCCA (arXiv:1706.05806), Platonic Representation Hypothesis
+  (arXiv:2405.07987): static one-time geometry -- the explicit foil. Survey: Klabunde et al. arXiv:2305.06329
+  (confirms process/ergodic distances are ABSENT from the taxonomy).
+- RNN->automaton equivalence (Weiss 1711.09576; Adriaensen&Maene 2410.06045; FSM-RNN distance 2004.00478):
+  discrete "same computation" via automata-equivalence/L*, NEVER via a metric on the stochastic process.
+- Ornstein-Weiss finitary-observation, arXiv:math/0608310 + Gray's generalization (Ann. Probab. 1975): the
+  theoretical ceiling on your claim; CITE IT FIRST.
+
+THE DISTINGUISHING STATEMENT (put a version in the intro)
+--------------------------------------------------------
+"Existing model-comparison metrics compare static representation geometry (CKA, Platonic, crosscoders) or the
+conjugacy of a deterministic linearized system (DSA). We introduce the first application of Ornstein's d-bar --
+a nonparametric, coding-invariant distance on stochastic PROCESSES -- to model comparison, and show that on a
+fixed low-entropy symbolic readout it separates same-output/same-marginal but different-process model pairs
+(a model vs its noise-injected/distilled/pruned twin) that static and deterministic-conjugacy metrics do not,
+while respecting the Ornstein-Weiss finitary-observation bound (we do not claim isomorphism detection in
+general)."
+
+EXPERIMENT LADDER (gated; E0 is an EXISTENCE PROOF and a HARD GATE -- do it BEFORE writing a framing sentence)
+------------------------------------------------------------------------------------------------------------
+E0. THE EXISTENCE PROOF (does dbar see what CKA/DSA cannot?). CONSTRUCT the discriminating pair by hand:
+    - Train two small RNNs/GRUs (width 64-256, minutes each on the 3080) on the SAME regular-language / small-
+      HMM task (Tomita grammars, parity, mod-p, or a Shai-style epsilon-machine generator) so they achieve
+      IDENTICAL behavior (same outputs => identical output marginals => "same invariant measure" at the
+      readout) but by construction have DIFFERENT internal processes. Cleanest constructions:
+        (a) same task, two seeds/learning-rules that DSA shows conjugate-vs-not (reuse Ostrow's setups);
+        (b) a model vs its NOISE-INJECTED twin (same computation + noise -- the case dbar is DESIGNED for and
+            DSA's deterministic linearization is NOT). HIGHEST-PROBABILITY WIN.
+        (c) a model vs its DISTILLED / PRUNED copy (same outputs, plausibly different process).
+    - Symbolize via extracted automaton (preferred) or argmax output (low-entropy readout).
+    - Compute THREE numbers per pair: CKA (should say "similar"), DSA (public code), and empirical dbar
+      (your estimator). THE PAPER EXISTS IFF there is a pair where CKA~0 distance AND DSA~0 distance BUT dbar
+      is LARGE (or vice-versa). The noise-injected twin is the highest-probability win.
+    - VALIDATION BATTERY: (i) identity/isomorphism sanity -- a model vs a RE-CODED copy of itself -> dbar~0;
+      (ii) different-task -> dbar large for all three (agreement); (iii) CONVERGENCE CURVE -- plot dbar
+      estimate vs n and vs block length k, empirically locating the (log n)/h wall to SHOW you respect it.
+    HARD GATE: if the noise-injected AND distilled pairs BOTH come out indistinguishable across all three
+    metrics, the honest result is NARROW/NEGATIVE ("dbar agrees with existing tools on the cases we could
+    construct") -- report that, do not force it.
+E1. GENERALITY OF THE SEPARATION. If E0 wins, characterize WHEN dbar separates: sweep noise level / distillation
+    temperature / prune fraction; show the dbar-vs-DSA gap as a function of how stochastic the "sameness" is.
+E2. REALISTIC READOUT. Move from RNN-on-formal-language to a small Pythia/GPT-2-small pair on a synthetic
+    grammar, transformer readout via FSM extraction (2410.06045). Show the metric ports beyond toy RNNs.
+E3. (stretch) A genuinely useful application: base-vs-finetune (the crosscoder question) OR
+    model-vs-distillate on a controlled task, where "did the process change or only the output?" matters.
+
+PRE-REGISTERED KILL CONDITIONS (commit to PLAN.md BEFORE results; commit that file BEFORE the results commit)
+-----------------------------------------------------------------------------------------------------------
+K1. NO SEPARATION (the E0 gate): no constructed pair (noise-injected/distilled/pruned) yields
+    dbar-large-while-DSA/CKA-small -> dbar adds nothing over existing tools on the cases we can build ->
+    honest NARROW/NEGATIVE; publish as such, do not overclaim.
+K2. ESTIMATION-WALL VIOLATION: the winning separation only appears at block lengths k > (log n)/h (i.e. in the
+    inconsistent regime) -> it is an estimation artifact, not real dbar structure -> retract that claim.
+K3. ISOMORPHISM-OVERCLAIM: any framing that asserts dbar detects "same computation / isomorphism in general
+    from finite data" -> forbidden by Ornstein-Weiss (math/0608310); restrict to "distance within a fixed
+    readout".
+
+FEASIBILITY (very feasible; you already own the estimator)
+----------------------------------------------------------
+The estimator = discrete OT between empirical n-block histograms of a small alphabet under Hamming cost = the
+chaos-paper machinery, ports directly; cheap. Everything fits one 3080 (small RNN training = minutes; DSA code
+public; dbar on small-alphabet histograms trivial). LLM API = writing/lit only, not compute. Effort:
+existence-proof ~1-2 weeks. The failure mode is NOT compute -- it is not finding a pair where dbar demonstrably
+beats DSA (the noise-injected twin is the most likely win because it is precisely the stochastic-sameness case
+dbar was invented for and DSA's deterministic route is blind to).
+
+STATS / HOUSE DISCIPLINE
+------------------------
+Repo mirrors the program: src/<pkg>/ (dbar.py the OT block-distribution estimator + convergence diagnostics,
+symbolize.py automaton/argmax/quantized readouts, pairs.py the constructed model pairs, baselines.py CKA+DSA,
+figures), experiments/ (exp0_existence .. exp3), tests/, results/ (committed JSONs), paper/ (main.tex,
+numbers.tex AUTO-GENERATED, verify_regen.py). Every number a machine-generated macro; >=5 seeds for the
+constructed pairs with CIs; ALWAYS report the three metrics side-by-side + the convergence-vs-k curve; a null
+(re-coded-self -> dbar~0) and an agreement control (different-task -> all three large). Pre-register E0 + the
+(log n)/h wall + K1-K3 in PLAN.md and COMMIT before results. Recency re-sweep before submission ("process
+distance neural network comparison", "ergodic model diffing", "dynamical similarity analysis", newest-first).
+
+READING LIST (in order)
+-----------------------
+1. arXiv:2306.10168 (DSA -- the competitor; RUN ITS CODE). 2. arXiv:2412.14421 (OT between noisy neural
+dynamics -- closest mechanism). 3. arXiv:2405.15943 (belief-state geometry -- process framing + task
+generators). 4. arXiv:math/0608310 (Ornstein-Weiss finitary observation -- the ceiling; cite first).
+5. arXiv:2305.06329 (similarity-measures survey -- positions dbar in the taxonomy). 6. arXiv:2405.07987
+(Platonic -- the static foil). 7. arXiv:2410.06045 (+ 1711.09576) (FSM extraction -- the low-entropy readout).
+8. arXiv:2602.11729 (+ 2603.04426) (crosscoder model diffing -- static base-vs-finetune foil). 9. Gray 1975
+(Ann. Probab., generalized dbar) + Scholarpedia "Ornstein theory" (canonical dbar + estimation). 10. your own
+"Beyond the Invariant Measure" (the estimator you reuse) + arXiv:2605.31547 (dynamic-probabilistic consistency
+gap -- motivates importing dbar).
+
+HONEST CEILING
+--------------
+A real METHODS paper IFF the existence-proof pair materializes (the noise-injected/distilled twin is the most
+likely win). Bounded to "distance within a fixed low-entropy readout" -- NOT general isomorphism detection.
+Value is "a genuinely new, stochastic, coding-invariant notion of same-computation that catches a case every
+existing tool misses" -- a very useful tool, not a paradigm shift. If E0 does not separate, the honest outcome
+is NARROW/NEGATIVE and you report it. DO THE EXISTENCE-PROOF EXPERIMENT BEFORE WRITING A SINGLE FRAMING
+SENTENCE.
+
+ATLAS LINK-BACK
+---------------
+One of three concurrently-scoped interp/theory directions (companions: latent-reasoning-spectra [build-#1],
+faithful-selection). Most unoccupied of the three, but existence-proof-gated. On ship, tell the atlas
+assistant to ingest as an own-lab node and stamp the outcome (positive if dbar separates a same-output/
+different-process pair that CKA+DSA miss / honest-negative if K1 fires -- both shippable).

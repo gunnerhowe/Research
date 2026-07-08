@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+checkpoints/
+paper/main.aux
+paper/main.log
+paper/main.out
+paper/main.bbl
+paper/main.blg
+paper/main.fls
+paper/main.fdb_latexmk
+.pytest_cache/
