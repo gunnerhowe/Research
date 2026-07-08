@@ -1,0 +1,13 @@
+models/
+data/*.json
+__pycache__/
+*.pyc
+paper/main.aux
+paper/main.log
+paper/main.out
+paper/main.bbl
+paper/main.blg
+paper/main.fls
+paper/main.fdb_latexmk
+paper/main.synctex.gz
+.cache/

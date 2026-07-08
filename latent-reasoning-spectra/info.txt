@@ -1,0 +1,188 @@
+PROJECT BRIEF — Spectral Invariants of Latent Reasoning: Predicting and Causally Explaining
+Anchor/Branch Structure in Continuous Chain-of-Thought
+============================================================================================
+Read this whole file before writing any code. Complete handoff, AFTER a dedicated adversarial
+kill-check + feasibility study (verdict: OPEN-AND-WORTH-BUILDING, narrow-but-real, RACING A CLOCK).
+Author: Gunner Levi Howe (gunnerlevihowe@gmail.com). Hardware: one RTX 3080 (10GB) + Claude/Nemotron API.
+This is the STRONGEST of three concurrently-scoped directions; it is the one to build FIRST and FAST.
+
+THE ONE-LINE IDEA
+-----------------
+A latent/continuous chain-of-thought (Coconut-family) reasons by feeding its last hidden state back as
+the next input embedding, producing a trajectory of continuous "thought" vectors c_1..c_n. That trajectory
+is literally a discrete-time dynamical system c_{t+1}=F(c_t). CLAIM: the interpretable structure of the
+reasoning -- the high-influence "anchor" thoughts and the branch points -- is PREDICTED (not merely
+observed) by the dynamical invariants of F: anchor thoughts <-> dominant/slow modes of the local Jacobian
+(or the estimated Koopman/transfer operator along the orbit); branch points <-> transient-expansion /
+non-normal-amplification directions. Validate against ProsQA's KNOWN ground-truth reachability DAG with a
+linear-chain null control, and -- MANDATORY -- cross-check CAUSALLY so the spectral objects are shown to be
+mechanistic, not epiphenomenal.
+
+WHAT THE KILL-CHECK FOUND (read first -- hard constraints)
+---------------------------------------------------------
+OPEN: the exact intersection is unoccupied as of July 2026 -- (latent-thought AR axis) x (spectral/
+transfer-operator tools) x (predict-then-causally-verify against a known DAG). No paper scoops the
+conjunction. Your Koopman/Ruelle-Pollicott/ergodic expertise is a genuine, scoop-resistant moat: almost
+nobody in interpretability does spectral operator theory properly.
+
+DO NOT CLAIM THE PHENOMENON. That "some latent steps have outsized, heterogeneous causal influence" (anchors
+exist) and that "step-to-step effects are non-local/routed" is ALREADY DOCUMENTED (2602.08783, 2606.12689).
+State it as established background. Your contribution is the SPECTRAL PREDICTOR + CAUSAL EXPLANATION of it,
+validated on a known DAG. A purely-descriptive "here are eigenvalues along a trajectory" restatement is
+INCREMENTAL, not foundational -- do not ship that.
+
+THE ARMED TRAP (the most dangerous adjacent paper). Aswal et al., "Observable Patterns Are Not Explanations:
+A Causal-Geometric Analysis of Latent Reasoning Models" (arXiv:2606.12689): analyzes Coconut+CODI with
+matched controls + causal interventions, finds causal effect concentrates in LOW-RANK directions whose
+step-to-step geometry grows more structured with behavioral influence -- one inference from your anchor
+hypothesis, but via causal+low-rank geometry, NOT spectral. Its thesis is a landmine: "observable geometric
+structure is NOT mechanism; decodability/static structure alone cannot establish it -- you need matched
+controls + causal tests." ANY spectral claim you make ("this slow mode IS a reasoning step") MUST be
+validated causally, or this paper pre-refutes you. Adopt its discipline; do not fight it.
+
+THE CLOCK. There is a live SPAR Spring-2026 project "Interpreting latent reasoning: methods for understanding
+continuous chain-of-thought" (mentor: Uzay Macar, Anthropic Fellows) with no published output yet, plus a
+dense cluster of 2606 Coconut-analysis papers. This cell is likely occupied within 1-2 seasons. The
+spectral/transfer-operator angle is the defense, but only if you SHIP the predict-and-causally-verify result.
+Move fast; this is the reason it is build-#1.
+
+CITE-AND-DISTINGUISH (mandatory, in the paper's related work)
+-------------------------------------------------------------
+- Fernando & Guitchounts, arXiv:2605.14258 (Jacobian spectra, non-normality, spectral gradients OF the
+  transformer residual stream): SAME TOOLKIT, DIFFERENT DYNAMICAL OBJECT -- depth-as-time on standard
+  forward passes vs your thought-step AR recurrence; and it does NOT touch reasoning/CoT/Coconut. This is
+  your single most important tools-overlap distinction and the template to adapt.
+- RKSP, arXiv:2602.22988 (whitened-DMD Koopman over LAYER-wise residual snapshots, near-unit-spectral-mass
+  diagnostic for TRAINING INSTABILITY): depth-axis + training-dynamics goal, not interpretability of reasoning.
+  Borrow the near-unit-spectral-mass idea; distinguish the axis + goal.
+- Aswal et al., arXiv:2606.12689 (causal-geometric Coconut/CODI): they MEASURE that low-rank directions carry
+  causal load and grow structured; you PREDICT which directions/steps from spectral invariants and EXPLAIN
+  why -- and you adopt their control+causal discipline. (Also the armed trap above.)
+- Li et al., arXiv:2602.08783 (SCM + step-wise do-interventions on latent CoT): establishes anchors exist
+  causally AND that step effects are "routed/non-local" (a substantive threat to a naive local-Jacobian
+  story -- see K3). They establish the phenomenon; you supply the dynamical mechanism.
+- Carson & Reisizadeh, arXiv:2506.04374 ("A Statistical Physics of Language Model Reasoning"): SDE
+  dh=mu(h)dt+B(h)dW at the SENTENCE/token level, PCA(40)+GMM regimes. Closest "reasoning-as-dynamical-system"
+  framing but discrete tokens (not latent thoughts), no Jacobian/Koopman/spectra, no DAG. Distinguish:
+  deterministic latent spectral operator + DAG validation.
+- Sun et al., arXiv:2604.05655 ("LLM Reasoning as Trajectories", discrete CoT, step-specific subspace
+  geometry, mid-trajectory correctness ROC-AUC 0.87): discrete-CoT subspace geometry, no spectral/dynamical
+  machinery; source of validation metrics (mid-trajectory correctness).
+- Attractor/equilibrium reasoner ARCHITECTURES (2605.12466, 2605.21488, 2606.18206, 2605.18820): they BUILD
+  fixed-point dynamics; you ANALYZE emergent dynamics of trajectories that already exist. Cite to show you
+  know the conversation; distinguish design-vs-analysis.
+- NOTE (phantom scoop, do NOT be spooked): a web summary claimed ReLaX (arXiv:2512.07558) "applies Koopman/DMD
+  to reasoning trajectories" -- FALSE; the PDF has zero Koopman/DMD (it is an RL latent-exploration training
+  method). A search-summarizer hallucination. Verified not a scoop.
+
+THE DISTINGUISHING STATEMENT (put a version in the intro)
+--------------------------------------------------------
+"Prior work establishes that latent reasoning has heterogeneous, causally-routed 'anchor' structure and that
+low-rank directions carry its causal load; and separately applies Koopman/Jacobian-spectral tools to the
+transformer's DEPTH axis. We are the first to characterize the latent-reasoning AUTOREGRESSIVE map
+c_{t+1}=F(c_t) spectrally, and to show that its dynamical invariants -- dominant/slow modes and non-normal
+transient-expansion directions -- PREDICT the anchor thoughts and branch points, validated against a
+ground-truth reasoning DAG with a linear-chain null control and confirmed by causal ablation."
+
+EXPERIMENT LADDER (gated; E0 is a ONE-WEEK go/no-go)
+---------------------------------------------------
+E0. WEEK-1 GO/NO-GO (spectral prediction + the make-or-break null control). NO TRAINING NEEDED.
+    - Download bmarti44/coconut-curriculum-checkpoints (HuggingFace): base openai-community/gpt2 (124M),
+      ProsQA, 7-stage curriculum, variants M1 (CoT baseline), M2 (Coconut hidden-state recycling),
+      M3 (pause-token single-pass), M4 (pause-token 6-pass). M3/M4 are BUILT-IN null controls -- they match
+      Coconut accuracy (96.6 vs 97.0) WITHOUT the latent recurrence, i.e. same behavior, different mechanism.
+    - Load ProsQA from facebookresearch/coconut (data/prosqa_*.json). ProsQA = synthetic graph-reachability
+      with a KNOWN reasoning DAG; branch nodes = out-degree > 1; linear-chain instances = the natural null.
+    - Per problem, run M2, capture latent thoughts c_1..c_n (c_t in R^768). At each step compute
+      J_t = dc_{t+1}/dc_t (768x768, torch.func.jacrev, seconds on a 3080); record eigenspectrum, spectral
+      radius, Henrici non-normality (||J||_F^2 - sum|lambda_i|^2), top-SVD expansion direction.
+    - HYPOTHESIS TESTS vs ground truth: (a) do high-transient-expansion / high-non-normality steps coincide
+      with ProsQA BRANCH nodes (out-degree>1)? (b) do dominant/slow-mode steps coincide with causally-high-
+      influence ANCHOR thoughts (measured by YOUR OWN step-ablation, cross-referenced to the leverage pattern
+      in 2602.08783)? Report AUROC/precision-recall of the spectral predictor against the DAG labels.
+    - NULL CONTROL (make-or-break): repeat on (i) linear-chain single-path ProsQA instances and (ii) the
+      pause-token M3/M4 models. The thesis REQUIRES the branching/expansion signatures to VANISH there. If
+      M3/M4 (same accuracy) show the SAME spectral structure, the spectral objects are epiphenomenal and
+      2606.12689 pre-refutes you -> K1 fires, project dead. You learn this in week one.
+E1. CAUSAL VALIDATION (mandatory gate, the 2606.12689 discipline). Intervene on the spectrally-identified
+    anchor directions / branch steps (ablate, patch, or perturb along the dominant mode) and show the
+    predicted downstream reasoning change; show random/other-direction interventions do not. This converts
+    "spectral objects correlate with anchors" into "spectral objects ARE mechanistic." Without E1 the paper
+    is the descriptive/incremental version -- do not stop before it.
+E2. LOCAL-JACOBIAN vs ROUTED dynamics (the 2602.08783 threat). If the local step-to-step Jacobian misses the
+    non-local/routed effects, escalate to a full Koopman / transfer-operator estimate over the ORBIT
+    (delay-embedding + EDMD/DMD on the c_1..c_n sequence, Ruelle-Pollicott resonance estimate) rather than
+    local linearization. THIS is where your expertise earns its keep and where the moat is deepest.
+E3. SCALE / ROBUSTNESS (as budget allows). More ProsQA problems (>=5 seeds of the analysis pipeline for CIs);
+    the M1 CoT baseline for contrast; if feasible a second latent-reasoning model (CODI) to show the lens is
+    not Coconut-specific. Honest about the GPT-2-124M/toy-ProsQA scope.
+
+PRE-REGISTERED KILL CONDITIONS (commit to PLAN.md BEFORE results; commit that file BEFORE the results commit)
+-----------------------------------------------------------------------------------------------------------
+K1. NULL-CONTROL FAILURE: the pause-token M3/M4 models (or linear-chain instances) show the SAME
+    branch/expansion spectral structure as Coconut -> the spectral objects are epiphenomenal, 2606.12689
+    pre-refutes -> honest negative, project dead (or reframe as "spectral structure is a property of the
+    architecture, not the reasoning" -- itself a small honest result).
+K2. CAUSAL FAILURE (E1): intervening on the spectrally-identified directions does NOT produce the predicted
+    downstream change beyond random-direction baselines -> the lens is descriptive-only, not mechanistic ->
+    demote to incremental; do not overclaim "explains".
+K3. ROUTED-EFFECT FAILURE (E2): neither local Jacobian NOR orbit-level Koopman captures the anchor/branch
+    structure because reasoning routes through attention in a way the state-to-state operator misses ->
+    report the honest limitation of the dynamical-systems lens for routed computation.
+
+FEASIBILITY (STRONG -- this is why it is build-#1)
+--------------------------------------------------
+- NO TRAINING: public GPT-2-124M ProsQA Coconut checkpoints (bmarti44/coconut-curriculum-checkpoints) +
+  pause-token controls built in. Model fits in ~1-2 GB; inference/eval on ProsQA trivial on a 3080.
+- ProsQA dataset + eval configs public in facebookresearch/coconut (its "4xA100" note is for from-scratch
+  TRAINING, which you SKIP).
+- Numerics tiny: 5-40 thoughts x 768-dim; 768x768 Jacobian via jacrev in seconds; full eigendecomp in ms;
+  non-normality/pseudospectra/orbit-EDMD all negligible. The BINDING CONSTRAINT is your spectral expertise,
+  not hardware. Claude/Nemotron API irrelevant to the core loop (local autograd + linear algebra); use for
+  lit-tracking + writing.
+
+STATS / HOUSE DISCIPLINE (mirror the program's shipped papers)
+--------------------------------------------------------------
+Frame as "spectral invariants PREDICT and CAUSALLY EXPLAIN the already-observed anchor/branch structure of
+latent reasoning, validated on a known DAG with a null control" -- NOT "here are eigenvalues along a
+trajectory" (invites the incremental verdict). Repo: src/<pkg>/ (spectra.py Jacobian/Koopman/non-normality,
+prosqa.py DAG labels + null instances, causal.py the E1 interventions, figures), experiments/ (exp0_gate ..
+exp3 + make_figures.py), tests/, results/ (committed JSONs), paper/ (main.tex, numbers.tex AUTO-GENERATED,
+verify_regen.py). Every number a machine-generated macro; >=5 analysis seeds for CIs; report AUROC/PR of the
+spectral predictor vs DAG with bootstrap CIs; paired tests Coconut-vs-null. Pre-register E0 + K1-K3 in
+PLAN.md and COMMIT it before results. Recency re-sweep before submission ("Koopman latent reasoning",
+"spectral Coconut interpretability", "dynamical systems chain of thought", newest-first) -- this field ships
+~weekly; a live web sweep is mandatory (the frozen index misses recent preprints).
+
+READING LIST (in order)
+-----------------------
+1. arXiv:2412.06769 (Coconut -- substrate + ProsQA). Non-negotiable first read.
+2. arXiv:2606.12689 (Observable Patterns Are Not Explanations -- nearest competitor AND the causal-validation
+   gate). Read closely, second.
+3. arXiv:2605.14258 (Dynamics of the Transformer Residual Stream -- your toolkit on the depth axis; template).
+4. arXiv:2506.04374 (Statistical Physics of LM Reasoning -- closest trajectory-as-dynamical-system framing).
+5. arXiv:2602.08783 (Dynamics Within Latent CoT: causal structure -- anchors exist + routed/non-local threat).
+6. arXiv:2602.22988 (RKSP -- depth-axis Koopman; near-unit spectral-mass diagnostic to borrow).
+7. "The Curriculum Is the Mechanism" (HF bmarti44/coconut-curriculum-checkpoints -- checkpoints + pause-token
+   null-control precedent).
+8. arXiv:2604.05655 (LLM Reasoning as Trajectories -- discrete-CoT analogue; validation metrics).
+9. SPAR project page "Interpreting latent reasoning" (sparai.org/projects/sp26/...) -- monitor the competitor.
+10. A Koopman/transfer-operator + non-normality reference for the writeup (you already own this material).
+
+HONEST CEILING
+--------------
+UPSIDE (framework): if the spectral invariants PREDICT branch/anchor structure AND survive the null + causal
+check, this is a foundational lens for an emerging subfield (latent-reasoning interpretability) with a
+distinctive, hard-to-replicate mathematical toolkit -- a genuine "first dynamical-systems account of latent
+reasoning" flag, and positioning-valuable. DOWNSIDE: bounded by GPT-2-124M on toy synthetic ProsQA, one
+architecture; the routed/non-local threat (2602.08783) may force the harder orbit-Koopman treatment; and a
+purely-descriptive version without predict+causal-verify is incremental. Not a paradigm shift -- a
+substantial/foundational-for-a-niche result. The clock (SPAR + 2606 cluster) is real: ship the
+predict-and-causally-verify result within a season or lose the cell.
+
+ATLAS LINK-BACK
+---------------
+One of three concurrently-scoped interp/theory directions (companions: faithful-selection, dbar-model-diffing).
+This is the recommended build-#1 (open + on-GPU-today + moat + clock). On arXiv/Zenodo ship, tell the atlas
+assistant to ingest as an own-lab node and stamp the outcome (positive if spectral invariants predict+
+causally-explain anchors/branches on the DAG / honest-negative if K1-K3 fire -- both shippable).
