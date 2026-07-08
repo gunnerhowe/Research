@@ -152,23 +152,38 @@ def fig_e1():
             [(E1["noise"], "sigma", r"hidden-state noise $\sigma$"),
              (E1["prune"], "frac", "prune fraction")]):
         knobs = sorted({r[knob] for r in rows})
+        def am_ratio(r, curve="dbar_curve", wall="k_wall"):
+            ok = [row for row in r[curve]
+                  if 2 <= row["n"] <= r[wall] and row["dbar"] >= 2 * row["floor"]]
+            if not ok:
+                return 1.0
+            w = max(ok, key=lambda x: x["delta"])
+            return w["dbar"] / max(w["floor"], 1e-12)
+
         panels = [("cka", "CKA", C["cka"], None),
                   ("dsa", "DSA distance", C["dsa"], None),
                   ("dbar", r"$\bar d_{n^*}$ / floor", C["dbar"], "ratio")]
         for rowi, (key, ylabel, color, mode) in enumerate(panels):
             ax = axes[rowi, col]
             if mode == "ratio":
-                vals = np.array(
-                    [[r["plateau"]["dbar"] / max(r["plateau"]["floor"], 1e-12)
-                      for r in rows if r[knob] == k] for k in knobs])
+                vals = np.array([[am_ratio(r) for r in rows if r[knob] == k]
+                                 for k in knobs])
+                bel = np.array([[am_ratio(r, "belief_curve", "belief_k_wall")
+                                 for r in rows if r[knob] == k] for k in knobs])
+                ax.errorbar(knobs, bel.mean(1), yerr=bel.std(1), marker="D",
+                            ms=3, color=C["belief"], lw=1.1, capsize=2, ls="--",
+                            label="belief readout")
                 ax.set_yscale("log")
                 ax.axhline(2.0, color="k", lw=0.6, ls="--")
+                if col == 0:
+                    ax.legend(frameon=False, fontsize=7)
             else:
                 vals = np.array([[r[key] for r in rows if r[knob] == k]
                                  for k in knobs])
             m, s = vals.mean(1), vals.std(1)
             ax.errorbar(knobs, m, yerr=s, marker="o", ms=3.5, color=color,
-                        lw=1.3, capsize=2)
+                        lw=1.3, capsize=2,
+                        label="emitted readout" if mode == "ratio" else None)
             if rowi == 0:
                 ax.set_ylim(0, 1.05)
                 ax.axhline(0.90, color="k", lw=0.6, ls="--")

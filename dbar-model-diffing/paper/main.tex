@@ -454,7 +454,89 @@ below-the-wall signal, not an estimation artifact (K2 respected).}
 
 \section{E1: when does $\dbar$ separate, and when does DSA wake up?}\label{sec:e1}
 
-%%E1_RESULTS%%
+E1 characterizes the E0 findings along the two knobs that produced them: the
+noise level $\sigma$ and the prune fraction, $\nSeeds$ seeds each, at a reduced
+characterization budget (Amendment~2: $8192$-step runs with their own matched floors,
+blocks $n \le 12$; the E0 existence claims are untouched by this).
+
+\begin{table}[t]
+\centering\small
+\caption{E1 sweeps (mean $\pm$ std over $\nSeeds$ seeds; $\dbar$ as multiples of
+same-process floors at the reduced budget). \textbf{Left:} noise twins. \textbf{Right:}
+pruned + fine-tuned twins; CE is the fine-tuned validation cross-entropy (base:
+$\valCEmin$--$\valCEmax$; task optimum $\taskH$).}
+\label{tab:e1}
+\begin{minipage}{0.51\linewidth}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+$\sigma$ & CKA & DSA & $\dbar$/fl & belief\\
+\midrule
+\eOneNoiseRows
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}{0.47\linewidth}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+frac & CKA & DSA & $\dbar$/fl & CE\\
+\midrule
+\eOnePruneRows
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figs/fig_e1_sweep.pdf}
+\caption{E1: the three metrics as functions of noise level (left column) and prune
+fraction (right column). Bottom row: $\dbar$ as a multiple of its same-process floor
+(log scale), emitted (circles) and belief (diamonds) readouts. DSA responds to the
+smallest tested noise more strongly than to a different computation, and does not
+respond to pruning at any fraction; $\dbar$'s response is graded and
+readout-resolved.}
+\label{fig:e1}
+\end{figure}
+
+\textbf{The noise axis inverts the pre-registered bet.} We pre-registered noise
+injection as the likeliest existence pair on the grounds that DSA's deterministic
+pipeline would be blind to it. The sweep shows the opposite failure: DSA leaves its
+null already at the smallest tested level ($\sigma = \sigmaLo$: DSA
+$= \dsaAtSigmaLo$) and saturates by $\sigma = 0.05$ --- a response to \emph{noise
+itself}, not to the size of the process change (at $\sigma = 0$ it returns
+$\dsaAtSigmaZero$ exactly, and its response to noise exceeds its response to a
+genuinely different computation, $\kappaDSA$, several-fold). $\dbar$ grades instead
+of saturating: the belief readout separates at every $\sigma > 0$
+($\ge \beliefSweepMin\times$ floor at all levels, already $\beliefAtSigmaLo\times$ at
+$\sigma = \sigmaLo$) with unigram TV $\le \noiseTVmax$ throughout, while the emitted
+readout at this reduced budget separates only intermittently (at most
+$\emitSepMaxCount/5$ seeds per level) --- correctly reflecting that hidden noise
+barely perturbs the emitted process (which is precisely why these twins pass output
+preservation). So on the noise axis there is no window where DSA is quiet and
+$\dbar$ fires; instead, DSA fires \emph{indiscriminately} while $\dbar$ resolves
+which level of the computation changed and by how much.
+
+\textbf{The prune axis is a disagreement window from end to end.} At every fraction
+from 0.1 to 0.9, the fine-tuned pruned twin restores base-level outputs (CE
+$\le \pruneSweepCEMax$; TV $\le \pruneSweepTVMax$), CKA stays at
+$\ge \pruneSweepCKAMin$, DSA stays inside its null (max $\pruneSweepDSAMax$) --- and
+$\dbar$ separates: $\pruneSweepEmitMin$--$\pruneSweepEmitMax\times$ floor at the
+emitted readout, $\pruneSweepBeliefMin$--$\pruneSweepBeliefMax\times$ at the belief
+readout. Notably even 10\% pruning (plus recovery fine-tuning) yields a
+$\dbar$-visible process change.
+
+\textbf{An honest confound, bracketed.} The pruned twin differs from base by pruning
+\emph{and} by the recovery fine-tune; some of the separation is attributable to
+retraining as such. The comparison set brackets this: distilled students (fresh
+init, conditionals matched directly by KL) sit at $\ratioDistill\times$ floor;
+pruned + CE-fine-tuned twins at $\pruneSweepEmitMin$--$\pruneSweepEmitMax\times$;
+independent seeds (fresh init, CE only) at $\ratioSeed\times$. Process preservation
+tracks how directly the twin's training objective constrains the base model's
+conditionals --- which is itself a $\dbar$-visible, and practically relevant,
+regularity: if you want a twin that is the \emph{same process}, distill it; do not
+merely retrain it to the same loss.
 
 \section{E2: beyond toy RNNs --- transformer readouts}\label{sec:e2}
 

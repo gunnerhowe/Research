@@ -182,22 +182,47 @@ if E1P.exists():
     cmd("eOneNoiseRows", "\n".join(nrows))
     cmd("eOnePruneRows", "\n".join(prows))
 
-    # smallest sigma with all-seed emitted separation; sigma where DSA leaves null
+    # sigma where DSA leaves its null; d-bar behavior at the smallest tested sigma
     thr = AM["dsa_similar_threshold"]
-    sig_sep = [s for s in E1["sigmas"] if s > 0 and all(
-        amended_win(r) is not None for r in bykey(E1["noise"], "sigma", s))]
-    cmd("sigmaSepMin", str(min(sig_sep)) if sig_sep else "none")
     sig_dsa = [s for s in E1["sigmas"] if s > 0 and
                np.mean([r["dsa"] for r in bykey(E1["noise"], "sigma", s)]) > thr]
     cmd("sigmaDSAwake", str(min(sig_dsa)) if sig_dsa else "none")
-    # belief ratio at the smallest separating sigma
-    if sig_sep:
-        s0 = min(sig_sep)
-        rs = bykey(E1["noise"], "sigma", s0)
-        cmd("beliefAtSigmaSepMin",
-            f"{np.mean([am_ratio(r, 'belief_curve', 'belief_k_wall') for r in rs]):.0f}")
-        cmd("dsaAtSigmaSepMin", pm([r["dsa"] for r in rs]))
-        cmd("emittedAtSigmaSepMin", pm([am_ratio(r) for r in rs], 1))
+    rs0 = bykey(E1["noise"], "sigma", 0.0)
+    cmd("dsaAtSigmaZero", pm([r["dsa"] for r in rs0]))
+    lo = min(s for s in E1["sigmas"] if s > 0)
+    rlo = bykey(E1["noise"], "sigma", lo)
+    cmd("sigmaLo", str(lo))
+    cmd("dsaAtSigmaLo", pm([r["dsa"] for r in rlo]))
+    cmd("beliefAtSigmaLo",
+        pm([am_ratio(r, "belief_curve", "belief_k_wall") for r in rlo], 0))
+    bel_mins = [np.mean([am_ratio(r, "belief_curve", "belief_k_wall")
+                         for r in bykey(E1["noise"], "sigma", s)])
+                for s in E1["sigmas"] if s > 0]
+    cmd("beliefSweepMin", f"{min(bel_mins):.0f}")
+    cmd("noiseTVmax", f(max(r["dbar_1"] for r in E1["noise"]), 4))
+    # prune sweep summaries
+    em = {fr: np.mean([am_ratio(r) for r in bykey(E1["prune"], "frac", fr)])
+          for fr in E1["fracs"]}
+    be = {fr: np.mean([am_ratio(r, "belief_curve", "belief_k_wall")
+                       for r in bykey(E1["prune"], "frac", fr)])
+          for fr in E1["fracs"]}
+    cmd("pruneSweepEmitMin", f"{min(em.values()):.1f}")
+    cmd("pruneSweepEmitMax", f"{max(em.values()):.1f}")
+    cmd("pruneSweepBeliefMin", f"{min(be.values()):.0f}")
+    cmd("pruneSweepBeliefMax", f"{max(be.values()):.0f}")
+    cmd("pruneSweepDSAMax",
+        f(max(np.mean([r["dsa"] for r in bykey(E1["prune"], "frac", fr)])
+              for fr in E1["fracs"])))
+    cmd("pruneSweepCKAMin",
+        f(min(np.mean([r["cka"] for r in bykey(E1["prune"], "frac", fr)])
+              for fr in E1["fracs"]), 4))
+    cmd("pruneSweepCEMax",
+        f(max(r["ce"] for r in E1["prune"]), 4))
+    cmd("pruneSweepTVMax", f(max(r["dbar_1"] for r in E1["prune"]), 4))
+    # emitted-readout separation counts at this reduced budget
+    n_em = {s: sum(am_ratio(r) > 1.0 for r in bykey(E1["noise"], "sigma", s))
+            for s in E1["sigmas"] if s > 0}
+    cmd("emitSepMaxCount", str(max(n_em.values())))
 
 # ---- E2 (guarded) -----------------------------------------------------------
 E2P = RES / "exp2_transformer.json"
