@@ -36,10 +36,15 @@ class HMM:
         """Unifilar: given (s, a), at most one successor state has positive prob."""
         return bool(np.all((self.T > 1e-12).sum(axis=2) <= 1))
 
-    def entropy_rate(self):
-        """Exact for unifilar HMMs: h = Σ_s π_s H(emission dist at s) (bits)."""
+    def entropy_rate(self, n_est=2_000_000):
+        """Exact for unifilar HMMs: h = Σ_s π_s H(emission dist at s) (bits).
+        Non-unifilar HMMs (e.g. MESS3, whose epsilon-machine is infinite) fall back
+        to the conditional-block-entropy estimator on a long sample."""
         if not self.is_unifilar():
-            raise ValueError("closed-form entropy rate requires unifilarity")
+            from .entropy import entropy_rate as est
+            x = self.sample(64, n_est // 64, seed=161803)
+            h, _, _ = est([x[i] for i in range(x.shape[0])], self.m)
+            return float(h)
         em = self.T.sum(axis=2).T          # (S, m) emission probs per state
         h_s = np.array([-np.sum(p[p > 0] * np.log2(p[p > 0])) for p in em])
         return float(self.pi @ h_s)

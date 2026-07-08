@@ -47,6 +47,13 @@ def test_feven_sample_even_zero_runs():
         assert all(r % 2 == 0 for r in runs)
 
 
+def test_mess3_entropy_fallback():
+    m3 = mess3()
+    assert not m3.is_unifilar()
+    h = m3.entropy_rate(n_est=400_000)
+    assert 0.3 < h < 1.6
+
+
 def test_mess3_rows_and_sampling():
     m3 = mess3()
     assert m3.m == 3 and m3.S == 3
