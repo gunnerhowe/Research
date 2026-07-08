@@ -17,10 +17,17 @@ from __future__ import annotations
 import numpy as np
 
 
-def invariants(J: np.ndarray, unit_band: tuple[float, float] = (0.9, 1.1)) -> dict:
+def invariants(J: np.ndarray, unit_band: tuple[float, float] = (0.9, 1.1),
+               eig_out: list | None = None) -> dict:
+    """If eig_out is a list, the (eigvals, eigvecs) pair is appended to it so callers
+    needing eigenvectors (top_eig_subspace) can reuse the single dgeev call."""
     J = np.asarray(J, dtype=np.float64)
     assert J.ndim == 2 and J.shape[0] == J.shape[1]
-    eig = np.linalg.eigvals(J)
+    if eig_out is not None:
+        eig, V = np.linalg.eig(J)
+        eig_out.append((eig, V))
+    else:
+        eig = np.linalg.eigvals(J)
     abs_eig = np.abs(eig)
     rho = float(abs_eig.max())
     fro2 = float((J * J).sum())
@@ -52,11 +59,13 @@ def scalar_invariants(inv: dict) -> dict:
     return {k: v for k, v in inv.items() if k not in ("u1", "v1")}
 
 
-def top_eig_subspace(J: np.ndarray, k: int = 4) -> tuple[np.ndarray, np.ndarray]:
+def top_eig_subspace(J: np.ndarray, k: int = 4,
+                     eig: tuple | None = None) -> tuple[np.ndarray, np.ndarray]:
     """Top-k eigenvalues (by modulus) and a REAL orthonormal basis spanning the
-    corresponding eigenvector directions (conjugate pairs realified, then QR)."""
+    corresponding eigenvector directions (conjugate pairs realified, then QR).
+    Pass eig=(w, V) to reuse an existing eigendecomposition."""
     J = np.asarray(J, dtype=np.float64)
-    w, V = np.linalg.eig(J)
+    w, V = eig if eig is not None else np.linalg.eig(J)
     order = np.argsort(-np.abs(w))
     cols: list[np.ndarray] = []
     used: set[int] = set()

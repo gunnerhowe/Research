@@ -198,12 +198,30 @@ class Harness:
 
         return f
 
-    def jacobian(self, run: LatentRun, t: int) -> torch.Tensor:
-        """J_t = d c_{t+1} / d c_t (768x768) at the realized fed vector."""
+    def jacobian(self, run: LatentRun, t: int, chunk: int = None) -> torch.Tensor:
+        """J_t = d c_{t+1} / d c_t (768x768) at the realized fed vector.
+
+        Chunked batched VJPs keep peak VRAM small so the computation stays on-device
+        even when the GPU is shared with other jobs (a full 768-row batched backward
+        spills to system RAM under memory pressure and is ~40x slower).
+        """
+        import os
+
+        chunk = chunk or int(os.environ.get("LRSPEC_JAC_CHUNK", "96"))
         f = self.step_function(run, t)
         c = self.fed_vector(run, t).detach().requires_grad_(True)
-        J = torch.autograd.functional.jacobian(f, c, vectorize=True)
-        return J.detach()
+        y = f(c)
+        d = y.shape[0]
+        I = torch.eye(d, device=y.device, dtype=y.dtype)
+        rows = []
+        for s in range(0, d, chunk):
+            v = I[s: s + chunk]
+            (g,) = torch.autograd.grad(
+                y, c, grad_outputs=v, retain_graph=(s + chunk < d),
+                is_grads_batched=True,
+            )
+            rows.append(g.detach())
+        return torch.cat(rows, dim=0)
 
     def unrolled_function(self, run: LatentRun, t: int, k: int):
         """g: c_t -> c_{t+k}, differentiating through ALL paths (incl. KV written at
@@ -236,12 +254,26 @@ class Harness:
 
         return g
 
-    def influence_jacobian(self, run: LatentRun, t: int, k: int) -> torch.Tensor:
-        """G_{t->t+k} = d c_{t+k} / d c_t through all paths (E2)."""
-        g = self.unrolled_function(run, t, k)
+    def influence_jacobian(self, run: LatentRun, t: int, k: int,
+                           chunk: int = None) -> torch.Tensor:
+        """G_{t->t+k} = d c_{t+k} / d c_t through all paths (E2).  Chunked VJPs."""
+        import os
+
+        chunk = chunk or int(os.environ.get("LRSPEC_JAC_CHUNK", "96"))
+        fn = self.unrolled_function(run, t, k)
         c = self.fed_vector(run, t).detach().requires_grad_(True)
-        G = torch.autograd.functional.jacobian(g, c, vectorize=True)
-        return G.detach()
+        y = fn(c)
+        d = y.shape[0]
+        I = torch.eye(d, device=y.device, dtype=y.dtype)
+        rows = []
+        for s in range(0, d, chunk):
+            v = I[s: s + chunk]
+            (g,) = torch.autograd.grad(
+                y, c, grad_outputs=v, retain_graph=(s + chunk < d),
+                is_grads_batched=True,
+            )
+            rows.append(g.detach())
+        return torch.cat(rows, dim=0)
 
     # ---------- answer readout ----------
 

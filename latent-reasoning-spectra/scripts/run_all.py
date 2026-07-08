@@ -10,6 +10,7 @@ Each stage is a subprocess; failures abort the chain (except analyze stages, whi
 retried at the end).  Progress: runs/pipeline_log.txt
 """
 
+import os
 import subprocess
 import sys
 import time
@@ -18,6 +19,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LOG = ROOT / "runs" / "pipeline_log.txt"
 PY = [sys.executable, "-X", "utf8", "-W", "ignore"]
+
+# co-tenant discipline: modest CPU-BLAS threads, small CUDA workspace growth
+ENV = {**os.environ,
+       "OMP_NUM_THREADS": "4", "MKL_NUM_THREADS": "4",
+       "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"}
 
 STAGES = [
     ("E0 capture M2", PY + ["experiments/exp0_gate.py", "capture", "--model", "M2"]),
@@ -44,7 +50,14 @@ def main():
             print(msg, flush=True)
             log.write(msg)
             log.flush()
-            r = subprocess.run(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+            r = subprocess.run(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
+                               env=ENV)
+            if r.returncode != 0:
+                # one retry per stage (captures resume from their checkpoints)
+                log.write(f"===== {name}: rc={r.returncode}, retrying =====\n")
+                log.flush()
+                r = subprocess.run(cmd, cwd=ROOT, stdout=log,
+                                   stderr=subprocess.STDOUT, env=ENV)
             dt = (time.time() - t0) / 60
             status = "OK" if r.returncode == 0 else f"FAIL rc={r.returncode}"
             msg = f"===== {name}: {status} ({dt:.1f} min) =====\n"

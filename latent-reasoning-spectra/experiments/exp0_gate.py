@@ -67,8 +67,34 @@ def capture(model_key: str, problems, out_path: Path, store_dirs: bool):
     correct = np.zeros(N, dtype=bool)
     prob_idx = np.zeros(N, dtype=np.int32)
 
+    start_i = 0
+    if out_path.exists():
+        # resume from the last periodic checkpoint (crash/OOM resilience)
+        old = np.load(out_path)
+        if old["inv"].shape[0] == N and int(old["n_done"][0]) < N:
+            start_i = int(old["n_done"][0])
+            inv_arr[:start_i] = old["inv"][:start_i]
+            eig_abs[:start_i] = old["eig_abs"][:start_i]
+            hs_arr[:start_i] = old["hs"][:start_i]
+            labels[:start_i] = old["labels"][:start_i]
+            degrees[:start_i] = old["degrees"][:start_i]
+            hops[:start_i] = old["hops"][:start_i]
+            margins[:start_i] = old["margins"][:start_i]
+            correct[:start_i] = old["correct"][:start_i]
+            prob_idx[:start_i] = old["prob_idx"][:start_i]
+            if store_dirs and "v1" in old:
+                v1_arr[:start_i] = old["v1"][:start_i]
+                u1_arr[:start_i] = old["u1"][:start_i]
+                eigQ_arr[:start_i] = old["eigQ"][:start_i]
+            print(f"[{model_key}] resuming from {start_i}/{N}", flush=True)
+        elif int(old["n_done"][0]) >= N:
+            print(f"[{model_key}] already complete ({N}), skipping", flush=True)
+            return
+
     t0 = time.time()
     for i, p in enumerate(problems):
+        if i < start_i:
+            continue
         run = h.run_latent(p)
         ro = h.readout(run, p)
         margins[i] = ro["margin"]
@@ -80,13 +106,14 @@ def capture(model_key: str, problems, out_path: Path, store_dirs: bool):
         prob_idx[i] = p.idx
         for t in range(1, N_LATENT + 1):
             J = h.jacobian(run, t).cpu().numpy()
-            inv = invariants(J)
+            eig_pair: list = [] if store_dirs else None
+            inv = invariants(J, eig_out=eig_pair)
             inv_arr[i, t - 1] = [inv[k] for k in SCALAR_KEYS]
             eig_abs[i, t - 1] = inv["eig_abs_sorted"]
             if store_dirs:
                 v1_arr[i, t - 1] = inv["v1"]
                 u1_arr[i, t - 1] = inv["u1"]
-                _, Q = top_eig_subspace(J, k=4)
+                _, Q = top_eig_subspace(J, k=4, eig=eig_pair[0])
                 eigQ_arr[i, t - 1] = Q[:, :4].astype(np.float32)
         if (i + 1) % 20 == 0:
             el = time.time() - t0

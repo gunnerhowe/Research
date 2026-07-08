@@ -49,9 +49,9 @@ def eval_cot_model(problems) -> dict:
         ids = h.tok.encode(p.question + "\n", add_special_tokens=True)
         x = torch.tensor([ids], device=h.device)
         out = h.model.generate(
-            x, max_new_tokens=64, do_sample=False,
+            x, max_new_tokens=128, do_sample=False,
             pad_token_id=h.eos_id, eos_token_id=h.eos_id,
-        )
+        )  # 128 matches facebookresearch/coconut run.py for ProsQA
         text = h.tok.decode(out[0][len(ids):], skip_special_tokens=True)
         ans = text.split("#")[-1].replace(",", "").strip()
         n_cor += ans == p.answer
