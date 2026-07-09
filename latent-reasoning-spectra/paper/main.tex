@@ -173,7 +173,65 @@ PLAN.md and committed to the repository before any result existed.
 \section{E0: do spectral invariants predict the DAG?}
 \label{sec:e0}
 
-%% TODO-RESULTS
+\paragraph{What the step maps look like.} The latent step maps of the trained Coconut
+model are \emph{strongly contracting yet highly non-normal}: across
+\nTestProblems\ problems and six steps, the mean spectral radius of $\Jt$ is
+$\meanRhoMTwo$ while the mean leading singular value is $\meanSigmaMTwo$
+($\kappa=\sigmaone/\rho$ averages $\meanKappaMTwo$), and the normalized Henrici
+departure from normality averages $\meanHenriciMTwo$ (of a maximum of one). Perturbations of a thought are amplified
+transiently through non-normal directions while every eigenmode decays --- the
+discrete-time analogue of hydrodynamic transient growth without spectral instability
+\citep{trefethen1993hydro}. An immediate casualty is the pre-registered primary
+\emph{anchor} predictor: with no eigenvalue anywhere near the unit circle, the
+near-unit spectral mass is identically zero and carries no signal. We report this
+degeneracy as-is rather than substituting a post-hoc band.
+
+\paragraph{Branch prediction.} The pre-registered primary branch predictor
+$\sigmaone(\Jt)$ discriminates branch from non-branch steps only weakly
+(AUROC $\aurocSigmaMTwo$, 95\% CI $\aurocSigmaMTwoCI$); the best local invariant is
+the non-normality ratio $\kappa$ (AUROC $\aurocKappaMTwo$). Both are beaten by the
+trivial trajectory baseline $\lVert \cthought{t+1}-\cthought{t}\rVert$
+(AUROC $\aurocBaseDcMTwo$).
+
+\paragraph{Even the weak signal is a step-index confound.} Branch steps concentrate
+early in the path (the root has high out-degree), and so do large trajectory jumps.
+When each predictor is z-scored \emph{within} its step index before pooling ---
+removing exactly this confound --- every quantity collapses to chance: $\sigmaone$
+falls to \stratSigma, and even the winning baseline
+$\lVert\Delta \cthought{t}\rVert$ falls to \stratDc. Within a step position, no
+local quantity we measured knows which problems are at a branch point.
+
+\paragraph{The null controls concur.} First, the pause-token models: $\sigmaone$
+computed from the identical architectural map at the identical positions predicts
+the same branch labels \emph{at least as well} in the models with no latent
+recurrence at all --- AUROC $\aurocSigmaMThree$ (M3) and $\aurocSigmaMFour$ (M4)
+vs Coconut's $\aurocSigmaMTwo$ --- and the per-problem branch/non-branch separation
+is \emph{larger} in the nulls (ratios \KOneSepRatioMThree$\times$ and
+\KOneSepRatioMFour$\times$ Coconut's). Second, the paired pruned-real control:
+deleting exactly the off-path alternatives from each problem (so every path node
+has out-degree one; the model still solves \accPrunedPct\% of the pruned twins)
+does not differentially move the spectra at formerly-branch steps (mean $\sigmaone$
+change $\prunedDropBranch$ there vs $\prunedDropNonbranch$ at non-branch steps;
+Mann--Whitney $p=\prunedMWUP$). The expansion signature does not respond to the
+actual presence of alternatives.
+
+\paragraph{Anchors.} No local invariant predicts the ablation influence $I_t$
+either: the best Spearman correlation among spectral invariants is
+$\anchorSpNExp$ (CI $\anchorSpNExpCI$, the count of expanding singular directions),
+most other confidence intervals span zero, and the pre-registered
+primary (near-unit mass) is degenerate as described. The apparent top-tercile
+AUROCs of trajectory baselines (e.g.\ $\anchorAuBaseDc$ for
+$\lVert\Delta\cthought{t}\rVert$) inherit the same step-position confound as the
+branch labels.
+
+\paragraph{Verdict.} The pre-registered kill condition K1 \KOneFires. What weak
+branch- or anchor-flavored structure the local spectral invariants show is a
+property of the trained \emph{architecture, the problem encoding, and the step
+position} --- not of the latent-reasoning recurrence: it appears equally without the
+mechanism (pause nulls), does not respond to removing the branching itself (pruned
+twins), and vanishes under within-step stratification. Exactly as
+\citet{aswal2026observable} warn for geometric patterns, observable spectral
+patterns are not explanations.
 
 \section{E1: are the spectral directions causally load-bearing?}
 \label{sec:e1}

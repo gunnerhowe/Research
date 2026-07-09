@@ -90,6 +90,23 @@ def numbers():
     macros["hopsMin"] = st["hops_min"]
     macros["hopsMax"] = st["hops_max"]
 
+    # descriptive means of the invariants per model (from capture arrays)
+    for mk, mn in [("M2", "MTwo"), ("M3", "MThree"), ("M4", "MFour")]:
+        cap = _npz(f"exp0_capture_{mk}.npz")
+        if cap is None:
+            continue
+        nn = int(cap["n_done"][0])
+        keys = [str(k) for k in cap["scalar_keys"]]
+        for pk, pn in [("rho", "Rho"), ("sigma1", "Sigma"), ("kappa", "Kappa"),
+                       ("henrici_norm", "Henrici")]:
+            vals = cap["inv"][:nn, :, keys.index(pk)]
+            macros[f"mean{pn}{mn}"] = fmt(float(np.nanmean(vals)), 2)
+        if mk == "M2":
+            hs = cap["hs"][:nn]
+            lab = cap["labels"][:nn]
+            dc = np.linalg.norm(np.diff(hs, axis=1), axis=2)[:, :6]
+            macros["meanDcMTwo"] = fmt(float(dc[lab >= 0].mean()), 1)
+
     san = _load("sanity_accuracy.json")
     if san:
         for k in ["M1", "M2", "M3", "M4"]:
@@ -109,10 +126,15 @@ def numbers():
                 if pk in b[mk]:
                     macros[f"auroc{pn}{mn}"] = fmt(b[mk][pk]["auroc"])
                     macros[f"auroc{pn}{mn}CI"] = fmt_ci(b[mk][pk]["auroc_ci"])
+        if "branch_stratified" in e0:
+            macros["stratSigma"] = fmt(e0["branch_stratified"]["sigma1"]["auroc"])
+            macros["stratDc"] = fmt(e0["branch_stratified"]["baseline_dc"]["auroc"])
+            macros["stratHenrici"] = fmt(e0["branch_stratified"]["henrici_norm"]["auroc"])
         a = e0["anchor"]
         for pk, pn in [("unit_mass", "UnitMass"), ("rho", "Rho"), ("sigma1", "Sigma"),
                        ("baseline_cnorm", "BaseNorm"), ("baseline_step", "BaseStep"),
-                       ("baseline_dc", "BaseDc"), ("henrici_norm", "Henrici")]:
+                       ("baseline_dc", "BaseDc"), ("henrici_norm", "Henrici"),
+                       ("n_expanding", "NExp")]:
             macros[f"anchorSp{pn}"] = fmt(a[pk]["spearman"]["spearman"])
             macros[f"anchorSp{pn}CI"] = fmt_ci(a[pk]["spearman"]["ci"])
             macros[f"anchorAu{pn}"] = fmt(a[pk]["auroc_top_tercile"]["auroc"])
