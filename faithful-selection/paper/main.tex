@@ -49,14 +49,16 @@ test detects the confound ($\hat\rho=\QrhoMain$, LR \QrhoLRpMain), the
 corrected population and hidden-reliance estimates recover ground truth
 better than the naive estimators, a randomized disclosure instruction
 validates as an instrument (moves verbalization, leaves reliance balanced),
-and a placebo hint yields no detection; two further open models
-(Qwen2.5-7B, Phi-3.5-mini) span a range of verbalization rates down to the
-near-floor regime where naive faithfulness counts are most misleading. We then apply the correction in the observation-only regime the
+and a placebo hint yields no detection. Crucially the test
+\emph{discriminates} rather than always firing: on two further open models
+(Qwen2.5-7B, Phi-3.5-mini) it returns null, correctly reporting that their
+verbalization is not confounded on the identified outcome and needs no
+correction. We then apply the correction in the observation-only regime the
 method is designed for---the same reasoning model analyzed from text alone
-and then unblinded, and Claude Haiku 4.5 via API---where it moves the
-faithfulness verdict in the direction the open-model ground truth says it
-should. The estimator, not the phenomenon, is the contribution: a drop-in
-audit for any faithfulness metric that counts verbalizations.
+and then unblinded, and Claude Haiku 4.5 via API. The estimator, not the
+phenomenon, is the contribution: a drop-in, self-validating audit that tells a
+faithfulness metric \emph{whether} it is confounded and, when it is, by how
+much.
 \end{abstract}
 
 \section{Introduction}
@@ -127,12 +129,14 @@ sensitivity we chart explicitly.
 On open-weight models we can measure ground-truth reliance for
 \emph{every} instance via hint-excision counterfactuals, so the whole
 selection machinery is validatable end-to-end: fit the model as if reliance
-were observable only through verbalizing traces, then unblind. The test
-detects the confound, the correction recovers population and hidden reliance
-better than the naive estimators, the randomized disclosure instrument
-validates, and a placebo hint yields no detection
-(Section~\ref{sec:results}). We then run the estimator in the
-observation-only regime it is designed for (Section~\ref{sec:e2}).
+were observable only through verbalizing traces, then unblind. In a reasoning
+model the test detects a real confound and the correction recovers population
+and hidden reliance better than the naive estimators; in two instruction-tuned
+models it correctly returns null, as does a placebo
+(Section~\ref{sec:results}). The test thus discriminates confounded from
+unconfounded verbalization rather than assuming the former. We then run the
+estimator in the observation-only regime it is designed for
+(Section~\ref{sec:e2}).
 
 \section{Related work}
 \label{sec:related}
@@ -312,7 +316,7 @@ results) fixes endpoints, the instrument-validation criteria, and three
 kill conditions (no confound; exclusion failure; reduction to MNAR
 mediation).
 
-\section{Results: the confound exists and the correction works}
+\section{Results: detecting and correcting the confound where it exists}
 \label{sec:results}
 
 We report the primary model (Nemotron-Nano-8B) in full, then robustness
@@ -434,19 +438,21 @@ $\hat\rho$. Nemotron-Nano-8B.}
 \subsection{Robustness: models, hint types, placebo}
 \label{sec:e3}
 
-\paragraph{Models.} Table~\ref{tab:models} repeats the analysis on two
-further open models that span a wide range of verbalization rates:
+\paragraph{Models: the test discriminates.} Table~\ref{tab:models} repeats the
+analysis on two further open, instruction-tuned models:
 Qwen2.5-7B-Instruct ($\Pr(V)=\QQwVrate{}$, $\hat\rho=\QQwRho{}$,
 $\QQwRhoLRp{}$) and Phi-3.5-mini-instruct
-($\Pr(V)=\QPhVrate{}$, $\hat\rho=\QPhRho{}$, $\QPhRhoLRp{}$). Where
-verbalization is frequent enough to identify the selection equation, the
-confound test rejects and the corrected estimate recovers ground truth better
-than the naive one (final column). Where it is near the floor---some of these
-instruct models verbalize the hint in only a few percent of traces---the
-naive faithfulness count is itself degenerate (close to zero), which is
-exactly the regime the correction is built for: its closed-form estimate of
-the hidden reliance quantifies the hint use that the verbalization count sets
-to zero.
+($\Pr(V)=\QPhVrate{}$, $\hat\rho=\QPhRho{}$, $\QPhRhoLRp{}$). On both the
+disclosure instrument has a strong first stage, yet the confound test does
+\emph{not} reject: on the identified direct-effect outcome their verbalization
+carries no detectable selection-on-unobservables, so the naive count is not
+confounded and needs no correction. This is the diagnostic behaving as it
+should. A test that always fired would be useless; ours returns null exactly
+where the placebo and these models say it should, and rejects for the
+reasoning model where ground truth confirms a real confound. The verbalization
+confound is thus a property of some models, not a universal law --- and the
+scalar test tells an auditor which case they are in before they trust or
+correct a faithfulness number.
 
 \paragraph{Hint types.} Table~\ref{tab:hints} breaks the primary model down by
 hint type. The confound is present across sycophancy, authority, metadata, and
@@ -513,21 +519,36 @@ that the text-only correction points the right way.
 \paragraph{Claude (API, no ground truth).} On \QClHpN{} instances Claude
 verbalizes the hint in \QClHpV{} of traces. The observation-only fit gives
 $\hat\rho=\QClHpRho{}$ ($\QClHpLRp{}$); the naive adoption rate among
-verbalizers, \QClHpNaive{}, is corrected to a population rate of
-\QClHpCorrPop{} and a hidden rate of \QClHpCorrHidden{}. As with the open
-models, reading reliance off verbalizing traces alone over-states the
-verbalized stratum relative to the corrected population estimate; the sign
-and direction of the correction match what the open-model ground truth
-calibrates, which is the transfer the method is designed to provide.
+verbalizers, \QClHpNaive{}, is adjusted to a population rate of
+\QClHpCorrPop{} and a hidden (non-verbalizer) rate of \QClHpCorrHidden{}.
+With no activation ground truth this is a demonstration of the deployable
+machinery rather than a validated correction: it shows the estimator runs
+end-to-end on a closed API model from traces and answers alone, returns a
+confound estimate with a confidence interval, and reports a corrected rate an
+auditor could act on --- the transfer the method is designed to provide, to be
+trusted on any given closed model only as far as its parametric assumptions
+hold.
 
 \section{Limitations}
 \label{sec:limits}
 
+The verbalization confound is model-specific, not universal: we detect it in
+the reasoning model and find it absent in the two instruction-tuned models on
+the identified outcome. Our claim is therefore about the \emph{test and
+correction} --- a diagnostic that reports which regime a model is in --- not
+that every model's verbalization is confounded. With three open models plus
+one API model we characterize when the confound appears (here, the
+higher-verbalizing reasoning model) but cannot yet say why; a larger model
+sweep is needed to tie confound presence to model family, training, or
+verbalization rate.
+
 The exclusion restriction is contestable despite randomization and the
-balance test: an instruction that changes reasoning length could in
-principle change the computation in ways our reliance measures miss; this
-is why every headline claim is accompanied by the $\rho$-sensitivity table
-and why $R^{\mathrm{pre}}$ (mechanically instrument-free) is reported.
+balance test: an instruction that changes what the model reports could in
+principle change the computation in ways our reliance measures miss --- indeed
+it demonstrably does for the total effect $R^{\mathrm{TE}}$, which is why we
+identify on the direct effect $R^{\mathrm{NDE}}$, report $R^{\mathrm{TE}}$ only
+under $\rho$-sensitivity, and also give the mechanically instrument-free
+$R^{\mathrm{pre}}$.
 Identification also leans on bivariate normality of $(u,\varepsilon)$;
 non-normal latent reliance distorts $\hat\rho$. Our reliance measures are
 letter-level log-odds contrasts, not full computational attribution, and
