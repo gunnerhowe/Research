@@ -236,7 +236,43 @@ patterns are not explanations.
 \section{E1: are the spectral directions causally load-bearing?}
 \label{sec:e1}
 
-%% TODO-RESULTS
+E0 asked whether spectral \emph{scalars} flag reasoning structure; E1 asks the
+orthogonal, directional question: among perturbations of equal size, do the
+spectrally identified \emph{directions} carry more causal load? For \eOneNProblems\
+problems and steps $t=1..5$ we perturb $\cthought{t}\to\cthought{t}+
+s\,\varepsilon\lVert\cthought{t}\rVert\,d$ ($s=\pm1$) with $d$ the top right singular
+vector $v_1(\Jt)$, the leading eigendirection $q_1(\Jt)$, or magnitude-matched random
+unit vectors, and measure the downstream change in answer margin.
+
+\paragraph{Directional privilege is real, and it is non-normal.} Perturbations
+along $v_1(\Jt)$ produce \eOneRatioVoneLo$\times$ the downstream effect of random
+directions at $\varepsilon=0.1$ and \eOneRatioVoneHi$\times$ at $\varepsilon=0.3$
+(paired Wilcoxon $p=\eOneVonePLo$ and $p=\eOneVonePHi$), satisfying the
+pre-registered K2 criterion ($\geq 2\times$, $p<0.01$) at both magnitudes: K2
+\KTwoFires. The leading \emph{eigen}direction, by contrast, is not privileged
+(\eOneRatioQoneLo$\times$ / \eOneRatioQoneHi$\times$) --- exactly the signature of
+non-normal dynamics, where transient growth lives in singular directions rather
+than eigendirections \citep{trefethen2005spectra}. Projecting the top-4
+eigen-subspace of $\Jt$ out of $\cthought{t}$ produces \eOneSubRatio$\times$ the
+effect of removing random 4-dimensional subspaces ($p=\eOneSubP$), though we note
+this comparison is not matched for removed norm (the thought vector concentrates
+in the dominant subspace).
+
+\paragraph{But the absolute effects are strikingly small.} At $\varepsilon=0.3$ ---
+a 30\% relative perturbation --- the mean margin change along $v_1$ is
+\eOneVoneMeanHi\ against baseline margins of $\approx\meanMarginMTwo$, and
+\emph{no intervention of any kind flipped a single answer}
+(flip rate \eOneFlipVoneHiPct\% for $v_1$, \eOneFlipRandHiPct\% for random).
+Stronger still: replacing an \emph{entire} thought with the dataset-mean thought
+for its slot (the E0 ablation used as anchor ground truth) changes the margin by a
+median of \ablMedian\ (90th percentile \ablPNinety), with zero answer flips across
+all \nTestProblems$\times$6 single-step ablations; replacing a thought with the
+zero vector still flips nothing (mean $|\Delta\text{margin}|=$ \ablZeroMean). In
+this high-accuracy Coconut checkpoint, the content of any \emph{individual}
+recycled thought vector is locally, causally near-inert for the final answer: the
+computation is carried by the question context and the structure of the latent
+segment, with the residual per-thought causal signal concentrated in the
+non-normal amplification directions of the step map.
 
 \section{E2: local Jacobians, routed effects, and the orbit-level operator}
 \label{sec:routed}

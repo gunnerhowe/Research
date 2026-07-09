@@ -106,6 +106,16 @@ def numbers():
             lab = cap["labels"][:nn]
             dc = np.linalg.norm(np.diff(hs, axis=1), axis=2)[:, :6]
             macros["meanDcMTwo"] = fmt(float(dc[lab >= 0].mean()), 1)
+            macros["meanMarginMTwo"] = fmt(float(cap["margins"][:nn].mean()), 1)
+
+    abl = _npz("exp0_ablate_M2.npz")
+    if abl is not None:
+        na = int(abl["n_done"][0])
+        I = abl["I_mean"][:na]
+        macros["ablMedian"] = fmt(float(np.median(I)), 3)
+        macros["ablPNinety"] = fmt(float(np.percentile(I, 90)), 3)
+        macros["ablZeroMean"] = fmt(float(abl["I_zero"][:na].mean()), 3)
+        macros["ablFlipPct"] = fmt(100 * float(abl["flips_mean"][:na].mean()), 2)
 
     san = _load("sanity_accuracy.json")
     if san:
@@ -171,6 +181,8 @@ def numbers():
                 macros[f"eOneFlipRand{en}Pct"] = fmt(100 * d["flip_rand"], 1)
                 macros[f"eOneVoneBranch{en}"] = fmt(d["v1_mean_at_branch"], 2)
                 macros[f"eOneVoneNonbranch{en}"] = fmt(d["v1_mean_at_nonbranch"], 2)
+                macros[f"eOneVoneMean{en}"] = fmt(d["v1_mean"], 3)
+                macros[f"eOneRandMean{en}"] = fmt(d["rand_mean"], 3)
         macros["eOneSubRatio"] = fmt(e1["subspace"]["ratio"], 2)
         macros["eOneSubP"] = fmt_p(e1["subspace"]["wilcoxon"]["p"])
         macros["eOneSubFlipSpectralPct"] = fmt(100 * e1["subspace"]["flip_spectral"], 1)

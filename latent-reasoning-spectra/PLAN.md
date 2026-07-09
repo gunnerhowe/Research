@@ -162,6 +162,16 @@ mass. All others are reported as secondary/exploratory.
 - `paper/main.tex` + auto-generated `paper/numbers.tex` + `paper/verify_regen.py`
 - Recency re-sweep (live web) logged in `lit_notes.md` before submission.
 
+## 6b. Post-hoc probes (declared 2026-07-09, AFTER E0/E1 results; exploratory only)
+
+- **All-thoughts ablation** (`exp_posthoc_allablate.py`): E0/E1 found single-thought
+  replacement causally near-inert. Probe whether the recycled content is
+  *collectively* inert: replace all six fed vectors with slot-mean / zero / donor
+  thoughts, measure test accuracy. Labeled exploratory in the paper; no confirmatory
+  claims will rest on it.
+- Any within-step-stratified or scale-relative eigenvalue re-analyses beyond the
+  pre-registered set are likewise exploratory and marked as such.
+
 ## 7. What we will NOT claim
 
 - Not claiming discovery of anchors/branch structure (established: 2602.08783, 2606.12689).
