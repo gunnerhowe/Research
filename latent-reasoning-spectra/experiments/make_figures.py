@@ -200,6 +200,9 @@ def numbers():
         macros["routedMedianThreeThree"] = fmt(rm.get("3_3"), 2)
         macros["routedMedianMax"] = fmt(max(v for v in rm.values()), 2)
         macros["routedMedianMin"] = fmt(min(v for v in rm.values()), 2)
+        nr = e2["part_a_routedness"].get("norm_ratio_chain_over_G_median", {})
+        if "1_3" in nr:
+            macros["normRatioOneThree"] = fmt(nr["1_3"], 2)
         ed = e2["part_b_edmd"]["edmd_r128"]
         macros["edmdExplainedPct"] = fmt(100 * ed["explained_var"], 1)
         macros["edmdResid"] = fmt(ed["fit_residual"], 3)

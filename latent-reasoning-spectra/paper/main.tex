@@ -277,7 +277,47 @@ non-normal amplification directions of the step map.
 \section{E2: local Jacobians, routed effects, and the orbit-level operator}
 \label{sec:routed}
 
-%% TODO-RESULTS
+A thought $\cthought{t}$ influences later thoughts through two routes: the direct
+recurrence \eqref{eq:recurrence}, whose composition the chained local Jacobians
+$J_{t+k-1}\cdots J_t$ describe, and the attention cache written at intermediate
+latent slots, which they miss. We differentiate the full unrolled map through all
+paths to obtain the influence Jacobian $G_{t\to t+k}$ and measure the routedness
+$R_{t,k}=\lVert G_{t\to t+k}-\prod J\rVert_F/\lVert G_{t\to t+k}\rVert_F$.
+
+\paragraph{Half the influence is routed within three steps.} At $k=2$ the local
+chain is a good description (median $R$ between \routedMedianMin\ and
+$\approx$\routedMedianThreeTwo\ across $t$), but at $k=3$ the median routedness
+reaches \routedMedianOneThree\ ($t{=}1$), \routedMedianTwoThree\ ($t{=}2$),
+\routedMedianThreeThree\ ($t{=}3$): roughly \emph{half} of the influence a thought
+exerts three steps ahead flows through attention rather than through the
+state-to-state recurrence, and the local chain systematically underestimates total
+influence (chain-to-full norm ratio dropping to $\approx$\normRatioOneThree\ at
+$k{=}3$). This quantifies, in operator norms, the non-local routing that
+\citet{li2026dynamics} report via interventions --- and it bounds what any purely
+state-space account of latent reasoning can capture.
+
+\paragraph{The orbit-level operator does not rescue prediction.} A pooled EDMD
+estimate over all test trajectories (PCA-$r{=}128$ coordinates,
+\edmdExplainedPct\% variance retained) leaves a relative one-step residual of
+\edmdResid\ --- the pooled linear model accounts for only about two thirds of the
+transition --- and its spectrum has \edmdUnitCount\ near-unit modes (spectral
+radius \edmdRho): persistent, context-encoding directions, as expected when each
+orbit is anchored to a fixed problem embedding. But its per-step diagnostics carry
+no reasoning-specific signal either: the Koopman one-step residual gives branch
+AUROC \koopResidBranchAu\ (CI \koopResidBranchAuCI; the same magnitude, and the
+same step-position confound, as the local invariants), unit-mode participation
+gives \koopPartBranchAu, and neither correlates with ablation influence
+(Spearman \koopPartAnchorSp\ and \koopResidAnchorSp). A delay-2 embedding does not
+change this picture.
+
+\paragraph{Verdict.} The formal K3 criterion does not fire --- the local
+$\sigmaone$ and orbit-residual branch AUROCs are statistically above chance ---
+but the within-step stratification of Section~\ref{sec:e0} shows that this residual
+signal is positional rather than reasoning-specific, and we report the overall
+conclusion accordingly: neither the local step operator nor a pooled orbit-level
+transfer-operator estimate captures the anchor/branch structure of the reasoning,
+and the routedness measurements explain why --- the latent recurrence is simply not
+the channel through which most influence flows.
 
 \section{E3: robustness}
 \label{sec:e3}
