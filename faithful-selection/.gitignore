@@ -11,9 +11,3 @@ paper/main.blg
 paper/main.fls
 paper/main.fdb_latexmk
 paper/main.synctex.gz
-
-# placeholder build artifacts (regenerated from results)
-paper/figs/
-paper/main.pdf
-paper/numbers.tex
-paper/tables/

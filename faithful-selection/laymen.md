@@ -48,19 +48,34 @@ clean causal test: delete the hint and see how much the answer's internal
 verify the correction recovers it — then we apply the same correction to a
 closed API model where the truth is hidden.
 
-## Why it matters
+## What we actually found (an honest negative)
 
-Faithfulness metrics are becoming part of how we audit and oversee AI reasoning.
-If those metrics are systematically biased by what the model chooses to say out
-loud, the audits are off — sometimes badly, in the cases where the model relies
-on something heavily but never says so. This gives auditors a principled knob to
-correct for that, plus a test that tells them whether they need to.
+We set out to show the correction works. It mostly doesn't — and *why* it
+doesn't turned out to be the more useful result.
 
-## The honest caveats
+1. **The standard way of measuring "did the reasoning mention the hint?" is
+   badly wrong.** The field uses a keyword detector. When we checked it against
+   a careful reader (another AI model reading each trace and judging), the
+   detector over-counted "mentions" by **2× to 9×** — it fired on innocent
+   words like "the *source* of gravity" or "as noted *earlier*." Once you
+   measure mentions correctly, they're **rare** (roughly 3–25% of the time),
+   matching what other labs have found. Since faithfulness scores are built on
+   this measurement, getting it wrong is a bigger problem than any correction
+   can fix.
 
-The correction leans on a modeling assumption (an "instrument" — something that
-changes what the model *says* without changing what it *computes*). We test that
-assumption rather than assume it, and when it's shaky we report a *range* of
-answers across possible values of ρ instead of a single number. This is a
-measurement-methodology contribution: it fixes the *estimate* of reliance, it
-does not make the model's reasoning honest.
+2. **When we measure mentions correctly, the naive faithfulness number is
+   already about right**, and our fancy correction makes it *worse*, not
+   better — it overshoots. The statistical test still flags that "selection"
+   is happening, but a sensitivity check shows the correction that would
+   actually match reality is essentially "do nothing." The overshoot comes
+   from an assumption (bell-curve-shaped errors) that the real data violates.
+
+3. So the honest bottom line: the *idea* (faithfulness metrics are a
+   self-selected sample) is right and the *test* is a useful warning light,
+   but the *correction* doesn't deliver on these models, and the thing
+   practitioners should worry about most is measuring "verbalization"
+   reliably in the first place.
+
+This is a negative result, reported plainly. Negative results that explain
+*why* a natural idea fails — and surface a measurement problem the field
+should fix — are worth writing down.
