@@ -18,15 +18,14 @@ HINTS_NP="sycophancy,authority,metadata,consistency"
 python experiments/run_model.py --model nemotron8b --n $N --hints $HINTS --seed 0 \
     --out results/raw/nemotron8b_e0.jsonl --gen-bs 12 --lens-bs 4 --chunk 32 --max-new-tokens 512
 
-# --- ROBUSTNESS: R_TE + R_NDE only (no lens) ---
-python experiments/run_model.py --model qwen7b   --n $N --hints $HINTS --seed 0 --out results/raw/qwen7b_e3.jsonl   --gen-bs 16 --chunk 32 --max-new-tokens 512 --no-lens
-python experiments/run_model.py --model mistral7b --n $N --hints $HINTS --seed 0 --out results/raw/mistral7b_e3.jsonl --gen-bs 16 --chunk 32 --max-new-tokens 512 --no-lens
-python experiments/run_model.py --model phi35     --n $N --hints $HINTS --seed 0 --out results/raw/phi35_e3.jsonl     --gen-bs 16 --chunk 32 --max-new-tokens 512 --no-lens
+# --- ROBUSTNESS: R_TE + R_NDE only (no lens). Two open models spanning
+#     lower verbalization rates (Mistral dropped: redundant + tokenizer flake). ---
+python experiments/run_model.py --model qwen7b --n $N --hints $HINTS --seed 0 --out results/raw/qwen7b_e3.jsonl --gen-bs 16 --chunk 32 --max-new-tokens 512 --no-lens
+python experiments/run_model.py --model phi35  --n $N --hints $HINTS --seed 0 --out results/raw/phi35_e3.jsonl  --gen-bs 16 --chunk 32 --max-new-tokens 512 --no-lens
 
 # --- fits ---
 python experiments/fit_all.py --raw results/raw/nemotron8b_e0.jsonl --tag nemotron8b_e0 --heckprob --n-boot 1000
 python experiments/fit_all.py --raw results/raw/qwen7b_e3.jsonl     --tag qwen7b_e3     --n-boot 1000
-python experiments/fit_all.py --raw results/raw/mistral7b_e3.jsonl  --tag mistral7b_e3  --n-boot 1000
 python experiments/fit_all.py --raw results/raw/phi35_e3.jsonl      --tag phi35_e3      --n-boot 1000
 python experiments/fit_all.py --raw results/raw/claude_e2.jsonl     --tag claude_e2     --heckprob --n-boot 300
 

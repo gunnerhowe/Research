@@ -238,10 +238,6 @@ def main():
     if qwen:
         emit_main("qwen7b", qwen, "Qw")
         emit_placebo(qwen, "Qw")
-    mist = load("mistral7b_e3.json")
-    if mist:
-        emit_main("mistral7b", mist, "Mi")
-        emit_placebo(mist, "Mi")
     phi = load("phi35_e3.json")
     if phi:
         emit_main("phi35", phi, "Ph")
@@ -249,7 +245,7 @@ def main():
 
     (TABLES / "models.tex").write_text(table_models([
         ("nemotron8b", "nemotron8b_e0.json"), ("qwen7b", "qwen7b_e3.json"),
-        ("mistral7b", "mistral7b_e3.json"), ("phi35", "phi35_e3.json")]))
+        ("phi35", "phi35_e3.json")]))
 
     claude = load("claude_e2.json")
     if claude:
