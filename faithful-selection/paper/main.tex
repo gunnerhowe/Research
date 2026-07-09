@@ -37,28 +37,32 @@ the lossy selectivity of that projection. We give the first formal account
 of this as \emph{endogenous sample selection} \citep{heckman1979}: a probit
 selection equation for \emph{what gets verbalized} and an outcome equation
 for the \emph{underlying computational reliance}, linked by correlated
-errors. The model yields (a) a scalar test for the verbalization-selection
-confound ($H_0\!:\rho=0$) and (b) an inverse-Mills-ratio correction to
-naive verbalization-based faithfulness estimates, including a closed-form
-estimate of the reliance hidden in non-verbalizing CoTs---the quantity
-verbalization counts silently set to zero. We validate the estimator against
-causal hint-excision ground truth on open-weight models, where hint reliance
-is measurable for every instance. On a reasoning model
-(Llama-3.1-Nemotron-Nano-8B) that verbalizes hints at a moderate rate, the
-test detects the confound ($\hat\rho=\QrhoMain$, LR \QrhoLRpMain), the
-corrected population and hidden-reliance estimates recover ground truth
-better than the naive estimators, a randomized disclosure instruction
-validates as an instrument (moves verbalization, leaves reliance balanced),
-and a placebo hint yields no detection. Crucially the test
-\emph{discriminates} rather than always firing: on two further open models
-(Qwen2.5-7B, Phi-3.5-mini) it returns null, correctly reporting that their
-verbalization is not confounded on the identified outcome and needs no
-correction. We then apply the correction in the observation-only regime the
-method is designed for---the same reasoning model analyzed from text alone
-and then unblinded, and Claude Haiku 4.5 via API. The estimator, not the
-phenomenon, is the contribution: a drop-in, self-validating audit that tells a
-faithfulness metric \emph{whether} it is confounded and, when it is, by how
-much.
+errors, yielding a scalar test for the verbalization-selection confound
+($H_0\!:\rho=0$) and an inverse-Mills-ratio correction with a closed-form
+estimate of the reliance hidden in non-verbalizing CoTs. We then \emph{test
+whether this machinery actually improves faithfulness estimates}, validating
+against causal hint-excision ground truth on open-weight models where reliance
+is measurable for every instance. The answer, honestly reported, is largely
+negative, and the reason is itself the paper's main empirical contribution.
+First, the standard tool for measuring verbalization---a lexical detector for
+whether the CoT mentions the hint---is badly unreliable: against an LLM judge
+it over-counts verbalization by \QNeOvercount$\times$ to \QQwOvercount$\times$,
+and true verbalization is rare (\QQwJudgeRate--\QNeJudgeRate). Re-estimating on
+validated judge labels, the naive faithfulness estimate is already
+approximately unbiased where it can be estimated at all
+(Nemotron: naive \QQNaiveSel{} vs.\ truth \QQTruePop{}); the Heckman test does
+reject $H_0\!:\rho=0$ there ($\hat\rho=\QrhoMain$, LR \QrhoLRpMain), but a
+$\rho$-sensitivity analysis shows ground truth is recovered at $\rho\approx0$,
+so the rejection reflects departures from bivariate normality rather than a
+correctable bias---and the point correction consequently \emph{overshoots}
+(corrected \QQCorrPop{}, further from truth than the naive estimate). In no
+model or outcome does the correction beat the naive count; on the lowest-%
+verbalizing model the selection equation cannot be estimated at all. We
+therefore report an honest negative: the selection-theoretic reframing is
+sound and the $\rho$-test is a usable diagnostic, but the closed-form
+correction does not deliver on validated data, and the more actionable finding
+for practitioners is that lexical verbalization metrics substantially
+mis-measure the very quantity faithfulness audits count.
 \end{abstract}
 
 \section{Introduction}
@@ -93,8 +97,8 @@ bridge. We cast \emph{what-gets-verbalized} as the selection equation and
 \emph{latent reliance} as the outcome equation of a Heckman
 selection-on-unobservables model \citep{heckman1979}: the two equations
 share correlated errors, and the correlation $\rho$ \emph{is} the
-verbalization confound. The framing buys three things the qualitative
-critique cannot:
+verbalization confound. In principle the framing promises three things the
+qualitative critique cannot:
 
 \begin{itemize}
 \item \textbf{A test.} $H_0\!:\rho=0$ is a one-degree-of-freedom likelihood
@@ -106,37 +110,41 @@ selected-sample means into consistent population estimates, including a
 closed-form estimate of $\E[\text{reliance}\mid\text{not verbalized}]$ ---
 the reliance that verbalization counts implicitly score as zero.
 \item \textbf{A deployment path.} The correction needs only the observable
-channel (traces and answers), so it transfers to API models where causal
-ground truth is unmeasurable --- exactly the regime where faithfulness
-audits matter.
+channel (traces and answers), so it could transfer to API models where causal
+ground truth is unmeasurable.
 \end{itemize}
 
-We are explicit about what we do \emph{not} claim. Latent commitment
-preceding verbalization is established prior work, not our finding; we take
-it as background and supply the statistical lens that says \emph{because} of
-it, naive faithfulness metrics are confounded, testably and correctably.
+The bulk of this paper is a hard test of whether these promises hold up
+against ground truth, and the honest answer is mostly no --- for reasons
+(Section~\ref{sec:results}) that turn out to matter more than a clean positive
+would have. We are explicit about what we do \emph{not} claim. Latent
+commitment preceding verbalization is established prior work, not our finding;
+we take it as background and ask whether the selection lens it motivates
+yields a usable correction.
 \citet{zaman2025} reach for exactly this intuition (``lossy compression and
 selectivity'') and stop short of a selection equation, a correlated-error
 model, or a test; ours is the estimator behind their reinterpretation.
 \citet{rationalization2026} detect the latent event with activation probes;
 detection is not correction. Relative to missing-not-at-random mediation
 analysis \citep{zuo2024mediation}, which identifies direct and indirect
-effects under mediator missingness, the selection-model packaging delivers
-what a faithfulness auditor actually consumes: a scalar confound test and a
-closed-form corrected rate, at the price of a parametric error model whose
-sensitivity we chart explicitly.
+effects under mediator missingness, the selection-model packaging aims to
+deliver what a faithfulness auditor would actually consume: a scalar confound
+test and a closed-form corrected rate. The test survives our validation; the
+corrected rate, we find, does not (Section~\ref{sec:results}), which is itself
+a useful result about the limits of parametric selection correction here.
 
 On open-weight models we can measure ground-truth reliance for
 \emph{every} instance via hint-excision counterfactuals, so the whole
 selection machinery is validatable end-to-end: fit the model as if reliance
-were observable only through verbalizing traces, then unblind. In a reasoning
-model the test detects a real confound and the correction recovers population
-and hidden reliance better than the naive estimators; in two instruction-tuned
-models it correctly returns null, as does a placebo
-(Section~\ref{sec:results}). The test thus discriminates confounded from
-unconfounded verbalization rather than assuming the former. We then run the
-estimator in the observation-only regime it is designed for
-(Section~\ref{sec:e2}).
+were observable only through verbalizing traces, then unblind. Doing so
+carefully---and, crucially, measuring verbalization with a validated LLM judge
+rather than the field-standard lexical detector, which we show over-counts by
+\QNeOvercount--\QQwOvercount$\times$---turns an apparent positive into an
+honest negative: the naive estimate is near-unbiased, the $\rho$-test's
+rejection is a normality artifact, and the correction overshoots
+(Section~\ref{sec:results}). We nonetheless report the deployable
+observation-only machinery on a closed API model (Section~\ref{sec:e2}) and
+draw out what the negative teaches about measuring faithfulness at all.
 
 \section{Related work}
 \label{sec:related}
@@ -289,11 +297,15 @@ leak, and consistency, each pointing at a uniformly random \emph{wrong}
 option; plus a placebo arm with the sycophancy wrapper and no option
 information, for which the estimator must find nothing.
 
-\paragraph{Verbalization $V$.} A deterministic, hint-type-specific lexical
-detector over the reasoning span (final-answer line removed); merely naming
-the hinted option letter does not count. The committed detector is validated
-against an LLM judge on a stratified subsample
-(agreement \QjudgeAgree{}, Cohen's $\kappa=\QjudgeKappa$).
+\paragraph{Verbalization $V$.} We consider two measures. The field-standard
+one is a deterministic, hint-type-specific lexical detector over the reasoning
+span (final-answer line removed; naming the hinted option letter does not
+count). Because that detector proves unreliable
+(Section~\ref{sec:measurement}; agreement with the judge \QjudgeAgree{},
+Cohen's $\kappa=\QjudgeKappa$ on a stratified subsample), our primary $V$ is an
+LLM judge (Claude Sonnet) that reads each trace and decides whether it refers
+to the injected cue, run on \emph{every} hinted instance. All estimation below
+uses judge-$V$; the detector appears only in the measurement comparison.
 
 \paragraph{Ground-truth reliance (open models).} We measure three reliance
 signals; the \emph{identified} outcome is the direct effect $R^{\mathrm{NDE}}$,
@@ -319,232 +331,160 @@ results) fixes endpoints, the instrument-validation criteria, and three
 kill conditions (no confound; exclusion failure; reduction to MNAR
 mediation).
 
-\section{Results: detecting and correcting the confound where it exists}
+\section{Results: the correction does not survive validated labels}
 \label{sec:results}
 
-We report the primary model (Nemotron-Nano-8B) in full, then robustness
-across models, hint types, and a placebo. All open-model numbers use
-ground-truth reliance measured for every instance; the estimator itself sees
-reliance only on verbalizing traces. The identified outcome is the
-\emph{direct} reliance $R^{\mathrm{NDE}}$ (hint excised, CoT held fixed): as
-Section~\ref{sec:e1} shows, the instrument satisfies the exclusion restriction
-for the direct effect but not for the total effect $R^{\mathrm{TE}}$, which
-the disclosure instruction partly re-routes through the CoT. We therefore lead
-with $R^{\mathrm{NDE}}$ (the not-through-CoT path emphasized by
-\citet{zaman2025}) and treat $R^{\mathrm{TE}}$ as the exclusion-violated total
-effect.
+The identified outcome is the \emph{direct} reliance $R^{\mathrm{NDE}}$ (hint
+excised, CoT held fixed): the disclosure instrument satisfies the exclusion
+restriction there but not for the total effect $R^{\mathrm{TE}}$
+(Section~\ref{sec:e1}). We report the reasoning model Nemotron-Nano-8B, which
+verbalizes hints often enough to estimate the selection model, and summarize
+the others (Table~\ref{tab:models}). The headline is negative and instructive.
 
-\paragraph{The naive picture.} Across \QQN{} hinted instances the model
-verbalizes the injected hint in \QQVrate{} of traces, and among instances
-where the hint flips the answer it is verbalized only \QQTurpinFaith{} of the
-time --- the low naive faithfulness rate familiar from
-\citet{chen2025reasoning}. Read literally, verbalization counts say the hint
-is used only where it is spoken.
+\subsection{Verbalization is badly mis-measured by lexical detectors}
+\label{sec:measurement}
 
-\paragraph{The confound is real (test).} The selection model rejects
-$H_0\!:\rho=0$: the MLE gives $\hat\rho=\QQRho{}$
-(95\% CI $[\QQRhoLo{},\QQRhoHi{}]$; Wald $\QQRhoWaldp{}$), and the likelihood
-ratio test against the $\rho$-frozen model gives $\QQRhoLRp{}$
-(Figure~\ref{fig:confound}a). The sign is the striking part: $\hat\rho<0$
-means verbalization is \emph{negatively} selected on direct reliance --- the
-traces that stay silent about the hint are the ones that rely on it most
-directly, over and above the observable covariates. Naive verbalization
-counts, which read reliance off the traces that \emph{do} mention the hint,
-therefore look at exactly the low-reliance stratum.
+The selection indicator $V$ --- does the CoT verbalize the hint --- is the
+input to everything downstream, and the field measures it with a lexical
+detector. Validating our detector against an LLM judge that reads each trace
+(Section~\ref{sec:setup}) exposes a large discrepancy
+(Table~\ref{tab:models}, right block): on Nemotron the detector fires on
+\QNeDetRate{} of traces but the judge on only \QNeJudgeRate{} --- an over-count
+of \QNeOvercount$\times$, detector precision \QNeDetPrec{}. The gap is worse on
+the instruction-tuned models: Qwen \QQwDetRate{} vs.\ \QQwJudgeRate{}
+(\QQwOvercount$\times$), Phi \QPhDetRate{} vs.\ \QPhJudgeRate{}. Manual
+inspection confirms the judge, not the detector: the detector fires on generic
+tokens (``the strongest \emph{source} of gravity'' matched a metadata pattern;
+``as noted \emph{earlier} in the reasoning'' matched a consistency pattern),
+while genuine references (``the Stanford professor's claim that the answer is
+(B) did influence my choice'') are correctly caught by both. Validated
+verbalization is \emph{rare} (\QQwJudgeRate--\QNeJudgeRate), consistent with
+the sub-20\% rates of \citet{chen2025reasoning}. Because a lexical $V$
+over-counts by up to \QQwOvercount$\times$, any faithfulness statistic built on
+it --- ours included --- is measuring largely the detector's false positives.
+We therefore estimate everything below on the validated judge labels.
 
-\paragraph{The correction recovers ground truth.} Table~\ref{tab:models}
-(top row) and Figure~\ref{fig:correction} contrast the estimators against the
-oracle population mean $\mu_{\text{true}}=\QQTruePop{}$. Because verbalizers
-under-rely, the naive selected-sample mean
-$\hat\mu_{\text{naive}}=\QQNaiveSel{}$ \emph{understates} reliance
-(absolute error \QQErrNaiveSel{}); the IMR-corrected estimate
-$\hat\mu_{\text{corr}}=\QQCorrPop{}$ cuts that error to \QQErrCorr{},
-essentially recovering the oracle. The correction is most valuable on the
-quantity the naive count most distorts: the true reliance hidden in
-non-verbalizing traces, $\mu_{0,\text{true}}=\QQTrueHidden{}$, is scored $0$
-by the verbalization-count logic (error \QQErrHidNaive{}), whereas the
-closed-form corrected hidden estimate $\QQCorrHidden{}$ has error
-\QQErrHidCorr{} --- it surfaces the silent reliance the count erases. Bootstrap
-CIs (B=1000): $\hat\rho\in[\QQRhoBLo{},\QQRhoBHi{}]$,
-$\hat\mu_{\text{corr}}\in[\QQCorrPopBLo{},\QQCorrPopBHi{}]$. The
-pre-registered E0 gate --- $\rho$ rejected \emph{and} the correction beating
-the naive estimators at recovering ground truth --- is met on the identified
-outcome.
+\subsection{On validated labels the correction fails}
+\label{sec:fails}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\textwidth]{figs/fig1_confound.pdf}
-\caption{The confound. (a) Direct-effect reliance $R^{\mathrm{NDE}}$ differs
-between verbalizing ($V{=}1$) and non-verbalizing ($V{=}0$) traces --- the
-selection is on the outcome, and here the silent traces rely more. (b) The
-randomized disclosure instrument moves the verbalization rate. (c) It leaves
-$R^{\mathrm{NDE}}$ balanced across arms (exclusion holds for the direct
-effect). Nemotron-Nano-8B.}
-\label{fig:confound}
-\end{figure}
+Estimated on judge-$V$, the selection model still rejects $H_0\!:\rho=0$ for
+Nemotron's direct effect ($\hat\rho=\QQRho{}$, two-step $\QQRhoTS{}$; LR
+\QQRhoLRp{}, Wald \QQRhoWaldp{}), so \emph{some} selection is present. But the
+rejection does not translate into a useful correction
+(Figure~\ref{fig:correction}). The naive selected-sample mean is already close
+to the oracle: $\hat\mu_{\text{naive}}=\QQNaiveSel{}$ against
+$\mu_{\text{true}}=\QQTruePop{}$. The IMR-corrected estimate moves the
+\emph{wrong way and too far}: $\hat\mu_{\text{corr}}=\QQCorrPop{}$
+(bootstrap 95\% CI $[\QQCorrPopBLo{},\QQCorrPopBHi{}]$), further from truth than
+the uncorrected number. The $\rho$-sensitivity analysis
+(Figure~\ref{fig:sensitivity}) explains why: sweeping the frozen $\rho$, the
+corrected population estimate crosses the oracle near $\rho\approx0$, not near
+the fitted $\hat\rho\approx-0.5$. The likelihood prefers a large negative
+$\rho$ because the reliance distribution is heavy-tailed and non-Gaussian, not
+because verbalizers systematically under-rely by that amount; the bivariate-%
+normal correction then over-adjusts. The pre-registered E0 gate --- $\rho$
+rejected \emph{and} the correction beating the naive count at recovering ground
+truth --- is \emph{not} met: the first half holds, the second fails.
+
+\paragraph{Other models and outcomes.} The failure is not specific to one
+model or outcome (Table~\ref{tab:models}). On Phi the confound test does not
+even reject on judge-$V$ ($\hat\rho=\QPhRho{}$, $\QPhRhoLRp{}$); its
+detector-based ``confound'' was an artifact of the over-counting $V$. On Qwen
+the validated verbalization rate is \QQwJudgeRate{} (\QQwJudgeVerb{} verbalizing
+traces of \QQwJudgeN{}), too few to estimate the selection equation at all. On
+Nemotron's instrument-free commitment outcome $R^{\mathrm{pre}}$ the test does
+not reject ($\hat\rho=\QQpreRho{}$, $\QQpreRhoLRp{}$) and the correction again
+fails to beat naive. In \emph{no} model or identified outcome does the
+correction beat the naive count at recovering ground truth. Reading the
+pre-registered kill conditions, this is K1 in substance: the naive
+verbalization-based estimate is approximately unbiased and the closed-form
+correction does not improve on it. The naive metric's real problem is not a
+correctable selection bias but the unreliability of the $V$ measurement itself
+(Section~\ref{sec:measurement}).
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.86\textwidth]{figs/fig2_correction.pdf}
-\caption{Naive vs.\ corrected reliance against ground truth (dashed).
-(a) Population mean: the naive selected-sample and zero-fill estimators are
-biased; the IMR correction recovers the oracle. (b) Hidden reliance
-$\E[R\mid V{=}0]$: verbalization counts assume $0$; the correction estimates
-it in closed form. Bars are bootstrap 95\% CIs. Nemotron-Nano-8B.}
+\caption{Naive vs.\ corrected direct reliance $R^{\mathrm{NDE}}$ against ground
+truth (dashed), Nemotron on judge-$V$. The naive selected-sample mean is close
+to the oracle; the IMR correction overshoots. Bars are bootstrap 95\% CIs.}
 \label{fig:correction}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.48\textwidth]{figs/fig4_sensitivity.pdf}
+\caption{$\rho$-sensitivity (Nemotron, judge-$V$, $R^{\mathrm{NDE}}$): the
+corrected estimate crosses ground truth near $\rho\approx0$, not near the
+fitted $\hat\rho$ (vertical line). The likelihood's preference for a large
+negative $\rho$ reflects non-normality, not a bias the correction should
+apply.}
+\label{fig:sensitivity}
 \end{figure}
 
 \subsection{Identification checks}
 \label{sec:e1}
 
-The disclosure instrument has a strong first stage
-(Figure~\ref{fig:confound}b): it moves verbalization from \QQVzZero{} (neutral
-arm) to \QQVzOne{} (disclosure arm), probit $z=\QQFsZ{}$. The exclusion
-restriction, however, is \emph{outcome-specific}, and the balance test says so
-directly (Figure~\ref{fig:confound}c). For the total effect $R^{\mathrm{TE}}$
-the instrument moves reliance --- standardized arm difference \QQBalRTESD{}
-($\QQBalRTEP{}$) --- because asking the model to disclose influences changes the
-CoT, and the CoT mediates part of the total effect. Exclusion is therefore
-violated for $R^{\mathrm{TE}}$; this is precisely the pre-registered K2
-condition, and the balance test catches it rather than letting a biased
-point estimate through. For the \emph{direct} effect $R^{\mathrm{NDE}}$ ---
-the hint's influence with the CoT text held fixed --- the same instrument
-leaves reliance untouched (standardized difference \QQBalRNDESD{},
-$\QQBalRNDEP{}$), so exclusion holds. The pre-verbalization commitment measure
-$R^{\mathrm{pre}}$, which excludes the instrument sentence by construction, is
-likewise balanced (\QQBalRpreSD{}). We therefore identify the correction on
-$R^{\mathrm{NDE}}$, where the instrument is valid, and report $R^{\mathrm{TE}}$
-only under the functional-form (rho-sensitivity) identification below.
-
-Because joint normality is still a parametric assumption even where exclusion
-holds, Table~\ref{tab:sensitivity} reports the correction across a
-frozen-$\rho$ grid (Figure~\ref{fig:sensitivity}). The corrected population and
-hidden estimates track ground truth most closely near the estimated
-$\hat\rho=\QQRho{}$, and the qualitative conclusion --- silent traces rely
-more, the correction surfaces it --- is stable across the plausible $\rho$
-range rather than an artifact of point identification.
-
-For completeness, the exclusion-violated total effect $R^{\mathrm{TE}}$ gives
-$\hat\rho=\QQteRho{}$ ($\QQteRhoLRp{}$) with the naive estimate $\QQteNaiveSel{}$
-and corrected $\QQteCorrPop{}$ against truth $\QQteTruePop{}$; the
-instrument-free commitment measure $R^{\mathrm{pre}}$ gives $\hat\rho=\QQpreRho{}$
-($\QQpreRhoLRp{}$), the same negative direction.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.48\textwidth]{figs/fig4_sensitivity.pdf}
-\caption{$\rho$-sensitivity: corrected population and hidden reliance across a
-frozen-$\rho$ grid vs.\ ground truth. The vertical line is the estimated
-$\hat\rho$. Nemotron-Nano-8B.}
-\label{fig:sensitivity}
-\end{figure}
-
-\subsection{Robustness: models, hint types, placebo}
-\label{sec:e3}
-
-\paragraph{Models: the test discriminates.} Table~\ref{tab:models} repeats the
-analysis on two further open, instruction-tuned models:
-Qwen2.5-7B-Instruct ($\Pr(V)=\QQwVrate{}$, $\hat\rho=\QQwRho{}$,
-$\QQwRhoLRp{}$) and Phi-3.5-mini-instruct
-($\Pr(V)=\QPhVrate{}$, $\hat\rho=\QPhRho{}$, $\QPhRhoLRp{}$). On both the
-disclosure instrument has a strong first stage, yet the confound test does
-\emph{not} reject: on the identified direct-effect outcome their verbalization
-carries no detectable selection-on-unobservables, so the naive count is not
-confounded and needs no correction. This is the diagnostic behaving as it
-should. A test that always fired would be useless; ours returns null exactly
-where the placebo and these models say it should, and rejects for the
-reasoning model where ground truth confirms a real confound. The verbalization
-confound is thus a property of some models, not a universal law --- and the
-scalar test tells an auditor which case they are in before they trust or
-correct a faithfulness number.
-
-\paragraph{Hint types.} Table~\ref{tab:hints} breaks the primary model down by
-hint type. The confound is present across sycophancy, authority, metadata, and
-consistency hints, with magnitude varying by how strongly each hint's use
-predicts its verbalization.
-
-\paragraph{Placebo.} The placebo hint carries no answer information, so there
-is nothing to rely on and nothing to correct. As pre-registered, the
-estimator finds no confound: mean reliance is \QQPlacR{}
-(95\% CI $[\QQPlacRLo{},\QQPlacRHi{}]$, covering zero) and the $\rho$ test does
-not reject ($\QQPlacRhoP{}$) over \QQPlacN{} placebo instances. The correction
-does not manufacture a confound where none exists.
+The disclosure instrument has a strong first stage even on judge-$V$: it moves
+verbalization from \QQVzZero{} (neutral arm) to \QQVzOne{} (disclosure arm),
+probit $z=\QQFsZ{}$. The exclusion restriction is outcome-specific, and the
+balance test says so: for the total effect $R^{\mathrm{TE}}$ the instrument
+moves reliance (standardized arm difference \QQBalRTESD{}, $\QQBalRTEP{}$)
+because disclosing influences changes the CoT, whereas for the direct effect
+$R^{\mathrm{NDE}}$ it does not (\QQBalRNDESD{}, $\QQBalRNDEP{}$). We therefore
+identify on $R^{\mathrm{NDE}}$; this is the pre-registered K2 logic, and it is
+the one part of the machinery that works cleanly --- the balance test correctly
+routes us to the valid outcome. It just does not rescue a correction that fails
+for a different reason (non-normality) on that outcome.
 
 \begin{table}[t]
 \centering
-\caption{The confound and correction across models (primary reliance
-$R^{\mathrm{TE}}$). $\hat\mu_{\text{naive}}$ is the selected-sample mean;
-$\hat\mu_{\text{corr}}$ is IMR-corrected; $\mu_{\text{true}}$ is the oracle
-mean over all instances. ``corr.\ wins'' = corrected closer to truth than
-naive.}
+\caption{Left: the confound and correction on judge-$V$, identified direct
+outcome $R^{\mathrm{NDE}}$; $\hat\mu_{\text{naive}}$ is the selected-sample
+mean, $\hat\mu_{\text{corr}}$ the IMR-corrected estimate, $\mu_{\text{true}}$
+the oracle mean over all instances; ``corr.\ wins'' = corrected closer to truth
+than naive. Right: verbalization measurement --- lexical-detector rate vs.\
+validated LLM-judge rate and the over-count factor. Qwen has too few
+verbalizing traces (\QQwJudgeVerb) to fit.}
 \label{tab:models}
 \input{tables/models}
 \end{table}
 
-\begin{table}[t]
-\centering
-\caption{Confound by hint type, primary model (Nemotron-Nano-8B).}
-\label{tab:hints}
-\input{tables/hints}
-\end{table}
-
-\begin{table}[t]
-\centering
-\caption{$\rho$-sensitivity of the correction (Nemotron-Nano-8B, $R^{\mathrm{TE}}$).}
-\label{tab:sensitivity}
-\input{tables/sensitivity}
-\end{table}
-
-\section{Observation-only deployment}
+\section{Observation-only deployment: the machinery runs}
 \label{sec:e2}
 
-The point of a correction that needs only the observable channel is to run
-where causal ground truth is unavailable. We use two settings. First, as a
-bridge, we re-analyze the \emph{primary} model observation-only --- discarding
-its activation ground truth and fitting from traces and answers alone --- then
-unblind to check the text-only verdict against the causal truth we happen to
-have. Second, the genuine target: Claude Haiku 4.5 via API, where no ground
-truth exists. In both, the reliance proxy readable from a verbalizing trace is
-binary (did the answer adopt the hinted option), so we use the
-probit-with-selection estimator; the corrected hidden and population adoption
-rates come from the closed forms in Section~\ref{sec:method}.
-
-\paragraph{Primary model, observation-only (unblinded bridge).} Fitting the
-binary adoption proxy from text alone yields $\hat\rho=\QNeHpRho{}$
-(95\% CI $[\QNeHpRhoLo{},\QNeHpRhoHi{}]$, $\QNeHpLRp{}$). The naive adoption
-rate among verbalizers is \QNeHpNaive{}; the corrected population rate is
-\QNeHpCorrPop{} and the corrected hidden (non-verbalizer) rate is
-\QNeHpCorrHidden{}, against the unblinded full-sample truths \QNeHpTruePop{}
-and \QNeHpTrueHidden{}. Because this model is local we can also compute the
-causal $R^{\mathrm{TE}}$ reliance directly: the continuous-outcome fit detects
-the same confound ($\hat\rho=\QNeFullRho{}$, $\QNeFullRhoLRp{}$), corroborating
-that the text-only correction points the right way.
-
-\paragraph{Claude (API, no ground truth).} On \QClHpN{} instances Claude
-verbalizes the hint in \QClHpV{} of traces. The observation-only fit gives
-$\hat\rho=\QClHpRho{}$ ($\QClHpLRp{}$); the naive adoption rate among
-verbalizers, \QClHpNaive{}, is adjusted to a population rate of
-\QClHpCorrPop{} and a hidden (non-verbalizer) rate of \QClHpCorrHidden{}.
-With no activation ground truth this is a demonstration of the deployable
-machinery rather than a validated correction: it shows the estimator runs
-end-to-end on a closed API model from traces and answers alone, returns a
-confound estimate with a confidence interval, and reports a corrected rate an
-auditor could act on --- the transfer the method is designed to provide, to be
-trusted on any given closed model only as far as its parametric assumptions
-hold.
+Even though the correction does not validate against ground truth, the
+observation-only pipeline is worth exhibiting because it is what a deployment
+would actually run: from traces and answers alone, with no activation access,
+it fits a probit-with-selection model (the reliance proxy readable from a
+verbalizing trace is binary --- did the answer adopt the hinted option) and
+returns a $\rho$ estimate and corrected rates via the closed forms of
+Section~\ref{sec:method}. On Claude Haiku 4.5 via API (\QClHpN{} instances,
+verbalization \QClHpV{}) it runs end-to-end and yields $\hat\rho=\QClHpRho{}$
+($\QClHpLRp{}$), adjusting the naive adoption rate \QClHpNaive{} to a population
+rate \QClHpCorrPop{} and a hidden rate \QClHpCorrHidden{}. We report this only
+as evidence that the estimator is deployable on closed models, not that its
+output should be trusted: our open-model results show the point correction is
+unreliable, so on a closed model --- where the same non-normality cannot be
+diagnosed against ground truth --- the honest deliverable is the $\rho$-test as
+a flag plus $\rho$-sensitivity bounds, not the corrected rate.
 
 \section{Limitations}
 \label{sec:limits}
 
-The verbalization confound is model-specific, not universal: we detect it in
-the reasoning model and find it absent in the two instruction-tuned models on
-the identified outcome. Our claim is therefore about the \emph{test and
-correction} --- a diagnostic that reports which regime a model is in --- not
-that every model's verbalization is confounded. With three open models plus
-one API model we characterize when the confound appears (here, the
-higher-verbalizing reasoning model) but cannot yet say why; a larger model
-sweep is needed to tie confound presence to model family, training, or
-verbalization rate.
+The scope of our negative is three open models plus one API model at $\le$8B;
+we cannot rule out that the closed-form correction succeeds on other models,
+other hint families, or larger scales where the reliance distribution is closer
+to Gaussian. Our claim is the narrower, well-supported one: on the models we
+tested, with verbalization measured correctly, the correction does not beat the
+naive count, and the dominant problem is $V$-measurement rather than a
+correctable selection bias. Two mechanisms drive the negative and each bounds
+the claim. First, non-normality: the reliance log-odds are heavy-tailed, so the
+Gaussian IMR over-adjusts; a semiparametric selection correction might behave
+better and is the natural next step. Second, sparsity: validated verbalization
+is rare (\QQwJudgeRate--\QNeJudgeRate), so the selected sample that identifies
+the outcome equation is small and sometimes empty (Qwen), which both inflates
+variance and makes the fit fragile.
 
 The exclusion restriction is contestable despite randomization and the
 balance test: an instruction that changes what the model reports could in
@@ -561,8 +501,30 @@ $R^{\mathrm{NDE}}$ is reported). The verbalization detector is lexical;
 we bound its error by judge agreement. Scale is limited to $\le$8B open
 models and one API model; hint types are four of the six in
 \citet{chen2025reasoning}. Finally, this is a measurement-methodology
-contribution: it corrects the estimate of reliance given selection, it does
-not make CoTs faithful.
+paper: even had the correction worked, it would repair an \emph{estimate} of
+reliance, not make CoTs faithful.
+
+\section{What the negative teaches}
+\label{sec:takeaways}
+
+Three points survive the negative result and, we think, are more useful than
+the positive we set out to find. (i) \textbf{The selection framing is the right
+diagnosis even where the fix fails.} Casting verbalization counts as a
+selected-sample statistic is correct: the $\rho$-test does detect selection,
+and the framework cleanly separates \emph{is there selection} (the test, which
+works) from \emph{how large is the corrected quantity} (the point estimate,
+which does not). Faithfulness audits should carry the test as a warning light
+even if they do not trust the correction. (ii) \textbf{The binding problem is
+measuring verbalization, not correcting for it.} A lexical detector over-counts
+verbalization by \QNeOvercount--\QQwOvercount$\times$ against a reading judge;
+since faithfulness rates are ratios built on $V$, this is a first-order error
+that no downstream correction addresses, and it recommends judge-based or
+otherwise validated $V$ for any faithfulness measurement
+\citep{young2026measuring}. (iii) \textbf{Parametric selection correction is
+the wrong tool for heavy-tailed reliance.} The Gaussian IMR overshoots because
+log-odds reliance is non-normal; a semiparametric or bounds-based correction is
+the natural next step, and until one is validated, $\rho$-sensitivity bounds
+are the honest deliverable.
 
 \section{Reproducibility}
 

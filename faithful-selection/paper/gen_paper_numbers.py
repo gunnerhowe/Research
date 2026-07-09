@@ -2,12 +2,14 @@
 (house rule: every number in the paper is machine-generated)."""
 
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
 OUT = ROOT / "paper" / "numbers.tex"
 TABLES = ROOT / "paper" / "tables"
+sys.path.insert(0, str(ROOT / "src"))
 
 M = {}
 
@@ -15,6 +17,35 @@ M = {}
 def load(name):
     p = RESULTS / name
     return json.loads(p.read_text()) if p.exists() else None
+
+
+def detector_vs_judge(raw_name, vjudge_name):
+    """Detector V-rate vs validated judge V-rate on the same hinted instances,
+    plus the detector's precision against the judge. Machine-generated so the
+    over-count claim is reproducible."""
+    import warnings
+    warnings.filterwarnings("ignore")
+    from faithsel.analysis import load_rows, augment
+    raw = RESULTS / "raw" / raw_name
+    vj = RESULTS / vjudge_name
+    if not raw.exists() or not vj.exists():
+        return None
+    judge = {k: int(v) for k, v in json.loads(vj.read_text()).items()}
+    df = augment(load_rows(str(raw)))               # detector V
+    d = df[df["parse_ok"] & (df["hint_type"] != "placebo")]
+    d = d[d["qid"].isin(judge)]
+    det = d.set_index("qid")["V"].to_dict()
+    common = [q for q in det if q in judge]
+    det_rate = sum(det[q] for q in common) / len(common)
+    jud_rate = sum(judge[q] for q in common) / len(common)
+    tp = sum(1 for q in common if det[q] == 1 and judge[q] == 1)
+    fp = sum(1 for q in common if det[q] == 1 and judge[q] == 0)
+    fn = sum(1 for q in common if det[q] == 0 and judge[q] == 1)
+    prec = tp / (tp + fp) if tp + fp else 0.0
+    rec = tp / (tp + fn) if tp + fn else 0.0
+    return {"n": len(common), "det_rate": det_rate, "judge_rate": jud_rate,
+            "overcount": det_rate / jud_rate if jud_rate else float("inf"),
+            "precision": prec, "recall": rec}
 
 
 def num(x, d=2):
@@ -132,32 +163,41 @@ def emit_heckprob(res, prefix):
     put(prefix + "HpTruePop", pct(hp["true_pop_adoption_unblind"]))
 
 
+MEAS = {"nemotron8b": ("nemotron8b_e0.jsonl", "vjudge_nemotron8b_e0.json"),
+        "qwen7b": ("qwen7b_e3.jsonl", "vjudge_qwen7b_e3.json"),
+        "phi35": ("phi35_e3.jsonl", "vjudge_phi35_e3.json")}
+
+
 def table_models(tags, outcome="R_NDE"):
     rows = []
     for tag, fname in tags:
-        res = load(fname)
+        res = load(fname) if fname else None
+        lab = MODEL_LABELS.get(tag, tag)
+        dj = detector_vs_judge(*MEAS[tag]) if tag in MEAS else None
+        meas = (f"{pct(dj['det_rate'])} & {pct(dj['judge_rate'])} & "
+                f"{num(dj['overcount'], 1)}$\\times$" if dj else " & & ")
         if res is None:
+            rows.append(f"{lab} & --- & --- & --- & --- & --- & --- & {meas} \\\\")
             continue
         rep = res["outcomes"].get(outcome) or res["outcomes"]["R_TE"]
         est = rep["two_step"]["estimands"]
         tgt = rep["targets"]
         g = rep["gate"]
-        lab = MODEL_LABELS.get(tag, tag)
         rows.append(
-            f"{lab} & {rep['n_fit']} & {pct(rep['verbalization_rate'])} & "
-            f"{num(rep['mle']['rho'])} "
-            f"[{num(rep['rho_wald']['rho_ci95'][0])}, "
-            f"{num(rep['rho_wald']['rho_ci95'][1])}] & "
-            f"{pval(rep['rho_lr']['p'])} & "
+            f"{lab} & {num(rep['mle']['rho'])} & {pval(rep['rho_lr']['p'])} & "
             f"{num(est['naive_selected'])} & {num(est['corrected_pop'])} & "
             f"{num(tgt['true_pop'])} & "
-            f"{'\\checkmark' if g['corrected_beats_naive_selected'] else '$\\times$'} \\\\")
+            f"{'\\checkmark' if g['corrected_beats_naive_selected'] else '$\\times$'} & "
+            f"{meas} \\\\")
     body = "\n".join(rows)
     return (
-        "\\begin{tabular}{lrrrrrrrc}\n\\toprule\n"
-        "Model & $n$ & $\\Pr(V)$ & $\\hat\\rho$ [95\\% CI] & LR test & "
-        "$\\hat\\mu_{\\text{naive}}$ & $\\hat\\mu_{\\text{corr}}$ & "
-        "$\\mu_{\\text{true}}$ & corr.\\ wins \\\\\n\\midrule\n"
+        "\\begin{tabular}{lrrrrrc|rrr}\n\\toprule\n"
+        "& \\multicolumn{6}{c}{estimation (judge-$V$, $R^{\\mathrm{NDE}}$)} & "
+        "\\multicolumn{3}{c}{verbalization measurement} \\\\\n"
+        "Model & $\\hat\\rho$ & LR & "
+        "$\\hat\\mu_{\\text{nv}}$ & $\\hat\\mu_{\\text{cr}}$ & "
+        "$\\mu_{\\text{tr}}$ & wins & "
+        "det.\\ & judge & over \\\\\n\\midrule\n"
         + body + "\n\\bottomrule\n\\end{tabular}\n")
 
 
@@ -236,22 +276,34 @@ def main():
                 put(pre + "TruePop", num(rep["targets"]["true_pop"]))
                 put(pre + "NaiveSel",
                     num(rep["two_step"]["estimands"]["naive_selected"]))
-        (TABLES / "hints.tex").write_text(table_hints(primary, outcome="R_NDE"))
-        (TABLES / "sensitivity.tex").write_text(
-            table_sensitivity(primary, outcome="R_NDE"))
 
-    qwen = load("qwen7b_e3.json")
-    if qwen:
-        emit_main("qwen7b", qwen, "Qw", outcome="R_NDE")
-        emit_placebo(qwen, "Qw")
     phi = load("phi35_e3.json")
     if phi:
         emit_main("phi35", phi, "Ph", outcome="R_NDE")
         emit_placebo(phi, "Ph")
 
+    # detector-vs-judge measurement block (the over-count finding)
+    for tag, raw, vj in (("Ne", "nemotron8b_e0.jsonl", "vjudge_nemotron8b_e0.json"),
+                         ("Qw", "qwen7b_e3.jsonl", "vjudge_qwen7b_e3.json"),
+                         ("Ph", "phi35_e3.jsonl", "vjudge_phi35_e3.json")):
+        dj = detector_vs_judge(raw, vj)
+        if dj:
+            put(tag + "DetRate", pct(dj["det_rate"]))
+            put(tag + "JudgeRate", pct(dj["judge_rate"]))
+            put(tag + "Overcount", num(dj["overcount"], 1))
+            put(tag + "DetPrec", num(dj["precision"], 2))
+            put(tag + "MeasN", dj["n"])
+    # Qwen judge-V rate (unfittable: too few verbalizers)
+    qwen_vj = load("vjudge_qwen7b_e3.json")
+    if qwen_vj:
+        vals = list(qwen_vj.values())
+        put("QwJudgeVerb", sum(vals))
+        put("QwJudgeN", len(vals))
+
     (TABLES / "models.tex").write_text(table_models([
-        ("nemotron8b", "nemotron8b_e0.json"), ("qwen7b", "qwen7b_e3.json"),
-        ("phi35", "phi35_e3.json")]))
+        ("nemotron8b", "nemotron8b_e0.json"),
+        ("phi35", "phi35_e3.json"),
+        ("qwen7b", None)]))
 
     claude = load("claude_e2.json")
     if claude:
