@@ -73,7 +73,7 @@ def fig_correction(results: dict, path="paper/figs/fig2_correction.pdf",
                    outcome="R_TE"):
     """Naive vs corrected vs ground truth, population + hidden estimands,
     bootstrap CIs."""
-    rep = results["outcomes"][outcome]
+    rep = results["outcomes"].get(outcome) or results["outcomes"]["R_TE"]
     est = rep["two_step"]["estimands"]
     tgt = rep["targets"]
     boot = rep["bootstrap"]
@@ -147,8 +147,10 @@ def fig_lens(df, path="paper/figs/fig3_lens.pdf"):
 def fig_sensitivity(results: dict, path="paper/figs/fig4_sensitivity.pdf",
                     outcome="R_TE"):
     """Corrected estimands across the fixed-rho grid vs ground truth."""
-    rep = results["outcomes"][outcome]
-    rows = rep["rho_sensitivity"]
+    rep = results["outcomes"].get(outcome) or results["outcomes"]["R_TE"]
+    rows = rep.get("rho_sensitivity")
+    if not rows:
+        return
     tgt = rep["targets"]
     rho_hat = rep["mle"]["rho"]
     fig, ax = plt.subplots(figsize=(4.2, 2.9))
@@ -178,7 +180,7 @@ def fig_models(results_list: list[dict], labels: list[str],
     fig, ax = plt.subplots(figsize=(4.6, 2.9))
     ys, names = [], []
     for res, lab in zip(results_list, labels):
-        rep = res["outcomes"][outcome]
+        rep = res["outcomes"].get(outcome) or res["outcomes"]["R_TE"]
         lo, hi = rep["rho_wald"]["rho_ci95"]
         ys.append((rep["mle"]["rho"], lo, hi))
         names.append(lab)
