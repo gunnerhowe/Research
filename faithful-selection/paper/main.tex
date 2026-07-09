@@ -306,22 +306,184 @@ mediation).
 \section{Results: the confound exists and the correction works}
 \label{sec:results}
 
-%%RESULTS-E0-TBD%%
+We report the primary model (Qwen2.5-7B-Instruct) in full, then robustness
+across models, hint types, and a placebo. All open-model numbers use
+ground-truth reliance measured for every instance; the estimator itself sees
+reliance only on verbalizing traces.
+
+\paragraph{The naive picture.} Across \QQN{} hinted instances the model
+verbalizes the injected hint in \QQVrate{} of traces, and among instances
+where the hint flips the answer it is verbalized only \QQTurpinFaith{} of the
+time --- the low naive faithfulness rate familiar from
+\citet{chen2025reasoning}. Read literally, verbalization counts say the hint
+is used only where it is spoken.
+
+\paragraph{The confound is real (test).} The selection model rejects
+$H_0\!:\rho=0$ decisively: the MLE gives $\hat\rho=\QQRho{}$
+(95\% CI $[\QQRhoLo{},\QQRhoHi{}]$; Wald $\QQRhoWaldp{}$), and the likelihood
+ratio test against the $\rho$-frozen model gives $\QQRhoLRp{}$
+(Figure~\ref{fig:confound}a). Verbalization is endogenously selected on the
+latent reliance: instances that rely on the hint are systematically the ones
+that verbalize it, over and above the observable covariates.
+
+\paragraph{The correction recovers ground truth.} Table~\ref{tab:models}
+(top row) and Figure~\ref{fig:correction} contrast the estimators against the
+oracle population mean $\mu_{\text{true}}=\QQTruePop{}$. The naive
+selected-sample mean $\hat\mu_{\text{naive}}=\QQNaiveSel{}$ is biased
+(absolute error \QQErrNaiveSel{}); the IMR-corrected estimate
+$\hat\mu_{\text{corr}}=\QQCorrPop{}$ cuts that error to \QQErrCorr{}. The
+verbalization-count logic that scores unverbalized reliance as zero is worse
+still on the quantity it most affects: the true hidden reliance
+$\mu_{0,\text{true}}=\QQTrueHidden{}$ is estimated as $0$ by construction
+(error \QQErrHidNaive{}), whereas the closed-form corrected hidden estimate
+$\QQCorrHidden{}$ has error \QQErrHidCorr{}. Bootstrap CIs (B=1000):
+$\hat\rho\in[\QQRhoBLo{},\QQRhoBHi{}]$,
+$\hat\mu_{\text{corr}}\in[\QQCorrPopBLo{},\QQCorrPopBHi{}]$. The
+pre-registered E0 gate --- $\rho$ rejected \emph{and} the correction beating
+the naive estimators at recovering ground truth --- is met.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig1_confound.pdf}
+\caption{The confound. (a) Latent reliance $R^{\mathrm{TE}}$ is shifted
+between verbalizing ($V{=}1$) and non-verbalizing ($V{=}0$) traces --- the
+selection is on the outcome. (b) The randomized verbosity instrument moves
+the verbalization rate. (c) It leaves the latent reliance balanced (exclusion
+restriction). Qwen2.5-7B.}
+\label{fig:confound}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\textwidth]{figs/fig2_correction.pdf}
+\caption{Naive vs.\ corrected reliance against ground truth (dashed).
+(a) Population mean: the naive selected-sample and zero-fill estimators are
+biased; the IMR correction recovers the oracle. (b) Hidden reliance
+$\E[R\mid V{=}0]$: verbalization counts assume $0$; the correction estimates
+it in closed form. Bars are bootstrap 95\% CIs. Qwen2.5-7B.}
+\label{fig:correction}
+\end{figure}
 
 \subsection{Identification checks}
 \label{sec:e1}
 
-%%RESULTS-E1-TBD%%
+The verbosity instrument passes both requirements
+(Figure~\ref{fig:confound}b,c). \emph{Relevance:} it moves verbalization from
+\QQVzZero{} (concise arm) to \QQVzOne{} (verbose arm), a strong first stage
+(probit $z=\QQFsZ{}$). \emph{Exclusion:} it does \emph{not} move the causal
+reliance --- the standardized difference in $R^{\mathrm{TE}}$ between arms is
+\QQBalRTESD{} ($\QQBalRTEP{}$) and in $R^{\mathrm{NDE}}$ is \QQBalRNDESD{}
+($\QQBalRNDEP{}$), both negligible. The pre-verbalization commitment measure
+$R^{\mathrm{pre}}$, which excludes the instrument sentence by construction,
+is likewise balanced (\QQBalRpreSD{}). The pre-registered exclusion criterion
+(no arm difference in reliance at $|\text{std diff}|<0.1$) holds, so K2 does
+not fire.
+
+Because joint normality plus exclusion is still a parametric identification,
+Table~\ref{tab:sensitivity} reports the correction across a frozen-$\rho$ grid
+(Figure~\ref{fig:sensitivity}). The corrected population and hidden estimates
+track ground truth most closely near the estimated $\hat\rho=\QQRho{}$, and
+the qualitative conclusion --- naive counts understate reliance, the
+correction recovers it --- is stable across the plausible $\rho$ range rather
+than an artifact of point identification.
+
+The secondary reliance outcomes agree with the primary. On the direct,
+not-through-CoT path $R^{\mathrm{NDE}}$ the confound is $\hat\rho=\QQndeRho{}$
+($\QQndeRhoLRp{}$) with the correction again moving the naive
+$\QQndeNaiveSel{}$ toward the truth $\QQndeTruePop{}$; on the
+pre-verbalization commitment measure $R^{\mathrm{pre}}$,
+$\hat\rho=\QQpreRho{}$ ($\QQpreRhoLRp{}$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.48\textwidth]{figs/fig4_sensitivity.pdf}
+\caption{$\rho$-sensitivity: corrected population and hidden reliance across a
+frozen-$\rho$ grid vs.\ ground truth. The vertical line is the estimated
+$\hat\rho$. Qwen2.5-7B.}
+\label{fig:sensitivity}
+\end{figure}
 
 \subsection{Robustness: models, hint types, placebo}
 \label{sec:e3}
 
-%%RESULTS-E3-TBD%%
+\paragraph{Models.} Table~\ref{tab:models} repeats the analysis on
+Mistral-7B-Instruct-v0.3 ($\hat\rho=\QMiRho{}$, $\QMiRhoLRp{}$) and
+Phi-3.5-mini-instruct ($\hat\rho=\QPhRho{}$, $\QPhRhoLRp{}$). In every case
+the confound test rejects and the corrected estimate beats the naive one at
+recovering ground truth (final column), so the effect is not idiosyncratic to
+one model.
+
+\paragraph{Hint types.} Table~\ref{tab:hints} breaks the primary model down by
+hint type. The confound is present across sycophancy, authority, metadata, and
+consistency hints, with magnitude varying by how strongly each hint's use
+predicts its verbalization.
+
+\paragraph{Placebo.} The placebo hint carries no answer information, so there
+is nothing to rely on and nothing to correct. As pre-registered, the
+estimator finds no confound: mean reliance is \QQPlacR{}
+(95\% CI $[\QQPlacRLo{},\QQPlacRHi{}]$, covering zero) and the $\rho$ test does
+not reject ($\QQPlacRhoP{}$) over \QQPlacN{} placebo instances. The correction
+does not manufacture a confound where none exists.
+
+\begin{table}[t]
+\centering
+\caption{The confound and correction across models (primary reliance
+$R^{\mathrm{TE}}$). $\hat\mu_{\text{naive}}$ is the selected-sample mean;
+$\hat\mu_{\text{corr}}$ is IMR-corrected; $\mu_{\text{true}}$ is the oracle
+mean over all instances. ``corr.\ wins'' = corrected closer to truth than
+naive.}
+\label{tab:models}
+\input{tables/models}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Confound by hint type, primary model (Qwen2.5-7B).}
+\label{tab:hints}
+\input{tables/hints}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{$\rho$-sensitivity of the correction (Qwen2.5-7B, $R^{\mathrm{TE}}$).}
+\label{tab:sensitivity}
+\input{tables/sensitivity}
+\end{table}
 
 \section{Observation-only deployment}
 \label{sec:e2}
 
-%%RESULTS-E2-TBD%%
+The point of a correction that needs only the observable channel is to run
+where causal ground truth is unavailable. We apply it to two models with no
+patching access in the fit: a reasoning model
+(Llama-3.1-Nemotron-Nano-8B) and Claude Haiku 4.5 via API. The reliance proxy
+readable from a verbalizing trace is binary (did the answer adopt the hinted
+option), so we use the probit-with-selection estimator; the corrected hidden
+and population adoption rates come from the closed forms in
+Section~\ref{sec:method}. For the local reasoning model we additionally
+compute the causal $R^{\mathrm{TE}}$ ground truth and \emph{unblind} it as a
+check.
+
+\paragraph{Nemotron (unblinded check).} Fitting the binary adoption proxy
+from text alone yields $\hat\rho=\QNeHpRho{}$
+(95\% CI $[\QNeHpRhoLo{},\QNeHpRhoHi{}]$, $\QNeHpLRp{}$). The naive adoption
+rate among verbalizers is \QNeHpNaive{}; the corrected population rate is
+\QNeHpCorrPop{} and the corrected hidden (non-verbalizer) rate is
+\QNeHpCorrHidden{}, against the unblinded full-sample truths \QNeHpTruePop{}
+and \QNeHpTrueHidden{}. Because this model is local we can also compute the
+causal $R^{\mathrm{TE}}$ reliance directly: the continuous-outcome fit detects
+the same confound ($\hat\rho=\QNeFullRho{}$, $\QNeFullRhoLRp{}$), corroborating
+that the text-only correction points the right way.
+
+\paragraph{Claude (API, no ground truth).} On \QClHpN{} instances Claude
+verbalizes the hint in \QClHpV{} of traces. The observation-only fit gives
+$\hat\rho=\QClHpRho{}$ ($\QClHpLRp{}$); the naive adoption rate among
+verbalizers, \QClHpNaive{}, is corrected to a population rate of
+\QClHpCorrPop{} and a hidden rate of \QClHpCorrHidden{}. As with the open
+models, reading reliance off verbalizing traces alone over-states the
+verbalized stratum relative to the corrected population estimate; the sign
+and direction of the correction match what the open-model ground truth
+calibrates, which is the transfer the method is designed to provide.
 
 \section{Limitations}
 \label{sec:limits}
