@@ -12,3 +12,4 @@ paper/main.fdb_latexmk
 paper/main.synctex.gz
 .cache/
 runs/
+tools/tectonic.exe

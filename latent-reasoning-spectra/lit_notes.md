@@ -1,5 +1,9 @@
 # Literature notes + recency sweeps
 
+> **Pre-submission checklist:** re-run the sweep queries below on submission day.
+> Last clean sweep: 2026-07-08 (cell open). The 2606 Coconut-analysis cluster ships
+> ~weekly and the SPAR Spring-2026 project (mentor Uzay Macar) had no output yet.
+
 ## Recency sweep 2026-07-08 (pre-writing; live web)
 
 Queries: "Koopman latent reasoning chain of thought 2026", "spectral Coconut continuous

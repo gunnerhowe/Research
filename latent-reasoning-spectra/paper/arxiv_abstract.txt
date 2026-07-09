@@ -1,0 +1,31 @@
+A Coconut-style latent reasoner feeds its last hidden state back as the next input
+embedding, so its chain of continuous thoughts is literally a discrete-time dynamical
+system c_{t+1} = F_t(c_t). We pre-registered -- with kill conditions committed before
+any result -- the natural dynamical-systems hypothesis for the emerging field of
+latent-reasoning interpretability: that the spectral invariants of this map
+(transient-expansion and slow-mode structure of the step Jacobians, and orbit-level
+Koopman estimates) predict the established anchor/branch structure of the reasoning,
+validated against ProsQA's ground-truth DAG. The hypothesis fails its controls,
+informatively. The step maps are strongly contracting (mean spectral radius 0.34) yet
+highly non-normal (mean sigma_1 = 2.97, sigma_1/rho ratio 8.96): thoughts are
+transiently amplified in singular directions while every eigenmode decays. But every
+spectral invariant's apparent branch/anchor signal survives in pause-token models with
+no recurrence at all, does not respond to surgically de-branching the problems, and
+collapses to chance -- along with all trivial baselines -- under within-step
+stratification: the observable spectral structure is architectural and positional, not
+reasoning-specific. Causally, perturbations along the top singular direction of the
+step Jacobian produce 3.3-7.0x the downstream effect of magnitude-matched random
+directions (eigendirections carry no privilege -- the non-normal signature), yet the
+absolute effects are minute: replacing any single thought outright shifts the answer
+margin by a median of 0.002 against baseline margins of ~13.9, flipping zero of
+500 x 6 ablations -- and transplanting all six thoughts from a random donor problem
+changes zero of 500 answers. Influence Jacobians differentiated through all paths show
+why: within three steps, about half of a thought's influence flows through the
+attention cache rather than the recurrence (median routedness up to 0.51), and a
+pooled orbit-level operator inherits the same positional confounds. For this
+high-accuracy checkpoint, the recycled thought vector is a weak causal channel whose
+spectral geometry says little about the reasoning it hosts -- a pre-registered
+cautionary result extending "observable patterns are not explanations" to the
+spectral/dynamical domain, with matched controls and causal validation as the
+non-negotiable price of admission for state-space interpretability of latent
+reasoning.
