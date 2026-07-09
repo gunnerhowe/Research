@@ -295,18 +295,21 @@ the hinted option letter does not count. The committed detector is validated
 against an LLM judge on a stratified subsample
 (agreement \QjudgeAgree{}, Cohen's $\kappa=\QjudgeKappa$).
 
-\paragraph{Ground-truth reliance (open models).} Primary, $R^{\mathrm{TE}}$:
-restricted log-odds of the hinted letter at a canonical answer position
-(``\texttt{Final answer: (}''), hinted run minus matched unhinted run ---
-an input-level $do(\text{hint})$ contrast capturing the hint's total causal
-effect on the answer distribution. Secondary, $R^{\mathrm{NDE}}$:
-hint-excision splice --- the hinted CoT is held fixed and re-read under the
-unhinted prompt, isolating the direct, not-through-CoT-text path
-\citep{zaman2025}. Tertiary, $R^{\mathrm{pre}}$: logit-lens
-\citep{nostalgebraist2020} commitment shift toward the hinted letter,
-averaged over the upper half of layers, from a no-CoT prompt that excludes
-the instrument sentence by construction. All three are forward-pass-only
-and deterministic.
+\paragraph{Ground-truth reliance (open models).} We measure three reliance
+signals; the \emph{identified} outcome is the direct effect $R^{\mathrm{NDE}}$,
+for the exclusion-restriction reason established in Section~\ref{sec:e1}, and
+we pre-registered all three. $R^{\mathrm{TE}}$ (total effect): restricted
+log-odds of the hinted letter at a canonical answer position
+(``\texttt{Final answer: (}''), hinted run minus matched unhinted run --- an
+input-level $do(\text{hint})$ contrast capturing the hint's total causal
+effect, including paths through the CoT text. $R^{\mathrm{NDE}}$ (direct
+effect, the identified outcome): hint-excision splice --- the hinted CoT is
+held fixed and re-read under the unhinted prompt, isolating the direct,
+not-through-CoT-text path \citep{zaman2025}. $R^{\mathrm{pre}}$
+(pre-verbalization commitment): logit-lens \citep{nostalgebraist2020}
+commitment shift toward the hinted letter, averaged over the upper half of
+layers, from a no-CoT prompt that excludes the instrument sentence by
+construction. All three are forward-pass-only and deterministic.
 
 \paragraph{Protocol.} The estimator is fit treating $R_i$ as observed iff
 $V_i=1$ (the observation-only regime); ground truth over all $i$ is used
@@ -371,11 +374,12 @@ outcome.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/fig1_confound.pdf}
-\caption{The confound. (a) Latent reliance $R^{\mathrm{TE}}$ is shifted
+\caption{The confound. (a) Direct-effect reliance $R^{\mathrm{NDE}}$ differs
 between verbalizing ($V{=}1$) and non-verbalizing ($V{=}0$) traces --- the
-selection is on the outcome. (b) The randomized disclosure instrument moves
-the verbalization rate. (c) It leaves the latent reliance balanced (exclusion
-restriction). Nemotron-Nano-8B.}
+selection is on the outcome, and here the silent traces rely more. (b) The
+randomized disclosure instrument moves the verbalization rate. (c) It leaves
+$R^{\mathrm{NDE}}$ balanced across arms (exclusion holds for the direct
+effect). Nemotron-Nano-8B.}
 \label{fig:confound}
 \end{figure}
 
