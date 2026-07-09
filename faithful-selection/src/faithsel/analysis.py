@@ -113,26 +113,69 @@ def _zscore(v: np.ndarray) -> np.ndarray:
     return (v - v.mean()) / (sd if sd > 1e-12 else 1.0)
 
 
-def design(df: pd.DataFrame, use_lens_covs: bool = True):
-    """Outcome design X and selection design W (= X plus the instrument)."""
+def design(df: pd.DataFrame, use_lens_covs: bool = False,
+           parsimonious: bool = True):
+    """Outcome design X and selection design W (= X plus the instrument z).
+
+    Verbalization rates on open models are low (often <15%), so the selected
+    sample that identifies the outcome equation is small. The default design
+    is therefore parsimonious -- constant plus hint-type dummies -- which is
+    what the confound is expected to vary along. Set parsimonious=False to add
+    dataset dummies, question length, and (if present) lens-derived difficulty
+    covariates for robustness checks. Columns are further pruned for
+    separation at fit time (see prune_design).
+    """
     n = len(df)
     cols, names = [np.ones(n)], ["const"]
     for ht in sorted(df["hint_type"].unique())[1:]:
         cols.append((df["hint_type"] == ht).astype(float).values)
         names.append(f"hint_{ht}")
-    for ds in sorted(df["dataset"].unique())[1:]:
-        cols.append((df["dataset"] == ds).astype(float).values)
-        names.append(f"ds_{ds}")
-    cols.append(_zscore(df["question_len"].values))
-    names.append("qlen_z")
-    if use_lens_covs and "direct_entropy" in df.columns:
-        cols.append(_zscore(df["direct_entropy"].values))
-        names.append("entropy_z")
-        cols.append(df["direct_correct"].astype(float).values)
-        names.append("direct_correct")
+    if not parsimonious:
+        for ds in sorted(df["dataset"].unique())[1:]:
+            cols.append((df["dataset"] == ds).astype(float).values)
+            names.append(f"ds_{ds}")
+        cols.append(_zscore(df["question_len"].values))
+        names.append("qlen_z")
+        if use_lens_covs and "direct_entropy" in df.columns:
+            cols.append(_zscore(df["direct_entropy"].values))
+            names.append("entropy_z")
+            cols.append(df["direct_correct"].astype(float).values)
+            names.append("direct_correct")
     X = np.column_stack(cols)
     W = np.column_stack(cols + [df["z"].astype(float).values])
     return X, W, names + ["z"]
+
+
+def prune_design(X, W, s, names, min_selected: int = 3):
+    """Drop covariates not identified given the selected sample.
+
+    A non-constant covariate that is constant among the verbalizers (s==1)
+    is unidentified in the outcome equation, and if it is also constant among
+    the verbalizers while varying overall it perfectly separates the probit.
+    Such columns (e.g. a hint-type dummy with zero verbalizers) are dropped
+    from BOTH designs, folding into the baseline; the instrument z is always
+    kept in W. Returns pruned (X, W, names, dropped)."""
+    s = np.asarray(s, dtype=float)
+    sel = s > 0.5
+    keep_cov, dropped = [], []
+    ncov = X.shape[1]                      # covariate block (shared by X, W)
+    for j in range(ncov):
+        col = X[:, j]
+        if names[j] == "const":
+            keep_cov.append(j)
+            continue
+        sel_vals = col[sel]
+        # unidentified in outcome eq (no variation among verbalizers) or
+        # too few verbalizers carrying the feature -> drop
+        if sel_vals.std() < 1e-9 or (col[sel] > 0.5).sum() < min_selected:
+            dropped.append(names[j])
+            continue
+        keep_cov.append(j)
+    Xp = X[:, keep_cov]
+    z_col = W[:, -1:]                       # instrument column
+    Wp = np.column_stack([W[:, keep_cov], z_col])
+    kept_names = [names[j] for j in keep_cov] + ["z"]
+    return Xp, Wp, kept_names, dropped
 
 
 # ------------------------------------------------------------ full report
@@ -164,8 +207,9 @@ def fit_report(df: pd.DataFrame, outcome: str = "R_TE",
     """The full linear-outcome pipeline against open-model ground truth."""
     d = df[df["parse_ok"] & (df["hint_type"] != "placebo")].copy()
     X, W, names = design(d)
-    y_full = d[outcome].values.astype(float)
     s = d["V"].values.astype(float)
+    X, W, names, dropped = prune_design(X, W, s, names)
+    y_full = d[outcome].values.astype(float)
     y = np.where(s > 0.5, y_full, np.nan)
 
     ts = sel.heckman_two_step(y, X, s, W)
@@ -184,6 +228,7 @@ def fit_report(df: pd.DataFrame, outcome: str = "R_TE",
         "n_total": int(len(df)), "n_fit": int(len(d)),
         "n_parse_fail": int((~df["parse_ok"]).sum()),
         "design_names": names,
+        "design_dropped": dropped,
         "verbalization_rate": float(s.mean()),
         "flip_rate": float(d["flip"].mean()),
         "followed_rate": float(d["followed"].mean()),
@@ -231,8 +276,9 @@ def _first_stage(W, s, names) -> dict:
 
 def _sub_fit(dh: pd.DataFrame, outcome: str) -> dict:
     X, W, names = design(dh)
-    y_full = dh[outcome].values.astype(float)
     s = dh["V"].values.astype(float)
+    X, W, names, _ = prune_design(X, W, s, names)
+    y_full = dh[outcome].values.astype(float)
     y = np.where(s > 0.5, y_full, np.nan)
     ts = sel.heckman_two_step(y, X, s, W)
     mle = sel.heckman_mle(y, X, s, W, start=ts)
@@ -257,7 +303,9 @@ def e1_balance(df: pd.DataFrame,
            "V_rate_z1": float(z1["V"].mean()),
            "V_rate_z0": float(z0["V"].mean())}
     X, W, names = design(d)
-    out["first_stage"] = _first_stage(W, d["V"].values.astype(float), names)
+    s = d["V"].values.astype(float)
+    X, W, names, _ = prune_design(X, W, s, names)
+    out["first_stage"] = _first_stage(W, s, names)
     for oc in outcomes:
         if oc not in d.columns:
             continue
@@ -314,6 +362,7 @@ def heckprob_report(df: pd.DataFrame, unblind_outcome: str | None = "R_TE",
     d = df[df["parse_ok"] & (df["hint_type"] != "placebo")].copy()
     X, W, names = design(d, use_lens_covs=False)
     s = d["V"].values.astype(float)
+    X, W, names, _ = prune_design(X, W, s, names)
     y_full = d["followed"].values.astype(float)
     y = np.where(s > 0.5, y_full, np.nan)
 

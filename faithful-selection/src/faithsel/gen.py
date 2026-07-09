@@ -143,10 +143,10 @@ def restricted_logprob(letter_logps: np.ndarray, idx: int) -> float:
 
 
 def process_chunk(model, tok, specs: list[PromptSpec],
-                  max_new_tokens: int = 448, gen_bs: int = 8,
+                  max_new_tokens: int = 512, gen_bs: int = 8,
                   read_bs: int = 8, lens_bs: int = 4,
                   do_lens: bool = True,
-                  concise_max_new_tokens: int = 256) -> list[dict]:
+                  concise_max_new_tokens: int = 384) -> list[dict]:
     """Run the full measurement pipeline for a chunk of instances.
 
     Generation batches are grouped by instrument arm: mixed batches run to

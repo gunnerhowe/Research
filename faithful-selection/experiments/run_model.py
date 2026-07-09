@@ -33,7 +33,7 @@ def main():
     ap.add_argument("--gen-bs", type=int, default=12)
     ap.add_argument("--read-bs", type=int, default=8)
     ap.add_argument("--lens-bs", type=int, default=4)
-    ap.add_argument("--max-new-tokens", type=int, default=448)
+    ap.add_argument("--max-new-tokens", type=int, default=512)
     ap.add_argument("--max-per-dataset", type=int, default=1200)
     ap.add_argument("--no-lens", action="store_true")
     ap.add_argument("--system-thinking", default=None,

@@ -118,6 +118,42 @@ Every paper number a machine-generated macro (`paper/numbers.tex` +
 interpretability") immediately before submission; this file commits BEFORE
 any results commit.
 
+## Amendments (made after pilots, BEFORE reading any confound/rho result)
+
+These changes were made to fix measurement validity, diagnosed from parse
+rate, verbalization rate, and instrument first-stage on small pilots. None
+involved inspecting rho, the naive-vs-corrected gap, or ground-truth
+recovery (the one rho value seen mid-diagnosis was a degenerate n=9 boundary
+artifact, not an estimate). They are logged here for transparency.
+
+- **A1 (token budget / parsing).** A 48-instance pilot showed ~19% of
+  generations truncated before the final-answer line at 320 new tokens.
+  Fixed: 512 new tokens, a stronger "always emit the final-answer line"
+  system instruction, and broader answer parsing. New parse rate ~0.96.
+- **A2 (verbalization detector recall).** The committed lexical detector
+  missed genuine references (e.g. "this was previously noted"). Recall was
+  broadened per hint type; precision remains guarded by the pre-registered
+  LLM-judge validation (Cohen's kappa reported). This changes the V
+  definition's recall, not the estimand.
+- **A3 (instrument).** The verbosity instrument (verbose vs. concise) had a
+  weak and unstable first stage on the open models (it did not reliably move
+  V). Replaced by a **disclosure instrument**: Z=1 asks the model to report
+  any external cue that influenced it; Z=0 is neutral. This targets the
+  reporting channel with a stronger first stage. The exclusion restriction is
+  still TESTED (E1 balance), and rho-sensitivity remains the pre-registered
+  primary identification per econometric practice, so a contestable or failed
+  exclusion (K2) degrades gracefully to bounds rather than sinking the result.
+- **A4 (design parsimony + separation).** Open-model verbalization is low
+  (often <15%), so the selected sample is small. The core design is
+  parsimonious (constant + hint-type dummies + instrument), and covariates
+  not identified by the selected sample (e.g. a hint-type dummy with ~zero
+  verbalizers) are pruned automatically, folding into the baseline. A
+  non-parsimonious design is retained for robustness.
+- **A5 (primary model).** The primary open model is chosen by a
+  verbalization-rate probe across the accessible roster (highest reliable V
+  with a working first stage), since the estimator needs verbalization
+  variation to be identified. All roster models are still reported.
+
 ## Known deviations from the brief (declared up front)
 
 - meta-llama/Llama-3.1-8B-Instruct and google/gemma-* are gated for this HF
