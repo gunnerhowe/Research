@@ -45,7 +45,7 @@ def main():
         out["outcomes"][outcome] = fit_report(
             df, outcome=outcome, n_boot=nb,
             do_sensitivity=not args.quick,
-            per_hint=(outcome == "R_TE"))
+            per_hint=(outcome in ("R_TE", "R_NDE")))
     out["e1_balance"] = e1_balance(df)
     out["placebo"] = placebo_report(df)
     if args.heckprob:

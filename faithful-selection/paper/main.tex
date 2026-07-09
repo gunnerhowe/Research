@@ -45,7 +45,7 @@ verbalization counts silently set to zero. We validate the estimator against
 causal hint-excision ground truth on open-weight models, where hint reliance
 is measurable for every instance. On a reasoning model
 (Llama-3.1-Nemotron-Nano-8B) that verbalizes hints at a moderate rate, the
-test detects the confound ($\hat\rho=\QrhoMain$, LR $p=\QrhoLRpMain$), the
+test detects the confound ($\hat\rho=\QrhoMain$, LR \QrhoLRpMain), the
 corrected population and hidden-reliance estimates recover ground truth
 better than the naive estimators, a randomized disclosure instruction
 validates as an instrument (moves verbalization, leaves reliance balanced),
@@ -318,7 +318,14 @@ mediation).
 We report the primary model (Nemotron-Nano-8B) in full, then robustness
 across models, hint types, and a placebo. All open-model numbers use
 ground-truth reliance measured for every instance; the estimator itself sees
-reliance only on verbalizing traces.
+reliance only on verbalizing traces. The identified outcome is the
+\emph{direct} reliance $R^{\mathrm{NDE}}$ (hint excised, CoT held fixed): as
+Section~\ref{sec:e1} shows, the instrument satisfies the exclusion restriction
+for the direct effect but not for the total effect $R^{\mathrm{TE}}$, which
+the disclosure instruction partly re-routes through the CoT. We therefore lead
+with $R^{\mathrm{NDE}}$ (the not-through-CoT path emphasized by
+\citet{zaman2025}) and treat $R^{\mathrm{TE}}$ as the exclusion-violated total
+effect.
 
 \paragraph{The naive picture.} Across \QQN{} hinted instances the model
 verbalizes the injected hint in \QQVrate{} of traces, and among instances
@@ -328,28 +335,34 @@ time --- the low naive faithfulness rate familiar from
 is used only where it is spoken.
 
 \paragraph{The confound is real (test).} The selection model rejects
-$H_0\!:\rho=0$ decisively: the MLE gives $\hat\rho=\QQRho{}$
+$H_0\!:\rho=0$: the MLE gives $\hat\rho=\QQRho{}$
 (95\% CI $[\QQRhoLo{},\QQRhoHi{}]$; Wald $\QQRhoWaldp{}$), and the likelihood
 ratio test against the $\rho$-frozen model gives $\QQRhoLRp{}$
-(Figure~\ref{fig:confound}a). Verbalization is endogenously selected on the
-latent reliance: instances that rely on the hint are systematically the ones
-that verbalize it, over and above the observable covariates.
+(Figure~\ref{fig:confound}a). The sign is the striking part: $\hat\rho<0$
+means verbalization is \emph{negatively} selected on direct reliance --- the
+traces that stay silent about the hint are the ones that rely on it most
+directly, over and above the observable covariates. Naive verbalization
+counts, which read reliance off the traces that \emph{do} mention the hint,
+therefore look at exactly the low-reliance stratum.
 
 \paragraph{The correction recovers ground truth.} Table~\ref{tab:models}
 (top row) and Figure~\ref{fig:correction} contrast the estimators against the
-oracle population mean $\mu_{\text{true}}=\QQTruePop{}$. The naive
-selected-sample mean $\hat\mu_{\text{naive}}=\QQNaiveSel{}$ is biased
+oracle population mean $\mu_{\text{true}}=\QQTruePop{}$. Because verbalizers
+under-rely, the naive selected-sample mean
+$\hat\mu_{\text{naive}}=\QQNaiveSel{}$ \emph{understates} reliance
 (absolute error \QQErrNaiveSel{}); the IMR-corrected estimate
-$\hat\mu_{\text{corr}}=\QQCorrPop{}$ cuts that error to \QQErrCorr{}. The
-verbalization-count logic that scores unverbalized reliance as zero is worse
-still on the quantity it most affects: the true hidden reliance
-$\mu_{0,\text{true}}=\QQTrueHidden{}$ is estimated as $0$ by construction
-(error \QQErrHidNaive{}), whereas the closed-form corrected hidden estimate
-$\QQCorrHidden{}$ has error \QQErrHidCorr{}. Bootstrap CIs (B=1000):
-$\hat\rho\in[\QQRhoBLo{},\QQRhoBHi{}]$,
+$\hat\mu_{\text{corr}}=\QQCorrPop{}$ cuts that error to \QQErrCorr{},
+essentially recovering the oracle. The correction is most valuable on the
+quantity the naive count most distorts: the true reliance hidden in
+non-verbalizing traces, $\mu_{0,\text{true}}=\QQTrueHidden{}$, is scored $0$
+by the verbalization-count logic (error \QQErrHidNaive{}), whereas the
+closed-form corrected hidden estimate $\QQCorrHidden{}$ has error
+\QQErrHidCorr{} --- it surfaces the silent reliance the count erases. Bootstrap
+CIs (B=1000): $\hat\rho\in[\QQRhoBLo{},\QQRhoBHi{}]$,
 $\hat\mu_{\text{corr}}\in[\QQCorrPopBLo{},\QQCorrPopBHi{}]$. The
 pre-registered E0 gate --- $\rho$ rejected \emph{and} the correction beating
-the naive estimators at recovering ground truth --- is met.
+the naive estimators at recovering ground truth --- is met on the identified
+outcome.
 
 \begin{figure}[t]
 \centering
@@ -376,32 +389,38 @@ it in closed form. Bars are bootstrap 95\% CIs. Nemotron-Nano-8B.}
 \subsection{Identification checks}
 \label{sec:e1}
 
-The disclosure instrument passes both requirements
-(Figure~\ref{fig:confound}b,c). \emph{Relevance:} it moves verbalization from
-\QQVzZero{} (neutral arm) to \QQVzOne{} (disclosure arm), a strong first stage
-(probit $z=\QQFsZ{}$). \emph{Exclusion:} it does \emph{not} move the causal
-reliance --- the standardized difference in $R^{\mathrm{TE}}$ between arms is
-\QQBalRTESD{} ($\QQBalRTEP{}$) and in $R^{\mathrm{NDE}}$ is \QQBalRNDESD{}
-($\QQBalRNDEP{}$), both negligible. The pre-verbalization commitment measure
-$R^{\mathrm{pre}}$, which excludes the instrument sentence by construction,
-is likewise balanced (\QQBalRpreSD{}). The pre-registered exclusion criterion
-(no arm difference in reliance at $|\text{std diff}|<0.1$) holds, so K2 does
-not fire.
+The disclosure instrument has a strong first stage
+(Figure~\ref{fig:confound}b): it moves verbalization from \QQVzZero{} (neutral
+arm) to \QQVzOne{} (disclosure arm), probit $z=\QQFsZ{}$. The exclusion
+restriction, however, is \emph{outcome-specific}, and the balance test says so
+directly (Figure~\ref{fig:confound}c). For the total effect $R^{\mathrm{TE}}$
+the instrument moves reliance --- standardized arm difference \QQBalRTESD{}
+($\QQBalRTEP{}$) --- because asking the model to disclose influences changes the
+CoT, and the CoT mediates part of the total effect. Exclusion is therefore
+violated for $R^{\mathrm{TE}}$; this is precisely the pre-registered K2
+condition, and the balance test catches it rather than letting a biased
+point estimate through. For the \emph{direct} effect $R^{\mathrm{NDE}}$ ---
+the hint's influence with the CoT text held fixed --- the same instrument
+leaves reliance untouched (standardized difference \QQBalRNDESD{},
+$\QQBalRNDEP{}$), so exclusion holds. The pre-verbalization commitment measure
+$R^{\mathrm{pre}}$, which excludes the instrument sentence by construction, is
+likewise balanced (\QQBalRpreSD{}). We therefore identify the correction on
+$R^{\mathrm{NDE}}$, where the instrument is valid, and report $R^{\mathrm{TE}}$
+only under the functional-form (rho-sensitivity) identification below.
 
-Because joint normality plus exclusion is still a parametric identification,
-Table~\ref{tab:sensitivity} reports the correction across a frozen-$\rho$ grid
-(Figure~\ref{fig:sensitivity}). The corrected population and hidden estimates
-track ground truth most closely near the estimated $\hat\rho=\QQRho{}$, and
-the qualitative conclusion --- naive counts understate reliance, the
-correction recovers it --- is stable across the plausible $\rho$ range rather
-than an artifact of point identification.
+Because joint normality is still a parametric assumption even where exclusion
+holds, Table~\ref{tab:sensitivity} reports the correction across a
+frozen-$\rho$ grid (Figure~\ref{fig:sensitivity}). The corrected population and
+hidden estimates track ground truth most closely near the estimated
+$\hat\rho=\QQRho{}$, and the qualitative conclusion --- silent traces rely
+more, the correction surfaces it --- is stable across the plausible $\rho$
+range rather than an artifact of point identification.
 
-The secondary reliance outcomes agree with the primary. On the direct,
-not-through-CoT path $R^{\mathrm{NDE}}$ the confound is $\hat\rho=\QQndeRho{}$
-($\QQndeRhoLRp{}$) with the correction again moving the naive
-$\QQndeNaiveSel{}$ toward the truth $\QQndeTruePop{}$; on the
-pre-verbalization commitment measure $R^{\mathrm{pre}}$,
-$\hat\rho=\QQpreRho{}$ ($\QQpreRhoLRp{}$).
+For completeness, the exclusion-violated total effect $R^{\mathrm{TE}}$ gives
+$\hat\rho=\QQteRho{}$ ($\QQteRhoLRp{}$) with the naive estimate $\QQteNaiveSel{}$
+and corrected $\QQteCorrPop{}$ against truth $\QQteTruePop{}$; the
+instrument-free commitment measure $R^{\mathrm{pre}}$ gives $\hat\rho=\QQpreRho{}$
+($\QQpreRhoLRp{}$), the same negative direction.
 
 \begin{figure}[t]
 \centering

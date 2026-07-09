@@ -48,8 +48,8 @@ HINT_LABELS = {
 }
 
 
-def emit_main(tag, res, prefix):
-    rep = res["outcomes"]["R_TE"]
+def emit_main(tag, res, prefix, outcome="R_TE"):
+    rep = res["outcomes"][outcome]
     est = rep["two_step"]["estimands"]
     tgt = rep["targets"]
     boot = rep["bootstrap"]
@@ -132,13 +132,13 @@ def emit_heckprob(res, prefix):
     put(prefix + "HpTruePop", pct(hp["true_pop_adoption_unblind"]))
 
 
-def table_models(tags):
+def table_models(tags, outcome="R_NDE"):
     rows = []
     for tag, fname in tags:
         res = load(fname)
         if res is None:
             continue
-        rep = res["outcomes"]["R_TE"]
+        rep = res["outcomes"].get(outcome) or res["outcomes"]["R_TE"]
         est = rep["two_step"]["estimands"]
         tgt = rep["targets"]
         g = rep["gate"]
@@ -161,8 +161,8 @@ def table_models(tags):
         + body + "\n\\bottomrule\n\\end{tabular}\n")
 
 
-def table_hints(res):
-    rep = res["outcomes"]["R_TE"]
+def table_hints(res, outcome="R_TE"):
+    rep = res["outcomes"].get(outcome) or res["outcomes"]["R_TE"]
     rows = []
     for ht, sub in sorted(rep.get("per_hint", {}).items()):
         if "error" in sub:
@@ -183,9 +183,11 @@ def table_hints(res):
         + body + "\n\\bottomrule\n\\end{tabular}\n")
 
 
-def table_sensitivity(res):
-    rep = res["outcomes"]["R_TE"]
+def table_sensitivity(res, outcome="R_TE"):
+    rep = res["outcomes"].get(outcome) or res["outcomes"]["R_TE"]
     tgt = rep["targets"]
+    if not rep.get("rho_sensitivity"):
+        return STUB_TABLE
     rows = []
     for r in rep["rho_sensitivity"]:
         rows.append(f"{num(r['rho_fixed'], 1)} & {num(r['corrected_pop'])} & "
@@ -210,18 +212,21 @@ def main():
         if not p.exists():
             p.write_text(STUB_TABLE)
 
-    # PRIMARY = Nemotron (PLAN amendment A5); prefix "Q" = primary namespace.
+    # PRIMARY = Nemotron (PLAN amendment A5). The identified primary OUTCOME is
+    # R_NDE (direct effect): the disclosure instrument satisfies the exclusion
+    # restriction there (balance test) but not for the total effect R_TE.
+    # Prefix "Q" = primary/R_NDE namespace; "Qte" = R_TE (exclusion-violated).
     primary = load("nemotron8b_e0.json")
     if primary:
-        emit_main("nemotron8b", primary, "Q")
+        emit_main("nemotron8b", primary, "Q", outcome="R_NDE")
         emit_e1(primary, "Q")
         emit_placebo(primary, "Q")
         # observation-only heckprob on the primary (the unblind bridge)
         emit_heckprob(primary, "Ne")
-        # the primary's own full R_TE fit doubles as the NeFull cross-check
-        emit_main("nemotron8b", primary, "NeFull")
-        # secondary outcomes on primary model
-        for oc, pre in (("R_NDE", "Qnde"), ("R_pre", "Qpre")):
+        # the primary's own full R_NDE fit doubles as the NeFull cross-check
+        emit_main("nemotron8b", primary, "NeFull", outcome="R_NDE")
+        # total effect (exclusion-violated) and pre-commitment outcomes
+        for oc, pre in (("R_TE", "Qte"), ("R_pre", "Qpre")):
             if oc in primary["outcomes"]:
                 rep = primary["outcomes"][oc]
                 put(pre + "Rho", num(rep["mle"]["rho"]))
@@ -231,16 +236,17 @@ def main():
                 put(pre + "TruePop", num(rep["targets"]["true_pop"]))
                 put(pre + "NaiveSel",
                     num(rep["two_step"]["estimands"]["naive_selected"]))
-        (TABLES / "hints.tex").write_text(table_hints(primary))
-        (TABLES / "sensitivity.tex").write_text(table_sensitivity(primary))
+        (TABLES / "hints.tex").write_text(table_hints(primary, outcome="R_NDE"))
+        (TABLES / "sensitivity.tex").write_text(
+            table_sensitivity(primary, outcome="R_NDE"))
 
     qwen = load("qwen7b_e3.json")
     if qwen:
-        emit_main("qwen7b", qwen, "Qw")
+        emit_main("qwen7b", qwen, "Qw", outcome="R_NDE")
         emit_placebo(qwen, "Qw")
     phi = load("phi35_e3.json")
     if phi:
-        emit_main("phi35", phi, "Ph")
+        emit_main("phi35", phi, "Ph", outcome="R_NDE")
         emit_placebo(phi, "Ph")
 
     (TABLES / "models.tex").write_text(table_models([
