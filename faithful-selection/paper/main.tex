@@ -42,20 +42,22 @@ confound ($H_0\!:\rho=0$) and (b) an inverse-Mills-ratio correction to
 naive verbalization-based faithfulness estimates, including a closed-form
 estimate of the reliance hidden in non-verbalizing CoTs---the quantity
 verbalization counts silently set to zero. We validate the estimator against
-causal hint-excision ground truth on open-weight models (Qwen2.5-7B,
-Mistral-7B, Phi-3.5-mini), where hint reliance is measurable for every
-instance: the test detects the confound ($\hat\rho=\QrhoMain$,
-LR $p=\QrhoLRpMain$), the corrected population and hidden-reliance
-estimates recover ground truth better than the naive estimators, a
-randomized verbosity instruction validates as an instrument (moves
-verbalization, leaves reliance balanced), and a placebo hint yields no
-detection. We then apply the correction in the observation-only regime the
-method is designed for---a reasoning model (Llama-3.1-Nemotron-Nano-8B)
-analyzed from text alone and then unblinded, and Claude Haiku 4.5 via API---
-where it moves the faithfulness verdict in the direction the open-model
-ground truth says it should. The estimator, not the phenomenon, is the
-contribution: a drop-in audit for any faithfulness metric that counts
-verbalizations.
+causal hint-excision ground truth on open-weight models, where hint reliance
+is measurable for every instance. On a reasoning model
+(Llama-3.1-Nemotron-Nano-8B) that verbalizes hints at a moderate rate, the
+test detects the confound ($\hat\rho=\QrhoMain$, LR $p=\QrhoLRpMain$), the
+corrected population and hidden-reliance estimates recover ground truth
+better than the naive estimators, a randomized disclosure instruction
+validates as an instrument (moves verbalization, leaves reliance balanced),
+and a placebo hint yields no detection; three further open models
+(Qwen2.5-7B, Mistral-7B, Phi-3.5-mini) span a range of verbalization rates
+down to the near-floor regime where naive faithfulness counts are most
+misleading. We then apply the correction in the observation-only regime the
+method is designed for---the same reasoning model analyzed from text alone
+and then unblinded, and Claude Haiku 4.5 via API---where it moves the
+faithfulness verdict in the direction the open-model ground truth says it
+should. The estimator, not the phenomenon, is the contribution: a drop-in
+audit for any faithfulness metric that counts verbalizations.
 \end{abstract}
 
 \section{Introduction}
@@ -128,7 +130,7 @@ On open-weight models we can measure ground-truth reliance for
 selection machinery is validatable end-to-end: fit the model as if reliance
 were observable only through verbalizing traces, then unblind. The test
 detects the confound, the correction recovers population and hidden reliance
-better than the naive estimators, the randomized verbosity instrument
+better than the naive estimators, the randomized disclosure instrument
 validates, and a placebo hint yields no detection
 (Section~\ref{sec:results}). We then run the estimator in the
 observation-only regime it is designed for (Section~\ref{sec:e2}).
@@ -162,7 +164,7 @@ test and correction their critique implies.
 \paragraph{Selection econometrics.} Heckman's two-step and MLE estimators
 \citep{heckman1979,puhani2000} and the binary-outcome variant
 \citep{vandeven1981} are textbook; our contribution is the mapping
-(verbalization $\to$ selection; reliance $\to$ outcome; verbosity
+(verbalization $\to$ selection; reliance $\to$ outcome; disclosure
 instruction $\to$ instrument) and its validation against mechanistic ground
 truth. To our knowledge no prior work imports selection-on-unobservables
 correction into CoT faithfulness or XAI metrics generally; a companion
@@ -229,14 +231,20 @@ $\Pr(y{=}1\mid V{=}0)=[\Phi(x^\top\beta)-\Phi_2(x^\top\beta, w^\top\gamma;\rho)]
 
 The load-bearing assumption is an exclusion restriction: a variable that
 moves \emph{what gets said} but not \emph{what is computed}. We randomize a
-\textbf{verbosity instruction} per instance (fair coin): the verbose arm
-asks the model to mention every consideration that influenced it; the
-concise arm caps the reasoning at two sentences. Randomization gives
-exogeneity by construction; relevance and exclusion are \emph{tested}, not
-assumed: the instruction must move $V$ (first stage) and must leave the
-causal reliance measures unmoved (balance test on ground truth,
-Section~\ref{sec:e1}). This choice is motivated by \citet{zaman2025}, whose
-faithful@k shows inference budget strongly modulates verbalization. Because
+\textbf{disclosure instruction} per instance (fair coin): the disclosure arm
+($Z{=}1$) asks the model to report any statement in the prompt (a stated
+opinion, an expert claim, a metadata field, a note about a previous answer)
+that influenced its choice; the neutral arm ($Z{=}0$) simply asks it to
+reason and answer. Both arms leave the reasoning budget unconstrained, so the
+arms differ only in the reporting request. Randomization gives exogeneity by
+construction; relevance and exclusion are \emph{tested}, not assumed: the
+instruction must move $V$ (first stage) and must leave the causal reliance
+measures unmoved (balance test on ground truth, Section~\ref{sec:e1}). A
+verbosity/token-budget instrument in the spirit of \citet{zaman2025}, whose
+faithful@k shows inference budget modulates verbalization, gave an unstable
+first stage on these models (PLAN amendment A3); the disclosure request is a
+stronger and more directly interpretable manipulation of the reporting
+channel. Because
 joint normality plus exclusion is still a parametric identification, we
 follow econometric practice \citep{puhani2000} and report a
 $\rho$-\emph{sensitivity} analysis --- corrected estimands across a frozen-%
@@ -262,13 +270,15 @@ novelty over the MNAR literature.
 \section{Experimental setup}
 \label{sec:setup}
 
-\paragraph{Models and data.} Open-weight: Qwen2.5-7B-Instruct (primary),
-Mistral-7B-Instruct-v0.3, Phi-3.5-mini-instruct, 4-bit NF4, greedy
-decoding throughout (deterministic pipeline). Observation-only (E2):
-Llama-3.1-Nemotron-Nano-8B (reasoning model; run locally but analyzed from
-text alone, then unblinded) and Claude Haiku 4.5 via API. Instances pool
-MMLU (8 subjects), ARC-Easy, ARC-Challenge, and OpenbookQA, normalized to
-4-option MCQ.
+\paragraph{Models and data.} Open-weight, 4-bit NF4, greedy decoding
+throughout (deterministic pipeline): Llama-3.1-Nemotron-Nano-8B (primary --- a
+reasoning model chosen because it verbalizes hints at a moderate rate, giving
+the selection equation the variation it needs; PLAN amendment A5), plus
+Qwen2.5-7B-Instruct, Mistral-7B-Instruct-v0.3, and Phi-3.5-mini-instruct,
+which span lower verbalization rates. Observation-only (E2): the primary model
+re-analyzed from text alone and then unblinded, and Claude Haiku 4.5 via API.
+Instances pool MMLU (8 subjects), ARC-Easy, ARC-Challenge, and OpenbookQA,
+normalized to 4-option MCQ.
 
 \paragraph{Hints and placebo.} Four prompt-injectable hint types following
 \citet{turpin2023,chen2025reasoning}: sycophancy, authority, metadata
@@ -306,7 +316,7 @@ mediation).
 \section{Results: the confound exists and the correction works}
 \label{sec:results}
 
-We report the primary model (Qwen2.5-7B-Instruct) in full, then robustness
+We report the primary model (Nemotron-Nano-8B) in full, then robustness
 across models, hint types, and a placebo. All open-model numbers use
 ground-truth reliance measured for every instance; the estimator itself sees
 reliance only on verbalizing traces.
@@ -347,9 +357,9 @@ the naive estimators at recovering ground truth --- is met.
 \includegraphics[width=\textwidth]{figs/fig1_confound.pdf}
 \caption{The confound. (a) Latent reliance $R^{\mathrm{TE}}$ is shifted
 between verbalizing ($V{=}1$) and non-verbalizing ($V{=}0$) traces --- the
-selection is on the outcome. (b) The randomized verbosity instrument moves
+selection is on the outcome. (b) The randomized disclosure instrument moves
 the verbalization rate. (c) It leaves the latent reliance balanced (exclusion
-restriction). Qwen2.5-7B.}
+restriction). Nemotron-Nano-8B.}
 \label{fig:confound}
 \end{figure}
 
@@ -360,16 +370,16 @@ restriction). Qwen2.5-7B.}
 (a) Population mean: the naive selected-sample and zero-fill estimators are
 biased; the IMR correction recovers the oracle. (b) Hidden reliance
 $\E[R\mid V{=}0]$: verbalization counts assume $0$; the correction estimates
-it in closed form. Bars are bootstrap 95\% CIs. Qwen2.5-7B.}
+it in closed form. Bars are bootstrap 95\% CIs. Nemotron-Nano-8B.}
 \label{fig:correction}
 \end{figure}
 
 \subsection{Identification checks}
 \label{sec:e1}
 
-The verbosity instrument passes both requirements
+The disclosure instrument passes both requirements
 (Figure~\ref{fig:confound}b,c). \emph{Relevance:} it moves verbalization from
-\QQVzZero{} (concise arm) to \QQVzOne{} (verbose arm), a strong first stage
+\QQVzZero{} (neutral arm) to \QQVzOne{} (disclosure arm), a strong first stage
 (probit $z=\QQFsZ{}$). \emph{Exclusion:} it does \emph{not} move the causal
 reliance --- the standardized difference in $R^{\mathrm{TE}}$ between arms is
 \QQBalRTESD{} ($\QQBalRTEP{}$) and in $R^{\mathrm{NDE}}$ is \QQBalRNDESD{}
@@ -399,19 +409,27 @@ $\hat\rho=\QQpreRho{}$ ($\QQpreRhoLRp{}$).
 \includegraphics[width=0.48\textwidth]{figs/fig4_sensitivity.pdf}
 \caption{$\rho$-sensitivity: corrected population and hidden reliance across a
 frozen-$\rho$ grid vs.\ ground truth. The vertical line is the estimated
-$\hat\rho$. Qwen2.5-7B.}
+$\hat\rho$. Nemotron-Nano-8B.}
 \label{fig:sensitivity}
 \end{figure}
 
 \subsection{Robustness: models, hint types, placebo}
 \label{sec:e3}
 
-\paragraph{Models.} Table~\ref{tab:models} repeats the analysis on
-Mistral-7B-Instruct-v0.3 ($\hat\rho=\QMiRho{}$, $\QMiRhoLRp{}$) and
-Phi-3.5-mini-instruct ($\hat\rho=\QPhRho{}$, $\QPhRhoLRp{}$). In every case
-the confound test rejects and the corrected estimate beats the naive one at
-recovering ground truth (final column), so the effect is not idiosyncratic to
-one model.
+\paragraph{Models.} Table~\ref{tab:models} repeats the analysis on three
+further open models that span a wide range of verbalization rates:
+Qwen2.5-7B-Instruct ($\Pr(V)=\QQwVrate{}$, $\hat\rho=\QQwRho{}$,
+$\QQwRhoLRp{}$), Mistral-7B-Instruct-v0.3 ($\Pr(V)=\QMiVrate{}$,
+$\hat\rho=\QMiRho{}$, $\QMiRhoLRp{}$), and Phi-3.5-mini-instruct
+($\Pr(V)=\QPhVrate{}$, $\hat\rho=\QPhRho{}$, $\QPhRhoLRp{}$). Where
+verbalization is frequent enough to identify the selection equation, the
+confound test rejects and the corrected estimate recovers ground truth better
+than the naive one (final column). Where it is near the floor---some of these
+instruct models verbalize the hint in only a few percent of traces---the
+naive faithfulness count is itself degenerate (close to zero), which is
+exactly the regime the correction is built for: its closed-form estimate of
+the hidden reliance quantifies the hint use that the verbalization count sets
+to zero.
 
 \paragraph{Hint types.} Table~\ref{tab:hints} breaks the primary model down by
 hint type. The confound is present across sycophancy, authority, metadata, and
@@ -438,14 +456,14 @@ naive.}
 
 \begin{table}[t]
 \centering
-\caption{Confound by hint type, primary model (Qwen2.5-7B).}
+\caption{Confound by hint type, primary model (Nemotron-Nano-8B).}
 \label{tab:hints}
 \input{tables/hints}
 \end{table}
 
 \begin{table}[t]
 \centering
-\caption{$\rho$-sensitivity of the correction (Qwen2.5-7B, $R^{\mathrm{TE}}$).}
+\caption{$\rho$-sensitivity of the correction (Nemotron-Nano-8B, $R^{\mathrm{TE}}$).}
 \label{tab:sensitivity}
 \input{tables/sensitivity}
 \end{table}
@@ -454,18 +472,18 @@ naive.}
 \label{sec:e2}
 
 The point of a correction that needs only the observable channel is to run
-where causal ground truth is unavailable. We apply it to two models with no
-patching access in the fit: a reasoning model
-(Llama-3.1-Nemotron-Nano-8B) and Claude Haiku 4.5 via API. The reliance proxy
-readable from a verbalizing trace is binary (did the answer adopt the hinted
-option), so we use the probit-with-selection estimator; the corrected hidden
-and population adoption rates come from the closed forms in
-Section~\ref{sec:method}. For the local reasoning model we additionally
-compute the causal $R^{\mathrm{TE}}$ ground truth and \emph{unblind} it as a
-check.
+where causal ground truth is unavailable. We use two settings. First, as a
+bridge, we re-analyze the \emph{primary} model observation-only --- discarding
+its activation ground truth and fitting from traces and answers alone --- then
+unblind to check the text-only verdict against the causal truth we happen to
+have. Second, the genuine target: Claude Haiku 4.5 via API, where no ground
+truth exists. In both, the reliance proxy readable from a verbalizing trace is
+binary (did the answer adopt the hinted option), so we use the
+probit-with-selection estimator; the corrected hidden and population adoption
+rates come from the closed forms in Section~\ref{sec:method}.
 
-\paragraph{Nemotron (unblinded check).} Fitting the binary adoption proxy
-from text alone yields $\hat\rho=\QNeHpRho{}$
+\paragraph{Primary model, observation-only (unblinded bridge).} Fitting the
+binary adoption proxy from text alone yields $\hat\rho=\QNeHpRho{}$
 (95\% CI $[\QNeHpRhoLo{},\QNeHpRhoHi{}]$, $\QNeHpLRp{}$). The naive adoption
 rate among verbalizers is \QNeHpNaive{}; the corrected population rate is
 \QNeHpCorrPop{} and the corrected hidden (non-verbalizer) rate is

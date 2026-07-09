@@ -210,15 +210,20 @@ def main():
         if not p.exists():
             p.write_text(STUB_TABLE)
 
-    qwen = load("qwen7b_e3.json") or load("qwen7b_e0.json")
-    if qwen:
-        emit_main("qwen7b", qwen, "Q")
-        emit_e1(qwen, "Q")
-        emit_placebo(qwen, "Q")
+    # PRIMARY = Nemotron (PLAN amendment A5); prefix "Q" = primary namespace.
+    primary = load("nemotron8b_e0.json")
+    if primary:
+        emit_main("nemotron8b", primary, "Q")
+        emit_e1(primary, "Q")
+        emit_placebo(primary, "Q")
+        # observation-only heckprob on the primary (the unblind bridge)
+        emit_heckprob(primary, "Ne")
+        # the primary's own full R_TE fit doubles as the NeFull cross-check
+        emit_main("nemotron8b", primary, "NeFull")
         # secondary outcomes on primary model
         for oc, pre in (("R_NDE", "Qnde"), ("R_pre", "Qpre")):
-            if oc in qwen["outcomes"]:
-                rep = qwen["outcomes"][oc]
+            if oc in primary["outcomes"]:
+                rep = primary["outcomes"][oc]
                 put(pre + "Rho", num(rep["mle"]["rho"]))
                 put(pre + "RhoLRp", pval(rep["rho_lr"]["p"]))
                 put(pre + "CorrPop",
@@ -226,9 +231,13 @@ def main():
                 put(pre + "TruePop", num(rep["targets"]["true_pop"]))
                 put(pre + "NaiveSel",
                     num(rep["two_step"]["estimands"]["naive_selected"]))
-        (TABLES / "hints.tex").write_text(table_hints(qwen))
-        (TABLES / "sensitivity.tex").write_text(table_sensitivity(qwen))
+        (TABLES / "hints.tex").write_text(table_hints(primary))
+        (TABLES / "sensitivity.tex").write_text(table_sensitivity(primary))
 
+    qwen = load("qwen7b_e3.json")
+    if qwen:
+        emit_main("qwen7b", qwen, "Qw")
+        emit_placebo(qwen, "Qw")
     mist = load("mistral7b_e3.json")
     if mist:
         emit_main("mistral7b", mist, "Mi")
@@ -239,19 +248,14 @@ def main():
         emit_placebo(phi, "Ph")
 
     (TABLES / "models.tex").write_text(table_models([
-        ("qwen7b", "qwen7b_e3.json"), ("mistral7b", "mistral7b_e3.json"),
-        ("phi35", "phi35_e3.json")]))
+        ("nemotron8b", "nemotron8b_e0.json"), ("qwen7b", "qwen7b_e3.json"),
+        ("mistral7b", "mistral7b_e3.json"), ("phi35", "phi35_e3.json")]))
 
-    nemo = load("nemotron8b_e2.json")
-    if nemo:
-        emit_heckprob(nemo, "Ne")
-        if "outcomes" in nemo and "R_TE" in nemo.get("outcomes", {}):
-            emit_main("nemotron8b", nemo, "NeFull")
     claude = load("claude_e2.json")
     if claude:
         emit_heckprob(claude, "Cl")
 
-    judge = load("judge_v_qwen7b.json")
+    judge = load("judge_v_nemotron8b.json")
     if judge:
         put("judgeAgree", pct(judge["agreement"]))
         put("judgeKappa", num(judge["kappa"]))
