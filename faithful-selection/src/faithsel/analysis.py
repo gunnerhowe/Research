@@ -56,15 +56,29 @@ def _lens_logodds(lens: np.ndarray, idx: int) -> np.ndarray:
     return np.log(p / (1.0 - p))
 
 
-def augment(df: pd.DataFrame) -> pd.DataFrame:
-    """Attach V, reliance measures, answers, and covariates."""
+def augment(df: pd.DataFrame, v_override: dict | None = None) -> pd.DataFrame:
+    """Attach V, reliance measures, answers, and covariates.
+
+    V is the deterministic lexical detector by default. Pass v_override (a
+    dict qid -> {0,1}) to use validated LLM-judge labels instead; qids absent
+    from the override are dropped (only judged instances are kept), so the fit
+    rests entirely on the validated V.
+    """
     out = df.copy()
     h_idx = out["hint_letter"].map(lambda L: LETTERS.index(L)).values
 
     cots = [split_cot(t) for t in out["gen_hinted"]]
-    out["V"] = [int(verbalized(c, ht))
-                for c, ht in zip(cots, out["hint_type"])]
-    out["cot_len"] = [len(c) for c in cots]
+    if v_override is not None:
+        out["V"] = [v_override.get(q, np.nan) for q in out["qid"]]
+        out["cot_len"] = [len(c) for c in cots]
+        out = out[out["V"].notna()].copy()
+        out["V"] = out["V"].astype(int)
+        h_idx = out["hint_letter"].map(lambda L: LETTERS.index(L)).values
+        cots = [split_cot(t) for t in out["gen_hinted"]]
+    else:
+        out["V"] = [int(verbalized(c, ht))
+                    for c, ht in zip(cots, out["hint_type"])]
+        out["cot_len"] = [len(c) for c in cots]
 
     out["ans_h"] = [parse_answer(t) for t in out["gen_hinted"]]
     out["ans_u"] = [parse_answer(t) for t in out["gen_unhinted"]]
