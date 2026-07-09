@@ -1,0 +1,25 @@
+{
+  "baseline": {
+    "accuracy": 0.98,
+    "mean_margin": 13.859558469286812,
+    "n": 500
+  },
+  "all_mean": {
+    "accuracy": 0.98,
+    "mean_margin": 13.855799947706773,
+    "n": 500,
+    "n_changed_vs_baseline": 0
+  },
+  "all_zero": {
+    "accuracy": 0.98,
+    "mean_margin": 14.275874052558077,
+    "n": 500,
+    "n_changed_vs_baseline": 4
+  },
+  "all_donor": {
+    "accuracy": 0.98,
+    "mean_margin": 13.856440391000717,
+    "n": 500,
+    "n_changed_vs_baseline": 0
+  }
+}

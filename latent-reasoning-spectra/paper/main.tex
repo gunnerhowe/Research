@@ -50,7 +50,8 @@ magnitude-matched random directions (eigendirections carry no privilege --- the
 non-normal signature), yet the absolute effects are minute: replacing any single
 thought outright shifts the answer margin by a median of \ablMedian\ against
 baseline margins of $\approx\meanMarginMTwo$, flipping zero of
-$\nTestProblems\times6$ ablations. Influence Jacobians differentiated through all
+$\nTestProblems\times6$ ablations --- and transplanting \emph{all six} thoughts
+from a random donor problem changes zero of \nTestProblems\ answers. Influence Jacobians differentiated through all
 paths show why: within three steps, about half of a thought's influence flows
 through the attention cache rather than the recurrence (median routedness up to
 \routedMedianOneThree), and a pooled orbit-level operator inherits the same
@@ -130,7 +131,10 @@ directions} $v_1(\Jt)$ ($\eOneRatioVoneLo$--$\eOneRatioVoneHi\times$ random at
 matched magnitude; eigendirections carry no privilege) --- a dynamical identity for
 the low-rank causal directions of \citet{aswal2026observable} --- but the channel
 itself is nearly inert: no single-thought intervention of any kind flipped a
-single answer.
+single answer, and a post-hoc probe replacing all six thoughts at once (slot
+means, zeros, or a random donor problem's entire chain) leaves accuracy at
+baseline. The recycled content is collectively unused; the latent segment
+contributes structure, not state.
 \item \textbf{A quantitative bound on state-space accounts of latent reasoning.}
 Differentiating the fully unrolled map shows the chained local Jacobians lose
 about half of a thought's influence within three steps (median routedness
@@ -399,6 +403,22 @@ computation is carried by the question context and the structure of the latent
 segment, with the residual per-thought causal signal concentrated in the
 non-normal amplification directions of the step map.
 
+\paragraph{Post-hoc probe: the content is collectively inert.} Prompted by the
+single-thought results, we ran one further probe, declared post-hoc in the
+pre-registration file before execution: replace \emph{all six} fed thoughts
+simultaneously. With every thought replaced by its slot-mean, accuracy is
+\posthocAllMeanAccPct\% (baseline \posthocBaseAccPct\%) and \posthocAllMeanChanged\
+of \nTestProblems\ answers change. With all six thoughts \emph{transplanted from a
+random donor problem}, accuracy is \posthocAllDonorAccPct\% and
+\posthocAllDonorChanged\ answers change. Even zeroing the entire thought chain
+changes only \posthocAllZeroChanged\ answers. The recycled content is not merely
+individually robust --- it is collectively unused: what the latent segment
+contributes to behavior is its \emph{structure} (six extra attended positions and
+whatever the cache accumulates over them), not the vectors it recycles. This is,
+to our knowledge, the first operator-side confirmation of the behavioral finding
+that the curriculum, not the recycling mechanism, drives Coconut's ProsQA gains
+\citep{martin2026curriculum}.
+
 \section{E2: local Jacobians, routed effects, and the orbit-level operator}
 \label{sec:routed}
 
@@ -458,7 +478,37 @@ the channel through which most influence flows.
 \section{E3: robustness}
 \label{sec:e3}
 
-%% TODO-RESULTS
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.55\textwidth]{figs/fig7_epochs.pdf}
+\caption{Curriculum sweep (100 problems per epoch checkpoint): ProsQA accuracy
+rises from \epochTenAccPct\% (epoch 10) to \epochBestAccPct\% (best) while the
+$\sigmaone$ branch AUROC stays flat and indistinguishable from chance throughout.}
+\label{fig:epochs}
+\end{figure}
+
+\paragraph{Held-out replication.} On the \nValidProblems-problem validation split
+(accuracy \validAccPct\%), the $\sigmaone$ branch AUROC is \validAurocSigma\
+(CI \validAurocSigmaCI, now bracketing 0.5), and within-step stratification again
+collapses it --- the test-split conclusions replicate out of split.
+
+\paragraph{Natural linear chains.} ProsQA's generator almost never emits
+branch-free instances (5 in 17,886 training problems; 0 in test+valid) --- the
+scarcity that motivated the pruned-twin construction. The model solves all
+\natlinN\ natural linear chains, whose mean $\sigmaone$ (\natlinSigma) is, if
+anything, \emph{higher} than at genuine branch steps (\natlinSigmaBranch): further
+confirmation that expansion does not track branching.
+
+\paragraph{The signal does not emerge with competence.} Across curriculum
+checkpoints (Figure~\ref{fig:epochs}), accuracy climbs from \epochTenAccPct\% at
+epoch 10 to \epochBestAccPct\% at the best epoch while the $\sigmaone$ branch AUROC
+never leaves the vicinity of chance (\epochTenAuroc\ $\to$ \epochBestAuroc): the
+weak positional structure is not something the model \emph{acquires} as it learns
+to reason.
+
+\paragraph{Stability.} All confidence intervals are stable across five bootstrap
+seeds (headline $\sigmaone$ CI varies by $<10^{-3}$), and all randomized
+components of E1 used five seeded random-direction draws per cell.
 
 \section{Related work}
 \label{sec:related}
