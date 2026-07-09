@@ -108,6 +108,18 @@ def numbers():
             macros["meanDcMTwo"] = fmt(float(dc[lab >= 0].mean()), 1)
             macros["meanMarginMTwo"] = fmt(float(cap["margins"][:nn].mean()), 1)
 
+    capM2d = _npz("exp0_capture_M2.npz")
+    if capM2d is not None and "eigQ" in capM2d:
+        nn = int(capM2d["n_done"][0])
+        hsd, eigQd = capM2d["hs"][:nn], capM2d["eigQ"][:nn]
+        fr = []
+        for i in range(nn):
+            for t in range(5):
+                c = hsd[i, t]
+                Q = eigQd[i, t]
+                fr.append(np.linalg.norm(Q.T @ c) / np.linalg.norm(c))
+        macros["subCFracPct"] = fmt(100 * float(np.mean(fr)), 1)
+
     abl = _npz("exp0_ablate_M2.npz")
     if abl is not None:
         na = int(abl["n_done"][0])
@@ -334,7 +346,7 @@ def fig2_branch():
     ax.set_xticks(x)
     ax.set_xticklabels(names, rotation=20)
     ax.set_ylabel("branch AUROC")
-    ax.set_ylim(0.3, 1.0)
+    ax.set_ylim(0.2, 1.0)
     ax.legend(frameon=False, ncol=3)
     ax.set_title("(b) branch prediction, model vs pause nulls")
     fig.savefig(FIGS / "fig2_branch.pdf")

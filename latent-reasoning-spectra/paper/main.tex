@@ -16,9 +16,9 @@
 \newcommand{\sigmaone}{\sigma_1}
 \newcommand{\henrici}{d_F}
 
-\title{Spectral Invariants of Latent Reasoning:\\
-Predicting Anchor and Branch Structure\\
-in Continuous Chain-of-Thought}
+\title{Contracting, Non-Normal, and Not the Mechanism:\\
+A Pre-Registered Spectral Audit of\\
+Latent Chain-of-Thought Reasoning}
 \author{Gunner Levi Howe\\ \small{\texttt{gunnerlevihowe@gmail.com}}}
 \date{July 2026}
 
@@ -26,7 +26,40 @@ in Continuous Chain-of-Thought}
 \maketitle
 
 \begin{abstract}
-%% TODO-RESULTS: abstract written after E0-E3 land.
+A Coconut-style latent reasoner feeds its last hidden state back as the next input
+embedding, so its chain of continuous thoughts is literally a discrete-time
+dynamical system $\cthought{t+1}=F_t(\cthought{t})$. We pre-registered --- with
+kill conditions committed before any result --- the natural dynamical-systems
+hypothesis for the emerging field of latent-reasoning interpretability: that the
+spectral invariants of this map (transient-expansion and slow-mode structure of
+the step Jacobians, and orbit-level Koopman estimates) \emph{predict} the
+established anchor/branch structure of the reasoning, validated against
+\prosqa's ground-truth DAG. The hypothesis fails its controls, informatively.
+The step maps are strongly contracting (mean spectral radius \meanRhoMTwo) yet
+highly non-normal (mean $\sigmaone=\meanSigmaMTwo$, $\sigmaone/\rho$ ratio
+$\meanKappaMTwo$): thoughts are transiently amplified in singular directions
+while every eigenmode decays. But every spectral invariant's apparent
+branch/anchor signal survives in pause-token models with \emph{no recurrence at
+all}, does not respond to surgically de-branching the problems, and collapses to
+chance --- along with all trivial baselines --- under within-step stratification:
+the observable spectral structure is architectural and positional, not
+reasoning-specific (kill condition K1). Causally, perturbations along the top
+singular direction of the step Jacobian produce
+$\eOneRatioVoneLo$--$\eOneRatioVoneHi\times$ the downstream effect of
+magnitude-matched random directions (eigendirections carry no privilege --- the
+non-normal signature), yet the absolute effects are minute: replacing any single
+thought outright shifts the answer margin by a median of \ablMedian\ against
+baseline margins of $\approx\meanMarginMTwo$, flipping zero of
+$\nTestProblems\times6$ ablations. Influence Jacobians differentiated through all
+paths show why: within three steps, about half of a thought's influence flows
+through the attention cache rather than the recurrence (median routedness up to
+\routedMedianOneThree), and a pooled orbit-level operator inherits the same
+positional confounds. For this high-accuracy checkpoint, the recycled thought
+vector is a weak causal channel whose spectral geometry says little about the
+reasoning it hosts --- a pre-registered cautionary result extending
+``observable patterns are not explanations'' to the spectral/dynamical domain,
+with matched controls and causal validation as the non-negotiable price of
+admission for state-space interpretability of latent reasoning.
 \end{abstract}
 
 \section{Introduction}
@@ -72,7 +105,40 @@ eigenvalues of $\Jt$ near the unit circle, the discrete-time analogue of margina
 stability, and the quantity that Koopman-spectral diagnostics of transformers have found
 most informative on other axes \citep{kim2026rksp}.
 
-%% TODO-RESULTS: contributions paragraph with headline numbers.
+\paragraph{Contributions.} This paper reports what happened when that program was
+run properly --- pre-registered, with kill conditions committed before results,
+matched behavioral controls, and causal validation:
+
+\begin{enumerate}
+\item \textbf{The first spectral characterization of the latent-thought
+autoregressive map.} The step Jacobians of a 98\%-accurate Coconut/ProsQA model
+are strongly contracting (mean $\rho=\meanRhoMTwo$) yet highly non-normal (mean
+$\sigmaone=\meanSigmaMTwo$, $\kappa=\meanKappaMTwo$, normalized Henrici departure
+\meanHenriciMTwo): transient amplification without eigenvalue growth. The thought
+vector itself rides the dominant eigen-subspace of its own linearization
+(\subCFracPct\% of its norm in the top-4 modes).
+\item \textbf{A clean pre-registered negative on spectral prediction of reasoning
+structure (K1).} Branch/anchor prediction from spectral invariants fails all three
+matched controls: pause-token models without any recurrence show equal or larger
+``branch signatures''; paired pruned twins with the branching surgically removed
+show unchanged spectra; and within-step stratification collapses every predictor
+--- including trivial trajectory baselines --- to chance. The observable spectral
+structure is a property of the architecture, the encoding, and the step position.
+\item \textbf{A directional causal finding with an honest ceiling.} The residual
+per-thought causal signal concentrates in the \emph{non-normal amplification
+directions} $v_1(\Jt)$ ($\eOneRatioVoneLo$--$\eOneRatioVoneHi\times$ random at
+matched magnitude; eigendirections carry no privilege) --- a dynamical identity for
+the low-rank causal directions of \citet{aswal2026observable} --- but the channel
+itself is nearly inert: no single-thought intervention of any kind flipped a
+single answer.
+\item \textbf{A quantitative bound on state-space accounts of latent reasoning.}
+Differentiating the fully unrolled map shows the chained local Jacobians lose
+about half of a thought's influence within three steps (median routedness
+\routedMedianOneThree\ at $t{=}1,k{=}3$); the influence is routed through the
+attention cache, in operator-norm agreement with the interventional routing
+reported by \citet{li2026dynamics}, and pooled orbit-level (EDMD/Koopman)
+estimates do not recover reasoning-specific structure either.
+\end{enumerate}
 
 \paragraph{Distinguishing statement.} Prior work establishes that latent reasoning has
 heterogeneous, causally-routed anchor structure \citep{li2026dynamics} and that low-rank
@@ -186,6 +252,28 @@ discrete-time analogue of hydrodynamic transient growth without spectral instabi
 near-unit spectral mass is identically zero and carries no signal. We report this
 degeneracy as-is rather than substituting a post-hoc band.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig1_spectra.pdf}
+\caption{Spectral profile of the latent step maps (M2, \nTestProblems\ problems).
+(a) Mean leading singular value by step type: branch and non-branch steps barely
+differ. (b) Mean eigenvalue-modulus profile: all eigenmodes decay
+($|\lambda_1|\approx\meanRhoMTwo$) while $\sigmaone\approx\meanSigmaMTwo$ ---
+contraction with strong non-normal transient amplification.}
+\label{fig:spectra}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig2_branch.pdf}
+\caption{Branch prediction fails its nulls. (a) $\sigmaone(\Jt)$ at branch vs
+non-branch steps for Coconut (M2) and the pause controls (M3/M4): the no-recurrence
+controls show \emph{larger} separation. (b) Pooled branch AUROC with 95\%
+cluster-bootstrap CIs for spectral invariants, the near-unit-mass diagnostic, and
+trivial baselines: the nulls match or beat M2 throughout.}
+\label{fig:branch}
+\end{figure}
+
 \paragraph{Branch prediction.} The pre-registered primary branch predictor
 $\sigmaone(\Jt)$ discriminates branch from non-branch steps only weakly
 (AUROC $\aurocSigmaMTwo$, 95\% CI $\aurocSigmaMTwoCI$); the best local invariant is
@@ -201,6 +289,17 @@ falls to \stratSigma, and even the winning baseline
 $\lVert\Delta \cthought{t}\rVert$ falls to \stratDc. Within a step position, no
 local quantity we measured knows which problems are at a branch point.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig3_pruned.pdf}
+\caption{Paired pruned-real control. (a) $\sigmaone$ at formerly-branch steps:
+original problem vs its de-branched twin (identical up to deleted off-path edges;
+model accuracy on twins \accPrunedPct\%). (b) The change distribution at
+formerly-branch steps matches non-branch steps (Mann--Whitney $p=\prunedMWUP$):
+the spectra do not respond to removing the alternatives.}
+\label{fig:pruned}
+\end{figure}
+
 \paragraph{The null controls concur.} First, the pause-token models: $\sigmaone$
 computed from the identical architectural map at the identical positions predicts
 the same branch labels \emph{at least as well} in the models with no latent
@@ -214,6 +313,16 @@ does not differentially move the spectra at formerly-branch steps (mean $\sigmao
 change $\prunedDropBranch$ there vs $\prunedDropNonbranch$ at non-branch steps;
 Mann--Whitney $p=\prunedMWUP$). The expansion signature does not respond to the
 actual presence of alternatives.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig4_anchor.pdf}
+\caption{Anchor prediction (M2). (a) Near-unit spectral mass (pre-registered
+primary) vs step-ablation influence $I_t$: the predictor is degenerate at zero.
+(b) Top-tercile anchor AUROCs across invariants and baselines; apparent
+above-chance values carry the same step-position confound as the branch labels.}
+\label{fig:anchor}
+\end{figure}
 
 \paragraph{Anchors.} No local invariant predicts the ablation influence $I_t$
 either: the best Spearman correlation among spectral invariants is
@@ -244,6 +353,19 @@ s\,\varepsilon\lVert\cthought{t}\rVert\,d$ ($s=\pm1$) with $d$ the top right sin
 vector $v_1(\Jt)$, the leading eigendirection $q_1(\Jt)$, or magnitude-matched random
 unit vectors, and measure the downstream change in answer margin.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig5_causal.pdf}
+\caption{E1 interventions (M2, \eOneNProblems\ problems, steps 1--5). (a) Downstream
+$|\Delta\text{margin}|$ for perturbations along $v_1(\Jt)$, the leading
+eigendirection, and magnitude-matched random directions: the singular direction is
+privileged, the eigendirection is not. Note the absolute scale against baseline
+margins of $\approx\meanMarginMTwo$. (b) Projecting out the top-4 eigen-subspace vs
+random 4-dim subspaces (not norm-matched; see text --- \subCFracPct\% of the thought
+lives in that subspace).}
+\label{fig:causal}
+\end{figure}
+
 \paragraph{Directional privilege is real, and it is non-normal.} Perturbations
 along $v_1(\Jt)$ produce \eOneRatioVoneLo$\times$ the downstream effect of random
 directions at $\varepsilon=0.1$ and \eOneRatioVoneHi$\times$ at $\varepsilon=0.3$
@@ -254,9 +376,12 @@ pre-registered K2 criterion ($\geq 2\times$, $p<0.01$) at both magnitudes: K2
 non-normal dynamics, where transient growth lives in singular directions rather
 than eigendirections \citep{trefethen2005spectra}. Projecting the top-4
 eigen-subspace of $\Jt$ out of $\cthought{t}$ produces \eOneSubRatio$\times$ the
-effect of removing random 4-dimensional subspaces ($p=\eOneSubP$), though we note
-this comparison is not matched for removed norm (the thought vector concentrates
-in the dominant subspace).
+effect of removing random 4-dimensional subspaces ($p=\eOneSubP$); this comparison
+is however not matched for removed norm, because of a striking geometric fact we
+report descriptively: \subCFracPct\% of each thought vector's norm lies in the
+top-4 eigen-subspace of its own step Jacobian (a random 4-dimensional subspace
+holds 7\%). The trajectory \emph{rides} the dominant --- yet contracting ---
+eigenmodes of its local linearization.
 
 \paragraph{But the absolute effects are strikingly small.} At $\varepsilon=0.3$ ---
 a 30\% relative perturbation --- the mean margin change along $v_1$ is
@@ -283,6 +408,17 @@ $J_{t+k-1}\cdots J_t$ describe, and the attention cache written at intermediate
 latent slots, which they miss. We differentiate the full unrolled map through all
 paths to obtain the influence Jacobian $G_{t\to t+k}$ and measure the routedness
 $R_{t,k}=\lVert G_{t\to t+k}-\prod J\rVert_F/\lVert G_{t\to t+k}\rVert_F$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig6_routed.pdf}
+\caption{E2. (a) Routedness $R_{t,k}$: the fraction of the full influence Jacobian
+$G_{t\to t+k}$ not captured by chaining local step Jacobians rises to
+$\approx$0.5 at $k{=}3$. (b) Pooled EDMD spectrum (top mode moduli): many
+near-unit persistent modes --- context-encoding directions --- none of which carry
+reasoning-specific per-step signal.}
+\label{fig:routed}
+\end{figure}
 
 \paragraph{Half the influence is routed within three steps.} At $k=2$ the local
 chain is a good description (median $R$ between \routedMedianMin\ and
@@ -369,11 +505,69 @@ positions, matched accuracy --- is due to \citet{martin2026curriculum}, whose fi
 that the \emph{curriculum} rather than the recycling mechanism drives Coconut's \prosqa\
 gains makes the pause models an unusually sharp null for any claim about the recurrence.
 
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{What died, and what survived.} The attractive program --- read the
+reasoning off the spectrum of the thought recurrence --- died at its
+pre-registered gates, in the strongest available way: not for lack of signal, but
+because the signal appears identically without the mechanism. What survived is a
+characterization with consequences. The latent step map is a contracting,
+strongly non-normal operator whose transient amplification is real and causally
+directional ($v_1$ privilege), whose state rides its own dominant contracting
+modes, and whose direct-feed channel carries strikingly little of the
+computation's causal load --- the answer is robust to every single-thought
+intervention we tried, and half of what influence there is routes through
+attention within three steps. In retrospect these pieces cohere: a nearly-inert,
+strongly-contracting recurrence is exactly the regime in which spectra can look
+structured while explaining nothing about behavior.
+
+\paragraph{Consequences for latent-reasoning interpretability.} First, the
+methodological point of \citet{aswal2026observable} extends with full force to
+dynamical-systems analyses: eigenvalues along a trajectory are as pattern-like as
+decodable frontiers, and matched behavioral controls plus causal tests are the
+price of admission. Second, our step-position stratification deserves emphasis as
+a cheap, general control: in curriculum-trained latent reasoners, step index is a
+powerful confound that inflates \emph{any} per-step statistic --- it inflated our
+trivial baselines as much as our spectral predictors. Third, the routedness
+measurements bound the entire family of state-space accounts: any analysis that
+models latent reasoning as $c_{t+1}=F(c_t)$ --- Koopman, SDE, attractor, or
+otherwise --- is modeling a channel that, in this trained system, loses half its
+influence within three steps to a side channel it cannot see. Analyses that
+include the attention state (the full KV configuration) as part of the dynamical
+state are the natural next object.
+
+\paragraph{Relation to the anchor literature.} Our results do not contradict
+\citet{li2026dynamics}: they study different latent-CoT systems and intervention
+scales, and our E1 confirms that \emph{relative} causal heterogeneity across
+directions is real. What we add is that in a curriculum-trained Coconut at
+ProsQA-scale, the per-thought causal budget is so small in absolute terms that
+``anchor'' structure, where measurable, reflects position and architecture. The
+dynamical vindication of the curriculum thesis \citep{martin2026curriculum} ---
+behavior preserved with the recurrence content replaced --- is, to our knowledge,
+the first from the operator side.
+
 \section{Limitations and honest scope}
 \label{sec:limits}
 
-%% TODO-RESULTS: finalize after results; keep GPT-2-124M/toy-ProsQA scope statement,
-%% one seed of one architecture, six-step trajectories, linear-dictionary EDMD caveats.
+Everything here is one architecture (GPT-2 124M), one training seed, one synthetic
+task (\prosqa) with 3--6-hop reachability, six-step latent trajectories, and one
+checkpoint suite. The negative results are therefore existence proofs about a
+representative, high-performing latent reasoner --- not universal claims about
+latent reasoning; a system trained such that thought content is load-bearing
+(longer horizons, information-bottlenecked contexts, or tasks where the question
+cannot be re-read from the cache) could behave differently, and our harness
+transfers directly to such systems. Trajectories of length six bound the
+orbit-level analysis: pooled EDMD with a linear dictionary (plus delay-2) is the
+strongest operator estimate the data supports, and Ruelle--Pollicott-style
+resonance analysis is out of reach at this length. The pruned-twin control changes
+the question text (shorter prompts), though the model's near-ceiling accuracy on
+the twins bounds the distribution shift. Intervention magnitudes were capped at
+30\% of the thought norm; larger perturbations eventually do change behavior, but
+at that point the intervention is no longer a local probe of the linearization.
+Finally, our step-ablation anchor ground truth follows the leverage protocol of
+prior work but is itself a single-step intervention; multi-step or subspace-level
+anchor definitions could reveal structure our per-step measure misses.
 
 \section{Reproducibility}
 All code, pre-registration (PLAN.md with kill conditions committed before results),
