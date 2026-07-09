@@ -15,9 +15,16 @@ outcome equation with correlated errors (Heckman 1979), yielding:
   non-verbalizing CoTs,
 - an observation-only variant (probit-with-selection) for API models.
 
-Validated against hint-excision causal ground truth on open-weight models;
-applied observation-only to a reasoning model (unblinded afterwards) and to
-Claude via API.
+Validated against hint-excision causal ground truth on open-weight models.
+
+**Outcome: honest negative (see [STATUS.md](STATUS.md)).** With verbalization
+measured by a validated LLM judge rather than the field-standard lexical
+detector — which we show over-counts verbalization 2–9× — the naive
+faithfulness estimate is approximately unbiased and the IMR correction does
+not beat it (it overshoots, a bivariate-normality artifact). The reframing and
+the ρ-test survive as diagnostics; the correction does not deliver, and the
+more actionable finding is that lexical verbalization metrics badly mis-measure
+the quantity faithfulness audits count.
 
 ## Layout
 
