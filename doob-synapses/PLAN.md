@@ -83,6 +83,77 @@ one operating point, retention-not-joules -- a full noise sweep with energy is t
 next study; (ii) plain replay out-retains us -- our standing is among rehearsal-free
 methods and the contribution is the mechanism/signature, not a retention SOTA.
 
+## E8 (pre-registered 2026-07-13, BEFORE any result) — the inverted-U ON SILICON
+
+The FIRST git-verifiable pre-registered SILICON experiment here (E5-E7 were honestly-
+labeled POST-access additions, NOT pre-registration; this restores the discipline).
+Motivation: E7 (+15.6 pts, single seed) and the follow-up seeded 2-task test
+(2026-07-13, n=5: 3/4 VALID seeds favour doob, mean +5.9 pts, NOT significant; seed-4
+excluded as a hardware failure; no seeds added to chase p) BOTH probed the mechanism
+ADVANTAGE at ONE fixed noise level (avg=1). Neither tested claim (b) — the inverted-U
+itself — on silicon. E8 does.
+
+**H-U.** On real BrainScaleS-2, doob's task-0 retention vs total forward-noise amplitude
+is an INVERTED-U (rises, interior peak, falls); the matched control ou (kappa=0) is
+monotone (no interior peak).
+
+**Noise axis** — total forward-noise std in units of the E5-measured intrinsic trial-std
+at avg=1 (~1.24 output units), one monotone axis via two device-faithful knobs:
+BELOW-intrinsic by hardware averaging avg in {8,4,2} (noise ~1/sqrt(N), E5 exponent 0.47
+-> ~{0.35,0.5,0.71} units); AT intrinsic avg=1 = 1.0 unit = the FREE-noise point (zero
+extra energy — flagged specially); ABOVE-intrinsic by adding independent Gaussian of std
+c x intrinsic-trial-std to the chip's analog output, c in {1,2,3.5} -> total sqrt(1+c^2)
+~ {1.41,2.24,3.64} units. **Pre-registered 7-point grid (units):
+{0.35,0.5,0.71,1.0,1.41,2.24,3.64}** — FIXED before results; no post-hoc grid edits.
+
+**Testbed** — continual Yin-Yang, 2 tasks, 0deg vs 90deg (strong interference), 3-way
+head; task0 plain-SGD then task1 + consolidation (the E6/E7 recipe: normalize+CLAMP
+importance, lr matched to the hxtorch weight scale). Retention = task0 test acc AFTER
+task1.
+
+**Validity gate (delta-blind, pre-registered).** A (seed, level, method) run is VALID
+only if its task0 baseline acc — measured AFTER task0, BEFORE task1 — is >= 0.45 (well
+clear of the 0.33 three-way floor). A failure means the chip/training DIVERGED (cf.
+seed-4, 2026-07-13: doob and ou byte-identical at 0.088, both below chance, from a shared
+poisoned task0). Failures get ONE automatic retry with fresh hardware init; a second
+failure = recorded chip dropout, EXCLUDED and documented. The rule reads ONLY whether the
+model trained — never the doob-vs-ou gap — so it cannot cherry-pick the effect.
+
+**Seeds** — 5 VALID per (level, method), targeted with the retry rule above. Budget,
+honestly: ~35 doob runs (primary) + ~35 ou runs (secondary contrast) ~ 40 h chip time,
+a RESUMABLE multi-session campaign; the PRIMARY gate needs only the 35 doob runs.
+
+**GATE U** (doob retention-vs-noise, adjudicated by stats.inverted_u_test — the same
+GATE-F test): (1) interior argmax (the optimal noise is NOT an endpoint); (2) peak beats
+the 0.35-unit end (one-sided paired Wilcoxon across seeds, p<0.05); (3) peak beats the
+3.64-unit end (p<0.05, the down-slope is real); (4) lift over the low end exceeds the
+seed sd at the peak. AND ou must FAIL the inverted-U test (monotone). PASS => the
+inverted-U is confirmed ON REAL SILICON (claim (b), hardware-verified). FAIL => a K-U
+below fires; honest negative.
+
+**Kill conditions (commit BEFORE results).**
+- **K-U1 (no U).** doob is monotone across the FULL grid (peak at an endpoint, or no
+  significant interior peak). => the inverted-U is a sim/emulation artifact that does NOT
+  survive real silicon; the on-silicon claim retracts to E7's fixed-noise advantage only.
+  A genuine possible outcome, reported as such.
+- **K-U2 (position of the free point).** An interior peak exists but sits ABOVE 1.0 unit
+  (optimum needs ADDED noise beyond intrinsic) => the "free intrinsic noise is optimal"
+  story weakens to "the chip sits on the ASCENDING limb"; if the peak sits BELOW 1.0
+  (optimum reached by averaging) => "the chip is slightly too noisy; cheap averaging
+  helps." Report which limb the free point occupies. (The U is still real; only its
+  position relative to free is the finding.)
+- **K-U3 (underpowered).** If the analog seed-to-seed variance keeps GATE U's paired
+  tests above p=0.05 at 5 valid seeds (cf. the 2026-07-13 seeded null), report an
+  underpowered DIRECTIONAL result and PRE-COMMIT NOT to extend seeds to reach
+  significance (optional-stopping = p-hacking). A powered re-run is a SEPARATE, freshly
+  pre-registered campaign.
+
+**Reporting** — the two curves (doob inverted-U vs ou monotone) on one noise axis with
+the intrinsic/free point marked; all numbers auto-generated into numbers.tex (no
+hand-typed results); results/bss2_silicon_U.json committed. Energy: mark the free point's
+zero-injection cost vs the injected points' added RNG/analog cost via energy.py (an
+ESTIMATE; measured joules remain future work / a Heidelberg collaboration).
+
 ## Fixed numerical conventions (pre-registered)
 
 - **Primary testbed:** Split-MNIST, domain-incremental. 5 binary tasks
