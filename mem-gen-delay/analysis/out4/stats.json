@@ -1,0 +1,534 @@
+{
+  "free_norm": {
+    "baseline": {
+      "t_gen": [
+        33400,
+        37600,
+        32200,
+        29800,
+        39400
+      ],
+      "censored": 0,
+      "max_te": [
+        0.8773,
+        0.8684,
+        0.8714,
+        0.8748,
+        0.8671
+      ],
+      "final_norm": [
+        62.08,
+        60.57,
+        62.72,
+        63.63,
+        59.77
+      ]
+    },
+    "augce": {
+      "t_gen": [
+        1800,
+        1800,
+        1800,
+        2000,
+        2200
+      ],
+      "censored": 0,
+      "max_te": [
+        0.9208,
+        0.9272,
+        0.9339,
+        0.9168,
+        0.9158
+      ],
+      "final_norm": [
+        88.33,
+        91.22,
+        96.21,
+        90.91,
+        88.0
+      ],
+      "paired_speedup_vs_baseline": [
+        18.556,
+        20.889,
+        17.889,
+        14.9,
+        17.909
+      ],
+      "median_speedup": 17.909
+    },
+    "supcon_aug": {
+      "t_gen": [
+        43600,
+        46000,
+        44200,
+        41600,
+        42200
+      ],
+      "censored": 0,
+      "max_te": [
+        0.8797,
+        0.8823,
+        0.8731,
+        0.8752,
+        0.8897
+      ],
+      "final_norm": [
+        90.92,
+        94.44,
+        93.09,
+        94.08,
+        93.33
+      ],
+      "paired_speedup_vs_baseline": [
+        0.766,
+        0.817,
+        0.729,
+        0.716,
+        0.934
+      ],
+      "median_speedup": 0.766
+    },
+    "supcon_label": {
+      "t_gen": [
+        16400,
+        17400,
+        15600,
+        15200,
+        15800
+      ],
+      "censored": 0,
+      "max_te": [
+        0.9218,
+        0.924,
+        0.9278,
+        0.9294,
+        0.9294
+      ],
+      "final_norm": [
+        101.46,
+        103.23,
+        101.24,
+        101.27,
+        104.26
+      ],
+      "paired_speedup_vs_baseline": [
+        2.037,
+        2.161,
+        2.064,
+        1.961,
+        2.494
+      ],
+      "median_speedup": 2.064
+    },
+    "supcon_shufpair": {
+      "t_gen": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "censored": 5,
+      "max_te": [
+        0.7611,
+        0.7571,
+        0.7632,
+        0.7935,
+        0.7826
+      ],
+      "final_norm": [
+        136.15,
+        136.6,
+        135.57,
+        133.06,
+        134.62
+      ]
+    }
+  },
+  "e2_matched_norm": {
+    "per_norm": {
+      "23": {
+        "base": {
+          "t_gen": [
+            400,
+            400,
+            400,
+            400
+          ],
+          "scored": [
+            400,
+            400,
+            400,
+            400
+          ],
+          "censored": 0
+        },
+        "aug": {
+          "t_gen": [
+            400,
+            400,
+            400,
+            600
+          ],
+          "scored": [
+            400,
+            400,
+            400,
+            600
+          ],
+          "censored": 0
+        },
+        "ratio_base_over_aug": [
+          1.0,
+          1.0,
+          1.0,
+          0.667
+        ],
+        "ratio_is_lower_bound": false
+      },
+      "35": {
+        "base": {
+          "t_gen": [
+            600,
+            400,
+            400,
+            600
+          ],
+          "scored": [
+            600,
+            400,
+            400,
+            600
+          ],
+          "censored": 0
+        },
+        "aug": {
+          "t_gen": [
+            600,
+            600,
+            600,
+            600
+          ],
+          "scored": [
+            600,
+            600,
+            600,
+            600
+          ],
+          "censored": 0
+        },
+        "ratio_base_over_aug": [
+          1.0,
+          0.667,
+          0.667,
+          1.0
+        ],
+        "ratio_is_lower_bound": false
+      },
+      "50": {
+        "base": {
+          "t_gen": [
+            9200,
+            10000,
+            7200,
+            9800
+          ],
+          "scored": [
+            9200,
+            10000,
+            7200,
+            9800
+          ],
+          "censored": 0
+        },
+        "aug": {
+          "t_gen": [
+            5200,
+            6200,
+            5000,
+            5000
+          ],
+          "scored": [
+            5200,
+            6200,
+            5000,
+            5000
+          ],
+          "censored": 0
+        },
+        "ratio_base_over_aug": [
+          1.769,
+          1.613,
+          1.44,
+          1.96
+        ],
+        "ratio_is_lower_bound": false
+      },
+      "65": {
+        "base": {
+          "t_gen": [
+            22400,
+            27600,
+            22000,
+            30800
+          ],
+          "scored": [
+            22400,
+            27600,
+            22000,
+            30800
+          ],
+          "censored": 0
+        },
+        "aug": {
+          "t_gen": [
+            14600,
+            16400,
+            13200,
+            15200
+          ],
+          "scored": [
+            14600,
+            16400,
+            13200,
+            15200
+          ],
+          "censored": 0
+        },
+        "ratio_base_over_aug": [
+          1.534,
+          1.683,
+          1.667,
+          2.026
+        ],
+        "ratio_is_lower_bound": false
+      },
+      "80": {
+        "base": {
+          "t_gen": [
+            58400,
+            67600,
+            49400,
+            77000
+          ],
+          "scored": [
+            58400,
+            67600,
+            49400,
+            77000
+          ],
+          "censored": 0
+        },
+        "aug": {
+          "t_gen": [
+            28000,
+            28200,
+            26600,
+            30000
+          ],
+          "scored": [
+            28000,
+            28200,
+            26600,
+            30000
+          ],
+          "censored": 0
+        },
+        "ratio_base_over_aug": [
+          2.086,
+          2.397,
+          1.857,
+          2.567
+        ],
+        "ratio_is_lower_bound": false
+      },
+      "92": {
+        "base": {
+          "t_gen": [
+            null,
+            null,
+            84000,
+            null
+          ],
+          "scored": [
+            100000,
+            100000,
+            84000,
+            100000
+          ],
+          "censored": 3
+        },
+        "aug": {
+          "t_gen": [
+            44400,
+            43000,
+            40400,
+            41400
+          ],
+          "scored": [
+            44400,
+            43000,
+            40400,
+            41400
+          ],
+          "censored": 0
+        },
+        "ratio_base_over_aug": [
+          2.252,
+          2.326,
+          2.079,
+          2.415
+        ],
+        "ratio_is_lower_bound": true
+      }
+    },
+    "slope_fits": {
+      "base": {
+        "slope_per_unit": 0.05706,
+        "mult_per_10": 1.769,
+        "includes_censored": true
+      },
+      "aug": {
+        "slope_per_unit": 0.04894,
+        "mult_per_10": 1.631,
+        "includes_censored": false
+      },
+      "slope_ratio_base_over_aug": 1.166,
+      "note": "baseline slope is a LOWER BOUND (censored cells scored at budget); true ratio >= reported"
+    }
+  },
+  "e3_nn": {
+    "per_seed": [
+      {
+        "seed": 0,
+        "baseline": 33400,
+        "nn": 38000,
+        "purity": 0.8440000414848328,
+        "win": false,
+        "ratio": 0.879,
+        "nn_final_norm": 119.33
+      },
+      {
+        "seed": 1,
+        "baseline": 37600,
+        "nn": 72400,
+        "purity": 0.812000036239624,
+        "win": false,
+        "ratio": 0.519,
+        "nn_final_norm": 131.65
+      },
+      {
+        "seed": 3,
+        "baseline": 29800,
+        "nn": 28400,
+        "purity": 0.8300000429153442,
+        "win": true,
+        "ratio": 1.049,
+        "nn_final_norm": 114.31
+      },
+      {
+        "seed": 4,
+        "baseline": 39400,
+        "nn": 38000,
+        "purity": 0.8220000267028809,
+        "win": true,
+        "ratio": 1.037,
+        "nn_final_norm": 120.4
+      }
+    ],
+    "tally": "2-2",
+    "verdict": "no evidence of free-norm transfer (pre-stated tally rule)"
+  },
+  "e4_dose": [
+    {
+      "lam": 0.0,
+      "seed": 0,
+      "t_gen": 33400,
+      "final_norm": 62.08
+    },
+    {
+      "lam": 0.0,
+      "seed": 3,
+      "t_gen": 29800,
+      "final_norm": 63.63
+    },
+    {
+      "lam": 0.03,
+      "seed": 0,
+      "t_gen": 33000,
+      "final_norm": 90.02
+    },
+    {
+      "lam": 0.03,
+      "seed": 3,
+      "t_gen": 31000,
+      "final_norm": 91.52
+    },
+    {
+      "lam": 0.1,
+      "seed": 0,
+      "t_gen": 36800,
+      "final_norm": 89.46
+    },
+    {
+      "lam": 0.1,
+      "seed": 3,
+      "t_gen": 35600,
+      "final_norm": 90.48
+    },
+    {
+      "lam": 0.3,
+      "seed": 0,
+      "t_gen": 43600,
+      "final_norm": 90.92
+    },
+    {
+      "lam": 0.3,
+      "seed": 3,
+      "t_gen": 41600,
+      "final_norm": 94.08
+    }
+  ],
+  "p5_probe_timing": {
+    "gap_threshold": 0.09,
+    "acc_threshold": 0.5,
+    "runs": [
+      {
+        "run": "baseline_s0",
+        "step_gap": 35200,
+        "step_acc": 9800,
+        "lead": -25400
+      },
+      {
+        "run": "baseline_s3",
+        "step_gap": 31800,
+        "step_acc": 9000,
+        "lead": -22800
+      },
+      {
+        "run": "supcon_aug_s0",
+        "step_gap": 1800,
+        "step_acc": 20000,
+        "lead": 18200
+      },
+      {
+        "run": "supcon_aug_s3",
+        "step_gap": 800,
+        "step_acc": 18200,
+        "lead": 17400
+      },
+      {
+        "run": "nn_s0",
+        "step_gap": 2200,
+        "step_acc": 11000,
+        "lead": 8800
+      },
+      {
+        "run": "nn_s3",
+        "step_gap": 1000,
+        "step_acc": 9400,
+        "lead": 8400
+      }
+    ]
+  }
+}
