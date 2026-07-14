@@ -1,5 +1,19 @@
-# Project status: PAPER 3 COMPLETE (all five rungs) + Paper 1 v4 ready + P4 amendment PRE-REGISTERED
+# Project status: THREE PAPERS SHIPPED-READY (P1 v4, P3 public, P4 natural-data) 
 Updated: 2026-07-14
+
+## PAPER 4 DELIVERABLE (paper3/ dir) — "Structure Transfers, Exponents Do Not" — COMPLETE
+9pp, 62 macro-backed numbers (paper3/gen_numbers.py -> numbers.tex; verify_regen.py PASSES),
+5 figures from analysis/out4 (analyze_paper4.py over 83 runs: grid4 35 + grid4b 48).
+arxiv_upload_paper3.zip clean-room verified (9pp, refs intact, tectonic). arxiv_abstract.txt
+1,896 chars (<=1920, single paragraph). Structure: free-norm negative led with -> confound
+diagnosis -> prereg protocol verbatim (commits 96f9c0a/45a1d08/c9b856e in Sec 7 Repro) ->
+E2 matched-norm win + K2 fired + pin-92 post-hoc robustness notes (0.80-bar + budget-attained
+accuracy, labeled post-hoc) -> E3 null + E4 dose -> probes -> boundary-map discussion incl.
+wall-clock honesty (2.5-3x/step aux cost) + augce-is-a-regularizer distinction.
+House-rule catches during writing: clamp floor is 400--600 not uniform 400 (aug_clamp23_s4);
+pin ceiling range 0.91--0.93 not 0.91--0.92. Both hand-typed guesses were wrong; macros right.
+User actions before submission: author block confirm; arXiv timing/order vs Papers 1+3;
+cs.LG primary + stat.ML cross-list as before; wire real arXiv IDs into companion cross-cites.
 
 ## P4 PRE-REGISTERED AMENDMENT (E2/E3/E4) — committed 2026-07-14 BEFORE any amended run starts
 
