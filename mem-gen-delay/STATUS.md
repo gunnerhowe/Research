@@ -46,6 +46,37 @@ Disclosures:
 - D4 One dead end already tried and kept: nothing — no amended run, pilot, or partial run of any
   E2/E3/E4 cell exists at commit time (grid4b/ does not exist yet).
 
+Ops note (2026-07-14): two workers briefly raced on 3 seed-2 dirs (worker A owned seeds 0-2, a
+redundant seed-2 worker was launched in parallel). No corruption: runs are deterministic, both
+writers produced byte-identical records (independently computed identical t_gen), all seed-2
+metrics.jsonl parse clean (monotone steps, zero bad lines, correct eval counts). No rerun.
+grid4 free-norm grid now COMPLETE at 35/35.
+
+### 2-seed verdicts vs prereg (2026-07-14, recorded BEFORE the seed extension launches)
+- K1 NO-FIRE — MATCHED-NORM BENEFIT CONFIRMED. base/aug delay ratio at pinned norm: c35 ~1.0
+  (floor), c50 1.44-1.77x, c65 1.53-1.67x, c80 1.86-2.09x, c92 2.08->=2.25x (base_c92_s0 CENSORED
+  at 100k budget with max acc 0.841; aug_c92 44.4k/40.4k). P1 confirmed (steep growth + censoring
+  at high pin), P2 confirmed (disclosed non-blind).
+- K2 FIRES. Ascending-branch (c50->c92) log-delay slopes: baseline ~0.058/unit (lower bound, one
+  censored cell) vs supcon_aug ~0.050/unit -> ratio ~1.15-1.25, far below the pre-registered 2.
+  NO algorithmic-magnitude exponent flattening on MNIST (was 17x on modular arithmetic). The
+  matched-norm benefit is a mild norm-growing multiplicative offset (1.4->2.3x), not a slope
+  change. Will be reported exactly as such.
+- E3 SPLIT 1-1 at n=2: nn_s0 38.0k vs baseline 33.4k (loses); nn_s3 28.4k vs 29.8k (wins).
+  Purity 0.844/0.830 (>=0.8 bar met). Neither P4 nor K3 resolves. Note: nn final norm 114-119 —
+  a BIGGER Channel-2 handicap than the view prior's ~92 — yet ~baseline speed at free norm.
+- E4 monotone dose at free norm: lam 0.03 break-even (33.0k/31.0k vs 33.4k/29.8k), 0.1 slower
+  (36.8k/35.6k), 0.3 slowest (43.6k/41.6k). Norm-freeze at ~90 persists even at lam 0.03 —
+  Channel 2 saturates at tiny dose; there is NO free-norm dose at which the view prior wins.
+- P5 directional-yes in prior arms (cos_gap 50%-of-max at 0.6-1.0k vs behavior at 15.6-17.6k;
+  gap_max 0.15-0.17 vs baseline 0.118) with a stated caveat: 50%-of-max degenerates on baseline's
+  low-amplitude curve (crosses at step 0); final analysis will use an absolute threshold.
+
+EXTENSION RULE (stated before launching seeds {1,4}, which the prereg design named): all four
+seeds reported regardless of outcome; E3 verdict = per-seed paired tally over 4 seeds (win =
+strictly smaller t_gen than same-seed baseline); NO further seeds after {1,4} whatever happens;
+E2 extension exists to put n=4 behind the slope fits, not to re-litigate K2.
+
 ## Paper 3 (paper2/main.pdf, 7pp) — "What Makes a Representational Prior Work?"
 178 new runs (runs/grid3). All numbers macro-generated (paper2/gen_numbers.py), verify_regen PASSES.
 - R1 band control: 1/15 grok ≈ random (p=0.43), ≠ true (p=2.3e-5) → FEATURE-FAMILY account CONFIRMED.
