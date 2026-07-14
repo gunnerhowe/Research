@@ -289,7 +289,7 @@ def main():
               for l in lams]
         ax.plot(lams, ys, marker=mk, lw=1.5, label=f"seed {s}")
     ax.set(xlabel="lambda (aux weight)", ylabel="t_gen (steps)",
-           title="Free-norm dose: more prior = slower")
+           title="Free-norm dose: no dose wins")
     ax.legend(fontsize=8)
     fig.tight_layout()
     for ext in ("pdf", "png"):

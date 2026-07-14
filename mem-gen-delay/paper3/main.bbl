@@ -1,0 +1,79 @@
+\begin{thebibliography}{11}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Power et~al.(2022)Power, Burda, Edwards, Babuschkin, and
+  Misra]{power2022grokking}
+Alethea Power, Yuri Burda, Harri Edwards, Igor Babuschkin, and Vedant Misra.
+\newblock Grokking: Generalization beyond overfitting on small algorithmic
+  datasets.
+\newblock \emph{arXiv preprint arXiv:2201.02177}, 2022.
+
+\bibitem[Howe(2026{\natexlab{a}})]{companion2026a}
+Gunner~Levi Howe.
+\newblock Structure-specific representational priors causally control the
+  grokking delay.
+\newblock \emph{arXiv preprint (submitted concurrently)}, 2026{\natexlab{a}}.
+
+\bibitem[Howe(2026{\natexlab{b}})]{companion2026b}
+Gunner~Levi Howe.
+\newblock What makes a representational prior work? feature families,
+  label-free invariances, and critical windows in grokking.
+\newblock \emph{arXiv preprint (submitted concurrently)}, 2026{\natexlab{b}}.
+
+\bibitem[Khosla et~al.(2020)Khosla, Teterwak, Wang, Sarna, Tian, Isola,
+  Maschinot, Liu, and Krishnan]{khosla2020supervised}
+Prannay Khosla, Piotr Teterwak, Chen Wang, Aaron Sarna, Yonglong Tian, Phillip
+  Isola, Aaron Maschinot, Ce~Liu, and Dilip Krishnan.
+\newblock Supervised contrastive learning.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~33, 2020.
+\newblock arXiv:2004.11362.
+
+\bibitem[Truong et~al.(2026)Truong, Doan, Luu, and Phan]{weightnormdelay2026}
+Xuan~Khanh Truong, Hoang~Viet Doan, Duc~Trung Luu, and Thanh~Duc Phan.
+\newblock The weight norm sets the grokking timescale: A causal delay law.
+\newblock \emph{arXiv preprint arXiv:2606.13753}, 2026.
+
+\bibitem[Nanda et~al.(2023)Nanda, Chan, Lieberum, Smith, and
+  Steinhardt]{nanda2023progress}
+Neel Nanda, Lawrence Chan, Tom Lieberum, Jess Smith, and Jacob Steinhardt.
+\newblock Progress measures for grokking via mechanistic interpretability.
+\newblock In \emph{International Conference on Learning Representations}, 2023.
+\newblock arXiv:2301.05217.
+
+\bibitem[Gromov(2023)]{gromov2023grokking}
+Andrey Gromov.
+\newblock Grokking modular arithmetic.
+\newblock \emph{arXiv preprint arXiv:2301.02679}, 2023.
+
+\bibitem[Liu et~al.(2023)Liu, Michaud, and Tegmark]{liu2023omnigrok}
+Ziming Liu, Eric~J Michaud, and Max Tegmark.
+\newblock Omnigrok: Grokking beyond algorithmic data.
+\newblock In \emph{International Conference on Learning Representations}, 2023.
+\newblock arXiv:2210.01117.
+
+\bibitem[Tiwari et~al.(2026)Tiwari, Chauhan, and Singh]{radialsuppression2026}
+Srijan Tiwari, Aditya Chauhan, and Manjot Singh.
+\newblock Radial suppression accelerates algorithmic generalization: A
+  geometric analysis of delayed generalization.
+\newblock \emph{arXiv preprint arXiv:2606.32000}, 2026.
+
+\bibitem[Chou et~al.(2026)Chou, Uzdelewicz, Chiu, Yang, and
+  Chung]{twospeeds2026}
+Chi-Ning Chou, Oscar Uzdelewicz, Neng-Chun Chiu, Yao-Yuan Yang, and SueYeon
+  Chung.
+\newblock Two speeds of learning: A representation-readout decomposition of
+  grokking and double descent.
+\newblock \emph{arXiv preprint arXiv:2605.27078}, 2026.
+
+\bibitem[Lee et~al.(2024)Lee, Kang, Kim, and Lee]{lee2024grokfast}
+Jaerin Lee, Bong~Gyun Kang, Kihoon Kim, and Kyoung~Mu Lee.
+\newblock Grokfast: Accelerated grokking by amplifying slow gradients.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2024.
+\newblock arXiv:2405.20233.
+
+\end{thebibliography}

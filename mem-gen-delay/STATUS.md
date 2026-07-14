@@ -15,6 +15,22 @@ pin ceiling range 0.91--0.93 not 0.91--0.92. Both hand-typed guesses were wrong;
 User actions before submission: author block confirm; arXiv timing/order vs Papers 1+3;
 cs.LG primary + stat.ML cross-list as before; wire real arXiv IDs into companion cross-cites.
 
+### User review response (2026-07-14, all 6 items addressed)
+1. UNCENSORED SLOPE REFIT (the one that mattered): 0.80-bar refit, same pins/seeds, zero
+   censoring -> slopes 0.058 vs 0.057, RATIO 1.03 (vs 1.17 censored LB). K2's negative is now
+   an assertion, not a failure-to-confirm. Added to abstract + Sec 5 + Sec 8; also required
+   tempering "norm-growing offset" -> the criterion-level ratio growth traces to the
+   budget-attained-accuracy gap at high pins, stated in Sec 5.
+2. "four orders of magnitude" -> "more than two orders (400-600 to beyond 100k)" — arithmetic
+   slip in un-macro'd prose, exactly the failure mode the reviewer named.
+3. paper3/-vs-paper4 codename note added to Reproducibility.
+4. Sec 5 heading -> "the prior wins wherever there is delay to win".
+5. GitHub push for third-party timestamps: pending repo-scope decision (git root spans multiple
+   research projects) — surfaced to user.
+6. "dose response is monotone" -> "no dose wins at free norm" (abstract, Sec 6, fig 3 caption,
+   fig title). Seed-0 lam0.03 dips trivially below baseline; monotone was wrong as stated.
+arxiv_abstract.txt now 1,910 chars; zip rebuilt + clean-room re-verified (9pp).
+
 ## P4 PRE-REGISTERED AMENDMENT (E2/E3/E4) — committed 2026-07-14 BEFORE any amended run starts
 
 Context (from the completed free-norm cells of runs/grid4, 4 seeds each): supcon_aug is SLOWER at

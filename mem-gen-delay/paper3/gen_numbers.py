@@ -142,6 +142,30 @@ M("pfCNTBaseEightyRange", rng(num(min(b80f)), num(max(b80f))))
 M("pfCNTAugEightyRange", rng(num(min(a80)), num(max(a80))))
 r80 = [(100000 if b is None else b) / a for b, a in zip(b80, a80)]
 M("pfCNTEightyRatioRange", rng(f"{min(r80):.2f}", f"{max(r80):.2f}") + "\\ensuremath{\\times}")
+# slope refit at the relaxed 0.80 criterion: same pins (50-92), same seeds, but UNCENSORED in
+# every cell — closes the "censored fit can only fail to confirm >= 2" objection to K2
+import math
+
+def ols_slope(pts):
+    """OLS slope of ln(t) on norm, matching analysis/analyze_paper4.py's fit."""
+    xs = [p[0] for p in pts]
+    ys = [math.log(p[1]) for p in pts]
+    mx, my = sum(xs) / len(xs), sum(ys) / len(ys)
+    return sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sum((x - mx) ** 2 for x in xs)
+
+pts80 = {"base": [], "aug": []}
+for arm in ("base", "aug"):
+    for c in (50, 65, 80, 92):
+        for s in (0, 1, 3, 4):
+            t = t_cross("grid4b", f"{arm}_c{c}_s{s}", 0.80)
+            assert t is not None, f"unexpected censoring at 0.80: {arm}_c{c}_s{s}"
+            pts80[arm].append((c, t))
+a_b = ols_slope(pts80["base"])
+a_a = ols_slope(pts80["aug"])
+M("pfSlopeBaseEighty", f"{a_b:.3f}", a_b)
+M("pfSlopeAugEighty", f"{a_a:.3f}", a_a)
+M("pfSlopeRatioEighty", f"{a_b / a_a:.2f}", a_b / a_a)
+
 # budget-attained accuracy at pin 92 (the criterion-vs-ceiling decomposition)
 bceil = [max(r["test_acc"] for r in load_run("grid4b", f"base_c92_s{s}")[1]) for s in (0, 1, 3, 4)]
 aceil = [max(r["test_acc"] for r in load_run("grid4b", f"aug_c92_s{s}")[1]) for s in (0, 1, 3, 4)]

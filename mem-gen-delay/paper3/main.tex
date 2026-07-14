@@ -40,11 +40,12 @@ fails the pre-registered $0.85$ criterion within the $\pfBudget$-step budget on
 while the prior passes on 4/4 (\pfCNTAugCeilRange); at a relaxed $0.80$ criterion all seeds
 cross and the prior remains \pfCNTEightyRatioRange{} faster. \textbf{One pre-registered kill
 criterion fired and we report it}: the exponent-flattening magnitude does \emph{not} transfer
---- the fitted slope ratio is \pfSlopeRatio{} (a lower bound), versus ${\sim}\pfAlgFlatten$ on
-modular arithmetic; on natural data the prior buys a norm-growing multiplicative offset, not a
-slope change. Further pre-registered arms: a cross-example nearest-neighbor prior is null at
+--- the fitted slope ratio is \pfSlopeRatio{} (a censored lower bound; \pfSlopeRatioEighty{}
+when refit at a relaxed, fully uncensored criterion), versus ${\sim}\pfAlgFlatten$ on modular
+arithmetic; on natural data the prior buys a multiplicative offset, not a slope change.
+Further pre-registered arms: a cross-example nearest-neighbor prior is null at
 free norm (\pfNnTally{} under a pre-stated tally rule) despite \pfNnPurityRange{} label purity;
-the dose response is monotone and the norm side-effect saturates by $\lambda{=}0.03$, so
+the norm side-effect saturates by $\lambda{=}0.03$, so
 \emph{no} free-norm dose wins; the supervised prior transfers (\pfLabelMedSpeed{} on 5/5 seeds);
 wrong-structure pairing caps test accuracy at \pfShufCeilRange{} (the whether-dissociation
 transfers); and plain augmentation of the task loss abolishes the delay outright
@@ -224,7 +225,7 @@ in the repository):
   MNIST; no amended cell existed at pre-registration time.
 \end{itemize}
 
-\section{E2: at matched norm the prior wins everywhere; the exponent does not transfer}
+\section{E2: the prior wins wherever there is delay to win; the exponent does not transfer}
 \label{sec:e2}
 
 \begin{figure}[t]
@@ -247,8 +248,9 @@ within budget on only one of four seeds (\pfCNTBaseFinite{} steps; the others ce
 $\pfBudget$) while the prior reaches it on all four (\pfCNTAugRange). P1 and P2 are confirmed.
 The free-norm slowdown of Section~\ref{sec:free} is therefore fully attributable to the norm
 side-effect: remove the handicap by pinning both arms to the same clock, and the structure
-channel's benefit is present at every operating point, growing exactly where the delay law
-bites hardest.
+channel's benefit is present at every operating point where there is delay to win, and largest
+at the criterion level exactly where the delay law bites hardest (the robustness notes below
+decompose that growth).
 
 Two honesty notes on the pin-92 cell, both from post-hoc robustness checks (labeled as such;
 they were not pre-registered). First, censoring at the $0.85$ criterion partly reflects
@@ -267,10 +269,17 @@ branch (pins 50--92, censored cells scored at budget, making the baseline side a
 gives slope \pfSlopeBase{} per norm unit for baseline ($\pfSlopeBaseMult$ per $+10$) vs.\
 \pfSlopeAug{} for the prior ($\pfSlopeAugMult$ per $+10$): ratio \pfSlopeRatio{} (lower bound),
 far below both the pre-registered bar of 2 and the ${\sim}\pfAlgFlatten$ observed on modular
-arithmetic (\pfAlgCeSlope{} vs.\ \pfAlgSupconSlope{} per unit there). On natural data the prior
-shifts the delay-law curve down by a norm-growing factor; it does not change its exponent. The
-companion's most dramatic quantitative claim is, on this evidence, specific to settings where
-the generalizing solution is a sparse exact circuit.
+arithmetic (\pfAlgCeSlope{} vs.\ \pfAlgSupconSlope{} per unit there). Because the censored
+cells enter at budget, that fit by itself \emph{fails to confirm} a ratio $\geq 2$ rather than
+excluding one; the relaxed criterion closes the gap. Refit on the same pins and seeds at the
+$0.80$ bar --- uncensored in every cell --- the slopes are \pfSlopeBaseEighty{} (baseline)
+vs.\ \pfSlopeAugEighty{} (prior): ratio \pfSlopeRatioEighty. The absence of
+algorithmic-magnitude flattening is therefore an assertion, not a failure to confirm, and no
+censoring correction to the $0.85$ fit could plausibly recover \pfAlgFlatten. On natural data
+the prior shifts the delay-law curve down; it does not change its exponent (the apparent growth
+of the criterion-level ratios with norm traces to the budget-attained accuracy gap at high
+pins, per the robustness notes above). The companion's most dramatic quantitative claim is, on
+this evidence, specific to settings where the generalizing solution is a sparse exact circuit.
 
 \section{E3 and E4: content and dose}
 \label{sec:e3e4}
@@ -306,17 +315,18 @@ free-norm null is expected rather than exculpatory.
 \centering
 \includegraphics[width=0.42\textwidth]{figs/fig5_dose.pdf}\hfill
 \includegraphics[width=0.55\textwidth]{figs/fig4_probes.pdf}
-\caption{\textbf{Left (E4):} free-norm dose response, seeds 0 and 3. More prior is
-monotonically slower; even $\lambda{=}0.03$ freezes the norm near \pfDoseTinyNorm{} (the
-side-effect saturates before the benefit does), so no dose wins at free norm. \textbf{Right
+\caption{\textbf{Left (E4):} free-norm dose response, seeds 0 and 3. $\lambda{=}0.03$ is
+break-even with baseline and every larger dose is slower; even the tiny dose freezes the norm
+near \pfDoseTinyNorm{} (the side-effect saturates before the benefit does), so no dose wins at
+free norm. \textbf{Right
 (P5):} class cosine gap (probe) vs.\ test accuracy for the view prior (seed 0): structure is
 in place by ${\sim}1$--$2$k steps; behavior moves at ${\sim}16$--$20$k.}
 \label{fig:doseprobes}
 \end{figure}
 
 \paragraph{E4.} The dose response (Figure~\ref{fig:doseprobes}, left; $\lambda \in
-\{0, 0.03, 0.1, 0.3\}$) is monotone: at $\lambda{=}0.03$ the prior is break-even with baseline,
-and every larger dose is slower. The mechanism is unforgiving: the norm-freeze equilibrium
+\{0, 0.03, 0.1, 0.3\}$): $\lambda{=}0.03$ is break-even with baseline, and every larger dose
+is monotonically slower. The mechanism is unforgiving: the norm-freeze equilibrium
 barely moves with $\lambda$ (final $\W \approx \pfDoseTinyNorm$ even at $0.03$), so the
 Channel-2 handicap arrives at full strength before any Channel-1 benefit can pay for it. There
 is no free lunch at free norm; the confound is not a tuning artifact.
@@ -342,14 +352,15 @@ state the change.)
 data: content decides \emph{whether} (supervised prior \pfLabelMedSpeed{} on 5/5; wrong
 structure capped at \pfShufCeilRange{} with exploding norm), the weight norm is the clock
 (baseline generalizes precisely as $\W$ decays to \pfBaseNormAtGen; pinning $\W$ reproduces
-delay-law growth over four orders of magnitude of $\tgen$), the structure channel is real and
+delay-law growth over more than two orders of magnitude of $\tgen$, from \pfClampFloor{} steps
+at pin 23 to beyond the \pfBudget-step budget at pin 92), the structure channel is real and
 separable (matched-norm wins on every seed at every pin $\geq 50$, growing to
 \pfRatioCNinetyTwo{} where the baseline mostly fails criterion within budget), and structure
 demonstrably precedes behavior in the prior arms.
 
 \paragraph{What does not.} The exponent. On modular arithmetic, structure injection flattened
 the delay-law slope ${\sim}$\pfAlgFlatten; here the slopes are near-parallel
-(ratio \pfSlopeRatio, lower bound). Our working hypothesis, stated as hypothesis: exponent
+(ratio \pfSlopeRatio{} censored, \pfSlopeRatioEighty{} uncensored). Our working hypothesis, stated as hypothesis: exponent
 flattening requires the generalizing solution to be a sparse exact circuit whose features the
 prior can seed directly, as in \citep{nanda2023progress,gromov2023grokking}; MNIST's
 generalizing solution is a dense statistical classifier, and there a representational head
@@ -397,7 +408,8 @@ Section~\ref{sec:prereg}), not third-party; we consider the commits adequate for
 ``predictions preceded results'' and note their limits. P2 was disclosed non-blind. K3 as
 written (both-seed failure at $n{=}2$) could not fire on a 1--1 split; the pre-stated
 four-seed tally rule resolved E3 and we ran no seeds beyond it. The pin-92 robustness checks
-(budget-attained accuracy; the $0.80$ criterion) are post-hoc and labeled as such. The
+(budget-attained accuracy; the $0.80$ criterion, including the uncensored slope refit) are
+post-hoc and labeled as such. The
 $\pfAlgFlatten$ comparator inherits the companion's caveat that its plain-CE slope is itself a
 censored lower bound. $\tfit$ is essentially unaffected by the auxiliary term
 (\pfTfitFreeRange{} steps across all free-norm content arms), so none of the effects here are
@@ -410,6 +422,9 @@ exponent.
 \label{sec:repro}
 
 \begin{sloppypar}
+This study's internal codename is \texttt{paper4} (fourth project phase); it is the third
+manuscript in the repository, hence the \texttt{paper3/} directory --- runner and analysis
+filenames and commit messages use the codename.
 All numbers in this paper are macros generated from the run artifacts by
 \texttt{paper3/gen\_numbers.py} (writing \texttt{numbers.tex}) and byte-verified by
 \texttt{paper3/verify\_regen.py}. The analysis pipeline is

@@ -1,0 +1,89 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand*\HyPL@Entry[1]{}
+\citation{power2022grokking}
+\citation{companion2026a,companion2026b}
+\citation{khosla2020supervised}
+\citation{weightnormdelay2026}
+\HyPL@Entry{0<</S/D>>}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\citation{nanda2023progress,gromov2023grokking}
+\citation{liu2023omnigrok}
+\citation{companion2026a}
+\citation{liu2023omnigrok}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Setup}{2}{section.2}\protected@file@percent }
+\newlabel{sec:setup}{{2}{2}{Setup}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Grokking regime.}{2}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Conditions.}{2}{section*.2}\protected@file@percent }
+\citation{weightnormdelay2026,liu2023omnigrok}
+\citation{companion2026a}
+\citation{companion2026a}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces \textbf  {Free-norm grid (grid4, 35 runs).} The label-free view prior is \emph  {slower} on every paired seed; the supervised prior transfers; wrong structure blocks at a 0.76--0.79{} accuracy ceiling with norm exploding to 133--137; plain augmentation in the task loss and norm control each abolish the delay. Norm-pin rows pool both pinned arms (baseline and prior), which are indistinguishable at the optimum.}}{3}{table.1}\protected@file@percent }
+\newlabel{tab:free}{{1}{3}{\textbf {Free-norm grid (grid4, 35 runs).} The label-free view prior is \emph {slower} on every paired seed; the supervised prior transfers; wrong structure blocks at a \pfShufCeilRange {} accuracy ceiling with norm exploding to \pfShufNormRange ; plain augmentation in the task loss and norm control each abolish the delay. Norm-pin rows pool both pinned arms (baseline and prior), which are indistinguishable at the optimum}{table.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}The free-norm race: a clean negative, and its diagnosis}{3}{section.3}\protected@file@percent }
+\newlabel{sec:free}{{3}{3}{The free-norm race: a clean negative, and its diagnosis}{section.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {Left:} free-norm test-accuracy curves (median of 5 seeds). \textbf  {Right:} the diagnosis --- weight-norm trajectories (seed 0). The baseline's norm decays from ${\sim }94$ and it generalizes only on reaching 63--68. The view prior's auxiliary gradient equilibrates against weight decay and \emph  {freezes} the norm near 91--93{} for the entire run; the supervised prior grows the norm to 98--100{} yet still generalizes $2.06\ensuremath  {\times }$ faster; the wrong-structure control explodes to 133--137{} and caps. Norm dynamics and outcomes double-dissociate: content decides whether, norm modulates when.}}{4}{figure.1}\protected@file@percent }
+\newlabel{fig:free}{{1}{4}{\textbf {Left:} free-norm test-accuracy curves (median of 5 seeds). \textbf {Right:} the diagnosis --- weight-norm trajectories (seed 0). The baseline's norm decays from ${\sim }94$ and it generalizes only on reaching \pfBaseNormAtGen . The view prior's auxiliary gradient equilibrates against weight decay and \emph {freezes} the norm near \pfAugNormAtGen {} for the entire run; the supervised prior grows the norm to \pfLabelNormAtGen {} yet still generalizes $\pfLabelMedSpeed $ faster; the wrong-structure control explodes to \pfShufNormRange {} and caps. Norm dynamics and outcomes double-dissociate: content decides whether, norm modulates when}{figure.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}The pre-registered amendment}{4}{section.4}\protected@file@percent }
+\newlabel{sec:prereg}{{4}{4}{The pre-registered amendment}{section.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {Matched-norm delay law (n=4 seeds per cell).} $t_{\mathrm  {gen}}$ vs.\ pinned $\lVert W\rVert $, log scale; open triangles are censored runs at the $100{,}000$-step budget. Below the delay floor (pins 23--35) the arms tie. From pin 50 upward the prior wins on every seed at every norm, and the gap grows with norm: 1.44--1.96\ensuremath  {\times }{} at 50, 1.53--2.03\ensuremath  {\times }{} at 65, 1.86--2.57\ensuremath  {\times }{} at 80, 2.08--2.42\ensuremath  {\times }{} at 92 (lower bounds there: 3/4{} baseline seeds censor). The two curves are nearly parallel on the log scale --- a multiplicative offset, not the algorithmic-task slope collapse.}}{5}{figure.2}\protected@file@percent }
+\newlabel{fig:delaylaw}{{2}{5}{\textbf {Matched-norm delay law (n=4 seeds per cell).} $\tgen $ vs.\ pinned $\W $, log scale; open triangles are censored runs at the $\pfBudget $-step budget. Below the delay floor (pins 23--35) the arms tie. From pin 50 upward the prior wins on every seed at every norm, and the gap grows with norm: \pfRatioCFifty {} at 50, \pfRatioCSixtyFive {} at 65, \pfRatioCEighty {} at 80, \pfRatioCNinetyTwo {} at 92 (lower bounds there: \pfCNTBaseCensored {} baseline seeds censor). The two curves are nearly parallel on the log scale --- a multiplicative offset, not the algorithmic-task slope collapse}{figure.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}E2: the prior wins wherever there is delay to win; the exponent does not transfer}{5}{section.5}\protected@file@percent }
+\newlabel{sec:e2}{{5}{5}{E2: the prior wins wherever there is delay to win; the exponent does not transfer}{section.5}{}}
+\citation{companion2026b}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \textbf  {E3: cross-example nearest-neighbor prior at free norm.} Tally 2--2{} under the pre-stated rule: no evidence of free-norm transfer. Wins are marginal; the seed-1 loss is large (0.52\ensuremath  {\times }); purity clears the pre-registered $0.8$ bar on every seed.}}{6}{table.2}\protected@file@percent }
+\newlabel{tab:nn}{{2}{6}{\textbf {E3: cross-example nearest-neighbor prior at free norm.} Tally \pfNnTally {} under the pre-stated rule: no evidence of free-norm transfer. Wins are marginal; the seed-1 loss is large (\pfNnWorstRatio ); purity clears the pre-registered $0.8$ bar on every seed}{table.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}E3 and E4: content and dose}{6}{section.6}\protected@file@percent }
+\newlabel{sec:e3e4}{{6}{6}{E3 and E4: content and dose}{section.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{E3.}{6}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{E4.}{6}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}P5: structure forms long before behavior}{6}{section.7}\protected@file@percent }
+\newlabel{sec:probes}{{7}{6}{P5: structure forms long before behavior}{section.7}{}}
+\citation{nanda2023progress,gromov2023grokking}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {Left (E4):} free-norm dose response, seeds 0 and 3. $\lambda {=}0.03$ is break-even with baseline and every larger dose is slower; even the tiny dose freezes the norm near 90{} (the side-effect saturates before the benefit does), so no dose wins at free norm. \textbf  {Right (P5):} class cosine gap (probe) vs.\ test accuracy for the view prior (seed 0): structure is in place by ${\sim }1$--$2$k steps; behavior moves at ${\sim }16$--$20$k.}}{7}{figure.3}\protected@file@percent }
+\newlabel{fig:doseprobes}{{3}{7}{\textbf {Left (E4):} free-norm dose response, seeds 0 and 3. $\lambda {=}0.03$ is break-even with baseline and every larger dose is slower; even the tiny dose freezes the norm near \pfDoseTinyNorm {} (the side-effect saturates before the benefit does), so no dose wins at free norm. \textbf {Right (P5):} class cosine gap (probe) vs.\ test accuracy for the view prior (seed 0): structure is in place by ${\sim }1$--$2$k steps; behavior moves at ${\sim }16$--$20$k}{figure.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Discussion}{7}{section.8}\protected@file@percent }
+\newlabel{sec:disc}{{8}{7}{Discussion}{section.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{What transfers.}{7}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What does not.}{7}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Augmentation is two different interventions.}{7}{section*.7}\protected@file@percent }
+\citation{liu2023omnigrok}
+\citation{weightnormdelay2026}
+\citation{radialsuppression2026,twospeeds2026}
+\citation{lee2024grokfast}
+\citation{weightnormdelay2026}
+\bibstyle{unsrtnat}
+\bibdata{references}
+\@writefile{toc}{\contentsline {paragraph}{Practical guidance.}{8}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Relation to prior work.}{8}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Limitations and disclosures}{8}{section.9}\protected@file@percent }
+\newlabel{sec:limits}{{9}{8}{Limitations and disclosures}{section.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Reproducibility}{8}{section.10}\protected@file@percent }
+\newlabel{sec:repro}{{10}{8}{Reproducibility}{section.10}{}}
+\bibcite{power2022grokking}{{1}{2022}{{Power et~al.}}{{Power, Burda, Edwards, Babuschkin, and Misra}}}
+\bibcite{companion2026a}{{2}{2026{}}{{Howe}}{{}}}
+\bibcite{companion2026b}{{3}{2026{}}{{Howe}}{{}}}
+\bibcite{khosla2020supervised}{{4}{2020}{{Khosla et~al.}}{{Khosla, Teterwak, Wang, Sarna, Tian, Isola, Maschinot, Liu, and Krishnan}}}
+\bibcite{weightnormdelay2026}{{5}{2026}{{Truong et~al.}}{{Truong, Doan, Luu, and Phan}}}
+\bibcite{nanda2023progress}{{6}{2023}{{Nanda et~al.}}{{Nanda, Chan, Lieberum, Smith, and Steinhardt}}}
+\bibcite{gromov2023grokking}{{7}{2023}{{Gromov}}{{}}}
+\bibcite{liu2023omnigrok}{{8}{2023}{{Liu et~al.}}{{Liu, Michaud, and Tegmark}}}
+\bibcite{radialsuppression2026}{{9}{2026}{{Tiwari et~al.}}{{Tiwari, Chauhan, and Singh}}}
+\bibcite{twospeeds2026}{{10}{2026}{{Chou et~al.}}{{Chou, Uzdelewicz, Chiu, Yang, and Chung}}}
+\bibcite{lee2024grokfast}{{11}{2024}{{Lee et~al.}}{{Lee, Kang, Kim, and Lee}}}
+\@writefile{toc}{\contentsline {paragraph}{Acknowledgments.}{9}{section*.10}\protected@file@percent }
+\gdef \@abspage@last{9}

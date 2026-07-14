@@ -148,10 +148,13 @@
   "pfShufCensored": "5/5",
   "pfShufNormRange": "133--137",
   "pfSlopeAug": 0.04894,
+  "pfSlopeAugEighty": 0.05683057360677182,
   "pfSlopeAugMult": 1.631,
   "pfSlopeBase": 0.05706,
+  "pfSlopeBaseEighty": 0.05835755176654641,
   "pfSlopeBaseMult": 1.769,
   "pfSlopeRatio": 1.166,
+  "pfSlopeRatioEighty": 1.026868955614283,
   "pfTfitFreeRange": [
     600,
     800
