@@ -77,6 +77,28 @@ seeds reported regardless of outcome; E3 verdict = per-seed paired tally over 4 
 strictly smaller t_gen than same-seed baseline); NO further seeds after {1,4} whatever happens;
 E2 extension exists to put n=4 behind the slope fits, not to re-litigate K2.
 
+### FINAL amendment verdicts, n=4 (2026-07-14, grid4b complete: 46 runs)
+- E2 CONFIRMED at n=4, every seed, every pinned norm >= 50: base/aug delay ratio c50 1.44-1.96x,
+  c65 1.53-2.03x, c80 1.86-2.57x, c92 2.08-2.42x. At c92 baseline CENSORS 3/4 seeds (only s3
+  finishes, 84k) while the prior groks 4/4 (40.4-44.4k) -> at high pinned norm the prior is the
+  difference between generalizing and not, on natural data. K1 definitively no-fire; c92 ratios
+  are conservative lower bounds (censored scored at budget).
+- K2 STANDS (fired): n=4 ascending-branch slope ratio ~1.15-1.2 (baseline side a lower bound via
+  censoring). No algorithmic-magnitude exponent flattening on MNIST; benefit = multiplicative
+  offset growing with norm, NOT a slope change. Scope limit on Paper 3's 17x, stated as such.
+- E3 FINAL: 2-2 (per pre-stated tally rule). Wins marginal (s3 1.05x, s4 1.04x), losses real
+  (s0 0.88x, s1 0.52x — 72.4k vs 37.6k). Purity 0.812-0.844 (bar met on all seeds). VERDICT:
+  no evidence of free-norm transfer for the cross-example label-free prior; heterogeneous harm
+  on one seed echoes the Paper-1 norm-channel bimodality. nn final norms 114-119 (worst
+  Channel-2 handicap of any prior arm). Rule honored: no further seeds.
+- Amendment scorecard: P1 Y, P2 Y (disclosed non-blind), P3 N (K2 fired), P4 N (E3 2-2), P5 Y
+  (directional). Free-norm negative (view prior slower 5/5) reported in full per D2.
+- Paper 4 story locked by the data: (1) free-norm race = channel confound that makes good priors
+  look bad; (2) structure channel TRANSFERS (matched-norm 1.4-2.4x growing with norm; 3/4
+  baseline censoring at c92 vs 4/4 prior groks); (3) exponent-flattening magnitude does NOT
+  transfer (~1.2x vs 17x); (4) no free-norm dose wins, Channel-2 saturates by lam 0.03; (5)
+  label prior 2.1x 5/5, wrong-structure ceiling-blocks 5/5, augce/clamp abolish the delay.
+
 ## Paper 3 (paper2/main.pdf, 7pp) — "What Makes a Representational Prior Work?"
 178 new runs (runs/grid3). All numbers macro-generated (paper2/gen_numbers.py), verify_regen PASSES.
 - R1 band control: 1/15 grok ≈ random (p=0.43), ≠ true (p=2.3e-5) → FEATURE-FAMILY account CONFIRMED.
