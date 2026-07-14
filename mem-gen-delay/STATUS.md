@@ -31,6 +31,16 @@ cs.LG primary + stat.ML cross-list as before; wire real arXiv IDs into companion
    fig title). Seed-0 lam0.03 dips trivially below baseline; monotone was wrong as stated.
 arxiv_abstract.txt now 1,910 chars; zip rebuilt + clean-room re-verified (9pp).
 
+### Review round 2 (2026-07-14): refit-consistency propagation
+The 1.03 parallel-slopes result contradicted two leftover "grows with norm" claims (intro
+bullet 3; fig 2 caption asserted growth AND log-parallel constancy in adjacent sentences).
+Unified story now everywhere: roughly constant multiplicative offset (slope ratio 1.03
+uncensored) + budget-attained accuracy advantage at high pin that inflates strict-criterion
+ratios. Abstract "from X to Y" -> "criterion-level ratios X at 50 and Y at 92". Slopes now
+printed at 4 decimals (0.0571/0.0489 -> 1.17; 0.0584/0.0568 -> 1.03) so quoted ratios
+reproduce from printed values — the 3-decimal prints computed to 1.02/1.16, a reproducibility
+gap the user caught. arxiv_abstract.txt 1,902 chars; zip + clean-room re-verified (9pp).
+
 ## P4 PRE-REGISTERED AMENDMENT (E2/E3/E4) — committed 2026-07-14 BEFORE any amended run starts
 
 Context (from the completed free-norm cells of runs/grid4, 4 seeds each): supcon_aug is SLOWER at

@@ -34,7 +34,8 @@ the baseline's norm decays to \pfBaseNormAtGen{} before it generalizes --- the r
 the prior's structure channel with its known norm side-effect. A pre-registered amendment
 (predictions, kill criteria, and disclosures committed before any amended run) de-confounds the
 comparison: \textbf{at matched (pinned) norm the prior wins at every norm $\geq 50$ on every
-seed}, from \pfRatioCFifty{} at norm 50 to \pfRatioCNinetyTwo{} at norm 92, where the baseline
+seed}, with criterion-level ratios \pfRatioCFifty{} at norm 50 and \pfRatioCNinetyTwo{} at norm
+92, where the baseline
 fails the pre-registered $0.85$ criterion within the $\pfBudget$-step budget on
 \pfCNTBaseCensored{} seeds (budget-attained accuracy \pfCNTBaseCeilRange, still climbing slowly)
 while the prior passes on 4/4 (\pfCNTAugCeilRange); at a relaxed $0.80$ criterion all seeds
@@ -87,8 +88,10 @@ We report the study in the order it happened, because the order is the finding:
 \item \textbf{A pre-registered amendment de-confounds} (Sections~\ref{sec:prereg}--\ref{sec:e2}):
   predictions, kill criteria, and disclosures were committed to the repository \emph{before} any
   amended run started. At matched (pinned) norm the prior wins on every seed at every norm
-  $\geq 50$, and the advantage grows with norm. One kill criterion fired --- the exponent
-  magnitude does not transfer --- and we report it as registered.
+  $\geq 50$, as a roughly constant multiplicative offset (uncensored slope ratio
+  \pfSlopeRatioEighty); criterion-level ratios reach \pfRatioCNinetyTwo{} at pin 92, where
+  baselines also fail to attain the accuracy bar within budget. One kill criterion fired ---
+  the exponent magnitude does not transfer --- and we report it as registered.
 \item \textbf{Content, dose, and probe arms complete the map}
   (Sections~\ref{sec:e3e4}--\ref{sec:probes}): a cross-example nearest-neighbor prior is null at
   free norm; no dose of the view prior wins at free norm because the norm side-effect saturates
@@ -233,8 +236,8 @@ in the repository):
 \includegraphics[width=0.6\textwidth]{figs/fig3_delaylaw.pdf}
 \caption{\textbf{Matched-norm delay law (n=4 seeds per cell).} $\tgen$ vs.\ pinned $\W$, log
 scale; open triangles are censored runs at the $\pfBudget$-step budget. Below the delay floor
-(pins 23--35) the arms tie. From pin 50 upward the prior wins on every seed at every norm, and
-the gap grows with norm: \pfRatioCFifty{} at 50, \pfRatioCSixtyFive{} at 65, \pfRatioCEighty{}
+(pins 23--35) the arms tie. From pin 50 upward the prior wins on every seed at every norm;
+criterion-level ratios: \pfRatioCFifty{} at 50, \pfRatioCSixtyFive{} at 65, \pfRatioCEighty{}
 at 80, \pfRatioCNinetyTwo{} at 92 (lower bounds there: \pfCNTBaseCensored{} baseline seeds
 censor). The two curves are nearly parallel on the log scale --- a multiplicative offset, not
 the algorithmic-task slope collapse.}

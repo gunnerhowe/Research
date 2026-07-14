@@ -119,10 +119,11 @@ M("pfCNTBaseFinite", num(fin[0]), fin[0])
 ag = E2["92"]["aug"]["t_gen"]
 M("pfCNTAugRange", rng(num(min(ag)), num(max(ag))))
 SF = S["e2_matched_norm"]["slope_fits"]
-M("pfSlopeBase", f"{SF['base']['slope_per_unit']:.3f}", SF["base"]["slope_per_unit"])
+# slopes printed at 4 decimals so the quoted ratio is reproducible from the printed values
+M("pfSlopeBase", f"{SF['base']['slope_per_unit']:.4f}", SF["base"]["slope_per_unit"])
 M("pfSlopeBaseMult", f"{SF['base']['mult_per_10']:.2f}\\ensuremath{{\\times}}",
   SF["base"]["mult_per_10"])
-M("pfSlopeAug", f"{SF['aug']['slope_per_unit']:.3f}", SF["aug"]["slope_per_unit"])
+M("pfSlopeAug", f"{SF['aug']['slope_per_unit']:.4f}", SF["aug"]["slope_per_unit"])
 M("pfSlopeAugMult", f"{SF['aug']['mult_per_10']:.2f}\\ensuremath{{\\times}}",
   SF["aug"]["mult_per_10"])
 M("pfSlopeRatio", f"{SF['slope_ratio_base_over_aug']:.2f}",
@@ -162,8 +163,8 @@ for arm in ("base", "aug"):
             pts80[arm].append((c, t))
 a_b = ols_slope(pts80["base"])
 a_a = ols_slope(pts80["aug"])
-M("pfSlopeBaseEighty", f"{a_b:.3f}", a_b)
-M("pfSlopeAugEighty", f"{a_a:.3f}", a_a)
+M("pfSlopeBaseEighty", f"{a_b:.4f}", a_b)
+M("pfSlopeAugEighty", f"{a_a:.4f}", a_a)
 M("pfSlopeRatioEighty", f"{a_b / a_a:.2f}", a_b / a_a)
 
 # budget-attained accuracy at pin 92 (the criterion-vs-ceiling decomposition)
