@@ -1,0 +1,160 @@
+{
+  "pfAlgCeFactor": "31\\ensuremath{\\times}",
+  "pfAlgCeSlope": "0.344",
+  "pfAlgFlatten": "17\\ensuremath{\\times}",
+  "pfAlgSupconFactor": "1.22\\ensuremath{\\times}",
+  "pfAlgSupconSlope": "0.020",
+  "pfAmendRuns": "48",
+  "pfAugCeilFree": "0.87--0.89",
+  "pfAugMedSlow": 1.31,
+  "pfAugNormAtGen": "91--93",
+  "pfAugSlowCount": "5/5",
+  "pfAugTgenRange": "41{,}600--46{,}000",
+  "pfAugceCeilFree": "0.92--0.93",
+  "pfAugceMedSpeed": 17.909,
+  "pfAugceTgenRange": "1{,}800--2{,}200",
+  "pfBaseAccAtHighNorm": "0.22",
+  "pfBaseAccCross": "9{,}000--9{,}800",
+  "pfBaseCeilFree": "0.87--0.88",
+  "pfBaseNormAtGen": "63--68",
+  "pfBaseProbeCross": "31{,}800--35{,}200",
+  "pfBaseTgenRange": "29{,}800--39{,}400",
+  "pfBudget": 100000,
+  "pfCNTAugCeilRange": "0.875--0.887",
+  "pfCNTAugEightyRange": "32{,}600--36{,}200",
+  "pfCNTAugRange": "40{,}400--44{,}400",
+  "pfCNTBaseCeilRange": "0.836--0.856",
+  "pfCNTBaseCensored": "3/4",
+  "pfCNTBaseEightyCensored": "0/4",
+  "pfCNTBaseEightyRange": "43{,}000--64{,}800",
+  "pfCNTBaseFinite": 84000,
+  "pfCNTEightyRatioRange": "1.32--1.84\\ensuremath{\\times}",
+  "pfClampFloor": [
+    400,
+    400,
+    400,
+    400,
+    400,
+    400,
+    400,
+    400,
+    400,
+    600
+  ],
+  "pfDoseTableBody": [
+    {
+      "final_norm": 62.08,
+      "lam": 0.0,
+      "seed": 0,
+      "t_gen": 33400
+    },
+    {
+      "final_norm": 63.63,
+      "lam": 0.0,
+      "seed": 3,
+      "t_gen": 29800
+    },
+    {
+      "final_norm": 90.02,
+      "lam": 0.03,
+      "seed": 0,
+      "t_gen": 33000
+    },
+    {
+      "final_norm": 91.52,
+      "lam": 0.03,
+      "seed": 3,
+      "t_gen": 31000
+    },
+    {
+      "final_norm": 89.46,
+      "lam": 0.1,
+      "seed": 0,
+      "t_gen": 36800
+    },
+    {
+      "final_norm": 90.48,
+      "lam": 0.1,
+      "seed": 3,
+      "t_gen": 35600
+    },
+    {
+      "final_norm": 90.92,
+      "lam": 0.3,
+      "seed": 0,
+      "t_gen": 43600
+    },
+    {
+      "final_norm": 94.08,
+      "lam": 0.3,
+      "seed": 3,
+      "t_gen": 41600
+    }
+  ],
+  "pfDoseTinyNorm": 90.02,
+  "pfFreeRuns": "35",
+  "pfLabelCeilFree": "0.92--0.93",
+  "pfLabelMedSpeed": 2.064,
+  "pfLabelNormAtGen": "98--100",
+  "pfLabelSpeedRange": "1.96--2.49",
+  "pfLabelTgenRange": "15{,}200--17{,}400",
+  "pfNnNormRange": "114--132",
+  "pfNnPurityRange": "0.81--0.84",
+  "pfNnTableBody": [
+    {
+      "baseline": 33400,
+      "nn": 38000,
+      "purity": 0.844,
+      "ratio": 0.879,
+      "seed": 0,
+      "win": false
+    },
+    {
+      "baseline": 37600,
+      "nn": 72400,
+      "purity": 0.812,
+      "ratio": 0.519,
+      "seed": 1,
+      "win": false
+    },
+    {
+      "baseline": 29800,
+      "nn": 28400,
+      "purity": 0.83,
+      "ratio": 1.049,
+      "seed": 3,
+      "win": true
+    },
+    {
+      "baseline": 39400,
+      "nn": 38000,
+      "purity": 0.822,
+      "ratio": 1.037,
+      "seed": 4,
+      "win": true
+    }
+  ],
+  "pfNnTally": "2--2",
+  "pfNnWorstRatio": 0.519,
+  "pfPinCeilFree": "0.91--0.93",
+  "pfProbeGapThresh": "0.09",
+  "pfProbeLeadAug": "17{,}400--18{,}200",
+  "pfProbeLeadNn": "8{,}400--8{,}800",
+  "pfRatioCEighty": "1.86--2.57\\ensuremath{\\times}",
+  "pfRatioCFifty": "1.44--1.96\\ensuremath{\\times}",
+  "pfRatioCNinetyTwo": "2.08--2.42\\ensuremath{\\times}",
+  "pfRatioCSixtyFive": "1.53--2.03\\ensuremath{\\times}",
+  "pfShufCeilRange": "0.76--0.79",
+  "pfShufCensored": "5/5",
+  "pfShufNormRange": "133--137",
+  "pfSlopeAug": 0.04894,
+  "pfSlopeAugMult": 1.631,
+  "pfSlopeBase": 0.05706,
+  "pfSlopeBaseMult": 1.769,
+  "pfSlopeRatio": 1.166,
+  "pfTfitFreeRange": [
+    600,
+    800
+  ],
+  "pfTotalRuns": "83"
+}
