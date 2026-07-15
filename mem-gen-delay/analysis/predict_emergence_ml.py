@@ -29,15 +29,45 @@ FA_CAP = 0.05
 def featnames(domain, which):
     base = {"S": SIG_S[domain], "R": SIG_R[domain],
             "SR": SIG_S[domain] + SIG_R[domain]}[which]
-    return [s for b in base for s in (b, "d." + b)]
+    names = [s for b in base for s in (b, "d." + b)]
+    if which.endswith("q"):
+        pass  # handled by caller passing base set name
+    return names
+
+
+def quad_names(domain, which):
+    """Mechanism-motivated nonlinear features: the viable-norm window is a band-pass in
+    wnorm (Papers 1-3: too low = inversion trap, too high = delay-law censoring), which a
+    linear model cannot express. Add wnorm^2 and structure-x-norm interactions."""
+    names = featnames(domain, which)
+    out = list(names)
+    if "wnorm" in names:
+        out.append("wnorm^2")
+        for r in SIG_R[domain]:
+            if r in names:
+                out += [f"{r}*wnorm", f"{r}*wnorm^2"]
+    return out
 
 
 def run_matrix(run, names):
     cols = []
     n = len(run["times"])
+    base = run["_sigs"]
     for k in names:
-        v = run["_sigs"].get(k)
-        cols.append(v if v is not None else np.full(n, np.nan))
+        if k == "wnorm^2":
+            w = base.get("wnorm")
+            cols.append(w ** 2 if w is not None else np.full(n, np.nan))
+        elif "*" in k:
+            a, b = k.split("*", 1)
+            va = base.get(a)
+            vb = base.get("wnorm")
+            if va is None or vb is None:
+                cols.append(np.full(n, np.nan))
+            else:
+                cols.append(va * (vb ** 2 if b == "wnorm^2" else vb))
+        else:
+            v = base.get(k)
+            cols.append(v if v is not None else np.full(n, np.nan))
     return np.stack(cols, 1)  # (T, F)
 
 

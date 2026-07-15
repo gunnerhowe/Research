@@ -16,7 +16,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import predict_emergence as pe
-from predict_emergence_ml import (featnames, build_dataset, run_matrix,
+from predict_emergence_ml import (featnames, quad_names, build_dataset, run_matrix,
                                   predict_run, alarm_lead, evaluate)
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -69,8 +69,9 @@ def main():
         val_runs = [r for r in dom if r["seed"] % 4 == 2]
         tg = [r["t_gen"] for r in fit_runs if r["t_gen"] is not None]
         base_W = float(np.median(tg))
-        for which in ("S", "R", "SR"):
-            names = featnames(domain, which)
+        for which, use_quad in (("S", False), ("R", False), ("SR", False), ("SR", True)):
+            names = quad_names(domain, which) if use_quad else featnames(domain, which)
+            which = which + ("q" if use_quad else "")
             for pw, iters, lr, wm in itertools.product(grid_pw, grid_iters, grid_lr,
                                                        grid_wmult):
                 W = wm * base_W
