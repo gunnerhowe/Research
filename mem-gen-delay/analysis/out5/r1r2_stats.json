@@ -1,0 +1,307 @@
+{
+  "r1_alg": {
+    "rows": [
+      {
+        "set": "S",
+        "signal": "test_ce",
+        "dir": "<=",
+        "theta": 0.00021,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.456,
+        "test_fa": 0.0,
+        "n_pos": 125,
+        "n_neg": 41
+      },
+      {
+        "set": "S",
+        "signal": "conf",
+        "dir": ">=",
+        "theta": 0.9998,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.448,
+        "test_fa": 0.0,
+        "n_pos": 125,
+        "n_neg": 41
+      },
+      {
+        "set": "R",
+        "signal": "fourier_top8",
+        "dir": ">=",
+        "theta": 0.92692,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.248,
+        "test_fa": 0.0,
+        "n_pos": 125,
+        "n_neg": 41
+      },
+      {
+        "set": "R",
+        "signal": "fourier_gini",
+        "dir": ">=",
+        "theta": 0.87904,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.6,
+        "test_fa": 0.0,
+        "n_pos": 125,
+        "n_neg": 41
+      },
+      {
+        "set": "R",
+        "signal": "cos_gap",
+        "dir": ">=",
+        "theta": 0.80869,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.68,
+        "test_fa": 0.0,
+        "n_pos": 125,
+        "n_neg": 41
+      },
+      {
+        "set": "R",
+        "signal": "d.cos_gap",
+        "dir": "<=",
+        "theta": -0.06789,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.384,
+        "test_fa": 0.073,
+        "n_pos": 125,
+        "n_neg": 41
+      },
+      {
+        "set": "R",
+        "signal": "fisher",
+        "dir": ">=",
+        "theta": 9.47227,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.608,
+        "test_fa": 0.024,
+        "n_pos": 125,
+        "n_neg": 41
+      },
+      {
+        "set": "R",
+        "signal": "d.fisher",
+        "dir": "<=",
+        "theta": -1.23448,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.384,
+        "test_fa": 0.024,
+        "n_pos": 125,
+        "n_neg": 41
+      }
+    ],
+    "champions": {
+      "S": "test_ce",
+      "R": "fourier_top8"
+    }
+  },
+  "r2_alg": {
+    "rows": [
+      {
+        "set": "S",
+        "signal": "test_ce",
+        "dir": "<=",
+        "theta": 0.00125,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.323,
+        "test_fa": 0.0,
+        "n_pos": 220,
+        "n_neg": 34
+      },
+      {
+        "set": "R",
+        "signal": "fourier_top8",
+        "dir": ">=",
+        "theta": 0.95414,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.35,
+        "test_fa": 0.059,
+        "n_pos": 220,
+        "n_neg": 34
+      },
+      {
+        "set": "R",
+        "signal": "fourier_gini",
+        "dir": ">=",
+        "theta": 0.88,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.509,
+        "test_fa": 0.059,
+        "n_pos": 220,
+        "n_neg": 34
+      },
+      {
+        "set": "R",
+        "signal": "fisher",
+        "dir": ">=",
+        "theta": 8.67412,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.559,
+        "test_fa": 0.029,
+        "n_pos": 220,
+        "n_neg": 34
+      },
+      {
+        "set": "R",
+        "signal": "d.fisher",
+        "dir": "<=",
+        "theta": -0.59723,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.332,
+        "test_fa": 0.029,
+        "n_pos": 220,
+        "n_neg": 34
+      }
+    ],
+    "champions": {
+      "S": "test_ce",
+      "R": "fourier_top8"
+    }
+  },
+  "r1_mnist": {
+    "rows": [
+      {
+        "set": "S",
+        "signal": "wnorm",
+        "dir": "<=",
+        "theta": 91.92256,
+        "train_med_lead": 2600.0,
+        "test_med_lead": 1000.0,
+        "test_rel_lead": 0.4444,
+        "test_miss": 0.229,
+        "test_fa": 0.0,
+        "n_pos": 35,
+        "n_neg": 3
+      },
+      {
+        "set": "R",
+        "signal": "d.cos_gap",
+        "dir": ">=",
+        "theta": 0.00745,
+        "train_med_lead": 400.0,
+        "test_med_lead": 4000.0,
+        "test_rel_lead": 0.8,
+        "test_miss": 0.2,
+        "test_fa": 0.333,
+        "n_pos": 35,
+        "n_neg": 3
+      },
+      {
+        "set": "S",
+        "signal": "d.wnorm",
+        "dir": "<=",
+        "theta": -0.98892,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.886,
+        "test_fa": 0.0,
+        "n_pos": 35,
+        "n_neg": 3
+      },
+      {
+        "set": "R",
+        "signal": "cos_gap",
+        "dir": ">=",
+        "theta": 0.12004,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.229,
+        "test_fa": 0.333,
+        "n_pos": 35,
+        "n_neg": 3
+      }
+    ],
+    "champions": {
+      "S": "wnorm",
+      "R": "d.cos_gap"
+    }
+  },
+  "r2_mnist": {
+    "rows": [
+      {
+        "set": "S",
+        "signal": "wnorm",
+        "dir": "<=",
+        "theta": 80.0,
+        "train_med_lead": 8200.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 0.512,
+        "test_fa": null,
+        "n_pos": 43,
+        "n_neg": 0
+      },
+      {
+        "set": "S",
+        "signal": "d.wnorm",
+        "dir": "<=",
+        "theta": -1.2252,
+        "train_med_lead": 0.0,
+        "test_med_lead": 0.0,
+        "test_rel_lead": 0.0,
+        "test_miss": 1.0,
+        "test_fa": null,
+        "n_pos": 43,
+        "n_neg": 0
+      },
+      {
+        "set": "R",
+        "signal": "cos_gap",
+        "dir": ">=",
+        "theta": 0.12863,
+        "train_med_lead": 0.0,
+        "test_med_lead": 4400.0,
+        "test_rel_lead": 0.1805,
+        "test_miss": 0.047,
+        "test_fa": null,
+        "n_pos": 43,
+        "n_neg": 0
+      },
+      {
+        "set": "R",
+        "signal": "d.cos_gap",
+        "dir": ">=",
+        "theta": 0.01075,
+        "train_med_lead": 0.0,
+        "test_med_lead": 16400.0,
+        "test_rel_lead": 0.9425,
+        "test_miss": 0.0,
+        "test_fa": null,
+        "n_pos": 43,
+        "n_neg": 0
+      }
+    ],
+    "champions": {
+      "S": "wnorm",
+      "R": "cos_gap"
+    }
+  }
+}
