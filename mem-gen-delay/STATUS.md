@@ -84,7 +84,21 @@ formation and stays silent on shufpair — the same two-failure-mode lesson as R
 validation this time. Exploratory scale (n=2 seeds, 1 negative/side) -> confirmation below.
 Also: base_c92 keeps validating the censoring-noise class (s8 93.6k, s9 92.8k IN budget).
 
-### P5 R5b CONFIRMATION (pre-registered NOW; grid5r5b empty at commit)
+### P5 R5b VERDICT (2026-07-16): K9 FIRES — label-free superiority claim DIES as registered
+d.top1_frac at the frozen threshold: median lead 34,200 (above the 18,100 bar) BUT
+false-alarmed on supcon_shufpair_s10 (1/3 fresh structural negatives) -> K9 fires on the FA
+clause. Per-run pattern is the real lesson: it led hugely on all 3 supcon_aug runs
+(38.8-42.8k ~ the whole delay) but scored 0 on 2/3 BASELINES — the signal is largely an
+AUX-ARM DETECTOR (the contrastive term drives sharp early spectral collapse; baseline
+collapse is gentler; shufpair's aux term sometimes trips it). Retroactively explains the
+R5 exploratory number. cos_gap passed its lead bar (13,400 >= 3,600) but ALSO false-alarmed
+on 1/3 (shufpair_s12) and scored 0 on all 3 baselines — the seed-8-fit threshold sits at
+baseline's ceiling. RUNG LESSON (ships in the paper): single-threshold probes calibrated on
+small negative sets are fragile out-of-sample (~1/3 FA both families); the R1-R3 core
+results are untouched (different machinery, larger negative sets, R3 prospective FA = 0),
+but R5 ships as "label-free spectra: exploratory promise, FAILED pre-registered
+confirmation; forecasting signatures were substantially intervention-signatures."
+ALL P5 EXPERIMENTS COMPLETE. Next: paper5/ manuscript.
 Frozen artifacts: the seed-8-fit thresholds exactly as committed in out5/r5_scored.json —
 d.top1_frac >= 0.006197 and cos_gap >= 0.1107. New runs grid5r5b: seeds {10,11,12} x
 {baseline, supcon_aug lam0.3, supcon_shufpair} = 9 runs (6 positives, 3 structural

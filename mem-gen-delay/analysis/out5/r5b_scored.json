@@ -1,0 +1,37 @@
+{
+  "d.top1_frac": {
+    "per_run_leads": {
+      "baseline_s10": 29600.0,
+      "baseline_s11": 0.0,
+      "baseline_s12": 0.0,
+      "supcon_aug_s10": 38800.0,
+      "supcon_aug_s11": 39000.0,
+      "supcon_aug_s12": 42800.0
+    },
+    "median_lead": 34200.0,
+    "median_rel": 0.9710973166486025,
+    "bar": 18100,
+    "false_alarms": [
+      "supcon_shufpair_s10"
+    ],
+    "passed": false
+  },
+  "cos_gap": {
+    "per_run_leads": {
+      "baseline_s10": 0.0,
+      "baseline_s11": 0.0,
+      "baseline_s12": 0.0,
+      "supcon_aug_s10": 29800.0,
+      "supcon_aug_s11": 37200.0,
+      "supcon_aug_s12": 26800.0
+    },
+    "median_lead": 13400.0,
+    "median_rel": 0.3059360730593607,
+    "bar": 3600,
+    "false_alarms": [
+      "supcon_shufpair_s12"
+    ],
+    "passed": true
+  },
+  "K9_fires": true
+}
