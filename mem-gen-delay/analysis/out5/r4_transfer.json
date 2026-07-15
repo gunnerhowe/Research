@@ -1,0 +1,83 @@
+{
+  "alg_to_mnist": {
+    "rows": [
+      {
+        "signal": "z.cos_gap",
+        "dir": ">=",
+        "theta": 3.2171,
+        "src_lead": 0.0,
+        "tgt_lead": 0.0,
+        "tgt_rel": 0.0,
+        "tgt_miss": 0.8666666666666667,
+        "tgt_fa": 0.0
+      },
+      {
+        "signal": "z.d.cos_gap",
+        "dir": "<=",
+        "theta": -1.3328,
+        "src_lead": 0.0,
+        "tgt_lead": 0.0,
+        "tgt_rel": 0.0,
+        "tgt_miss": 0.72,
+        "tgt_fa": 0.875
+      },
+      {
+        "signal": "z.logit_scale",
+        "dir": "<=",
+        "theta": -0.3219,
+        "src_lead": 0.0,
+        "tgt_lead": 800.0,
+        "tgt_rel": 0.04,
+        "tgt_miss": 0.0,
+        "tgt_fa": 1.0
+      },
+      {
+        "signal": "z.conf",
+        "dir": ">=",
+        "theta": 1.3712,
+        "src_lead": 0.0,
+        "tgt_lead": 0.0,
+        "tgt_rel": 0.0,
+        "tgt_miss": 0.52,
+        "tgt_fa": 1.0
+      }
+    ],
+    "transfers": []
+  },
+  "mnist_to_alg": {
+    "rows": [
+      {
+        "signal": "z.cos_gap",
+        "dir": ">=",
+        "theta": 0.3219,
+        "src_lead": 0.0,
+        "tgt_lead": 250.0,
+        "tgt_rel": 0.0425,
+        "tgt_miss": 0.04240282685512368,
+        "tgt_fa": 0.20212765957446807
+      },
+      {
+        "signal": "z.d.cos_gap",
+        "dir": ">=",
+        "theta": 0.9995,
+        "src_lead": 400.0,
+        "tgt_lead": 600.0,
+        "tgt_rel": 0.0685,
+        "tgt_miss": 0.07420494699646643,
+        "tgt_fa": 0.2553191489361702
+      },
+      {
+        "signal": "z.wnorm",
+        "dir": "<=",
+        "theta": 0.1698,
+        "src_lead": 800.0,
+        "tgt_lead": 9900.0,
+        "tgt_rel": 0.9754,
+        "tgt_miss": 0.0,
+        "tgt_fa": 1.0
+      }
+    ],
+    "transfers": []
+  },
+  "K5_fires": true
+}

@@ -124,6 +124,10 @@ def main():
     ap.add_argument("--proj_dim", type=int, default=64)
     ap.add_argument("--max_shift", type=int, default=3)
     ap.add_argument("--norm_clamp", type=float, default=0.0)
+    ap.add_argument("--log_spectra", action="store_true",
+                    help="log LABEL-FREE spectral stats of penultimate reps on a fixed "
+                         "probe batch (first 1000 test images): effective rank, "
+                         "participation ratio, top-1 eigenfraction (P5 R5)")
     ap.add_argument("--eval_every", type=int, default=200)
     ap.add_argument("--t_gen_acc", type=float, default=0.85)
     ap.add_argument("--out_dir", required=True)
@@ -240,6 +244,17 @@ def main():
                        wnorm=round(total_norm(model).item(), 3),
                        cos_gap=round(float(gap), 6), logit_scale=round(scale, 3),
                        conf=round(conf, 5))
+            if args.log_spectra:
+                # label-free: spectrum of the penultimate-rep covariance on a fixed,
+                # deterministic probe batch; no labels touched
+                hp = te_h[:1000]
+                hc = hp - hp.mean(0, keepdim=True)
+                ev = torch.linalg.eigvalsh((hc.T @ hc) / (hp.shape[0] - 1)).clamp_min(0)
+                s = ev.sum().clamp_min(1e-12)
+                pr = (ev / s).clamp_min(1e-12)
+                rec["eff_rank"] = round(float(torch.exp(-(pr * pr.log()).sum())), 3)
+                rec["part_ratio"] = round(float(s ** 2 / (ev ** 2).sum().clamp_min(1e-12)), 3)
+                rec["top1_frac"] = round(float(ev.max() / s), 5)
             log.write(json.dumps(rec) + "\n")
             log.flush()
             if t_fit is None and tr_acc >= 0.99:

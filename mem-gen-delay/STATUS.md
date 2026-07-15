@@ -60,7 +60,26 @@ P5 core result set complete: (1) in-dist forecasting works (60% of delay as warn
 validated prospectively on pre-registered predictions. Remaining rungs: R4 cross-domain,
 R5 label-free battery, paper (paper5/ or fold decision).
 
-### P5 R3 PROSPECTIVE (pre-registered NOW; runs execute AFTER this commit)
+### P5 R4 VERDICT (2026-07-15): K5 FIRES — no cross-domain transfer
+Per-signal thresholds fit on one domain (per-domain z-standardized, unsupervised) do not
+transfer at FA<=5% in EITHER direction: alg->mnist thresholds are trap-hardened (miss
+0.52-0.87 or FA 0.875-1.0); mnist->alg thresholds are permissive (FA 0.20-1.0 on trap
+negatives; z.wnorm gives 9,900 lead at FA=1.0 = useless). Forecasting CALIBRATION is
+regime-specific; the portable ingredient is mechanism (R2b's a-priori window), not fitted
+thresholds. Scope limit, reported as pre-registered.
+
+### P5 R5 PRE-REGISTRATION (label-free battery; committed BEFORE grid5r5 runs exist)
+Instrumentation (additive, --log_spectra, default off -> default path bit-identical):
+label-free penultimate-spectrum stats on a FIXED probe batch (first 1,000 test images,
+no labels touched): eff_rank (exp spectral entropy), part_ratio, top1_frac. Runs: grid5r5,
+seeds {8,9} x {baseline, supcon_aug 0.3, supcon_label 0.3, supcon_shufpair (structural
+negative), base_c92 (censoring-noise negative)} = 10 runs. Analysis protocol: same
+threshold-alarm machinery (levels + slopes, warmup 5, FA cap on the seed-8+9 negatives);
+fit on seed 8, validate on seed 9; primary comparison = best label-free signal's median
+lead vs cos_gap's lead ON THE SAME RUNS. K6 (from plan): label-free recovers < 50% of the
+task-aware probe's lead -> early warning needs capability-specific probes; reported either
+way. Exploratory scale (n=2 seeds/arm) — stated as such; informs whether R5 graduates to a
+full grid before the paper.
 grid5r3, 20 NEW runs: seeds 5-7 x {baseline, supcon_aug lam0.3, supcon_label lam0.3,
 supcon_shufpair (structural negatives), base_clamp60 (UNSEEN pin), supcon_aug lam0.05
 (UNSEEN dose)} + base_c92 s5,s6 (censoring-noise negatives). Frozen artifacts under test:
