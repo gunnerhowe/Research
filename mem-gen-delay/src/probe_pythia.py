@@ -21,7 +21,8 @@ import torch
 import torch.nn.functional as F
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STEPS_DEFAULT = [0, 64, 128, 256, 512, 1000, 1500, 2000, 2500, 3000, 4000, 5000,
+# valid Pythia revisions: step0..step512 in powers of 2, then every 1000 to step143000
+STEPS_DEFAULT = [0, 64, 128, 256, 512, 1000, 2000, 3000, 4000, 5000,
                  6000, 8000, 12000, 16000, 32000, 64000, 110000, 143000]
 TOKENS_PER_STEP = 1024 * 2048  # Pythia batch size in tokens
 

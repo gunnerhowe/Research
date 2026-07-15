@@ -55,6 +55,31 @@ R5 BLIND PROSPECTIVE (the ship-gate): freeze everything from R2-R4; pre-register
    interval forecasts for a NEVER-SEEN config (different width/data mix, 10 fresh seeds +
    3 fresh negatives); run; score. Kill P6-K5 = K4-style prospective collapse.
 
+## R0 VERDICT (2026-07-16): K0 PASSES [runs/p6r0/*.jsonl, analysis/out6/fig_r0_pythia.*]
+Phase change crisply resolvable in BOTH sizes: copy_adv 0.02-0.03 at 1.07B tokens -> 9.7-9.9
+at 2.1B; induction score 0.02-0.03 -> 0.93-0.96 in the same window. THE PRECURSOR LEADS:
+early-layer prev-token score is 4x baseline at 0.54B tokens (0.13-0.16) and 10x at 1.07B
+(0.37) while induction + behavior are still at noise — the mechanistic antecedent is
+measurable one full public-checkpoint stage before the capability, in models we did not
+train. Bonus: pythia-70m partially LOSES induction late (0.97 -> 0.36 at 67B, partial
+recovery); 160m keeps + grows deeper-layer IHs — capability regression exists and the
+fleet (R2) should quantify it. Caveat: the public grid has NO checkpoint between step512
+(1.07B) and step1000 (2.1B); the cliff sits inside that gap -> public-suite lead is
+bounded at one checkpoint stage; dense granularity is the fleet's job.
+
+## R1 SPEC (frozen NOW, before any forecast is computed; constants a priori)
+Runs: pythia {70m, 160m, 410m} x {standard, deduped} as available (n~5-6). Event = first
+checkpoint with copy_adv >= 50% of the run's max. PRECURSOR RULE (no tuning): alarm at
+first checkpoint with early-layer prevtok >= 0.10 (~3x the step-0 baseline of 0.037).
+LOSS RULES (best-case sweep, granted to the baseline): alarm at first checkpoint with
+text_loss <= theta, theta swept over all values; also loss-slope variants. Scoring per
+run: lead (in checkpoints and tokens) = event - alarm; a rule is VALID on a run if it
+alarms strictly before the event. P6-P1: the precursor rule alarms exactly one stage
+before the event on >= 4/5 runs with zero post-event alarms; no loss threshold achieves
+uniform pre-event alarming across runs without firing at/before 0.27B tokens (vacuously
+early, >= 4 stages ahead of any event) — i.e., loss carries no event-specific timing.
+K1 as in plan: precursor no earlier than best loss rule on >= half the runs.
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.
