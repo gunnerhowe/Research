@@ -1,5 +1,16 @@
-# Project status: THREE PAPERS SHIPPED-READY (P1 v4, P3 public, P4 natural-data) 
+# Project status: THREE PAPERS SHIPPED (P1 on arXiv v3, P4 submitted) + P5 PRE-REGISTERED
 Updated: 2026-07-14
+
+## P5 "Does Interpretability Buy Warning Time?" — PRE-REGISTERED (see plan_p5.md)
+Emergence-timing forecasting benchmark on the existing 466-run corpus + prospective rung.
+R0 lit kill-test DONE (lit_notes_p5.md): Notsawo 2306.13253 = whether-from-loss-oscillations
+(becomes our baseline feature); 2603.29805 = spectral early-warning indicators WITHOUT lead
+time/calibration/FA/baselines; 2511.16893 = IH timing from pre-training config (kills our IH
+headline -> stretch rung on seed variance); devinterp LLC = retrospective stage detection.
+Surviving lane N1-N6: scored forecasts (lead time @ <=5% FA), probe-vs-scalar horse race,
+interventional-shift robustness (P3: norm forecasters break on norm-decoupled supcon arms,
+probes survive), negative-control FA accounting, prospective prereg, corpus release.
+Kill criteria K1-K7 per rung in plan_p5.md, committed BEFORE R1 code exists.
 
 ## PAPER 4 DELIVERABLE (paper3/ dir) — "Structure Transfers, Exponents Do Not" — COMPLETE
 9pp, 62 macro-backed numbers (paper3/gen_numbers.py -> numbers.tex; verify_regen.py PASSES),
