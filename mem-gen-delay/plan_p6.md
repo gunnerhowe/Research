@@ -102,6 +102,30 @@ CANNOT distinguish precursor-forecasting from config-lookup (n=1 per config). Th
 fleet (R2) is where that question is answerable — per-seed variance at fixed config — and
 is now unambiguously the critical rung.
 
+## R2/R3 PRE-REGISTRATION (frozen BEFORE fleet launch; grid6r2 empty at commit)
+Trainer src/train_lm.py: 2-layer TinyLM d256/h4/ctx256, vocab 2048, fixed bigram language
+(LANG_SEED 777), variable-offset repeats p_rep=0.75 (positives); lr 1e-3 (warmup 100),
+batch 64, budget 16,000 steps, eval every 25. Smoke (seed 0, 12k): event 6,175; precursor
+lead ~1.5-2k steps; graded in-distribution ramp from ~2.4k. SEED 0 IS THE SMOKE AND IS
+EXCLUDED from all confirmatory sets.
+Fleet: rep seeds 1-30 (30 positives) + norep seeds 1-10 (data-ablation negatives) +
+onelayer seeds 1-5 (architectural negatives). Event (frozen from R1 lesson): copy_adv >=
+2.0 nats on 2 consecutive evals. Precursor time t_pv = first eval with layer-0 prevtok >=
+0.10 (constant carried from R1). Graded-behavioral time t_ind = first eval with
+indist_adv >= 0.10 (a priori).
+Predictions:
+- P2a: per-seed event spread >= 1.3x (max/min) across the 30 positives (else timing is
+  config-determined even per-seed — reported as such).
+- P2b: Spearman(t_pv, t_event) >= 0.5, bootstrap 95% CI excluding 0. K2 fires if CI
+  includes 0 for ALL probe-derived times (t_pv, t_ind).
+- P2c: best probe-time Spearman > best-case loss-threshold Spearman (theta swept, granted).
+- P2d: prevtok FORMS in norep negatives (independently useful for Markov prediction) ->
+  bare precursor rule false-alarms there; the a-priori CONJUNCTION (prevtok >= 0.10 AND
+  indist_adv >= 0.10) achieves FA <= 1/10 on norep while retaining pre-event alarms on
+  >= 25/30 positives.
+- P2e: onelayer: zero events, prefix < 0.05 throughout; conjunctive rule alarms <= 1/5.
+FA discipline: min-5-negatives rule satisfied per class (10 + 5).
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.
