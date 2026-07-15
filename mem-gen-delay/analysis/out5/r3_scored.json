@@ -1,0 +1,73 @@
+{
+  "P_R3a": {
+    "leads": {
+      "base_clamp60_s5": 21600.0,
+      "base_clamp60_s6": 18600.0,
+      "base_clamp60_s7": 14400.0,
+      "baseline_s5": 16600.0,
+      "baseline_s6": 20200.0,
+      "baseline_s7": 17400.0
+    },
+    "median": 18000.0,
+    "bar": 5200,
+    "passed": true
+  },
+  "P_R3b": {
+    "leads": {
+      "aug_lam0.05_s5": 0.0,
+      "aug_lam0.05_s6": 3400.0,
+      "aug_lam0.05_s7": 0.0,
+      "supcon_aug_s5": 3800.0,
+      "supcon_aug_s6": 14400.0,
+      "supcon_aug_s7": 9600.0,
+      "supcon_label_s5": 8800.0,
+      "supcon_label_s6": 12400.0,
+      "supcon_label_s7": 8400.0
+    },
+    "median": 8400.0,
+    "bar": 2200,
+    "passed": true
+  },
+  "dcos_gap_secondary": {
+    "median": 35400.0
+  },
+  "P_R3c": {
+    "miss_rate": 1.0,
+    "bar": 0.4,
+    "passed": true
+  },
+  "P_R3d": {
+    "alarms": {
+      "supcon_shufpair_s5": {
+        "A": false,
+        "B": false,
+        "C": false
+      },
+      "supcon_shufpair_s6": {
+        "A": false,
+        "B": false,
+        "C": false
+      },
+      "supcon_shufpair_s7": {
+        "A": false,
+        "B": false,
+        "C": false
+      }
+    },
+    "passed": true
+  },
+  "c92_descriptive": {
+    "base_c92_s5": {
+      "A": false,
+      "B": false,
+      "C": false,
+      "t_gen": null
+    },
+    "base_c92_s6": {
+      "A": true,
+      "B": false,
+      "C": false,
+      "t_gen": null
+    }
+  }
+}

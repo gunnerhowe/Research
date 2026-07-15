@@ -40,6 +40,26 @@ feasible with positive lead (c35 traps vetoed; bands must fall to the content th
 (ii) mnist two-gate retains >=50% of cos_gap's shift lead at lower FA. K8: alg still
 infeasible -> the boundary stands even with mechanism factoring; reported as such.
 
+### P5 R2b + R3 VERDICTS (2026-07-15, scored once against frozen artifacts)
+R3 PROSPECTIVE: ALL FOUR PREDICTIONS PASSED. P-R3a: median lead 18,000 on new
+baseline-family runs incl. UNSEEN clamp-60 pin (bar 5,200; retrodictive was 10,400 —
+prospective BEAT retrodictive). P-R3b: cos_gap probe on prior arms 8,400 (bar 2,200);
+d.cos_gap secondary 35,400 (~80-90% of delay). P-R3c: control-trained multivariate missed
+100% of prior arms (bar 40%) — tradeoff confirmed prospectively in extreme form. P-R3d:
+zero alarms on all 3 structural negatives x all 3 frozen artifacts. c92 exempt class:
+1 of 2 alarmed (consistent censoring-noise). K4 NO-FIRE.
+R2b TWO-GATE: mnist prediction (ii) PASSES — under the interventional shift the two-gate
+retains 12,400 median lead (53% rel, cos_gap champion; d.cos_gap 16,400 / 94% rel) with
+ZERO miss and train-side FA cap enforced. ALG: K8 FIRES — the mechanism veto controls FA
+(fourier 0% test FA) but buys no lead (median 0, miss 47%); with t_gen quartiles
+100/2,300/8,125 at 50-epoch cadence, the domain mixes no-room-for-warning fast groks with
+structure-complete traps — infeasibility is the honest final verdict there.
+P5 core result set complete: (1) in-dist forecasting works (60% of delay as warning);
+(2) robustness-vs-FA tradeoff (context features that control FA break under intervention);
+(3) mechanism-factored two-gate resolves the tradeoff on natural data; (4) all of it
+validated prospectively on pre-registered predictions. Remaining rungs: R4 cross-domain,
+R5 label-free battery, paper (paper5/ or fold decision).
+
 ### P5 R3 PROSPECTIVE (pre-registered NOW; runs execute AFTER this commit)
 grid5r3, 20 NEW runs: seeds 5-7 x {baseline, supcon_aug lam0.3, supcon_label lam0.3,
 supcon_shufpair (structural negatives), base_clamp60 (UNSEEN pin), supcon_aug lam0.05
