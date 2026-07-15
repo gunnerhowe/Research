@@ -80,6 +80,28 @@ uniform pre-event alarming across runs without firing at/before 0.27B tokens (va
 early, >= 4 stages ahead of any event) — i.e., loss carries no event-specific timing.
 K1 as in plan: precursor no earlier than best loss rule on >= half the runs.
 
+## R1 VERDICT (2026-07-16) [analysis/out6/r1_scored.json]
+AS-REGISTERED: P6-P1 FAILS on both clauses, and the failures are informative. (1) The
+precursor's lead is 2 stages, not the predicted "exactly one," on 3/5 runs (alarm at step
+256 vs cliff at 1000). (2) The loss baseline is STRONGER than predicted at public
+granularity: theta=6.264 alarms uniformly pre-event (1-stage lead on 4/4 clean runs) —
+loss does carry one stage of timing here. K1 NO-FIRE: the precursor alarmed pre-event on
+5/5 runs with ZERO post-event alarms and led the best-case loss rule strictly on 4/5
+(tied 1/5). Net: precursor buys one EXTRA stage over best-case loss; my registered
+prediction underestimated the baseline and overestimated precision.
+EVENT-DEFINITION BUG (disclosed): 50%-of-run-max is fragile to late outliers — the
+160m-deduped "event at 16.8B tokens" was an artifact of an anomalous final-checkpoint
+copy_adv spike (24.3 vs ~12 plateau); its actual cliff is at step 1000 like every other
+run. Same fragility class P5 flagged for 50%-of-max thresholds; lesson institutionalized:
+R2+ event = ABSOLUTE copy_adv crossing (>= 2 nats: far from noise ~0 and plateau ~10-12),
+frozen now.
+KEY STRUCTURAL FINDING for the program: all 5 public runs (3 sizes x 2 data variants,
+shared batch/context) cliff at the SAME ~2.1B tokens with the precursor up at 0.5-1.1B —
+fully consistent with config-determined timing (arXiv:2511.16893). Public suites therefore
+CANNOT distinguish precursor-forecasting from config-lookup (n=1 per config). The seed
+fleet (R2) is where that question is answerable — per-seed variance at fixed config — and
+is now unambiguously the critical rung.
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.

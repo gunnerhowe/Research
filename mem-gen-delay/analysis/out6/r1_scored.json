@@ -1,0 +1,61 @@
+{
+  "pythia-70m": {
+    "event_step": 1000,
+    "event_tokens": 2097152000,
+    "alarm_step": 256,
+    "lead_stages": 2,
+    "lead_tokens": 1560281088,
+    "pre_event": true
+  },
+  "pythia-160m": {
+    "event_step": 1000,
+    "event_tokens": 2097152000,
+    "alarm_step": 256,
+    "lead_stages": 2,
+    "lead_tokens": 1560281088,
+    "pre_event": true
+  },
+  "pythia-410m": {
+    "event_step": 1000,
+    "event_tokens": 2097152000,
+    "alarm_step": 512,
+    "lead_stages": 1,
+    "lead_tokens": 1023410176,
+    "pre_event": true
+  },
+  "pythia-70m-deduped": {
+    "event_step": 1000,
+    "event_tokens": 2097152000,
+    "alarm_step": 256,
+    "lead_stages": 2,
+    "lead_tokens": 1560281088,
+    "pre_event": true
+  },
+  "pythia-160m-deduped": {
+    "event_step": 8000,
+    "event_tokens": 16777216000,
+    "alarm_step": 256,
+    "lead_stages": 8,
+    "lead_tokens": 16240345088,
+    "pre_event": true
+  },
+  "loss_baseline": {
+    "theta": 6.26434,
+    "uniform_pre_event": true,
+    "fires_at_or_before_128": false,
+    "leads": [
+      1,
+      1,
+      1,
+      1,
+      7
+    ]
+  },
+  "P6_P1": {
+    "exact_one_stage": 1,
+    "no_post_event": true,
+    "loss_uniform_without_early": true,
+    "passed": false
+  },
+  "K1_fires": false
+}
