@@ -12,6 +12,46 @@ interventional-shift robustness (P3: norm forecasters break on norm-decoupled su
 probes survive), negative-control FA accounting, prospective prereg, corpus release.
 Kill criteria K1-K7 per rung in plan_p5.md, committed BEFORE R1 code exists.
 
+### P5 R1/R2 FROZEN-SPEC VERDICTS (2026-07-14; frozen at analysis/freeze_eval_p5.py commit,
+### test block executed once after)
+- R1 MNIST (frozen SRq multivariate, train=even/TEST=odd): median lead 10,400 steps = 59.8%
+  of the delay, miss 0/35, FA 1/3 — and the 1 is base_c92_s1, a CENSORING-NOISE negative
+  (still climbing at budget, crossed 0.80 at 43k); both STRUCTURAL negatives (shufpairs,
+  maxP~0.49 vs tau 0.861) correctly silent. K1 NO-FIRE (best scalar single: wnorm 1,000 ->
+  SRq +940%); K2 NO-FIRE. Negative taxonomy formalized: budget-censored vs structurally
+  blocked.
+- R2 MNIST interventional shift: the FA-controlling multivariate COLLAPSES (lead 0, miss
+  60%) while the bare content probe survives (cos_gap 4,400 lead / 4.7% miss; d.cos_gap
+  16,400 / 0 miss) and the scalar clock collapses (wnorm 0 lead / 51% miss). P3 CONFIRMED
+  for content probes. NEW FINDING (the paper's core): FA-control requires context features
+  (norm) that are exactly what breaks under intervention -> robustness-vs-false-alarm
+  tradeoff in emergence forecasting.
+- ALGORITHMIC domain: NO feasible operating point at FA<=5% across single-signal, linear,
+  and quadratic multivariate (trap negatives bind: supcon@c35 inversion runs carry COMPLETE
+  structure, fourier 0.996 > positives' median-at-t_gen 0.69; band arms fire 0.81-0.91).
+  K1/K2 FIRE for this domain as "infeasible" -> forecastability boundary result.
+
+### P5 R2b AMENDMENT (pre-registered NOW, before running): mechanism-factored two-gate
+Alarm iff content-probe gate AND norm-viability gate. Viability windows are MECHANISM
+CONSTANTS fixed a priori (not fit): alg ||W|| in [40, inf) (c35 inversion below 40, Papers
+2-3); mnist ||W|| in (0, 110] (wrong-structure explosion above ~110, Papers 4). Only the
+content threshold is fit (train side, FA cap, veto active). Predictions: (i) alg becomes
+feasible with positive lead (c35 traps vetoed; bands must fall to the content threshold);
+(ii) mnist two-gate retains >=50% of cos_gap's shift lead at lower FA. K8: alg still
+infeasible -> the boundary stands even with mechanism factoring; reported as such.
+
+### P5 R3 PROSPECTIVE (pre-registered NOW; runs execute AFTER this commit)
+grid5r3, 20 NEW runs: seeds 5-7 x {baseline, supcon_aug lam0.3, supcon_label lam0.3,
+supcon_shufpair (structural negatives), base_clamp60 (UNSEEN pin), supcon_aug lam0.05
+(UNSEEN dose)} + base_c92 s5,s6 (censoring-noise negatives). Frozen artifacts under test:
+(a) R1 SRq forecaster (freeze_eval_p5.py: code+hyperparams+tau protocol, deterministic),
+(b) first-pass single-signal thresholds (out5/r1r2_stats.json). Alarm decisions are causal
+functions of log prefixes computed by frozen code — post-hoc application is equivalent to
+online. Predictions: P-R3a SRq median lead on baseline-family >= 50% of 10,400 (K4 fires
+below); P-R3b cos_gap probe on prior arms >= 50% of 4,400; P-R3c SRq misses >= 40% of
+prior arms (the tradeoff, prospectively); P-R3d structural negatives: zero alarms from
+both frozen artifacts; c92 runs exempt (censoring-noise class).
+
 ## PAPER 4 DELIVERABLE (paper3/ dir) — "Structure Transfers, Exponents Do Not" — COMPLETE
 9pp, 62 macro-backed numbers (paper3/gen_numbers.py -> numbers.tex; verify_regen.py PASSES),
 5 figures from analysis/out4 (analyze_paper4.py over 83 runs: grid4 35 + grid4b 48).

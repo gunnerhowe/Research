@@ -1,0 +1,70 @@
+{
+  "r1": {
+    "label": "R1 mnist frozen SRq (train=even, TEST=odd)",
+    "W": 15700.0,
+    "tau": 0.8609617185927289,
+    "train": {
+      "median_lead": 13300.0,
+      "miss_rate": 0.0,
+      "fa_rate": 0.0
+    },
+    "test": {
+      "median_lead": 10400.0,
+      "median_rel": 0.5977011494252874,
+      "miss_rate": 0.0,
+      "fa_rate": 0.3333333333333333,
+      "n_pos": 35,
+      "n_neg": 3
+    },
+    "weights": {
+      "wnorm": -0.3237,
+      "d.wnorm": -0.2528,
+      "logit_scale": 0.5943,
+      "d.logit_scale": 0.1412,
+      "conf": -1.0896,
+      "d.conf": -0.3637,
+      "osc": 0.1155,
+      "d.osc": 0.0914,
+      "cos_gap": -3.036,
+      "d.cos_gap": 0.3632,
+      "wnorm^2": -3.9242,
+      "cos_gap*wnorm": 3.2088,
+      "cos_gap*wnorm^2": 1.3969,
+      "bias": 0.832
+    }
+  },
+  "r2": {
+    "label": "R2 mnist frozen SRq (train=control even, TEST=prior arms)",
+    "W": 9200.0,
+    "tau": 0.5444320105469937,
+    "train": {
+      "median_lead": 8200.0,
+      "miss_rate": 0.0,
+      "fa_rate": 0.0
+    },
+    "test": {
+      "median_lead": 0.0,
+      "median_rel": 0.0,
+      "miss_rate": 0.6046511627906976,
+      "fa_rate": null,
+      "n_pos": 43,
+      "n_neg": 0
+    },
+    "weights": {
+      "wnorm": -1.647,
+      "d.wnorm": -0.697,
+      "logit_scale": -3.0741,
+      "d.logit_scale": -0.9877,
+      "conf": -0.6851,
+      "d.conf": 0.1092,
+      "osc": 0.2892,
+      "d.osc": 0.4402,
+      "cos_gap": -3.2024,
+      "d.cos_gap": 0.1226,
+      "wnorm^2": -3.489,
+      "cos_gap*wnorm": 2.4529,
+      "cos_gap*wnorm^2": 1.0281,
+      "bias": -2.7615
+    }
+  }
+}
