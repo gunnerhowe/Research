@@ -1,0 +1,113 @@
+{
+  "rows": [
+    {
+      "family": "label_free",
+      "signal": "eff_rank",
+      "dir": "<=",
+      "theta": 65.49688,
+      "fit_lead": 34900.0,
+      "val_lead": 36200.0,
+      "val_rel": 0.9727,
+      "val_miss": 0.0,
+      "val_fa": 1.0
+    },
+    {
+      "family": "label_free",
+      "signal": "d.eff_rank",
+      "dir": "<=",
+      "theta": -3.06812,
+      "fit_lead": 6900.0,
+      "val_lead": 7800.0,
+      "val_rel": 0.4643,
+      "val_miss": 0.5,
+      "val_fa": 0.0
+    },
+    {
+      "family": "label_free",
+      "signal": "part_ratio",
+      "dir": "<=",
+      "theta": 34.06928,
+      "fit_lead": 34900.0,
+      "val_lead": 36200.0,
+      "val_rel": 0.9727,
+      "val_miss": 0.0,
+      "val_fa": 1.0
+    },
+    {
+      "family": "label_free",
+      "signal": "top1_frac",
+      "dir": ">=",
+      "theta": 0.09507,
+      "fit_lead": 34900.0,
+      "val_lead": 36200.0,
+      "val_rel": 0.9727,
+      "val_miss": 0.0,
+      "val_fa": 1.0
+    },
+    {
+      "family": "label_free",
+      "signal": "d.top1_frac",
+      "dir": ">=",
+      "theta": 0.0062,
+      "fit_lead": 23100.0,
+      "val_lead": 36200.0,
+      "val_rel": 0.9727,
+      "val_miss": 0.0,
+      "val_fa": 0.0
+    },
+    {
+      "family": "task_aware",
+      "signal": "cos_gap",
+      "dir": ">=",
+      "theta": 0.11066,
+      "fit_lead": 22500.0,
+      "val_lead": 7200.0,
+      "val_rel": 0.3333,
+      "val_miss": 0.0,
+      "val_fa": 0.0
+    },
+    {
+      "family": "task_aware",
+      "signal": "d.cos_gap",
+      "dir": ">=",
+      "theta": 0.01263,
+      "fit_lead": 7100.0,
+      "val_lead": 7900.0,
+      "val_rel": 0.4702,
+      "val_miss": 0.5,
+      "val_fa": 0.0
+    }
+  ],
+  "champions": {
+    "label_free": {
+      "family": "label_free",
+      "signal": "eff_rank",
+      "dir": "<=",
+      "theta": 65.49688,
+      "fit_lead": 34900.0,
+      "val_lead": 36200.0,
+      "val_rel": 0.9727,
+      "val_miss": 0.0,
+      "val_fa": 1.0
+    },
+    "task_aware": {
+      "family": "task_aware",
+      "signal": "cos_gap",
+      "dir": ">=",
+      "theta": 0.11066,
+      "fit_lead": 22500.0,
+      "val_lead": 7200.0,
+      "val_rel": 0.3333,
+      "val_miss": 0.0,
+      "val_fa": 0.0
+    }
+  },
+  "k6": {
+    "label_free": "eff_rank",
+    "lf_val_lead": 36200.0,
+    "task_aware": "cos_gap",
+    "ta_val_lead": 7200.0,
+    "recovery": 5.028,
+    "fires": false
+  }
+}

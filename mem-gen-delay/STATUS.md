@@ -68,7 +68,30 @@ negatives; z.wnorm gives 9,900 lead at FA=1.0 = useless). Forecasting CALIBRATIO
 regime-specific; the portable ingredient is mechanism (R2b's a-priori window), not fitted
 thresholds. Scope limit, reported as pre-registered.
 
-### P5 R5 PRE-REGISTRATION (label-free battery; committed BEFORE grid5r5 runs exist)
+### P5 R5 VERDICT (2026-07-15) — protocol degeneracy caught by validation + a label-free surprise
+AS-WRITTEN K6 comparison is INVALID and we say so: with only ONE fit-side negative
+(shufpair_s8), the FA<=5% cap was nearly vacuous, so degenerate quasi-always-on LEVEL
+thresholds (eff_rank/part_ratio/top1_frac) won the fit-lead championship (34,900) and then
+false-alarmed on the validated structural negative (FA 1/1). Champion-by-fit-lead therefore
+selects an invalid alarm; K6-as-registered cannot be adjudicated. Disclosed per D3.
+FA-VALID READING (post-hoc filter: validated FA = 0, labeled as such): label-free
+d.top1_frac = 36,200-step validated median lead (97.3% of delay!), 0 miss, 0 FA — vs
+task-aware cos_gap 7,200 (33.3%), 0 miss, 0 FA. Label-free ~5x the task-aware lead. K6
+does not fire in ANY reading; on MNIST label-free spectra look SUFFICIENT and possibly
+SUPERIOR. Mechanistic note: wrong-structure collapse also collapses spectrum LEVELS (hence
+their FA), but the SLOPE of top-1 eigenfraction spikes only in genuine early structure
+formation and stays silent on shufpair — the same two-failure-mode lesson as R2, caught by
+validation this time. Exploratory scale (n=2 seeds, 1 negative/side) -> confirmation below.
+Also: base_c92 keeps validating the censoring-noise class (s8 93.6k, s9 92.8k IN budget).
+
+### P5 R5b CONFIRMATION (pre-registered NOW; grid5r5b empty at commit)
+Frozen artifacts: the seed-8-fit thresholds exactly as committed in out5/r5_scored.json —
+d.top1_frac >= 0.006197 and cos_gap >= 0.1107. New runs grid5r5b: seeds {10,11,12} x
+{baseline, supcon_aug lam0.3, supcon_shufpair} = 9 runs (6 positives, 3 structural
+negatives). Predictions: P-R5b-a d.top1_frac median lead on the 6 positives >= 18,100
+(50% of 36,200) with 0/3 false alarms; P-R5b-b cos_gap retains >= 3,600. K9: d.top1_frac
+false-alarms on any shufpair OR lead < 18,100 -> the label-free-superiority claim dies and
+R5 reports as "label-free promising but unconfirmed"; either way in print.
 Instrumentation (additive, --log_spectra, default off -> default path bit-identical):
 label-free penultimate-spectrum stats on a FIXED probe batch (first 1,000 test images,
 no labels touched): eff_rank (exp spectral entropy), part_ratio, top1_frac. Runs: grid5r5,
