@@ -1,0 +1,158 @@
+{
+  "rows": [
+    {
+      "seed": 101,
+      "t_event": 6325,
+      "t_pv": 5375,
+      "interval": [
+        6200,
+        6500
+      ],
+      "lead": 950,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 102,
+      "t_event": 5600,
+      "t_pv": 4525,
+      "interval": [
+        5350,
+        5650
+      ],
+      "lead": 1075,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 103,
+      "t_event": 6025,
+      "t_pv": 5025,
+      "interval": [
+        5850,
+        6150
+      ],
+      "lead": 1000,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 104,
+      "t_event": 5600,
+      "t_pv": 4575,
+      "interval": [
+        5400,
+        5700
+      ],
+      "lead": 1025,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 105,
+      "t_event": 6725,
+      "t_pv": 5775,
+      "interval": [
+        6600,
+        6900
+      ],
+      "lead": 950,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 106,
+      "t_event": 5875,
+      "t_pv": 4850,
+      "interval": [
+        5675,
+        5975
+      ],
+      "lead": 1025,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 107,
+      "t_event": 5900,
+      "t_pv": 4950,
+      "interval": [
+        5775,
+        6075
+      ],
+      "lead": 950,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 108,
+      "t_event": 6050,
+      "t_pv": 5075,
+      "interval": [
+        5900,
+        6200
+      ],
+      "lead": 975,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 109,
+      "t_event": 6000,
+      "t_pv": 4950,
+      "interval": [
+        5775,
+        6075
+      ],
+      "lead": 1050,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 110,
+      "t_event": 5675,
+      "t_pv": 4575,
+      "interval": [
+        5400,
+        5700
+      ],
+      "lead": 1100,
+      "pre_event": true,
+      "covered": true
+    }
+  ],
+  "negatives": [
+    {
+      "seed": 101,
+      "t_event": null,
+      "conj_alarm": null
+    },
+    {
+      "seed": 102,
+      "t_event": null,
+      "conj_alarm": null
+    },
+    {
+      "seed": 103,
+      "t_event": null,
+      "conj_alarm": null
+    }
+  ],
+  "P5a": {
+    "events": "10/10",
+    "neg_events": 0,
+    "passed": true
+  },
+  "P5b": {
+    "pre_event": "10/10",
+    "conj_fa": 0,
+    "passed": true
+  },
+  "P5c": {
+    "coverage": "10/10",
+    "passed": true
+  },
+  "secondary_spearman": 0.9879,
+  "K5_gate_fires": false,
+  "median_lead": 1012.5
+}

@@ -190,6 +190,25 @@ Predictions:
   (config-conditional calibration) before any release. Honest expectation stated now:
   the offset delta is the component most at risk under shift.
 
+## R5 VERDICT (2026-07-16) — THE BLIND SHIP-GATE PASSES, 10/10 ON EVERY CLAUSE
+[analysis/out6/r5_scored.json; forecaster frozen at 377511b before grid6r5 existed]
+- P5a PASS: 10/10 never-seen-config positives evented; 0/3 negatives.
+- P5b PASS: precursor alarmed strictly pre-event 10/10; conjunction FA 0/3.
+- P5c PASS AT CEILING: the frozen interval [t_alarm+825, t_alarm+1125] — calibrated on a
+  DIFFERENT architecture (d256) and data mix (p_rep 0.75) — covered the true emergence
+  time on 10/10 blind runs (bar 7/10; nominal 90%). Median lead 1,012 steps. Secondary
+  Spearman on the new config: 0.988. K5-gate NO-FIRE.
+- My own registered expectation ("the offset delta is most at risk under shift") was
+  WRONG in the favorable direction: the precursor-to-cliff gap is ~config-invariant
+  across this shift (975 -> 1,012) — itself a finding worth probing (is the gap set by
+  optimization dynamics rather than config?).
+COMMUNITY BAR: all five legs now stand. (1) real LMs: Pythia public suites + own fleets;
+(2) manufactured negatives with FA accounting: 18 negatives, 0 false alarms; (3) per-seed
+forecasts beat loss (50-step nowcast) and config-equation (constant): rho 0.98 at ~1,000-
+step lead; (4) conformal intervals with measured coverage: 15/15 in-config, 10/10 under
+config shift; (5) blind prospective rung, pre-registered, commit-stamped. EXPERIMENTS
+COMPLETE; release decision is the user's per D2.
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.
