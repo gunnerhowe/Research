@@ -1,5 +1,18 @@
-# Project status: THREE PAPERS SHIPPED (P1 on arXiv v3, P4 submitted) + P5 PRE-REGISTERED
-Updated: 2026-07-14
+# Project status: THE FLAGSHIP IS WRITTEN — paper4/ "Capability Emergence Can Be Forecast"
+Updated: 2026-07-16
+
+## PAPER 5 / FLAGSHIP DELIVERABLE (paper4/ dir) — COMPLETE, release = user's call
+"Capability Emergence Can Be Forecast: Per-Seed, In Advance, With Calibrated Intervals,
+Certified False Alarms, and a Blind Pre-Registered Gate." 10pp, 51 macro-backed numbers
+(gen_numbers -> numbers.tex, verify_regen PASSES), 4 figures, kill-ledger section,
+arxiv_upload_paper4.zip clean-room verified (10pp), arxiv_abstract.txt 1,917 chars.
+Spans P5 (grokking benchmark + tradeoff + kills) and P6 (Pythia precursor-leads, 45-run
+fleet rho=0.977/lead 975, conformal 15/15, BLIND GATE 10/10 at commit 377511b->2ca7da4).
+Community-bar checklist: all five legs stand (real LMs; manufactured negatives 0 FA;
+per-seed beats loss-nowcast + config-constant; conformal coverage in-config and under
+shift; blind prereg gate). User actions: release decision; author block; arXiv IDs for
+companion cites; optional strengtheners (harder trap language, third config axis,
+gap-origin probe) staged as v2/reviewer ammunition.
 
 ## P5 "Does Interpretability Buy Warning Time?" — PRE-REGISTERED (see plan_p5.md)
 Emergence-timing forecasting benchmark on the existing 466-run corpus + prospective rung.
