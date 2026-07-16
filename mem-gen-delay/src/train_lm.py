@@ -159,6 +159,8 @@ def main():
     ap.add_argument("--warmup", type=int, default=100)
     ap.add_argument("--eval_every", type=int, default=25)
     ap.add_argument("--event_nats", type=float, default=2.0)
+    ap.add_argument("--p_rep", type=float, default=-1.0,
+                    help="override repeat probability (R5 config shift); -1 = condition default")
     ap.add_argument("--out_dir", required=True)
     args = ap.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
@@ -166,6 +168,8 @@ def main():
     torch.manual_seed(args.seed)
     n_layers = 1 if args.condition == "onelayer" else 2
     p_rep = 0.0 if args.condition == "norep" else 0.75
+    if args.p_rep >= 0 and args.condition != "norep":
+        p_rep = args.p_rep
     model = TinyLM(args.vocab, args.d_model, args.n_heads, n_layers, args.ctx).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd,
                             betas=(0.9, 0.95))

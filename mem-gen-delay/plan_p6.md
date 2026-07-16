@@ -168,6 +168,28 @@ lead. Loss-anchored variant (theta = 2.077) reported for contrast — its anchor
 ~50 steps pre-event, so whatever its width, it forecasts nothing. K4 (from plan):
 intervals vacuous (width on the order of the 16,000-step budget) at nominal coverage.
 
+## R5 PRE-REGISTRATION — THE BLIND SHIP-GATE (committed BEFORE grid6r5 exists)
+FROZEN FORECASTER (verbatim, calibrated on grid6r2 seeds 1-15, untouched hereafter):
+alarm at first eval with layer-0 prevtok >= 0.10; forecast the emergence interval
+[t_alarm + 825, t_alarm + 1125] (offset 975 +- conformal q 150, nominal 90%).
+Negative rule: conjunction (prevtok >= 0.10 AND indist_adv >= 0.10). Event rule:
+copy_adv >= 2.0 on 2 consecutive evals.
+NEVER-SEEN CONFIG (double shift, chosen a priori): d_model 256 -> 320 (architecture) and
+p_rep 0.75 -> 0.6 (data mix); everything else unchanged (same language LANG_SEED 777,
+lr 1e-3, ctx 256, vocab 2048, batch 64). Budget 20,000 steps (instrumentation headroom,
+not calibration). Runs: rep seeds 101-110 (10 positives) + norep seeds 101-103 (3
+negatives), grid6r5.
+Predictions:
+- P5a: >= 9/10 positives event within budget; 0/3 negatives event.
+- P5b: precursor alarms strictly pre-event on >= 9/10 positives; conjunction FA 0/3.
+- P5c (THE GATE): the frozen interval covers the true event time on >= 7/10 positives.
+- Secondary (scoped-transfer reading if P5c fails): Spearman(t_pv, t_event) >= 0.5 on the
+  10 new seeds would mean the ANCHOR transfers and only the offset is config-local.
+- K5-gate: coverage <= 5/10 OR precursor pre-event on <= 7/10 -> frozen calibration does
+  not survive the config shift (the P5-K5 precedent realized on LMs); iterate
+  (config-conditional calibration) before any release. Honest expectation stated now:
+  the offset delta is the component most at risk under shift.
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.
