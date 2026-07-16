@@ -126,6 +126,36 @@ Predictions:
 - P2e: onelayer: zero events, prefix < 0.05 throughout; conjunctive rule alarms <= 1/5.
 FA discipline: min-5-negatives rule satisfied per class (10 + 5).
 
+## R2/R3 VERDICT (2026-07-17) [analysis/out6/r2_scored.json; one-shot sealed scoring]
+- P2a PASS (barely): per-seed event spread 1.3097x (5,650-7,400) vs bar 1.3. Timing
+  variance at fixed config is real but modest (~+-13%).
+- P2b PASS, SPECTACULARLY: Spearman(t_pv, t_event) = 0.977, bootstrap CI [0.911, 0.995],
+  n=30. The precursor's formation time forecasts each seed's emergence time almost
+  perfectly, with median lead 975 steps (825-1,125) ~ 15% of training. THE CORE CLAIM OF
+  THE PROGRAM, on LMs, at seed level, where the config equation predicts a constant.
+- P2c FAIL AS REGISTERED + spec flaw disclosed: a best-case loss threshold (theta=2.077)
+  ties the precursor's Spearman EXACTLY (0.9769) — but post-hoc lead analysis (labeled)
+  shows why: its median lead is 50 steps (min -25) — it detects the cliff DURING descent.
+  Equal ranking, 20x less warning. The registered metric was one-dimensional (rank corr
+  without lead); rule for all future specs: forecasting comparisons are (correlation,
+  lead) pairs. Also: t_ind (graded behavioral ramp) Spearman ~ 0 — behavioral early
+  signals do NOT time the transition; the circuit precursor does. Clean dissociation.
+- P2d PASS on its criteria (conjunction FA 0/10, pre-event 30/30) BUT the interior
+  mechanistic prediction was WRONG and is reported so: prevtok does NOT form in norep
+  negatives (max 0.036-0.061 < 0.10; bare-precursor FA 0/10). My reasoning failed because
+  a pure bigram language is solvable by the embedding pathway alone — prev-token attention
+  buys nothing without repetition. The manufactured negatives thus CERTIFIED the precursor
+  rather than trapping it (certification is also what negative sets are for). Harder
+  negative class for the trap (a language where prev-token context is independently
+  needed, e.g. trigram/skip structure) = R5-adjacent follow-up.
+- P2e PASS: onelayer 0/5 events, prefix <= 0.014 (structurally blocked confirmed),
+  conjunction 0/5; descriptive: prevtok also stays ~0.04 in 1L — at this scale the
+  precursor forms as part of 2L circuit assembly, not independently.
+- K2 NO-FIRE (decisively). Fleet: 30/30 positives evented, 15/15 negatives silent.
+HEADLINE: per-seed emergence forecasting from a mechanistic precursor — rho 0.98, ~1,000
+steps (~15%) of lead, 0/15 false alarms on manufactured negatives, vs a config-equation
+baseline that is constant-per-config and a loss baseline with 50 steps of lead.
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.
