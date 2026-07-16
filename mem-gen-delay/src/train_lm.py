@@ -74,16 +74,25 @@ def make_language(vocab, lang="bigram", lang_seed=LANG_SEED):
     prediction REQUIRES previous-token context, so prev-token attention pays for the task
     itself, independent of repetition (the trap-language construction, R6)."""
     g = torch.Generator().manual_seed(lang_seed)
-    rows = vocab if lang == "bigram" else 65536
+    rows = vocab if lang == "bigram" else vocab * TRI_MODES
     succ = torch.randint(0, vocab, (rows, 20), generator=g)
     w = torch.softmax(torch.randn(rows, 20, generator=g) * 1.5, -1)
     return succ, w
 
 
+TRI_MODES = 2  # modal trigram: successor distribution selected by prev % TRI_MODES.
+# Design iterations (disclosed): v1 hashed 65k rows = unlearnable -> no task incentive,
+# no trap, induction assembles all-at-once late. v2 modes=8 = trap arms (prevtok 0.99 by
+# 5k) but the rich competing task postpones induction beyond budget entirely. v3 modes=2:
+# one bit of previous-token dependence — task incentive for the precursor with a quickly
+# learned language, so induction can still form. Both failures feed the competition-clock
+# hypothesis (R8 notes).
+
+
 def _row(lang, prev, cur, rows):
     if lang == "bigram":
         return cur
-    return (prev * 2654435761 + cur) % rows
+    return cur * TRI_MODES + (prev % TRI_MODES)
 
 
 def sample_batch(succ, w, B, ctx, p_rep, gen, device, lang="bigram", vocab=2048):

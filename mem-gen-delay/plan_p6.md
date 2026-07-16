@@ -253,3 +253,12 @@ D2 All kills reported internally; the release decision is the user's, gated on t
 D3 Downloads: public model checkpoints from huggingface.co (EleutherAI/pythia-*), ~150-350
    MB per checkpoint, ~3-7 GB per size for ~20 checkpoints; HF cache pinned to the E: drive.
 D4 P5's min-negative-count rule applies to every FA number in P6.
+
+### R6 constants FINALIZED after smoke iterations (v3; seed 0 = smoke, excluded)
+lang=trigram TRI_MODES=2, budget 24,000, lr 1e-3, d256, p_rep 0.75 (positives) / 0.0
+(negatives). Smoke v3: precursor crosses 0.10 at ~1k FOR TASK REASONS (saturates 0.99 by
+4k) while the event lands at 10,100 — the trap is armed: on norep-trigram negatives the
+identical task incentive should fire the bare rule (P-T1). Fleet: grid6r6, trigram rep
+seeds 1-10 + trigram norep seeds 1-10. Design iterations v1 (unlearnable hash — no trap,
+all-at-once assembly) and v2 (modes=8 — trap arms but induction starved beyond budget)
+disclosed in src/train_lm.py and feed the competition-clock hypothesis (R8 notes).
