@@ -1,0 +1,450 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\newcommand{\tev}{t_{\mathrm{event}}}
+\newcommand{\tpv}{t_{\mathrm{pv}}}
+\input{numbers}
+
+\title{Capability Emergence Can Be Forecast:\\
+\large Per-Seed, In Advance, With Calibrated Intervals, Certified False Alarms,\\
+and a Blind Pre-Registered Gate}
+\author{Gunner Levi Howe\\ \small{\texttt{gunnerlevihowe@gmail.com}}}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Emergent capabilities are widely treated as unpredictable: aggregate loss improves
+smoothly while specific abilities appear abruptly. Prior work offers early-warning
+\emph{indicators} but never scores them as \emph{forecasts} --- no lead time at a
+controlled false-alarm rate, no calibration, no negative controls, no blind validation.
+We supply that discipline and show that, in controlled settings spanning grokking model
+systems and small language models, emergence \emph{timing} is forecastable per training
+run, in advance, with calibrated uncertainty. On language models: across \wFleetPos{}
+transformers at identical configuration --- where the strongest published baseline
+predicts a single constant \citep{aoyama2025predicting} --- the formation time of the
+previous-token head (the mechanistic precursor of induction
+\citep{olsson2022context}) forecasts each seed's induction emergence at Spearman
+$\rho=\wRho$ (95\% CI [\wRhoCIlo, \wRhoCIhi]) with median lead \wLeadMed{} steps
+(${\sim}15\%$ of training). A best-case training-loss rule \emph{ties} that ranking
+($\rho=\wLossRho$) but with \wLossLeadMed-step median lead --- a nowcast, not a forecast.
+Split-conformal intervals of width \wConfWidth{} steps, anchored at the precursor alarm,
+covered \wConfCover{} held-out seeds at 90\% nominal. The entire rule was then frozen
+verbatim --- alarm threshold, offset \wConfDelta, quantile \wConfQ, commit-stamped ---
+and subjected to a blind pre-registered gate on a never-seen configuration (wider model,
+sparser repetition): it covered \wGateCover{} runs (bar 7/10), alarmed pre-event
+\wGatePre, and false-alarmed on 0/3 fresh negatives; the precursor-to-emergence gap was
+approximately configuration-invariant (\wConfDelta$\to$\wGateLeadMed{} steps). All
+false-alarm claims are certified against \wFleetNeg{}+3 \emph{manufactured
+capability-blocked negatives} (data-ablated and architectural) --- a resource we argue is
+mandatory for capability monitoring and that no public suite provides. Public-checkpoint
+evidence (Pythia): the precursor leads the induction cliff by a full checkpoint stage in
+all \wPythiaRuns{} suites probed, and all five cliff at the same token count, confirming
+that public suites cannot test per-seed forecasting. The grokking half of the paper
+(\vCorpus{} runs) contributes the evaluation methodology and its hard lessons: a
+robustness-versus-false-alarm tradeoff (the context features that suppress false alarms
+are exactly what breaks under intervention), mechanism-factored gates that resolve it,
+non-transfer of fitted calibration across regimes, and a label-free probe family that
+died under pre-registered confirmation. Three kill criteria fired and are reported.
+Every prediction, freeze, and verdict in both halves is commit-stamped before its data
+existed. Scope: named capabilities with known mechanistic precursors, small models;
+we state what stands between this and frontier deployment.
+\end{abstract}
+
+\section{Introduction}
+
+When a capability emerges during training, the training curve rarely announces it in
+advance: loss declines smoothly while the ability arrives abruptly
+\citep{olsson2022context,schaeffer2023mirage}. For frontier-scale systems this
+unpredictability is a safety problem with a name --- labs want to know what a model will
+be able to do \emph{before} it can do it. A literature of early-warning signals has
+grown in response: loss-curve oscillations that predict whether grokking will occur
+\citep{notsawo2023predicting}, spectral observables that show precursors of phase
+transitions \citep{densitymatrices2026}, geometric stage detection
+\citep{hoogland2024developmental}, and scale-axis extrapolations
+\citep{hu2024passuntil,snell2024predicting}. What none of this work does is score a
+\emph{forecast}: state, in advance, when a capability will arrive; attach calibrated
+uncertainty; measure lead time at a controlled false-alarm rate against negatives where
+the capability never arrives; and validate the frozen system blind. Indicators without
+that discipline are weather lore, not weather forecasting.
+
+This paper does two things. \textbf{First}, it builds the missing evaluation discipline
+on a grokking model system --- \vCorpus{} training runs across two domains with
+interventions that shift emergence timing ${\sim}100\times$ --- and reports what the
+discipline kills: single-signal alarms die on look-alike negatives; the context features
+that control false alarms are exactly the features that break under interventional
+shift (a robustness--false-alarm tradeoff); fitted calibration does not transfer across
+regimes; and an initially spectacular label-free probe family failed its pre-registered
+confirmation. \textbf{Second}, it carries the surviving methodology to language models
+and obtains the result the discipline was built for
+(Figure~\ref{fig:forecast}): per-seed forecasts of induction-head emergence from a
+mechanistic precursor, with calibrated intervals, certified false alarms, and a blind
+pre-registered transfer gate passed at ceiling.
+
+Contributions, each with its adversarial control:
+\begin{enumerate}
+\item \textbf{A forecasting benchmark and protocol for emergence timing}: event
+  definitions robust to outliers, lead time at capped false-alarm rate, champion
+  selection on training data only, (correlation, lead) reported as a pair --- plus a
+  \emph{negative taxonomy} (budget-censored vs.\ structurally blocked vs.\
+  \emph{manufactured}) and a minimum-negative-count rule learned the hard way.
+\item \textbf{The per-seed result} (Sections~\ref{sec:fleet}--\ref{sec:conformal}): at
+  fixed configuration, where the config-equation baseline of
+  \citet{aoyama2025predicting} is a constant by construction, precursor formation time
+  forecasts emergence at $\rho=\wRho$ with \wLeadMed-step median lead; a best-case loss
+  rule ties the correlation with \wLossLeadMed{} steps of lead. Warning time lives in
+  \emph{where you anchor}, and only the circuit precursor anchors early.
+\item \textbf{Manufactured negatives} (Section~\ref{sec:fleet}): capability-blocked
+  training runs --- data-ablated (repetition stripped) and architectural (one layer) ---
+  enabling the first certified false-alarm rates for emergence forecasting
+  (\wBareFA{} and \wConjFA{} on data-ablated, 0/5 on architectural, 0/3 blind).
+\item \textbf{The blind gate} (Section~\ref{sec:gate}): the full rule frozen verbatim
+  and commit-stamped, then tested on a never-seen configuration: \wGateCover{} interval
+  coverage, \wGatePre{} pre-event alarms, $\rho=\wGateRho$. The precursor-to-cliff gap
+  is approximately config-invariant across the shift we tested --- an unexplained
+  regularity we flag as an open question.
+\item \textbf{The kill ledger} (Section~\ref{sec:kills}): three pre-registered kill
+  criteria fired across the program and are reported with their mechanisms, alongside
+  every failed prediction. The positive results above survived the same regime that
+  produced these deaths; that, not any single number, is the paper's claim to trust.
+\end{enumerate}
+
+Everything is pre-registered in a public commit chain (every freeze precedes its data;
+Section~\ref{sec:repro}), and the corpus, fleets, and harness are released as a
+benchmark.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\textwidth]{figs/fig2_forecast.pdf}
+\caption{\textbf{The central result.} Precursor alarm time vs.\ emergence time. Blue:
+the calibration fleet (30 seeds, config A) --- Spearman $\rho=\wRho$. The dashed line
+and band are the \emph{frozen} rule (event $=$ alarm $+\,\wConfDelta \pm \wConfQ$).
+Red diamonds with bars: the blind gate --- 10 fresh seeds on a never-seen configuration
+(wider model, sparser repetition), scored once against the frozen rule: \wGateCover{}
+covered. Negatives (18 manufactured capability-blocked runs, not shown) produced zero
+false alarms.}
+\label{fig:forecast}
+\end{figure}
+
+\section{Related work}
+\label{sec:related}
+
+\citet{notsawo2023predicting} predict \emph{whether} grokking will occur from early
+loss-curve oscillations --- a scalar whether-classifier; its oscillation feature is one
+of our baselines. \citet{densitymatrices2026} derive spectral early-warning indicators
+(2-RDM heat capacity) across four transition settings but report no lead time,
+calibration, false-alarm rate, or baseline race; our label-free rung
+(Section~\ref{sec:kills}) shows concretely why unscored spectral indicators can
+mislead: ours died under confirmation. \citet{hoogland2024developmental} detect
+developmental stages retrospectively via the local learning coefficient.
+\citet{aoyama2025predicting} predict induction-head formation time from pre-training
+config (batch, context, bigram statistics) --- powerful, but constant per config; our
+fleet result answers precisely the variance their equation cannot (per-seed timing at
+fixed config), and our Pythia analysis confirms their account across public suites (all
+five cliff at the same token count). Scale-axis emergence prediction
+\citep{hu2024passuntil,snell2024predicting} forecasts across model size, orthogonal to
+our within-run time axis. \citet{olsson2022context} established the induction-head
+phase change and its previous-token precursor; \citet{barak2022hidden} and progress
+measures \citep{nanda2023progress} established hidden progress; we turn these
+observations into scored forecasts. The grokking substrate builds on
+\citep{power2022grokking,liu2023omnigrok,weightnormdelay2026} and our companion papers
+\citep{companion2026a,companion2026b,companion2026c}, which established the
+representational-timing mechanism and the norm clock that our two-gate forecaster
+exploits.
+
+\section{Forecasting emergence: definitions and discipline}
+\label{sec:defs}
+
+A \textbf{run} logs behavioral and internal signals at fixed cadence. An \textbf{event}
+is the first crossing of an absolute behavioral criterion robust to outliers (never a
+fraction of a run's own maximum --- a rule adopted after that operationalization failed
+twice; Section~\ref{sec:kills}). A \textbf{forecaster} observes the log prefix and may
+\textbf{alarm} once; its \textbf{lead} is $\tev - t_{\mathrm{alarm}}$ (alarms after the
+event score zero; no alarm on an eventing run is a miss). \textbf{False-alarm (FA)
+rate} is the fraction of \emph{negative} runs --- runs where the capability never
+arrives --- that alarm. Thresholds and champions are selected on training runs only,
+under an FA cap ($\leq 5\%$), with at least five negatives on every side of every
+split (a minimum learned from a degenerate fit, Section~\ref{sec:kills}). Negatives
+come in three kinds: \emph{budget-censored} (would event with more budget --- these
+legitimately attract alarms), \emph{structurally blocked} (wrong learned structure),
+and \emph{manufactured} (constructed so the capability cannot form). Forecast quality
+is always a \emph{pair} --- (ranking skill, lead) --- because a rule can rank
+perfectly by detecting the event as it happens; and point forecasts carry
+split-conformal intervals whose empirical coverage is reported. Blind validation means:
+every constant frozen and commit-stamped, then fresh runs, one scoring pass.
+
+\section{Part I: the grokking benchmark, and what the discipline kills}
+\label{sec:grok}
+
+We built the protocol on \vCorpus{} pre-existing grokking runs (modular arithmetic
+transformers; MNIST MLPs in the Omnigrok regime) whose companion-paper interventions
+(contrastive priors, norm clamps) shift emergence timing up to ${\sim}100\times$ and
+--- crucially --- \emph{decouple} the dominant scalar clock (weight norm) from the
+outcome. Full protocol and verdicts are in the repository
+(\texttt{plan\_p5.md}, \texttt{P5\_RESULTS.md}); four results shape everything
+downstream.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\textwidth]{figs/fig4_tradeoff.pdf}
+\caption{\textbf{The robustness--false-alarm tradeoff} (MNIST grokking; median warning
+time at $\leq 5\%$ FA, higher is better). The scalar clock (weight norm) forecasts
+in-distribution but collapses when interventions decouple the norm from the outcome.
+The multivariate forecaster that best controls false alarms in-distribution
+(\vRoneLead{} steps, \vRoneRel{} of the delay) collapses hardest under shift --- its
+norm-context features are exactly what the intervention breaks. The bare content probe
+survives the shift (\vShiftDcos{} steps) but is FA-fragile in corpora with look-alike
+negatives.}
+\label{fig:tradeoff}
+\end{figure}
+
+\textbf{(i) In-regime forecasting works.} A multivariate forecaster with
+mechanism-motivated features achieved \vRoneLead-step median lead (\vRoneRel{} of the
+delay) on held-out seeds at zero structural false alarms, and \vProspLead{} steps
+prospectively on pre-registered fresh runs including a never-seen norm pin (bar
+\vProspBar) --- all four prospective predictions passed.
+
+\textbf{(ii) The robustness--false-alarm tradeoff}
+(Figure~\ref{fig:tradeoff}). Trained on control runs only and tested on
+intervention arms, the scalar norm clock collapses (median lead 0; the interventions
+hold the norm where controls never generalize), and the FA-controlled multivariate
+collapses with it --- \emph{because} the context features that suppress false alarms
+are the features the intervention breaks. The bare content probe survives
+(\vShiftCos--\vShiftDcos{} steps). A monitor tuned quiet on its training distribution
+goes blind exactly when the recipe changes.
+
+\textbf{(iii) Mechanism-factored gates resolve the tradeoff where mechanism is known.}
+Composing a content gate with an \emph{a-priori} norm-viability window (constants from
+the companion papers, not fit) retains \vTwoGateLead{} steps (\vTwoGateRel{} of the
+delay) under the same shift at zero miss. The portable ingredient is mechanism, not
+fitted calibration: fitted thresholds transferred across domains in neither direction
+(kill K5).
+
+\textbf{(iv) The discipline kills seductive numbers.} An algorithmic-domain corpus
+with structure-complete-but-blocked negatives admitted \emph{no} forecaster at 5\% FA
+(kill K1/K8): trap negatives carry more ``progress'' signal than true positives show
+before their events. And a label-free spectral probe that posted a \vRfivebLead-step
+validated lead died under pre-registered confirmation --- it false-alarmed on fresh
+structural negatives and, per-run, was largely detecting the \emph{intervention}, not
+the emergence (kill K9). Both deaths are in the ledger (Section~\ref{sec:kills}) and
+both shaped the LM protocol.
+
+\section{Part II: language models}
+
+\subsection{Public checkpoints: the precursor leads, and why public suites are not
+enough}
+\label{sec:pythia}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\textwidth]{figs/fig1_pythia.pdf}
+\caption{\textbf{Public Pythia checkpoints (models we did not train).} The
+previous-token head (green) rises a full public-checkpoint stage before the
+induction-head score (blue) and the behavioral copy advantage (red) cliff together.
+Left: pythia-70m; right: pythia-160m. The 70m model also partially \emph{loses}
+induction late in training (prefix \wPyPrefixB$\to$\wPySeventyLatePrefix{} at 67B
+tokens) --- capability regression exists and is monitorable.}
+\label{fig:pythia}
+\end{figure}
+
+We probed \wPythiaRuns{} Pythia suites \citep{biderman2023pythia} (70m/160m/410m,
+standard and deduped) across training checkpoints for three quantities: behavioral copy
+advantage on repeated random sequences, the maximum per-head prefix-matching (induction)
+score, and the maximum early-layer previous-token score --- the known mechanistic
+precursor \citep{olsson2022context}. The phase change is crisp in every suite
+(Figure~\ref{fig:pythia}): at 1.07B tokens copy advantage is \wPyCopyA{} and the
+precursor is already at \wPyPrevA{} (${\sim}10\times$ baseline) while induction sits at
+\wPyPrefixA; one stage later both cliff (copy \wPyCopyB{} nats, induction
+\wPyPrefixB). Against a best-case loss threshold granted an oracle sweep, the precursor
+alarmed strictly earlier on 4/5 suites and never post-event (leads \wPythiaPreLeads{}
+stages); our pre-registered prediction here failed in both directions --- the precursor
+led by \emph{more} than predicted and loss was \emph{stronger} than predicted (one
+stage of genuine timing) --- and is reported as registered. Two structural facts matter
+more than the scores. First, all five suites, which share batch and context
+configuration, cliff at the same ${\sim}2.1$B tokens --- consistent with
+config-determined timing \citep{aoyama2025predicting} and fatal to using public suites
+for per-seed forecasting: there is one run per config. Second, an event definition we
+had frozen (50\% of each run's maximum) was silently broken by a late-training outlier
+in one suite --- the same operationalization failure our grokking rungs had already
+punished --- and was replaced, in print, by absolute criteria everywhere.
+
+\subsection{The seed fleet: per-seed forecasts, certified against manufactured
+negatives}
+\label{sec:fleet}
+
+Public suites cannot answer the forecasting question; fleets can. We trained
+\wTotalFleet{} two-layer transformers on a fixed synthetic language (bigram-structured,
+with variable-offset within-context repetition so that positional shortcuts cannot
+substitute for induction --- a shortcut our first design permitted, caught in smoke
+testing): \wFleetPos{} positives at one configuration (seeds vary; config fixed), plus
+\wFleetNeg{} \textbf{manufactured negatives} --- 10 \emph{data-ablated} (identical
+language, zero repetition: induction has no training signal) and 5 \emph{architectural}
+(one layer: induction is structurally impossible \citep{olsson2022context}). Events
+use an absolute criterion (copy advantage $\geq 2$ nats, two consecutive evals).
+
+Results, scored once against the pre-registered spec. Per-seed event times span
+\wEventMin--\wEventMax{} steps (spread \wSpread$\times$; the pre-registered bar of
+$1.3\times$ was cleared by 0.01 --- variance at fixed config is real but modest, and we
+do not dramatize it). The precursor's crossing time forecasts each seed's event:
+$\rho = \wRho$ (bootstrap CI [\wRhoCIlo, \wRhoCIhi], $n=\wFleetPos$), median lead
+\wLeadMed{} steps (\wLeadMin--\wLeadMax) --- ${\sim}15\%$ of the run issued as advance
+notice, seed by seed, where the config equation predicts one constant. The best-case
+loss threshold ($\theta = \wLossTheta$, granted an oracle sweep) \emph{ties} the
+ranking ($\rho=\wLossRho$) --- and forecasts nothing: its median lead is
+\wLossLeadMed{} steps (minimum \wLossLeadMin), i.e., it detects the cliff in progress.
+Our pre-registered comparison metric (rank correlation alone) was therefore
+\emph{wrong as designed}; the two-dimensional truth --- equal correlation, $20\times$
+the lead --- is reported alongside the registered failure, and (correlation, lead)
+pairs are now the protocol's required form. A second dissociation: the graded
+\emph{behavioral} ramp that precedes the cliff carries no timing information
+($\rho = \wIndRho$) --- circuits time the transition; early behavior does not.
+
+The negatives certified the false-alarm side. On data-ablated runs the precursor never
+formed (max layer-0 previous-token score \wNorepPvRange{} vs.\ threshold 0.10): bare
+precursor FA \wBareFA, conjunction FA \wConjFA, with pre-event alarms on \wConjPre{}
+positives. Here our pre-registered mechanistic prediction was wrong and is reported:
+we expected the precursor to form anyway (predicting false alarms that would require a
+conjunctive gate); in fact a pure bigram language is solvable through the embedding
+pathway alone, so previous-token attention only pays where repetition exists. The
+manufactured negatives thus \emph{certified} the precursor rather than trapping it ---
+certification is the other thing negative sets are for --- and constructing a language
+where the trap is real (where previous-token context pays independently of repetition)
+is the named follow-up. Architectural negatives: zero events, induction score
+$\leq \wOnePrefixMax$ throughout, zero alarms.
+
+\subsection{Calibrated intervals}
+\label{sec:conformal}
+
+Single thresholds are fragile (a P5 lesson bought with a dead result); forecasts should
+be intervals with measured coverage. Split-conformal calibration (seeds 1--15) around
+the anchored point forecast $\tpv + \wConfDelta$ yields intervals of median width
+\wConfWidth{} steps that covered \wConfCover{} held-out seeds (nominal 90\%) --- issued
+\wConfDelta{} steps before the event. The identical machinery anchored at the loss
+crossing covers too --- with \wLossConfLead{} steps of lead. Anchoring, not calibration,
+is where warning time comes from.
+
+\subsection{The blind gate}
+\label{sec:gate}
+
+Everything above is one configuration. The ship-gate: freeze the entire rule verbatim
+--- alarm at layer-0 previous-token score $\geq 0.10$; forecast the event in
+$[t_{\mathrm{alarm}} + 825,\; t_{\mathrm{alarm}} + 1125]$ --- commit it, then train 10
+fresh seeds and 3 fresh data-ablated negatives on a configuration the rule never saw
+(model width $256 \to 320$; repetition density $0.75 \to 0.6$), and score once.
+Pre-registered expectations were deliberately humble: the P5 transfer kill (fitted
+calibration did not survive regime shift) made the frozen offset the component we
+flagged as most at risk. Outcome (Figure~\ref{fig:forecast}): \wGateEvents{} events;
+\wGatePre{} pre-event alarms; \textbf{\wGateCover{} interval coverage} against a bar of
+7/10; $\rho = \wGateRho$ within the new config; 0/3 false alarms; median lead
+\wGateLeadMed{} steps. The precursor-to-emergence gap barely moved under the shift
+(\wConfDelta{} $\to$ \wGateLeadMed{} steps) --- our flagged risk did not materialize,
+and we do not fully understand why: whether the gap is set by optimization dynamics
+rather than configuration is, we believe, a sharp open question this benchmark makes
+askable.
+
+\section{The kill ledger}
+\label{sec:kills}
+
+Positive results are only as credible as the regime that tried to kill them. Everything
+below fired as pre-registered and is reported with its mechanism:
+
+\begin{center}\footnotesize
+\begin{tabular}{@{}p{0.30\textwidth}p{0.17\textwidth}p{0.44\textwidth}@{}}
+\toprule
+kill / failure & where & mechanism \\
+\midrule
+K1/K8: no forecaster at 5\% FA & grokking (algorithmic) & trap negatives out-signal true positives \\
+K5: calibration non-transfer & grokking (cross-domain) & fitted thresholds are regime-local \\
+K9: label-free probe dies & grokking (confirmation) & signal was the intervention, not emergence \\
+P1 (both clauses) & Pythia & precursor earlier, loss stronger than predicted \\
+50\%-of-max event rules & twice & fragile to outliers; absolute criteria adopted \\
+P2c metric as registered & fleet & rank correlation without lead rewards nowcasts \\
+P2d interior mechanism & fleet & bigram languages need no attention; negatives certified \\
+single-negative FA cap & grokking (R5) & degenerate fit; minimum-negative rule adopted \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three of these (K1/K8, K5, K9) are full kill criteria; the rest are registered
+predictions that failed informatively. The protocol that survived this ledger is the
+one the language-model results were scored under.
+
+\section{Discussion: what this does and does not establish}
+\label{sec:disc}
+
+\textbf{Established.} For a named capability with a known mechanistic precursor, in
+small transformers: emergence timing is forecastable per run, ${\sim}15\%$ of training
+in advance, with calibrated intervals (\wConfCover{} and \wGateCover{} coverage),
+certified false-alarm rates (0 across 18+3 manufactured negatives), a baseline
+accounting showing loss curves carry ranking but no lead, and blind transfer across a
+config shift. The evaluation discipline --- manufactured negatives, (correlation, lead)
+pairs, FA caps with minimum negative counts, absolute event criteria, prereg-gated
+freezes --- is domain-general and, we argue, the minimum standard any early-warning
+claim should meet.
+
+\textbf{Not established.} Frontier applicability. The gap has named parts:
+(1) \emph{precursor knowledge} --- induction heads have a known antecedent; most
+capabilities of concern do not, and finding precursors is mechanistic-interpretability
+work our benchmark can score but not replace; (2) \emph{negatives at scale} --- frontier
+labs have $n{=}1$ runs and no capability-blocked counterfactuals; our manufactured-negative
+recipe (ablate the training signal the capability needs; block the architecture) is
+implementable in principle at any scale, and we regard a library of blocked runs as the
+single most actionable transfer of this work; (3) \emph{recipe shift} --- we passed one
+blind config shift on two axes; the P5 tradeoff says shift-robustness must be
+re-certified per monitor, and mechanism-factored designs are the only pattern we found
+that survives shift by construction; (4) \emph{the gap-origin question} --- the
+config-invariance of the precursor-to-cliff gap is unexplained; if it is an
+optimization-dynamics constant, calibration may transfer far more broadly than P5's
+kill suggests, and if not, per-config calibration fleets are the cost of coverage.
+Emergence forecasting in the wild also faces capabilities that \emph{regress}
+(pythia-70m's late induction loss) and metric-induced discontinuities
+\citep{schaeffer2023mirage}; our absolute-criterion and interval machinery handles
+both mechanically, but the monitoring literature has not.
+
+\textbf{Practical recipe} (what a lab could run tomorrow, at their scale, for a named
+capability): identify the precursor circuit; log its strength densely alongside a
+behavioral probe; manufacture blocked negatives by ablating the capability's training
+signal; calibrate an anchored conformal interval on a seed fleet; freeze; monitor; and
+re-certify after any recipe change --- expecting, per our tradeoff, that the FA-control
+features are the first casualties of shift.
+
+\section{Limitations}
+\label{sec:limits}
+
+One capability (induction), small models (2-layer fleets; $\leq$410m public suites),
+synthetic fleet language, one blind config shift (two axes bundled), $n{=}30/10/18$
+per role. The fleet's positive-vs-negative separation was clean partly because a bigram
+language makes the precursor repetition-specific; harder languages may reintroduce the
+trap our grokking rungs documented. R4's calibration seeds were not blind (R5 is). The
+per-seed spread cleared its pre-registered bar by 0.01. Pythia event times are bounded
+by public checkpoint granularity. All pre-registration is repository-native
+(commit-stamped, publicly pushed), not third-party.
+
+\section{Reproducibility}
+\label{sec:repro}
+
+\begin{sloppypar}
+Every number in this paper is a macro generated from scored artifacts
+(\texttt{paper4/gen\_numbers.py}, byte-verified by \texttt{paper4/verify\_regen.py}).
+The prereg chain is public: plan and kills before code (\texttt{2cf62e3}), forecaster
+freezes before test blocks, fleet spec before launch (\texttt{6b05770}), the blind gate
+frozen verbatim before its runs existed (\texttt{377511b}), verdicts after
+(\texttt{f25aa45}, \texttt{dd4d5f5}, \texttt{2ca7da4}). Corpora: \vCorpus{} grokking
+runs, \wPythiaRuns{} public-suite probe trajectories, \wTotalFleet{}+13 fleet runs with
+dense circuit probes; training and scoring harnesses:
+\texttt{src/train\_lm.py}, \texttt{src/probe\_pythia.py},
+\texttt{analysis/score\_r*\_p6.py}. Hardware: one RTX 3080.
+\end{sloppypar}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}
