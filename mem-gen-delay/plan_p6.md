@@ -209,6 +209,43 @@ step lead; (4) conformal intervals with measured coverage: 15/15 in-config, 10/1
 config shift; (5) blind prospective rung, pre-registered, commit-stamped. EXPERIMENTS
 COMPLETE; release decision is the user's per D2.
 
+## R6/R7/R8 PRE-REGISTRATION — the three strengtheners (committed before their grids exist)
+
+R7 THIRD CONFIG AXIS (a NEW LANGUAGE; frozen rule verbatim, R5 protocol): lang_seed
+777 -> 888 (a different bigram table = a different data-generating process), all else at
+the ORIGINAL fleet config (d256, p_rep 0.75, lr 1e-3); budget 20,000. Runs: rep seeds
+201-210 + norep seeds 201-203 (grid6r7). Frozen rule unchanged: alarm at layer-0
+prevtok >= 0.10; interval [t_alarm + 825, t_alarm + 1125]. Bars mirror R5: P7a >= 9/10
+events & 0/3 negative events; P7b pre-event alarms >= 9/10 & conjunction FA 0/3; P7c
+interval coverage >= 7/10; secondary Spearman >= 0.5. K7-gate: coverage <= 5/10 or
+pre-event <= 7/10 -> the gap constant is language-local; report and calibrate per-language.
+
+R8 GAP-ORIGIN PROBE (competing clocks, 20 runs, grid6r8; bigram lang 777, d256, p_rep
+0.75, budget 32,000): lr in {5e-4, 2e-3} x seeds 301-305 at batch 64; batch in {32, 128}
+x seeds 311-315 at lr 1e-3. Reference cell = the existing 30-seed fleet (lr 1e-3, batch
+64, median gap 975). Gap = t_event - t_pv per run. Hypotheses: H1 (optimization clock)
+gap_steps ~ 1/lr, insensitive to batch; H2 (token clock) gap_steps ~ 1/batch,
+insensitive to lr. Discrimination rule (frozen): an axis "controls the gap" if its
+low/high median-gap ratio >= 2 while the other axis' ratio <= 1.5 (lr ratio uses
+5e-4 vs 2e-3, predicted 4x under H1; batch ratio uses 32 vs 128, predicted 4x under H2).
+K8b: both ratios < 2, or both >= 2 -> no clean single clock; gap origin reported as
+open/mixed.
+
+R6 TRAP LANGUAGE (constants pending the running trigram smoke; predictions frozen NOW):
+trigram language (next ~ table[hash(prev, current)]) makes previous-token context pay
+for the TASK, independent of repetition -> the precursor should form even where the
+capability cannot. Runs (after smoke sets budget): trigram rep seeds 1-10 + trigram
+norep seeds 1-10 (grid6r6). Predictions: P-T1 (the trap is real): bare precursor rule
+(prevtok >= 0.10) false-alarms on >= 8/10 trigram norep negatives. P-T2: the a-priori
+conjunction (prevtok >= 0.10 AND indist_adv >= 0.10) restores FA <= 1/10. P-T3
+(exploratory, all (rho, lead) pairs reported): among anchors {t_pv, t_ind, t_conj,
+t_prefix (first prefix >= 0.05)}, at least one achieves Spearman >= 0.5 with median
+lead >= 300 steps AND FA <= 1/10 on the trigram negatives. K-T: none does -> in trap
+languages, forecasting needs signals beyond this battery; reported as the boundary.
+Expectation stated now: t_pv itself should DEGRADE as a timer here (it forms early for
+task reasons on every run) — the trap is expected to break the bare precursor and the
+question is what survives.
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.

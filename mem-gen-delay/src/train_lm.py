@@ -68,24 +68,43 @@ class TinyLM(nn.Module):
         return self.head(self.ln_f(x)), atts
 
 
-def make_language(vocab):
-    """Fixed sparse-ish bigram table: each token has ~20 plausible successors (Zipf-ish)."""
-    g = torch.Generator().manual_seed(LANG_SEED)
-    succ = torch.randint(0, vocab, (vocab, 20), generator=g)
-    w = torch.softmax(torch.randn(vocab, 20, generator=g) * 1.5, -1)
+def make_language(vocab, lang="bigram", lang_seed=LANG_SEED):
+    """bigram: next ~ table[current] (solvable through the embedding pathway alone; the
+    prev-token head has no task incentive). trigram: next ~ table[hash(prev, current)] —
+    prediction REQUIRES previous-token context, so prev-token attention pays for the task
+    itself, independent of repetition (the trap-language construction, R6)."""
+    g = torch.Generator().manual_seed(lang_seed)
+    rows = vocab if lang == "bigram" else 65536
+    succ = torch.randint(0, vocab, (rows, 20), generator=g)
+    w = torch.softmax(torch.randn(rows, 20, generator=g) * 1.5, -1)
     return succ, w
 
 
-def sample_batch(succ, w, B, ctx, p_rep, gen, device):
+def _row(lang, prev, cur, rows):
+    if lang == "bigram":
+        return cur
+    return (prev * 2654435761 + cur) % rows
+
+
+def sample_batch(succ, w, B, ctx, p_rep, gen, device, lang="bigram", vocab=2048):
     """Markov sequences; with prob p_rep the tail repeats the sequence from the start at a
     VARIABLE offset r ~ U[16, ctx-16] (per sequence). Variable offsets deny the fixed-
-    positional-copy shortcut, so match-based induction is the only general solution."""
+    positional-copy shortcut, so match-based induction is the only general solution.
+    The bigram path draws EXACTLY as the original fleet code (bit-identical default)."""
+    rows = succ.shape[0]
     seq = torch.empty(B, ctx, dtype=torch.long)
-    cur = torch.randint(0, succ.shape[0], (B,), generator=gen)
+    if lang == "bigram":
+        cur = torch.randint(0, rows, (B,), generator=gen)
+        prev = cur
+    else:
+        prev = torch.randint(0, vocab, (B,), generator=gen)
+        cur = torch.randint(0, vocab, (B,), generator=gen)
     for t in range(ctx):
         seq[:, t] = cur
-        pick = torch.multinomial(w[cur], 1, generator=gen).squeeze(1)
-        cur = succ[cur, pick]
+        r_idx = cur if lang == "bigram" else _row(lang, prev, cur, rows)
+        pick = torch.multinomial(w[r_idx], 1, generator=gen).squeeze(1)
+        prev = cur
+        cur = succ[r_idx, pick]
     rep = torch.rand(B, generator=gen) < p_rep
     offs = torch.randint(16, ctx - 16, (B,), generator=gen)
     for b in range(B):
@@ -101,18 +120,27 @@ def probe_batch(vocab, B=64, L=64):
     return torch.cat([half, half], 1)
 
 
-def indist_probe(succ, w, ctx, device):
+def indist_probe(succ, w, ctx, device, lang="bigram", vocab=2048):
     """Fixed in-distribution probe: B sequences with a KNOWN repeat at offset r=96, plus
     B matched fresh sequences; in-distribution copy advantage = CE(fresh tail) - CE(rep
-    tail) at identical positions. Detects copying even if OOD-random probes miss it."""
+    tail) at identical positions. Detects copying even if OOD-random probes miss it.
+    Bigram path draws exactly as the original fleet code (bit-identical default)."""
     g = torch.Generator().manual_seed(4321)
     B = 64
+    rows = succ.shape[0]
     seq = torch.empty(2 * B, ctx, dtype=torch.long)
-    cur = torch.randint(0, succ.shape[0], (2 * B,), generator=g)
+    if lang == "bigram":
+        cur = torch.randint(0, rows, (2 * B,), generator=g)
+        prev = cur
+    else:
+        prev = torch.randint(0, vocab, (2 * B,), generator=g)
+        cur = torch.randint(0, vocab, (2 * B,), generator=g)
     for t in range(ctx):
         seq[:, t] = cur
-        pick = torch.multinomial(w[cur], 1, generator=g).squeeze(1)
-        cur = succ[cur, pick]
+        r_idx = cur if lang == "bigram" else _row(lang, prev, cur, rows)
+        pick = torch.multinomial(w[r_idx], 1, generator=g).squeeze(1)
+        prev = cur
+        cur = succ[r_idx, pick]
     r = 96
     seq[:B, r:] = seq[:B, : ctx - r].clone()
     return seq.to(device), r
@@ -161,6 +189,10 @@ def main():
     ap.add_argument("--event_nats", type=float, default=2.0)
     ap.add_argument("--p_rep", type=float, default=-1.0,
                     help="override repeat probability (R5 config shift); -1 = condition default")
+    ap.add_argument("--lang", default="bigram", choices=["bigram", "trigram"],
+                    help="trigram = trap language: prev-token context pays for the task itself (R6)")
+    ap.add_argument("--lang_seed", type=int, default=LANG_SEED,
+                    help="language generator seed (R7 third-axis shift)")
     ap.add_argument("--out_dir", required=True)
     args = ap.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
@@ -173,11 +205,11 @@ def main():
     model = TinyLM(args.vocab, args.d_model, args.n_heads, n_layers, args.ctx).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd,
                             betas=(0.9, 0.95))
-    succ, w = make_language(args.vocab)
+    succ, w = make_language(args.vocab, args.lang, args.lang_seed)
     gen = torch.Generator().manual_seed(args.seed + 10_000)
     pb = probe_batch(args.vocab).to(device)
     L = pb.shape[1] // 2
-    ipb, ir = indist_probe(succ, w, args.ctx, device)
+    ipb, ir = indist_probe(succ, w, args.ctx, device, args.lang, args.vocab)
     log = open(os.path.join(args.out_dir, "metrics.jsonl"), "w")
     t_event = None
     consec = 0
@@ -186,7 +218,8 @@ def main():
         lr = args.lr * min(1.0, (step + 1) / args.warmup)
         for g_ in opt.param_groups:
             g_["lr"] = lr
-        ids = sample_batch(succ, w, args.batch_size, args.ctx, p_rep, gen, device)
+        ids = sample_batch(succ, w, args.batch_size, args.ctx, p_rep, gen, device,
+                           args.lang, args.vocab)
         logits, _ = model(ids)
         loss = ce_per_pos(logits, ids).mean()
         opt.zero_grad(set_to_none=True)
