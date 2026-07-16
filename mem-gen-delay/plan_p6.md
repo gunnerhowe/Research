@@ -156,6 +156,18 @@ HEADLINE: per-seed emergence forecasting from a mechanistic precursor — rho 0.
 steps (~15%) of lead, 0/15 false alarms on manufactured negatives, vs a config-equation
 baseline that is constant-per-config and a loss baseline with 50 steps of lead.
 
+## R4 SPEC (frozen before scoring; fleet outcomes already seen via R2 — disclosed; the
+## blind validation of everything R4 produces is R5)
+Split-conformal time-to-event intervals, anchored at the precursor alarm (t_pv, the
+frozen prevtok >= 0.10 rule). Calibration = rep seeds 1-15; test = rep seeds 16-30
+(a-priori split by seed number). Methods: (A) OFFSET — point forecast t_pv + median
+calibration lead, nonconformity = absolute residual; (B) LINEAR — t_event ~ a + b*t_pv
+fit on calibration, same conformal wrapper. Nominal coverage 90% (finite-sample
+corrected quantile). Report per method: test coverage, median interval width, anchor
+lead. Loss-anchored variant (theta = 2.077) reported for contrast — its anchor arrives
+~50 steps pre-event, so whatever its width, it forecasts nothing. K4 (from plan):
+intervals vacuous (width on the order of the 16,000-step budget) at nominal coverage.
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.
