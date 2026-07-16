@@ -1,0 +1,228 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\setlist{itemsep=1pt,topsep=3pt}
+\pagestyle{plain}
+
+\title{\vspace{-1.2cm}\textbf{Forecasting Capability Emergence in Language Models}\\
+\large A Multi-Seed, Negative-Certified Benchmark at Scale}
+\author{Gunner Levi Howe \quad\textbar\quad \texttt{gunnerlevihowe@gmail.com}\\
+\small Independent researcher \quad\textbar\quad
+\texttt{github.com/gunnerhowe/Research}}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+\vspace{-0.6cm}
+
+\section*{1. Research problem to be solved}
+
+Frontier labs cannot predict \emph{when} a training run will acquire a specific
+capability. Aggregate loss falls smoothly while individual abilities --- in-context
+learning, arithmetic, multi-step reasoning --- appear abruptly. This unpredictability is
+a recognized safety problem: the 2026 International AI Safety Report lists capability
+forecastability as open, and existing work does not close it. Prior approaches predict
+across \emph{model scale} (PassUntil, emergence laws by finetuning), or offer
+early-warning \emph{indicators} without forecasting discipline (spectral observables,
+loss-landscape signals, stagewise detection via the local learning coefficient), or
+predict a single formation time \emph{per configuration} from pre-training hyperparameters
+(Aoyama \& Wilcox 2025). None issues a scored, calibrated forecast for a given training
+run, and none reports false-alarm rates --- because no public checkpoint suite contains
+the negative runs required to measure them.
+
+We have closed this gap at small scale, on one consumer GPU, and the result is strong:
+
+\begin{itemize}
+\item \textbf{Per-seed forecasting works.} Across 30 transformers at \emph{identical}
+  configuration --- where the config-equation baseline predicts one constant by
+  construction --- the formation time of a mechanistic precursor circuit (the
+  previous-token head, the known antecedent of induction) forecasts each seed's
+  induction-head emergence at Spearman $\rho = 0.977$ (95\% CI [0.911, 0.995]), with a
+  median lead of 975 steps ($\approx$15\% of training).
+\item \textbf{Loss curves cannot do this.} A best-case training-loss rule, granted an
+  oracle threshold sweep, \emph{ties} that ranking ($\rho = 0.977$) with a 50-step median
+  lead: it detects the cliff in progress. Warning time comes from \emph{where you anchor},
+  and only the circuit precursor anchors early.
+\item \textbf{Calibrated, not heuristic.} Split-conformal intervals of width 300 steps,
+  anchored at the precursor alarm, covered 15/15 held-out seeds at 90\% nominal.
+\item \textbf{Blind-validated.} The entire rule was frozen verbatim and commit-stamped,
+  then tested on a never-seen configuration (wider model, sparser data structure): 10/10
+  interval coverage (pre-registered bar 7/10), 10/10 pre-event alarms, 0/3 false alarms,
+  $\rho = 0.988$.
+\item \textbf{False alarms certified.} Every false-alarm claim is measured against 21
+  \emph{manufactured capability-blocked negatives} --- runs constructed so the capability
+  \emph{cannot} form (training signal ablated; architecture incapable). Zero false alarms
+  across all rungs.
+\item \textbf{Public suites cannot answer this.} We probed five Pythia suites
+  (70M/160M/410M $\times$ standard/deduped): the precursor leads the induction cliff by a
+  full checkpoint stage in every suite --- and all five cliff at the same token count,
+  confirming config-determined timing. With one run per configuration and no negatives,
+  public artifacts structurally cannot test per-seed forecasting or false-alarm rates.
+\end{itemize}
+
+\textbf{What this grant buys:} the scale-up from synthetic languages and 2.7M-parameter
+models to real language-model pretraining (70M--1B parameters, real text corpora, multiple
+capability tracks), and the public release of the first multi-seed emergence corpus with
+manufactured negatives. The methodology is proven; what is missing is compute. A single
+RTX 3080 cannot train 30-seed fleets at 1B parameters --- our current fleet of 45 runs
+took 11 hours at 2.7M parameters; the same experiment at 410M is $\sim$3 GPU-months on
+that hardware and $\sim$2 days on a Nebius H100 node.
+
+\section*{2. Expected resource usage}
+
+\begin{center}\footnotesize
+\begin{tabular}{@{}lrrp{5.3cm}@{}}
+\toprule
+Workstream & GPU-h (H100) & Tokens & Notes \\
+\midrule
+Multi-seed fleets, 70M--410M & 1{,}500 & $\sim$300B & 30 seeds $\times$ 3 configs, $\sim$10B tok/run \\
+Manufactured negatives (same scales) & 700 & $\sim$140B & data-ablated + architectural, $\geq$10/class \\
+Capability tracks 2--3 (ICL, arithmetic) & 2{,}500 & $\sim$400B & incl.\ precursor-identification probing \\
+1B validation fleet & 1{,}200 & $\sim$100B & 10 seeds + 3 negatives, blind gate \\
+Gap-origin scaling study & 800 & $\sim$150B & lr $\times$ batch $\times$ width factorial \\
+Design-iteration headroom ($\sim$1.5$\times$) & 3{,}000 & --- & empirical rate from our program \\
+\midrule
+\textbf{Total} & \textbf{$\sim$9{,}700} & \textbf{$\sim$1.1T} & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Storage:} $\sim$10 TB object storage (dense checkpoint corpus: $\sim$150
+checkpoints/run $\times$ $\sim$150 runs, plus probe trajectories), retained 12 months and
+released publicly; $\sim$2 TB shared filesystem for active working sets.
+
+\textbf{Datasets:} public only --- FineWeb-Edu / The Pile subsets for pretraining, plus
+programmatically ablated variants we construct (the manufactured negatives). No private
+or licensed data.
+
+\textbf{Preemptible-friendly by construction:} our runners are already idempotent with
+checkpoint-resume (built for a home GPU that gets interrupted). We plan
+$\approx$70\% of fleet training on preemptible instances, with on-demand reserved for
+latency-sensitive probing and the blind-gate runs.
+
+\section*{3. Expected costs (Nebius pricing)}
+
+\begin{center}\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Item & Rate (Nebius) & Cost \\
+\midrule
+$\sim$6{,}800 H100-h preemptible (70\%) & \$2.15 / GPU-h & \$14{,}620 \\
+$\sim$2{,}900 H100-h on-demand (30\%) & \$3.85 / GPU-h & \$11{,}165 \\
+Object storage, 10 TB $\times$ 12 mo & \$0.0147 / GiB-mo & \$1{,}805 \\
+Shared filesystem, 2 TB $\times$ 12 mo & \$0.0800 / GiB-mo & \$1{,}966 \\
+CPU/eval nodes, analysis + harness CI & --- & $\sim$\$1{,}500 \\
+\midrule
+\textbf{Core program subtotal} & & \textbf{$\sim$\$31{,}100} \\
+Extended capability tracks, 1B fleet expansion, & & \\
+public-corpus hosting through release & & $\sim$\$18{,}900 \\
+\midrule
+\textbf{Total requested} & & \textbf{\$50{,}000} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Scoping flexibility:} a \$15{,}000 award delivers the single-capability core
+(induction track, 70M--410M fleets with negatives, public corpus). \$30{,}000 adds the 1B
+validation fleet and the gap-origin study. \$50{,}000 delivers all three capability tracks
+and the full public benchmark. We will report actual spend against these lines.
+
+\section*{4. Project timeline with key milestones}
+
+\begin{center}\small
+\begin{tabular}{@{}llp{9.2cm}@{}}
+\toprule
+Phase & Months & Milestone (deliverable) \\
+\midrule
+M1 & 1--2 & Infrastructure port: probe harness + idempotent multi-seed runners on Nebius;
+  pilot 70M fleet (5 seeds) reproducing the induction phase change on real text.
+  \emph{Gate: phase change resolvable at our checkpoint cadence.} \\
+M2 & 2--4 & Full 70M--160M fleets (30 seeds/config) + manufactured negatives; scored
+  benchmark v1: lead @ FA $\leq$ 5\%, conformal coverage. \emph{Pre-registered before
+  launch.} \\
+M3 & 4--6 & 410M fleets; blind gate \#1 on a never-seen configuration.
+  \emph{Frozen rule, commit-stamped, one scoring pass.} \\
+M4 & 6--8 & Capability track 2 (in-context learning battery): precursor identification,
+  fleets, negatives via targeted ablation. \\
+M5 & 8--10 & 1B validation fleet + blind gate \#2; gap-origin scaling study
+  (is the precursor$\to$emergence gap set by optimization time, tokens, or
+  competition for gradient?). \\
+M6 & 10--12 & Capability track 3 (arithmetic/syntactic); public corpus + harness release;
+  flagship paper submission. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every milestone carries pre-registered predictions and kill criteria committed to a public
+repository \emph{before} the corresponding runs execute. This is our standing practice, not
+an aspiration: our current program has a public commit chain in which every freeze precedes
+its data, and three pre-registered kill criteria have fired and been reported.
+
+\section*{5. Anticipated outcomes}
+
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{The first multi-seed capability-emergence corpus}: $\sim$150 LM pretraining
+  runs (70M--1B) with dense checkpoints, circuit-probe trajectories, and --- uniquely ---
+  manufactured capability-blocked negatives enabling honest false-alarm accounting.
+  Released publicly.
+\item \textbf{A scored forecasting benchmark + harness}: event definitions, lead-time
+  at controlled FA, conformal interval scoring, and baseline implementations (loss rules,
+  config equation). Reusable by any lab for any capability with a known precursor.
+\item \textbf{The scaling answer}: does per-seed forecastability survive at 1B parameters
+  on real text, and does the precursor$\to$emergence gap remain approximately
+  configuration-invariant (as it did across our first blind shift: 975 $\to$ 1{,}012
+  steps)? Either answer is decision-relevant for monitoring.
+\item \textbf{A deployable recipe} for labs: identify the precursor circuit; log it densely;
+  manufacture blocked negatives by ablating the capability's training signal; calibrate an
+  anchored conformal interval on a seed fleet; freeze; monitor; re-certify after recipe
+  changes.
+\item \textbf{Honest boundaries}, reported either way: our discipline has killed three of our
+  own promising results (a label-free probe that failed confirmation; cross-regime
+  calibration transfer; a domain where no forecaster met the FA cap). Negative outcomes will
+  be published with the same rigor as positive ones.
+\end{enumerate}
+
+\section*{6. Potential publication plans}
+
+The flagship paper (\emph{``Capability Emergence Can Be Forecast: Per-Seed, In Advance,
+With Calibrated Intervals, Certified False Alarms, and a Blind Pre-Registered Gate''}) is
+written and internally complete at small scale; the Nebius-funded scale-up becomes its
+principal results section, targeting \textbf{ICLR/NeurIPS} with an arXiv preprint at
+submission. The corpus and harness ship as a \textbf{public benchmark release} (dataset
+card + leaderboard-style harness). Two follow-ons are natural: a methods paper on
+manufactured negatives for capability monitoring, and a mechanistic paper on the
+gap-origin result. Prior output from this line: three arXiv papers on the underlying
+representational-timing mechanism (one endorsed by the author of the weight-norm delay
+law we build on), all with the same regeneration-and-pre-registration discipline.
+
+\section*{7. Collaboration opportunities with Nebius}
+
+\begin{itemize}
+\item \textbf{Co-authorship / acknowledgment}: Nebius credited on the benchmark release and
+  papers; open to co-authorship with Nebius researchers contributing to design or analysis.
+\item \textbf{Hosting the public corpus} on Nebius object storage --- a visible,
+  citable artifact ($\sim$10 TB, permanently referenced by every paper that uses the
+  benchmark) demonstrating Nebius infrastructure in open science.
+\item \textbf{Preemptible-workload case study}: our runners are idempotent and
+  checkpoint-resumable by design. We are glad to publish a technical note with Nebius on
+  running large multi-seed scientific fleets economically on preemptible capacity ---
+  directly useful to other Nebius research users.
+\item \textbf{Talks/blog}: happy to present results at Nebius research events or write a
+  guest technical post; the ``can we see capabilities coming?'' framing has broad interest.
+\item \textbf{Early access for Nebius customers}: the forecasting harness is
+  infrastructure-agnostic but ships with Nebius-ready launch configs.
+\end{itemize}
+
+\vspace{0.3cm}
+\noindent\rule{\textwidth}{0.4pt}
+\small
+\textbf{Why this applicant:} an independent researcher with a complete, reproducible
+research program built on one RTX 3080 --- five projects, three arXiv papers, a public
+commit chain where every prediction is timestamped before its data, and a headline result
+($\rho = 0.977$ per-seed forecasting, 10/10 blind gate) already in hand. The compute is the
+only remaining bottleneck between this and a benchmark the field can use.
+\end{document}
