@@ -262,3 +262,13 @@ identical task incentive should fire the bare rule (P-T1). Fleet: grid6r6, trigr
 seeds 1-10 + trigram norep seeds 1-10. Design iterations v1 (unlearnable hash — no trap,
 all-at-once assembly) and v2 (modes=8 — trap arms but induction starved beyond budget)
 disclosed in src/train_lm.py and feed the competition-clock hypothesis (R8 notes).
+
+### Ops note (2026-07-16): R7/R8 worker died at run 12/33 — GPU contention, no data loss
+Two workers (R6 trap fleet + R7/R8) were launched concurrently on one 10GB RTX 3080. The
+R6 process's allocator cache grew to ~8.6GB; the R7/R8 worker then failed to allocate for
+its next run and exited (exit 1; traceback lost to the log redirect). NO corruption and no
+scoring impact: the 11 completed R7 runs (10/10 positives + 1 negative) have intact
+summaries; the partial norep_s202 had only metrics.jsonl (no summary.json) so the
+idempotent runner re-runs it cleanly from scratch. Remediation: R7/R8 is now CHAINED to
+start after R6 completes rather than racing it. Lesson (institutionalized): one training
+worker per GPU; concurrency only across distinct devices.
