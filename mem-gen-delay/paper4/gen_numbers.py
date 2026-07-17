@@ -107,6 +107,79 @@ M("wPyPrefixB", f"{at(p70, 1000, 'prefix_max'):.2f}", at(p70, 1000, "prefix_max"
 p70_late = [r for r in p70 if r["step"] == 32000][0]
 M("wPySeventyLatePrefix", f"{p70_late['prefix_max']:.2f}", p70_late["prefix_max"])
 
+# ---------------- P6 strengtheners: R6 trap, R7 third gate, R8 law, R9 blind ----------
+r6 = J("analysis/out6/r6_scored.json")
+M("wTrapBareFA", r6["P_T1"]["bare_fa"])
+M("wTrapConjFA", r6["P_T2"]["conj_fa"])
+tc = r6["P_T3"]["anchors"]["t_conj"]
+M("wTrapConjRho", f"{tc['rho']:.3f}", tc["rho"])
+M("wTrapConjLeadMed", num(int(tc["median_lead"])), tc["median_lead"])
+M("wTrapConjLeadRange", f"{num(tc['lead_range'][0])}--{num(tc['lead_range'][1])}")
+tp = r6["P_T3"]["anchors"]["t_prefix"]
+M("wTrapPrefixRho", f"{tp['rho']:.3f}", tp["rho"])
+M("wTrapPrefixLead", num(int(tp["median_lead"])), tp["median_lead"])
+M("wTrapIndFA", r6["P_T3"]["anchors"]["t_ind"]["fa"])
+neg_pv = [n["t_pv"] for n in r6["negatives"]]
+M("wTrapNegPvRange", f"{num(min(neg_pv))}--{num(max(neg_pv))}")
+
+r7 = J("analysis/out6/r7_scored.json")
+M("wGateCcover", r7["P7c"]["coverage"])
+M("wGateCpre", r7["P7b"]["pre_event"])
+M("wGateCrho", f"{r7['secondary_spearman']:.3f}", r7["secondary_spearman"])
+M("wGateCleadMed", f"{r7['median_lead']:.1f}", r7["median_lead"])
+
+r8 = J("analysis/out6/r8_scored.json")
+M("wGapLrRatio", f"{r8['lr_ratio']:.2f}", r8["lr_ratio"])
+M("wGapBatchRatio", f"{r8['batch_ratio']:.2f}", r8["batch_ratio"])
+for cell, tag in (("lr5e-4", "LrLow"), ("lr2e-3", "LrHigh"), ("b32", "BLow"),
+                  ("b128", "BHigh")):
+    M(f"wGap{tag}", num(int(r8["cells"][cell]["median_gap"])),
+      r8["cells"][cell]["median_gap"])
+    M(f"wEvent{tag}", num(int(r8["cells"][cell]["median_event"])),
+      r8["cells"][cell]["median_event"])
+
+# the law: recompute fractions across all 80 valid-anchor runs (same set as the
+# committed post-hoc script; regeneration keeps it artifact-backed)
+fracs = []
+def _frac(path, anchor="t_pv"):
+    s = J(f"{path}/summary.json")
+    recs = [json.loads(l) for l in open(os.path.join(ROOT, path, "metrics.jsonl"))
+            if l.strip()]
+    ev = s["t_event"]
+    if ev is None:
+        return
+    if anchor == "t_pv":
+        t = next((r["step"] for r in recs if r["prevtok_by_layer"][0] >= 0.10), None)
+    else:
+        t = next((r["step"] for r in recs if r["prevtok_by_layer"][0] >= 0.10
+                  and r["indist_adv"] >= 0.10), None)
+    if t:
+        fracs.append(t / ev)
+for s in range(1, 31):
+    _frac(f"runs/grid6r2/rep_s{s}")
+for s in range(101, 111):
+    _frac(f"runs/grid6r5/rep_s{s}")
+for s in range(201, 211):
+    _frac(f"runs/grid6r7/rep_s{s}")
+for tag, seeds in (("lr5e-4", range(301, 306)), ("lr2e-3", range(301, 306)),
+                   ("b32", range(311, 316)), ("b128", range(311, 316))):
+    for s in seeds:
+        _frac(f"runs/grid6r8/{tag}_s{s}")
+for s in range(1, 11):
+    _frac(f"runs/grid6r6/rep_s{s}", "conj")
+fa = np.array(fracs)
+M("wLawN", str(len(fa)), len(fa))
+M("wLawFrac", f"{np.median(fa):.3f}", float(np.median(fa)))
+M("wLawIQR", f"{np.percentile(fa, 25):.3f}--{np.percentile(fa, 75):.3f}")
+M("wLawRange", f"{fa.min():.3f}--{fa.max():.3f}")
+M("wLawMult", f"{1/np.median(fa):.2f}", float(1 / np.median(fa)))
+
+r9 = J("analysis/out6/r9_scored.json")
+M("wNineCover", r9["P9a"]["coverage"])
+M("wNineEvents", r9["P9a"]["events"])
+mults = r9["multipliers"]
+M("wNineMultRange", f"{min(mults):.3f}--{max(mults):.3f}")
+
 # ---------------- P5 (grokking benchmark) ----------------
 M("vCorpus", "466")
 fz = J("analysis/out5/frozen_eval.json")
