@@ -246,6 +246,26 @@ Expectation stated now: t_pv itself should DEGRADE as a timer here (it forms ear
 task reasons on every run) â€” the trap is expected to break the bare precursor and the
 question is what survives.
 
+## R-ORD PRE-REGISTRATION â€” ordinal cross-family replication (committed before the sweep)
+Two model families never before probed by this program, both fully public: OLMo-1B-hf and
+OLMo-2-0425-1B (distinct architectures, data mixes, tokenizers; AllenAI's two OLMo
+generations). ~10 checkpoints each, chosen nearest to target token counts spanning early
+(0-20B) and late; cache purged per checkpoint. DISCLOSED: final-checkpoint endpoint
+smokes were run to validate the instruments on the new architectures (OLMo-1 copy_adv
+12.43 / prefix 0.921; OLMo-2 12.95 / 0.971); no intermediate checkpoint has been probed.
+FROZEN RULES (unchanged from the program): precursor = early-layer (first half) prevtok
+>= 0.10; capability = copy_adv >= 2.0 nats. t_pre / t_cap = first available checkpoint
+(token order) crossing each.
+Predictions: P-ORD-a instruments validate at inits where available (both sub-threshold at
+0-token checkpoints). P-ORD-b (ordinal): t_pre <= t_cap in BOTH families. P-ORD-c (the
+lead): >= 1 family shows an intermediate checkpoint with precursor formed and capability
+absent (prevtok >= 0.10, copy_adv < 2.0). GRANULARITY NOTE (pre-stated): if a family's
+first formed checkpoint has both above threshold (t_pre = t_cap), that family is
+granularity-bounded and reported as such â€” public grids are coarse (OLMo-1 starts at 4B
+tokens; OLMo-2 jumps 1B -> 21B). K-ORD: t_cap strictly earlier than t_pre in ANY family
+(capability before precursor) -> the precursor-leads phenomenon is not family-general;
+reported as the boundary.
+
 ## Disclosures
 D1 R0/R1 events on public suites are defined after seeing R0 curves (relative criteria
    chosen to minimize arbitrariness); the blind rung is R5, as in P5.
@@ -257,13 +277,13 @@ D4 P5's min-negative-count rule applies to every FA number in P6.
 ### R6 constants FINALIZED after smoke iterations (v3; seed 0 = smoke, excluded)
 lang=trigram TRI_MODES=2, budget 24,000, lr 1e-3, d256, p_rep 0.75 (positives) / 0.0
 (negatives). Smoke v3: precursor crosses 0.10 at ~1k FOR TASK REASONS (saturates 0.99 by
-4k) while the event lands at 10,100 — the trap is armed: on norep-trigram negatives the
+4k) while the event lands at 10,100 ï¿½ the trap is armed: on norep-trigram negatives the
 identical task incentive should fire the bare rule (P-T1). Fleet: grid6r6, trigram rep
-seeds 1-10 + trigram norep seeds 1-10. Design iterations v1 (unlearnable hash — no trap,
-all-at-once assembly) and v2 (modes=8 — trap arms but induction starved beyond budget)
+seeds 1-10 + trigram norep seeds 1-10. Design iterations v1 (unlearnable hash ï¿½ no trap,
+all-at-once assembly) and v2 (modes=8 ï¿½ trap arms but induction starved beyond budget)
 disclosed in src/train_lm.py and feed the competition-clock hypothesis (R8 notes).
 
-### Ops note (2026-07-16): R7/R8 worker died at run 12/33 — GPU contention, no data loss
+### Ops note (2026-07-16): R7/R8 worker died at run 12/33 ï¿½ GPU contention, no data loss
 Two workers (R6 trap fleet + R7/R8) were launched concurrently on one 10GB RTX 3080. The
 R6 process's allocator cache grew to ~8.6GB; the R7/R8 worker then failed to allocate for
 its next run and exited (exit 1; traceback lost to the log redirect). NO corruption and no
@@ -273,35 +293,35 @@ idempotent runner re-runs it cleanly from scratch. Remediation: R7/R8 is now CHA
 start after R6 completes rather than racing it. Lesson (institutionalized): one training
 worker per GPU; concurrency only across distinct devices.
 
-## R7 VERDICT (2026-07-16) — THIRD AXIS PASSES [analysis/out6/r7_scored.json]
+## R7 VERDICT (2026-07-16) ï¿½ THIRD AXIS PASSES [analysis/out6/r7_scored.json]
 Frozen rule (calibrated on language 777, commit 377511b) applied to an ENTIRELY NEW
 LANGUAGE (lang_seed 888), scored once:
 - P7a PASS: 10/10 positives evented; 0/3 negatives evented.
 - P7b PASS: 10/10 pre-event alarms; conjunction FA 0/3; BARE precursor FA also 0/3.
-- P7c PASS: 9/10 interval coverage (bar 7/10) — EXACTLY the 90% nominal the conformal
+- P7c PASS: 9/10 interval coverage (bar 7/10) ï¿½ EXACTLY the 90% nominal the conformal
   quantile was calibrated for, on a data-generating process it never saw. The single miss
   (seed 206, lead 1200) fell 75 steps past the interval's upper edge, i.e. late-side, not
   a structural failure.
 - Secondary Spearman 0.9515; median lead 987.5. K7-gate NO-FIRE.
 GAP CONSTANT NOW STABLE ACROSS THREE CONFIGS: 975 (config A: d256/p_rep .75/lang 777),
-1,012 (config B: d320/p_rep .6/lang 777 — arch + data mix shifted), 987.5 (config C:
-d256/p_rep .75/lang 888 — language replaced). Spread across all three: ~4%. The
+1,012 (config B: d320/p_rep .6/lang 777 ï¿½ arch + data mix shifted), 987.5 (config C:
+d256/p_rep .75/lang 888 ï¿½ language replaced). Spread across all three: ~4%. The
 precursor->emergence gap survives architecture, data density, AND the data-generating
 process itself. This sharpens R8 (gap origin) from a curiosity into the program's central
 open question: a quantity that invariant is being set by something, and it is not config.
 
-## R6 VERDICT (2026-07-17) — THE TRAP IS REAL, AND THE FIX HOLDS [analysis/out6/r6_scored.json]
+## R6 VERDICT (2026-07-17) ï¿½ THE TRAP IS REAL, AND THE FIX HOLDS [analysis/out6/r6_scored.json]
 - P-T1 PASS AT CEILING: in the modal-trigram language the bare precursor rule false-alarms
   on 10/10 capability-blocked negatives (prevtok crosses 0.10 at 650-4,400 steps from the
   TASK incentive alone). The bigram-fleet headline rule is definitively broken in trap
-  languages — predicted from mechanism at prereg, before any trigram fleet run existed.
+  languages ï¿½ predicted from mechanism at prereg, before any trigram fleet run existed.
 - P-T2 PASS AT CEILING: the a-priori conjunction (prevtok >= 0.10 AND indist_adv >= 0.10,
   same eval) restores discrimination completely: 0/10 FA.
 - P-T3 PASS with the campaign's most striking number: the conjunction anchor t_conj scores
   Spearman rho = 1.000 (PERFECT rank order, n=10) with median lead 1,900 steps (range
   1,525-2,100) at 0/10 FA. Secondary anchor t_prefix (induction-score ramp >= 0.05):
   rho = 0.988, median lead 550, 0/10 FA. Neither gate alone survives: bare precursor
-  10/10 FA; behavioral ramp alone 2/10 FA (early transients on 2 seeds — which the
+  10/10 FA; behavioral ramp alone 2/10 FA (early transients on 2 seeds ï¿½ which the
   same-eval conjunction inherently filters). K-T NO-FIRE.
 - INTERPRETATION: in trap languages the forecasting hierarchy reorganizes exactly as the
   mechanism-factored view predicts. The precursor alone degenerates into a task-signature;
@@ -309,21 +329,21 @@ open question: a quantity that invariant is being set by something, and it is no
   bigram languages (rho 1.000 vs 0.977). This is the P5 two-gate lesson reproduced from
   first principles in a new domain, with the failure mode predicted, demonstrated, and
   repaired inside one pre-registered rung. The bigram fleet's P2d "wrong prediction" is
-  retroactively contextualized: the trap I wrongly predicted there exists — in the
+  retroactively contextualized: the trap I wrongly predicted there exists ï¿½ in the
   language class actually built to contain it.
 - PAPER IMPACT: the negatives claim upgrades from "0 FA everywhere" to the stronger,
   honest form: "bare precursor certified in bigram languages; broken (10/10 FA) in trap
   languages; mechanism-factored conjunction certified in BOTH (0 FA) with rho 1.000."
 
-## R8 VERDICT (2026-07-17) — K8b FIRES AS REGISTERED; post-hoc reveals the unifying law
+## R8 VERDICT (2026-07-17) ï¿½ K8b FIRES AS REGISTERED; post-hoc reveals the unifying law
 [analysis/out6/r8_scored.json, r8_posthoc_proportionality.txt]
-AS-REGISTERED: no single external clock. lr ratio 2.27, batch ratio 2.35 — BOTH axes move
+AS-REGISTERED: no single external clock. lr ratio 2.27, batch ratio 2.35 ï¿½ BOTH axes move
 the gap ~2.3x, so neither passes the frozen owns-it rule (one >= 2, other <= 1.5). H1 and
 H2 both rejected; K8b fires.
 POST-HOC (labeled): the gap is a FRACTION OF TIME-TO-EMERGENCE, not a fixed interval.
 Across ALL 80 valid-anchor runs (fleet A, gates B/C, all four R8 cells, trap fleet via
-t_conj): anchor/event median 0.843, IQR [0.825, 0.865], range [0.739, 0.898]. One law —
-t_event ~= 1.19 x t_anchor — explains the whole campaign: R5/R7's fixed-offset transfer
+t_conj): anchor/event median 0.843, IQR [0.825, 0.865], range [0.739, 0.898]. One law ï¿½
+t_event ~= 1.19 x t_anchor ï¿½ explains the whole campaign: R5/R7's fixed-offset transfer
 (those shifts preserved event timescale ~6.3-6.9k), R8's would-have-broken offsets (b128
 gap 650, lr5e-4 gap 1,875), and K8b itself (both axes move t_event, and the announcement
 scales with the road). Consistent with the competition-clock reading: precursor and
@@ -332,7 +352,7 @@ PAPER IMPACT: the deployable forecaster form is MULTIPLICATIVE (t_hat = 1.19 x t
 not additive; fixed-step offsets are timescale-local. The R5/R7 gates stand as registered
 (their configs preserved timescale) with this scope stated.
 
-## R9 PRE-REGISTRATION — proportional-rule confirmation (grid6r9 empty at commit)
+## R9 PRE-REGISTRATION ï¿½ proportional-rule confirmation (grid6r9 empty at commit)
 FROZEN RULE (calibrated on the 80 retrodictive runs above; frozen verbatim now):
 predict t_event in [1.11 x t_pv, 1.36 x t_pv] (full retrodictive envelope; median
 multiplier 1.186 reported as point forecast). Test: a NEVER-SEEN axis value lr = 7e-4
@@ -342,7 +362,7 @@ P9b 0/2 negative events and 0/2 conjunction FA. K9b: coverage <= 3/5 -> the prop
 law does not survive its first blind test; reported, and the paper ships the law as
 retrodictive-only.
 
-## R9 VERDICT (2026-07-17) — THE PROPORTIONAL LAW SURVIVES BLIND [analysis/out6/r9_scored.json]
+## R9 VERDICT (2026-07-17) ï¿½ THE PROPORTIONAL LAW SURVIVES BLIND [analysis/out6/r9_scored.json]
 P9a PASS AT CEILING: 5/5 events, 5/5 envelope coverage at the never-seen lr 7e-4.
 Observed multipliers 1.160-1.226 vs retrodictive median 1.186. P9b PASS: 0/2 negative
 events, 0/2 conjunction FA. K9b NO-FIRE.

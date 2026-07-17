@@ -11,6 +11,7 @@ Idempotent: skips steps already present in the output jsonl. HF cache pinned to 
 """
 import argparse
 import glob
+import re
 import json
 import os
 
@@ -51,6 +52,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="EleutherAI/pythia-70m")
     ap.add_argument("--steps", type=int, nargs="+", default=STEPS_DEFAULT)
+    ap.add_argument("--revisions", default=None,
+                    help="comma-separated explicit revision names (overrides --steps; "
+                         "for suites like OLMo whose checkpoints are not stepN)")
+    ap.add_argument("--purge", action="store_true",
+                    help="delete each checkpoint's HF cache snapshot after probing "
+                         "(bounds peak disk to ~one checkpoint)")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
     from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -58,18 +65,28 @@ def main():
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     done = set()
     if os.path.exists(args.out):
-        done = {json.loads(l)["step"] for l in open(args.out) if l.strip()}
+        done = {json.loads(l).get("revision", f"step{json.loads(l)['step']}")
+                for l in open(args.out) if l.strip()}
     tok = AutoTokenizer.from_pretrained(args.model)
     text_ids = None
     rep = None
     L = 64
-    for step in args.steps:
-        if step in done:
-            print(f"skip step{step}", flush=True)
+    if args.revisions:
+        revisions = args.revisions.split(",")
+    else:
+        revisions = [f"step{s}" for s in args.steps]
+    for rev in revisions:
+        if rev in done:
+            print(f"skip {rev}", flush=True)
             continue
-        print(f">> {args.model} step{step}", flush=True)
+        print(f">> {args.model} {rev}", flush=True)
+        m_tok = re.search(r"tokens(\d+)B", rev)
+        m_step = re.search(r"step(\d+)", rev)
+        step = int(m_step.group(1)) if m_step else -1
+        tokens = (int(m_tok.group(1)) * 10**9 if m_tok
+                  else step * TOKENS_PER_STEP)
         model = AutoModelForCausalLM.from_pretrained(
-            args.model, revision=f"step{step}", torch_dtype=torch.float32,
+            args.model, revision=rev, torch_dtype=torch.float32,
             attn_implementation="eager").to(device).eval()
         if text_ids is None:
             text_ids = fixed_text_batch(tok).to(device)
@@ -100,7 +117,7 @@ def main():
             for i in range(0, text_ids.shape[0], 8):
                 lo = model(text_ids[i:i + 8]).logits
                 losses.append(ce_per_pos(lo, text_ids[i:i + 8]).mean().item())
-        rec = dict(model=args.model, step=step, tokens=step * TOKENS_PER_STEP,
+        rec = dict(model=args.model, step=step, revision=rev, tokens=tokens,
                    copy_adv=round(first - second, 5),
                    ce_first=round(first, 5), ce_second=round(second, 5),
                    prefix_max=max(prefix_by_layer),
@@ -110,9 +127,20 @@ def main():
         with open(args.out, "a") as f:
             f.write(json.dumps(rec) + "\n")
         print(json.dumps({k: rec[k] for k in
-                          ("step", "copy_adv", "prefix_max", "text_loss")}), flush=True)
+                          ("revision", "copy_adv", "prefix_max", "text_loss")}), flush=True)
         del model, out
         torch.cuda.empty_cache()
+        if args.purge:
+            import shutil
+            from huggingface_hub import scan_cache_dir
+            try:
+                for repo in scan_cache_dir().repos:
+                    if repo.repo_id == args.model:
+                        for rv in repo.revisions:
+                            if rev in rv.refs:
+                                shutil.rmtree(rv.snapshot_path, ignore_errors=True)
+            except Exception as e:
+                print(f"(purge skipped: {e})", flush=True)
 
 
 if __name__ == "__main__":
