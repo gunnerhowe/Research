@@ -1,0 +1,228 @@
+{
+  "olmo1": {
+    "rows": [
+      {
+        "revision": "step1000-tokens4B",
+        "tokens_B": 4.0,
+        "prevtok": 0.06279,
+        "copy_adv": 0.27511,
+        "pre_up": false,
+        "cap_up": false
+      },
+      {
+        "revision": "step2000-tokens8B",
+        "tokens_B": 8.0,
+        "prevtok": 0.42564,
+        "copy_adv": 0.71068,
+        "pre_up": true,
+        "cap_up": false
+      },
+      {
+        "revision": "step3000-tokens12B",
+        "tokens_B": 12.0,
+        "prevtok": 0.93764,
+        "copy_adv": 4.05915,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step4000-tokens16B",
+        "tokens_B": 16.0,
+        "prevtok": 0.95424,
+        "copy_adv": 7.93672,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step5000-tokens20B",
+        "tokens_B": 20.0,
+        "prevtok": 0.93901,
+        "copy_adv": 9.59407,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step10000-tokens41B",
+        "tokens_B": 41.0,
+        "prevtok": 0.90757,
+        "copy_adv": 11.73769,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step15000-tokens62B",
+        "tokens_B": 62.0,
+        "prevtok": 0.8764,
+        "copy_adv": 11.73657,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step30000-tokens125B",
+        "tokens_B": 125.0,
+        "prevtok": 0.83488,
+        "copy_adv": 11.96086,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step50000-tokens209B",
+        "tokens_B": 209.0,
+        "prevtok": 0.80515,
+        "copy_adv": 12.01111,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step100000-tokens419B",
+        "tokens_B": 419.0,
+        "prevtok": 0.80924,
+        "copy_adv": 12.49595,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step330000-tokens1383B",
+        "tokens_B": 1383.0,
+        "prevtok": 0.75818,
+        "copy_adv": 12.46052,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step477000-tokens2000B",
+        "tokens_B": 2000.0,
+        "prevtok": 0.71019,
+        "copy_adv": 12.46191,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "step738000-tokens3094B",
+        "tokens_B": 3094.0,
+        "prevtok": 0.64355,
+        "copy_adv": 12.38225,
+        "pre_up": true,
+        "cap_up": true
+      }
+    ],
+    "t_pre_B": 8.0,
+    "t_cap_B": 12.0,
+    "ordinal_ok": true,
+    "lead_checkpoints": [
+      "step2000-tokens8B"
+    ],
+    "granularity_bounded": false,
+    "init_clean": null
+  },
+  "olmo2": {
+    "rows": [
+      {
+        "revision": "stage1-step0-tokens0B",
+        "tokens_B": 0.0,
+        "prevtok": 0.03646,
+        "copy_adv": -0.00173,
+        "pre_up": false,
+        "cap_up": false
+      },
+      {
+        "revision": "stage1-step300-tokens1B",
+        "tokens_B": 1.0,
+        "prevtok": 0.21786,
+        "copy_adv": -0.14054,
+        "pre_up": true,
+        "cap_up": false
+      },
+      {
+        "revision": "stage1-step10000-tokens21B",
+        "tokens_B": 21.0,
+        "prevtok": 0.93024,
+        "copy_adv": 12.35007,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "stage1-step20000-tokens42B",
+        "tokens_B": 42.0,
+        "prevtok": 0.90901,
+        "copy_adv": 12.51128,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "stage1-step30000-tokens63B",
+        "tokens_B": 63.0,
+        "prevtok": 0.89361,
+        "copy_adv": 12.53342,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "stage1-step50000-tokens105B",
+        "tokens_B": 105.0,
+        "prevtok": 0.85999,
+        "copy_adv": 12.30277,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "stage1-step100000-tokens210B",
+        "tokens_B": 210.0,
+        "prevtok": 0.75864,
+        "copy_adv": 12.55428,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "stage1-step200000-tokens420B",
+        "tokens_B": 420.0,
+        "prevtok": 0.71008,
+        "copy_adv": 12.48128,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "stage1-step480000-tokens1007B",
+        "tokens_B": 1007.0,
+        "prevtok": 0.71332,
+        "copy_adv": 12.68779,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "stage1-step950000-tokens1993B",
+        "tokens_B": 1993.0,
+        "prevtok": 0.72257,
+        "copy_adv": 12.99712,
+        "pre_up": true,
+        "cap_up": true
+      },
+      {
+        "revision": "stage1-step1907359-tokens4001B",
+        "tokens_B": 4001.0,
+        "prevtok": 0.72452,
+        "copy_adv": 13.01813,
+        "pre_up": true,
+        "cap_up": true
+      }
+    ],
+    "t_pre_B": 1.0,
+    "t_cap_B": 21.0,
+    "ordinal_ok": true,
+    "lead_checkpoints": [
+      "stage1-step300-tokens1B"
+    ],
+    "granularity_bounded": false,
+    "init_clean": true
+  },
+  "P_ORD_a": {
+    "passed": true
+  },
+  "P_ORD_b": {
+    "passed": true
+  },
+  "P_ORD_c": {
+    "passed": true
+  },
+  "K_ORD_fires": false
+}

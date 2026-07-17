@@ -372,3 +372,16 @@ The paper's forecaster story is now complete and earned: fixed offset -> broken 
 own stress tests (R8 cells) -> replaced by the scale-invariant law t_event ~= 1.19 x
 t_anchor -> validated blind at an unseen config (5/5). 87 total valid-anchor runs support
 the law; anchors must be mechanism-composed in trap languages (R6). Fold-in begins.
+
+## R-ORD VERDICT (2026-07-17) — ALL THREE PREDICTIONS PASS, BOTH FAMILIES
+[analysis/out6/rord_scored.json]
+- P-ORD-a PASS: OLMo-2 init checkpoint (0 tokens): prevtok 0.036, copy_adv -0.00.
+- P-ORD-b PASS: t_pre <= t_cap in both families (OLMo-1: 8B <= 12B; OLMo-2: 1B <= 21B).
+- P-ORD-c PASS IN BOTH (bar was >= 1): intermediate precursor-up/capability-down
+  checkpoints exist in each family — OLMo-1 at 8B tokens (prevtok 0.426, copy +0.71 <
+  2.0) and OLMo-2 at 1B tokens (prevtok 0.218, copy -0.14: capability literally absent).
+- K-ORD NO-FIRE. No granularity-bounding needed.
+The precursor-leads phenomenon now replicates across THREE public model families
+(Pythia x5 suites, OLMo-1, OLMo-2) — distinct architectures, data mixes, tokenizers,
+training eras — under frozen rules committed before the sweep. The 'toy models'
+objection patch is in hand; fold into paper4 Sec 5.1 + abstract.
