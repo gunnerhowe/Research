@@ -1,0 +1,22 @@
+{
+  "condition": "rep",
+  "seed": 314,
+  "vocab": 2048,
+  "d_model": 256,
+  "n_heads": 4,
+  "ctx": 256,
+  "batch_size": 32,
+  "steps": 32000,
+  "lr": 0.001,
+  "wd": 0.01,
+  "warmup": 100,
+  "eval_every": 25,
+  "event_nats": 2.0,
+  "p_rep": 0.75,
+  "lang": "bigram",
+  "lang_seed": 777,
+  "out_dir": "E:\\GitHub\\Research\\mem-gen-delay\\runs\\grid6r8\\b32_s314",
+  "n_layers": 2,
+  "t_event": 12575,
+  "wall_seconds": 1349.0
+}
