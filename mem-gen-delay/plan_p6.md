@@ -289,3 +289,28 @@ d256/p_rep .75/lang 888 — language replaced). Spread across all three: ~4%. The
 precursor->emergence gap survives architecture, data density, AND the data-generating
 process itself. This sharpens R8 (gap origin) from a curiosity into the program's central
 open question: a quantity that invariant is being set by something, and it is not config.
+
+## R6 VERDICT (2026-07-17) — THE TRAP IS REAL, AND THE FIX HOLDS [analysis/out6/r6_scored.json]
+- P-T1 PASS AT CEILING: in the modal-trigram language the bare precursor rule false-alarms
+  on 10/10 capability-blocked negatives (prevtok crosses 0.10 at 650-4,400 steps from the
+  TASK incentive alone). The bigram-fleet headline rule is definitively broken in trap
+  languages — predicted from mechanism at prereg, before any trigram fleet run existed.
+- P-T2 PASS AT CEILING: the a-priori conjunction (prevtok >= 0.10 AND indist_adv >= 0.10,
+  same eval) restores discrimination completely: 0/10 FA.
+- P-T3 PASS with the campaign's most striking number: the conjunction anchor t_conj scores
+  Spearman rho = 1.000 (PERFECT rank order, n=10) with median lead 1,900 steps (range
+  1,525-2,100) at 0/10 FA. Secondary anchor t_prefix (induction-score ramp >= 0.05):
+  rho = 0.988, median lead 550, 0/10 FA. Neither gate alone survives: bare precursor
+  10/10 FA; behavioral ramp alone 2/10 FA (early transients on 2 seeds — which the
+  same-eval conjunction inherently filters). K-T NO-FIRE.
+- INTERPRETATION: in trap languages the forecasting hierarchy reorganizes exactly as the
+  mechanism-factored view predicts. The precursor alone degenerates into a task-signature;
+  the conjunction becomes a BETTER per-seed timer than the bare precursor ever was in
+  bigram languages (rho 1.000 vs 0.977). This is the P5 two-gate lesson reproduced from
+  first principles in a new domain, with the failure mode predicted, demonstrated, and
+  repaired inside one pre-registered rung. The bigram fleet's P2d "wrong prediction" is
+  retroactively contextualized: the trap I wrongly predicted there exists — in the
+  language class actually built to contain it.
+- PAPER IMPACT: the negatives claim upgrades from "0 FA everywhere" to the stronger,
+  honest form: "bare precursor certified in bigram languages; broken (10/10 FA) in trap
+  languages; mechanism-factored conjunction certified in BOTH (0 FA) with rho 1.000."

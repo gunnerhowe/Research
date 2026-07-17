@@ -1,0 +1,220 @@
+{
+  "positives": [
+    {
+      "seed": 1,
+      "t_event": 12550,
+      "t_pv": 1375,
+      "t_ind": 10675,
+      "t_conj": 10675,
+      "t_prefix": 11975
+    },
+    {
+      "seed": 2,
+      "t_event": 9900,
+      "t_pv": 1075,
+      "t_ind": 150,
+      "t_conj": 7975,
+      "t_prefix": 9325
+    },
+    {
+      "seed": 3,
+      "t_event": 12775,
+      "t_pv": 1475,
+      "t_ind": 11050,
+      "t_conj": 11050,
+      "t_prefix": 12225
+    },
+    {
+      "seed": 4,
+      "t_event": 12750,
+      "t_pv": 1225,
+      "t_ind": 10700,
+      "t_conj": 10700,
+      "t_prefix": 12250
+    },
+    {
+      "seed": 5,
+      "t_event": 9875,
+      "t_pv": 1025,
+      "t_ind": 7950,
+      "t_conj": 7950,
+      "t_prefix": 9300
+    },
+    {
+      "seed": 6,
+      "t_event": 9400,
+      "t_pv": 825,
+      "t_ind": 125,
+      "t_conj": 7450,
+      "t_prefix": 8800
+    },
+    {
+      "seed": 7,
+      "t_event": 11525,
+      "t_pv": 1300,
+      "t_ind": 9650,
+      "t_conj": 9650,
+      "t_prefix": 10975
+    },
+    {
+      "seed": 8,
+      "t_event": 8550,
+      "t_pv": 800,
+      "t_ind": 6875,
+      "t_conj": 6875,
+      "t_prefix": 8075
+    },
+    {
+      "seed": 9,
+      "t_event": 8125,
+      "t_pv": 700,
+      "t_ind": 6600,
+      "t_conj": 6600,
+      "t_prefix": 7600
+    },
+    {
+      "seed": 10,
+      "t_event": 11875,
+      "t_pv": 1275,
+      "t_ind": 9775,
+      "t_conj": 9775,
+      "t_prefix": 11350
+    }
+  ],
+  "negatives": [
+    {
+      "seed": 1,
+      "t_event": null,
+      "t_pv": 1450,
+      "t_ind": null,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 2,
+      "t_event": null,
+      "t_pv": 925,
+      "t_ind": 150,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 3,
+      "t_event": null,
+      "t_pv": 4400,
+      "t_ind": null,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 4,
+      "t_event": null,
+      "t_pv": 1650,
+      "t_ind": null,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 5,
+      "t_event": null,
+      "t_pv": 950,
+      "t_ind": null,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 6,
+      "t_event": null,
+      "t_pv": 800,
+      "t_ind": 125,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 7,
+      "t_event": null,
+      "t_pv": 1100,
+      "t_ind": null,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 8,
+      "t_event": null,
+      "t_pv": 800,
+      "t_ind": null,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 9,
+      "t_event": null,
+      "t_pv": 650,
+      "t_ind": null,
+      "t_conj": null,
+      "t_prefix": null
+    },
+    {
+      "seed": 10,
+      "t_event": null,
+      "t_pv": 1150,
+      "t_ind": null,
+      "t_conj": null,
+      "t_prefix": null
+    }
+  ],
+  "P_T1": {
+    "bare_fa": "10/10",
+    "passed": true
+  },
+  "P_T2": {
+    "conj_fa": "0/10",
+    "passed": true
+  },
+  "P_T3": {
+    "anchors": {
+      "t_pv": {
+        "rho": 0.9152,
+        "median_lead": 9537.5,
+        "lead_range": [
+          7425,
+          11525
+        ],
+        "fa": "10/10",
+        "qualifies": false
+      },
+      "t_ind": {
+        "rho": 0.8667,
+        "median_lead": 1900.0,
+        "lead_range": [
+          1525,
+          9750
+        ],
+        "fa": "2/10",
+        "qualifies": false
+      },
+      "t_conj": {
+        "rho": 1.0,
+        "median_lead": 1900.0,
+        "lead_range": [
+          1525,
+          2100
+        ],
+        "fa": "0/10",
+        "qualifies": true
+      },
+      "t_prefix": {
+        "rho": 0.9879,
+        "median_lead": 550.0,
+        "lead_range": [
+          475,
+          600
+        ],
+        "fa": "0/10",
+        "qualifies": true
+      }
+    },
+    "passed": true
+  },
+  "K_T_fires": false
+}
