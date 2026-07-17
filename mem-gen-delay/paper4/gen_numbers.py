@@ -180,6 +180,24 @@ M("wNineEvents", r9["P9a"]["events"])
 mults = r9["multipliers"]
 M("wNineMultRange", f"{min(mults):.3f}--{max(mults):.3f}")
 
+# ---------------- authoritative negative census (audit 2026-07-17) ----------------
+import glob as _glob
+_neg_total, _neg_conj_fa = 0, 0
+for _grid, _pats in [("grid6r2", ["norep_s*", "onelayer_s*"]), ("grid6r5", ["norep_s*"]),
+                     ("grid6r6", ["norep_s*"]), ("grid6r7", ["norep_s*"]),
+                     ("grid6r9", ["norep_s*"])]:
+    for _pat in _pats:
+        for _d in sorted(_glob.glob(os.path.join(ROOT, "runs", _grid, _pat))):
+            _s = json.load(open(os.path.join(_d, "summary.json")))
+            assert _s["t_event"] is None, f"negative with event: {_d}"
+            _recs = [json.loads(l) for l in open(os.path.join(_d, "metrics.jsonl"))
+                     if l.strip()]
+            _neg_conj_fa += any(r["prevtok_by_layer"][0] >= 0.10
+                                and r["indist_adv"] >= 0.10 for r in _recs)
+            _neg_total += 1
+M("wNegTotal", str(_neg_total), _neg_total)
+M("wNegConjFA", str(_neg_conj_fa), _neg_conj_fa)
+
 # ---------------- R-ORD cross-family replication ----------------
 ro = J("analysis/out6/rord_scored.json")
 o1 = {r["revision"]: r for r in ro["olmo1"]["rows"]}

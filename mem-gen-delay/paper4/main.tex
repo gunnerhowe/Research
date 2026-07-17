@@ -52,8 +52,8 @@ every fleet, both languages, and all configuration axes, the anchor fires at
 \wLawFrac{} of time-to-emergence (IQR \wLawIQR) --- $\tev \approx \wLawMult \times
 t_{\mathrm{anchor}}$ --- and this multiplicative rule passed its own blind gate at a
 third never-seen configuration (\wNineCover{} coverage). All false-alarm claims are
-certified against 28 \emph{manufactured capability-blocked negatives} (data-ablated and
-architectural, across both languages) --- a resource we argue is mandatory for capability
+certified against \wNegTotal{} \emph{manufactured capability-blocked negatives}
+(data-ablated and architectural, across both languages) --- a resource we argue is mandatory for capability
 monitoring and that no public suite provides. Public-checkpoint evidence: the precursor
 leads the capability across \emph{three model families} (Pythia, OLMo, OLMo-2; seven
 suites, pre-registered rules) --- OLMo-2's 1B-token checkpoint shows the precursor
@@ -77,7 +77,7 @@ unpredictability is a safety problem with a name --- labs want to know what a mo
 be able to do \emph{before} it can do it. A literature of early-warning signals has
 grown in response: loss-curve oscillations that predict whether grokking will occur
 \citep{notsawo2023predicting}, spectral observables that show precursors of phase
-transitions \citep{densitymatrices2026}, geometric stage detection
+transitions \citep{hennick2026density}, geometric stage detection
 \citep{hoogland2024developmental}, and scale-axis extrapolations
 \citep{hu2024passuntil,snell2024predicting}. What none of this work does is score a
 \emph{forecast}: state, in advance, when a capability will arrive; attach calibrated
@@ -155,7 +155,7 @@ false alarms.}
 
 \citet{notsawo2023predicting} predict \emph{whether} grokking will occur from early
 loss-curve oscillations --- a scalar whether-classifier; its oscillation feature is one
-of our baselines. \citet{densitymatrices2026} derive spectral early-warning indicators
+of our baselines. \citet{hennick2026density} derive spectral early-warning indicators
 (2-RDM heat capacity) across four transition settings but report no lead time,
 calibration, false-alarm rate, or baseline race; our label-free rung
 (Section~\ref{sec:kills}) shows concretely why unscored spectral indicators can
@@ -417,7 +417,7 @@ emergence times span $3\times$.}
 \label{fig:gaplaw}
 \end{figure}
 
-Why did a fixed 975-step offset survive two config shifts? The pre-registered gap-origin
+Why did a fixed \wConfDelta-step offset survive two config shifts? The pre-registered gap-origin
 study answers by breaking it. Halving the learning rate stretches the gap
 $\wGapLrRatio\times$; halving the batch stretches it $\wGapBatchRatio\times$: both
 optimization axes move it, so \emph{no external clock owns the gap} (the registered
@@ -479,7 +479,8 @@ the one every language-model result was scored under.
 small transformers: emergence timing is forecastable per run, ${\sim}15\%$ of training
 in advance, with calibrated intervals (\wConfCover, \wGateCover, \wGateCcover, and
 \wNineCover{} coverage across four evaluations, three of them blind), certified
-false-alarm rates (0 across 28 manufactured negatives spanning both language classes ---
+false-alarm rates (\wNegConjFA{} across \wNegTotal{} manufactured negatives spanning both
+language classes ---
 for the \emph{correctly composed} anchor; the bare anchor fails \wTrapBareFA{} where its
 circuit pays for the task), a baseline accounting showing loss curves carry ranking but
 no lead, and a scale-invariant forecasting law ($\tev \approx \wLawMult \times
