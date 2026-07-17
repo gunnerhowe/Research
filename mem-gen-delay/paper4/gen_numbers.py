@@ -180,6 +180,23 @@ M("wNineEvents", r9["P9a"]["events"])
 mults = r9["multipliers"]
 M("wNineMultRange", f"{min(mults):.3f}--{max(mults):.3f}")
 
+# ---------------- R-ORD cross-family replication ----------------
+ro = J("analysis/out6/rord_scored.json")
+o1 = {r["revision"]: r for r in ro["olmo1"]["rows"]}
+o2 = {r["revision"]: r for r in ro["olmo2"]["rows"]}
+M("ordOlmoOnePre", f"{o1['step2000-tokens8B']['prevtok']:.2f}",
+  o1["step2000-tokens8B"]["prevtok"])
+M("ordOlmoOneCap", f"{o1['step2000-tokens8B']['copy_adv']:.2f}",
+  o1["step2000-tokens8B"]["copy_adv"])
+M("ordOlmoTwoPre", f"{o2['stage1-step300-tokens1B']['prevtok']:.2f}",
+  o2["stage1-step300-tokens1B"]["prevtok"])
+M("ordOlmoTwoCap", f"{o2['stage1-step300-tokens1B']['copy_adv']:.2f}",
+  o2["stage1-step300-tokens1B"]["copy_adv"])
+M("ordOlmoOnePreT", "8", ro["olmo1"]["t_pre_B"])
+M("ordOlmoOneCapT", "12", ro["olmo1"]["t_cap_B"])
+M("ordOlmoTwoPreT", "1", ro["olmo2"]["t_pre_B"])
+M("ordOlmoTwoCapT", "21", ro["olmo2"]["t_cap_B"])
+
 # ---------------- P5 (grokking benchmark) ----------------
 M("vCorpus", "466")
 fz = J("analysis/out5/frozen_eval.json")

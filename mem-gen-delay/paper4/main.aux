@@ -46,14 +46,15 @@
 \citation{biderman2023pythia}
 \citation{olsson2022context}
 \citation{aoyama2025predicting}
-\citation{olsson2022context}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {The robustness--false-alarm tradeoff} (MNIST grokking; median warning time at $\leq 5\%$ FA, higher is better). The scalar clock (weight norm) forecasts in-distribution but collapses when interventions decouple the norm from the outcome. The multivariate forecaster that best controls false alarms in-distribution (10{,}400{} steps, 60\%{} of the delay) collapses hardest under shift --- its norm-context features are exactly what the intervention breaks. The bare content probe survives the shift (16{,}400{} steps) but is FA-fragile in corpora with look-alike negatives.}}{5}{figure.2}\protected@file@percent }
 \newlabel{fig:tradeoff}{{2}{5}{\textbf {The robustness--false-alarm tradeoff} (MNIST grokking; median warning time at $\leq 5\%$ FA, higher is better). The scalar clock (weight norm) forecasts in-distribution but collapses when interventions decouple the norm from the outcome. The multivariate forecaster that best controls false alarms in-distribution (\vRoneLead {} steps, \vRoneRel {} of the delay) collapses hardest under shift --- its norm-context features are exactly what the intervention breaks. The bare content probe survives the shift (\vShiftDcos {} steps) but is FA-fragile in corpora with look-alike negatives}{figure.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {5}Part II: language models}{5}{section.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Public checkpoints: the precursor leads, and why public suites are not enough}{5}{subsection.5.1}\protected@file@percent }
 \newlabel{sec:pythia}{{5.1}{5}{Public checkpoints: the precursor leads, and why public suites are not enough}{subsection.5.1}{}}
+\citation{olsson2022context}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {Public Pythia checkpoints (models we did not train).} The previous-token head (green) rises a full public-checkpoint stage before the induction-head score (blue) and the behavioral copy advantage (red) cliff together. Left: pythia-70m; right: pythia-160m. The 70m model also partially \emph  {loses} induction late in training (prefix 0.93$\to $0.36{} at 67B tokens) --- capability regression exists and is monitorable.}}{6}{figure.3}\protected@file@percent }
 \newlabel{fig:pythia}{{3}{6}{\textbf {Public Pythia checkpoints (models we did not train).} The previous-token head (green) rises a full public-checkpoint stage before the induction-head score (blue) and the behavioral copy advantage (red) cliff together. Left: pythia-70m; right: pythia-160m. The 70m model also partially \emph {loses} induction late in training (prefix \wPyPrefixB $\to $\wPySeventyLatePrefix {} at 67B tokens) --- capability regression exists and is monitorable}{figure.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cross-family replication (pre-registered).}{6}{section*.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.2}The seed fleet: per-seed forecasts, certified against manufactured negatives}{6}{subsection.5.2}\protected@file@percent }
 \newlabel{sec:fleet}{{5.2}{6}{The seed fleet: per-seed forecasts, certified against manufactured negatives}{subsection.5.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Calibrated intervals}{7}{subsection.5.3}\protected@file@percent }
@@ -62,13 +63,13 @@
 \newlabel{sec:gate}{{5.4}{7}{Two blind gates}{subsection.5.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.5}The trap language: our rule, attacked as pre-registered}{7}{subsection.5.5}\protected@file@percent }
 \newlabel{sec:trap}{{5.5}{7}{The trap language: our rule, attacked as pre-registered}{subsection.5.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}From offset to law: the gap is a fraction, not a clock}{7}{subsection.5.6}\protected@file@percent }
-\newlabel{sec:law}{{5.6}{7}{From offset to law: the gap is a fraction, not a clock}{subsection.5.6}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textbf  {The gap law.} Anchor time over emergence time for every valid-anchor cell in the program: the calibration fleet, both blind gates, all four gap-probe cells (learning rate halved/doubled, batch halved/doubled), the trap language via its conjunction anchor, and --- red diamonds --- the blind validation at a never-seen learning rate. Median 0.843{} (dashed); the shaded band is the frozen envelope $[1/1.36,\,1/1.11]$ used in the blind test. One fraction describes 80{} runs whose emergence times span $3\times $.}}{8}{figure.4}\protected@file@percent }
 \newlabel{fig:gaplaw}{{4}{8}{\textbf {The gap law.} Anchor time over emergence time for every valid-anchor cell in the program: the calibration fleet, both blind gates, all four gap-probe cells (learning rate halved/doubled, batch halved/doubled), the trap language via its conjunction anchor, and --- red diamonds --- the blind validation at a never-seen learning rate. Median \wLawFrac {} (dashed); the shaded band is the frozen envelope $[1/1.36,\,1/1.11]$ used in the blind test. One fraction describes \wLawN {} runs whose emergence times span $3\times $}{figure.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}The kill ledger}{8}{section.6}\protected@file@percent }
-\newlabel{sec:kills}{{6}{8}{The kill ledger}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}From offset to law: the gap is a fraction, not a clock}{8}{subsection.5.6}\protected@file@percent }
+\newlabel{sec:law}{{5.6}{8}{From offset to law: the gap is a fraction, not a clock}{subsection.5.6}{}}
 \citation{schaeffer2023mirage}
+\@writefile{toc}{\contentsline {section}{\numberline {6}The kill ledger}{9}{section.6}\protected@file@percent }
+\newlabel{sec:kills}{{6}{9}{The kill ledger}{section.6}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {7}Discussion: what this does and does not establish}{9}{section.7}\protected@file@percent }
 \newlabel{sec:disc}{{7}{9}{Discussion: what this does and does not establish}{section.7}{}}
 \bibstyle{unsrtnat}
@@ -76,12 +77,12 @@
 \bibcite{aoyama2025predicting}{{1}{2025}{{Aoyama and Wilcox}}{{}}}
 \bibcite{olsson2022context}{{2}{2022}{{Olsson et~al.}}{{Olsson, Elhage, Nanda, Joseph, et~al.}}}
 \bibcite{schaeffer2023mirage}{{3}{2023}{{Schaeffer et~al.}}{{Schaeffer, Miranda, and Koyejo}}}
-\bibcite{notsawo2023predicting}{{4}{2023}{{Notsawo et~al.}}{{Notsawo, Zhou, Pezeshki, Rish, and Dumas}}}
-\bibcite{densitymatrices2026}{{5}{2026}{{Anonymous et al.}}{{}}}
 \@writefile{toc}{\contentsline {section}{\numberline {8}Limitations}{10}{section.8}\protected@file@percent }
 \newlabel{sec:limits}{{8}{10}{Limitations}{section.8}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {9}Reproducibility}{10}{section.9}\protected@file@percent }
 \newlabel{sec:repro}{{9}{10}{Reproducibility}{section.9}{}}
+\bibcite{notsawo2023predicting}{{4}{2023}{{Notsawo et~al.}}{{Notsawo, Zhou, Pezeshki, Rish, and Dumas}}}
+\bibcite{densitymatrices2026}{{5}{2026}{{Anonymous et al.}}{{}}}
 \bibcite{hoogland2024developmental}{{6}{2024}{{Hoogland et~al.}}{{Hoogland, Wang, Farrugia-Roberts, Carroll, Wei, and Murfet}}}
 \bibcite{hu2024passuntil}{{7}{2024}{{Hu et~al.}}{{Hu, Liu, Han, et~al.}}}
 \bibcite{snell2024predicting}{{8}{2024}{{Snell et~al.}}{{Snell, Klein, and Zhong}}}

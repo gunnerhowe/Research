@@ -1,4 +1,12 @@
 {
+  "ordOlmoOneCap": 0.71068,
+  "ordOlmoOneCapT": 12.0,
+  "ordOlmoOnePre": 0.42564,
+  "ordOlmoOnePreT": 8.0,
+  "ordOlmoTwoCap": -0.14054,
+  "ordOlmoTwoCapT": 21.0,
+  "ordOlmoTwoPre": 0.21786,
+  "ordOlmoTwoPreT": 1.0,
   "vCorpus": "466",
   "vInWnorm": 1000.0,
   "vProspBar": 5200,

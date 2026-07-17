@@ -54,10 +54,11 @@ t_{\mathrm{anchor}}$ --- and this multiplicative rule passed its own blind gate 
 third never-seen configuration (\wNineCover{} coverage). All false-alarm claims are
 certified against 28 \emph{manufactured capability-blocked negatives} (data-ablated and
 architectural, across both languages) --- a resource we argue is mandatory for capability
-monitoring and that no public suite provides. Public-checkpoint evidence (Pythia): the
-precursor leads the induction cliff in all \wPythiaRuns{} suites probed, and all five
-cliff at the same token count, confirming that public suites cannot test per-seed
-forecasting. The grokking half of the paper (\vCorpus{} runs) contributes the evaluation
+monitoring and that no public suite provides. Public-checkpoint evidence: the precursor
+leads the capability across \emph{three model families} (Pythia, OLMo, OLMo-2; seven
+suites, pre-registered rules) --- OLMo-2's 1B-token checkpoint shows the precursor
+formed while the capability is absent --- yet all Pythia suites cliff at the same token
+count, confirming that public artifacts cannot test per-seed forecasting. The grokking half of the paper (\vCorpus{} runs) contributes the evaluation
 methodology and its hard lessons: a robustness-versus-false-alarm tradeoff,
 mechanism-factored gates that resolve it, non-transfer of fitted calibration, and a
 label-free probe family that died under pre-registered confirmation. Four pre-registered
@@ -291,6 +292,20 @@ had frozen (50\% of each run's maximum) was silently broken by a late-training o
 in one suite --- the same operationalization failure our grokking rungs had already
 punished --- and was replaced, in print, by absolute criteria everywhere.
 
+\paragraph{Cross-family replication (pre-registered).} To test whether the
+precursor-leads phenomenon is a Pythia artifact, we froze the same rules (precursor
+$\geq 0.10$; capability $\geq 2.0$ nats) and swept two families this program had never
+probed --- AllenAI's two OLMo generations, with architectures, data pipelines, and
+tokenizers all distinct from Pythia's and from each other. All three pre-registered
+predictions passed in \emph{both} families, and each family's public grid caught the
+intermediate state directly: OLMo-1 at 8B tokens shows the precursor formed
+(\ordOlmoOnePre) with the capability below threshold (\ordOlmoOneCap{} nats), and OLMo-2
+at 1B tokens shows the precursor formed (\ordOlmoTwoPre) with the capability
+\emph{absent} (\ordOlmoTwoCap{} nats) --- ordinal leads of
+\ordOlmoOnePreT{}$\to$\ordOlmoOneCapT{}B and \ordOlmoTwoPreT{}$\to$\ordOlmoTwoCapT{}B
+tokens respectively. The kill (capability before precursor in any family) fired
+nowhere. Across three model families and seven public suites, the precursor leads.
+
 \subsection{The seed fleet: per-seed forecasts, certified against manufactured
 negatives}
 \label{sec:fleet}
@@ -507,7 +522,7 @@ monitor; re-certify after any recipe change that could move the emergence timesc
 \section{Limitations}
 \label{sec:limits}
 
-One capability (induction), small models (2-layer fleets; $\leq$410m public suites),
+One capability (induction), small models (2-layer fleets; $\leq$1B public suites),
 synthetic fleet languages, three blind gates but each on one or two axes at a time. The
 trap prediction that harder languages reintroduce false alarms is now \emph{tested and
 confirmed} (Section~\ref{sec:trap}), with the conjunction as the repair; trap classes
