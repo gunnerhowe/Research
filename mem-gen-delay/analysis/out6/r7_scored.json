@@ -1,0 +1,162 @@
+{
+  "rows": [
+    {
+      "seed": 201,
+      "t_event": 6150,
+      "t_pv": 5100,
+      "interval": [
+        5925,
+        6225
+      ],
+      "lead": 1050,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 202,
+      "t_event": 6650,
+      "t_pv": 5625,
+      "interval": [
+        6450,
+        6750
+      ],
+      "lead": 1025,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 203,
+      "t_event": 6125,
+      "t_pv": 5125,
+      "interval": [
+        5950,
+        6250
+      ],
+      "lead": 1000,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 204,
+      "t_event": 6525,
+      "t_pv": 5625,
+      "interval": [
+        6450,
+        6750
+      ],
+      "lead": 900,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 205,
+      "t_event": 7025,
+      "t_pv": 6200,
+      "interval": [
+        7025,
+        7325
+      ],
+      "lead": 825,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 206,
+      "t_event": 5700,
+      "t_pv": 4500,
+      "interval": [
+        5325,
+        5625
+      ],
+      "lead": 1200,
+      "pre_event": true,
+      "covered": false
+    },
+    {
+      "seed": 207,
+      "t_event": 6600,
+      "t_pv": 5750,
+      "interval": [
+        6575,
+        6875
+      ],
+      "lead": 850,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 208,
+      "t_event": 6025,
+      "t_pv": 4900,
+      "interval": [
+        5725,
+        6025
+      ],
+      "lead": 1125,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 209,
+      "t_event": 6675,
+      "t_pv": 5700,
+      "interval": [
+        6525,
+        6825
+      ],
+      "lead": 975,
+      "pre_event": true,
+      "covered": true
+    },
+    {
+      "seed": 210,
+      "t_event": 6850,
+      "t_pv": 6000,
+      "interval": [
+        6825,
+        7125
+      ],
+      "lead": 850,
+      "pre_event": true,
+      "covered": true
+    }
+  ],
+  "negatives": [
+    {
+      "seed": 201,
+      "t_event": null,
+      "conj_alarm": null,
+      "bare_alarm": null
+    },
+    {
+      "seed": 202,
+      "t_event": null,
+      "conj_alarm": null,
+      "bare_alarm": null
+    },
+    {
+      "seed": 203,
+      "t_event": null,
+      "conj_alarm": null,
+      "bare_alarm": null
+    }
+  ],
+  "P7a": {
+    "events": "10/10",
+    "neg_events": 0,
+    "passed": true
+  },
+  "P7b": {
+    "pre_event": "10/10",
+    "conj_fa": 0,
+    "bare_fa": 0,
+    "passed": true
+  },
+  "P7c": {
+    "coverage": "9/10",
+    "passed": true
+  },
+  "secondary_spearman": 0.9515,
+  "median_lead": 987.5,
+  "K7_gate_fires": false
+}

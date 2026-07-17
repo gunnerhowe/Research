@@ -272,3 +272,20 @@ summaries; the partial norep_s202 had only metrics.jsonl (no summary.json) so th
 idempotent runner re-runs it cleanly from scratch. Remediation: R7/R8 is now CHAINED to
 start after R6 completes rather than racing it. Lesson (institutionalized): one training
 worker per GPU; concurrency only across distinct devices.
+
+## R7 VERDICT (2026-07-16) — THIRD AXIS PASSES [analysis/out6/r7_scored.json]
+Frozen rule (calibrated on language 777, commit 377511b) applied to an ENTIRELY NEW
+LANGUAGE (lang_seed 888), scored once:
+- P7a PASS: 10/10 positives evented; 0/3 negatives evented.
+- P7b PASS: 10/10 pre-event alarms; conjunction FA 0/3; BARE precursor FA also 0/3.
+- P7c PASS: 9/10 interval coverage (bar 7/10) — EXACTLY the 90% nominal the conformal
+  quantile was calibrated for, on a data-generating process it never saw. The single miss
+  (seed 206, lead 1200) fell 75 steps past the interval's upper edge, i.e. late-side, not
+  a structural failure.
+- Secondary Spearman 0.9515; median lead 987.5. K7-gate NO-FIRE.
+GAP CONSTANT NOW STABLE ACROSS THREE CONFIGS: 975 (config A: d256/p_rep .75/lang 777),
+1,012 (config B: d320/p_rep .6/lang 777 — arch + data mix shifted), 987.5 (config C:
+d256/p_rep .75/lang 888 — language replaced). Spread across all three: ~4%. The
+precursor->emergence gap survives architecture, data density, AND the data-generating
+process itself. This sharpens R8 (gap origin) from a curiosity into the program's central
+open question: a quantity that invariant is being set by something, and it is not config.
