@@ -341,3 +341,14 @@ seeds 321-322 (hygiene). Bars: P9a >= 4/5 positives event with envelope coverage
 P9b 0/2 negative events and 0/2 conjunction FA. K9b: coverage <= 3/5 -> the proportional
 law does not survive its first blind test; reported, and the paper ships the law as
 retrodictive-only.
+
+## R9 VERDICT (2026-07-17) — THE PROPORTIONAL LAW SURVIVES BLIND [analysis/out6/r9_scored.json]
+P9a PASS AT CEILING: 5/5 events, 5/5 envelope coverage at the never-seen lr 7e-4.
+Observed multipliers 1.160-1.226 vs retrodictive median 1.186. P9b PASS: 0/2 negative
+events, 0/2 conjunction FA. K9b NO-FIRE.
+THE CAMPAIGN IS CLOSED (R6 trap: real + conjunction rho 1.0; R7 third config: nominal
+coverage; R8: K8b as registered + the fractional-gap law; R9: law blind-validated).
+The paper's forecaster story is now complete and earned: fixed offset -> broken by its
+own stress tests (R8 cells) -> replaced by the scale-invariant law t_event ~= 1.19 x
+t_anchor -> validated blind at an unseen config (5/5). 87 total valid-anchor runs support
+the law; anchors must be mechanism-composed in trap languages (R6). Fold-in begins.

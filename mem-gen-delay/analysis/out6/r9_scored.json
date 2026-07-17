@@ -1,0 +1,89 @@
+{
+  "rows": [
+    {
+      "seed": 321,
+      "t_event": 7775,
+      "t_pv": 6375,
+      "envelope": [
+        7076,
+        8670
+      ],
+      "multiplier": 1.2196,
+      "covered": true
+    },
+    {
+      "seed": 322,
+      "t_event": 8700,
+      "t_pv": 7500,
+      "envelope": [
+        8325,
+        10200
+      ],
+      "multiplier": 1.16,
+      "covered": true
+    },
+    {
+      "seed": 323,
+      "t_event": 7500,
+      "t_pv": 6275,
+      "envelope": [
+        6965,
+        8534
+      ],
+      "multiplier": 1.1952,
+      "covered": true
+    },
+    {
+      "seed": 324,
+      "t_event": 7600,
+      "t_pv": 6200,
+      "envelope": [
+        6882,
+        8432
+      ],
+      "multiplier": 1.2258,
+      "covered": true
+    },
+    {
+      "seed": 325,
+      "t_event": 8000,
+      "t_pv": 6750,
+      "envelope": [
+        7493,
+        9180
+      ],
+      "multiplier": 1.1852,
+      "covered": true
+    }
+  ],
+  "negatives": [
+    {
+      "seed": 321,
+      "t_event": null,
+      "conj_alarm": null
+    },
+    {
+      "seed": 322,
+      "t_event": null,
+      "conj_alarm": null
+    }
+  ],
+  "P9a": {
+    "events": "5/5",
+    "coverage": "5/5",
+    "passed": true
+  },
+  "P9b": {
+    "neg_events": 0,
+    "conj_fa": 0,
+    "passed": true
+  },
+  "K9b_fires": false,
+  "multipliers": [
+    1.2196,
+    1.16,
+    1.1952,
+    1.2258,
+    1.1852
+  ]
+}
