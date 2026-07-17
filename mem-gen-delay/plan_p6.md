@@ -314,3 +314,30 @@ open question: a quantity that invariant is being set by something, and it is no
 - PAPER IMPACT: the negatives claim upgrades from "0 FA everywhere" to the stronger,
   honest form: "bare precursor certified in bigram languages; broken (10/10 FA) in trap
   languages; mechanism-factored conjunction certified in BOTH (0 FA) with rho 1.000."
+
+## R8 VERDICT (2026-07-17) — K8b FIRES AS REGISTERED; post-hoc reveals the unifying law
+[analysis/out6/r8_scored.json, r8_posthoc_proportionality.txt]
+AS-REGISTERED: no single external clock. lr ratio 2.27, batch ratio 2.35 — BOTH axes move
+the gap ~2.3x, so neither passes the frozen owns-it rule (one >= 2, other <= 1.5). H1 and
+H2 both rejected; K8b fires.
+POST-HOC (labeled): the gap is a FRACTION OF TIME-TO-EMERGENCE, not a fixed interval.
+Across ALL 80 valid-anchor runs (fleet A, gates B/C, all four R8 cells, trap fleet via
+t_conj): anchor/event median 0.843, IQR [0.825, 0.865], range [0.739, 0.898]. One law —
+t_event ~= 1.19 x t_anchor — explains the whole campaign: R5/R7's fixed-offset transfer
+(those shifts preserved event timescale ~6.3-6.9k), R8's would-have-broken offsets (b128
+gap 650, lr5e-4 gap 1,875), and K8b itself (both axes move t_event, and the announcement
+scales with the road). Consistent with the competition-clock reading: precursor and
+capability phases stretch together.
+PAPER IMPACT: the deployable forecaster form is MULTIPLICATIVE (t_hat = 1.19 x t_alarm),
+not additive; fixed-step offsets are timescale-local. The R5/R7 gates stand as registered
+(their configs preserved timescale) with this scope stated.
+
+## R9 PRE-REGISTRATION — proportional-rule confirmation (grid6r9 empty at commit)
+FROZEN RULE (calibrated on the 80 retrodictive runs above; frozen verbatim now):
+predict t_event in [1.11 x t_pv, 1.36 x t_pv] (full retrodictive envelope; median
+multiplier 1.186 reported as point forecast). Test: a NEVER-SEEN axis value lr = 7e-4
+(batch 64, bigram lang 777, d256, p_rep 0.75, budget 24,000), rep seeds 321-325 + norep
+seeds 321-322 (hygiene). Bars: P9a >= 4/5 positives event with envelope coverage >= 4/5;
+P9b 0/2 negative events and 0/2 conjunction FA. K9b: coverage <= 3/5 -> the proportional
+law does not survive its first blind test; reported, and the paper ships the law as
+retrodictive-only.

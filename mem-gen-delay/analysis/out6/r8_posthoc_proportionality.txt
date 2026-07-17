@@ -1,0 +1,11 @@
+A: fleet lr1e-3 b64        n=30  anchor/event: median 0.844  range [0.801, 0.885]
+B: gate d320 p.6           n=10  anchor/event: median 0.830  range [0.806, 0.859]
+C: gate lang888            n=10  anchor/event: median 0.850  range [0.789, 0.883]
+D: lr5e-4                  n= 5  anchor/event: median 0.815  range [0.739, 0.856]
+E: lr2e-3                  n= 5  anchor/event: median 0.892  range [0.886, 0.898]
+F: b32                     n= 5  anchor/event: median 0.877  range [0.863, 0.880]
+G: b128                    n= 5  anchor/event: median 0.848  range [0.784, 0.868]
+H: TRAP trigram (t_conj)   n=10  anchor/event: median 0.818  range [0.793, 0.865]
+
+ALL 80 runs pooled: median 0.843, IQR [0.825, 0.865], range [0.739, 0.898]
+Implied multiplicative rule: t_event ~= 1.186 x t_anchor
