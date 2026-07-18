@@ -434,3 +434,38 @@ DISCLOSURE: all corpus trajectories have been READ before this prereg (they are 
 published benchmark data) — this is a retrodictive-design rung with held-out CELLS, not
 held-out ignorance; the blind element is the frozen spec + one-shot cell scoring. Any
 follow-up on fresh runs would be the prospective rung.
+
+## R-ESN VERDICT (2026-07-18) [analysis/out6/esn_scored.json; frozen at b4048b1]
+- P-E1 FAIL + K-E1 FIRES (NAIVE): calibration tau degenerate (18.1 — odd-negative score
+  ceiling from linear-readout extrapolation spikes) -> 0 lead in-dist, misses everywhere.
+- P-E3 (the pure thesis cell) FAIL + K-E2 FIRES: NAIVE trap FA 10/10 — trigram
+  trajectories sit far outside calibration distribution; the unbounded readout explodes
+  and alarms on everything. Diagnosis: linear-score extrapolation, not signal.
+- P-E5 CONFIRMED AT CEILING: FULL false-alarms on 10/10 trap negatives (it reads the
+  prevtok channels, which fire there for task reasons; it did NOT learn the conjunction).
+  The K9 pattern claims its THIRD victim, exactly as bet. In-family, FULL is excellent
+  (0 miss on gates B/C, gap, law cells; leads 3,062-4,325; c ~ 0.43-0.52) — certified
+  in-family, trap-fragile: learned circuit-channel detectors inherit the bare anchor's
+  failure mode.
+- P-E4 DEAD IN THE INTERESTING DIRECTION — THE RUNG'S HEADLINE: LOSSONLY (a reservoir
+  over the loss curve alone) is NOT a nowcast: leads 1,512-3,000 with 0 miss and 0 FA on
+  EVERY bigram-family cell, and it SURVIVES THE TRAP (0/10 FA on trigram negatives,
+  0/10 miss on trigram positives). Learned TEMPORAL features of loss carry
+  capability-arrival information that loss THRESHOLDS cannot see. The paper's
+  "loss is a nowcast" claim sharpens to "loss thresholds are nowcasts; loss dynamics
+  need not be."
+- HONEST CAVEATS (in print with the result): (i) LOSSONLY's trap alarms come at
+  c ~ 0.068 — very early — consistent with reading the data-mix signature (rep vs norep
+  loss shape) rather than model progress; PARTIAL defusal: in calibration it did NOT
+  alarm on bigram onelayer negatives (rep data present, capability impossible), so it
+  separates capability-possible from impossible at matched data on bigram; the
+  discriminating trigram-onelayer cell does not exist yet (10 runs, ~2 GPU-h, queued for
+  when the GPU frees). (ii) c is not fraction-stable across worlds for LOSSONLY (0.61-0.76
+  bigram vs 0.07 trap) — no law claim. (iii) NAIVE's death is diagnosed as an
+  extrapolation pathology; a bounded-readout variant is a disclosed v2 candidate, not a
+  re-run of this frozen rung.
+- NET: two of three learned generic anchors died exactly as the certification regime
+  predicts (K-E1/K-E2 + the P-E5 trap kill); the third — the least-informed one —
+  survived everything we could throw at it retrodictively and upgrades a headline claim.
+  Next gates before any library inclusion: trigram-onelayer negatives + a prospective
+  fresh-config blind cell for LOSSONLY.
