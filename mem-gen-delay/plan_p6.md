@@ -385,3 +385,52 @@ The precursor-leads phenomenon now replicates across THREE public model families
 (Pythia x5 suites, OLMo-1, OLMo-2) — distinct architectures, data mixes, tokenizers,
 training eras — under frozen rules committed before the sweep. The 'toy models'
 objection patch is in hand; fold into paper4 Sec 5.1 + abstract.
+
+## R-ESN PRE-REGISTRATION — learned generic anchors via reservoir computing
+## (committed BEFORE analysis/esn code exists; CPU-only; runs on the committed corpus)
+
+THESIS UNDER TEST (user's): even without knowing a skill's circuit, a fixed random
+reservoir (echo state network) over a run's logged trajectories + a linear readout can
+CAPTURE the scaffolding signal — a learned generic anchor. The K9 shadow is explicit:
+our last generic detector died under confirmation (it detected the intervention). The
+trap fleet is the acid test built for exactly this question.
+
+FROZEN DESIGN
+- Inputs: per-run trajectories at the 25-step probe cadence. TWO channel sets:
+  * NAIVE (primary; the no-circuit-knowledge cell): {train_loss, copy_adv, indist_adv}.
+  * FULL (secondary; informed upper bound): NAIVE + prevtok_by_layer(2) + prefix_by_layer(2).
+  * LOSS-ONLY (baseline): {train_loss} through the identical reservoir.
+  Channels z-scored with CALIBRATION-set statistics.
+- Reservoir (frozen): leaky ESN, N=500, spectral radius 0.9, leak 0.3, input scale 1.0,
+  weights from seed 7, sparsity 0.9. Readout: ridge regression, alpha swept over
+  {1e-3,1e-2,...,1e3} by inner 5-fold on the readout-fit set only.
+- Label: y_t = 1 iff the run events and 0 < t_event - t <= W, W = 3,000 steps (a-priori
+  round constant ~ half the config-A median event time). Positive-run rows after t_event
+  excluded from fitting (never teach aftermath detection). Negative runs: all rows y=0.
+- Alarm: first probe step >= 125 with readout >= tau on 2 consecutive probes; fires once.
+- Splits (frozen): READOUT FIT = grid6r2 even seeds (pos+neg). TAU FIT = grid6r2 odd
+  seeds at FA cap (8 negatives there; cap means 0/8 alarms). Everything else is TEST,
+  scored once after a freeze commit: gates B (grid6r5) and C (grid6r7), gap cells
+  (grid6r8), law cell (grid6r9), and THE TRAP (grid6r6: 10 pos + 10 neg, trigram).
+- Also reported: fraction c = t_alarm/t_event per alarmed eventing run, vs the 0.843 law.
+
+PREDICTIONS
+- P-E1: NAIVE in-dist (grid6r2 odd positives): median lead >= 500 steps at the tau cap.
+- P-E2 (comparison, no directional bet): FULL in-dist lead vs the hand anchor's 975.
+- P-E3 (THE THESIS): NAIVE survives the trap — FA <= 1/10 on trigram negatives AND
+  median lead on trigram positives >= 50% of its in-dist lead. Its channels are
+  capability-grounded, so it SHOULD transfer where circuit-channel detectors cannot.
+- P-E4: LOSS-ONLY reservoir is a nowcast (median in-dist lead < 200 steps) — the paper's
+  loss result should survive even a learned temporal-feature upgrade.
+- P-E5 (K9-echo bet): FULL false-alarms on >= 3/10 trap negatives (it can see the
+  prevtok channels, which fire there for task reasons) UNLESS the readout has learned
+  the conjunction structure itself — either outcome is reportable mechanism evidence.
+KILLS
+- K-E1: NAIVE finds no feasible tau at the cap, or in-dist median lead < 200 -> learned
+  generic anchors fail in-distribution; mechanism anchors stand; report.
+- K-E2: NAIVE trap FA > 1/10 -> the K9 pattern claims its third victim; report as the
+  third independent demonstration that certification kills generic detectors.
+DISCLOSURE: all corpus trajectories have been READ before this prereg (they are scored,
+published benchmark data) — this is a retrodictive-design rung with held-out CELLS, not
+held-out ignorance; the blind element is the frozen spec + one-shot cell scoring. Any
+follow-up on fresh runs would be the prospective rung.
