@@ -469,3 +469,38 @@ follow-up on fresh runs would be the prospective rung.
   survived everything we could throw at it retrodictively and upgrades a headline claim.
   Next gates before any library inclusion: trigram-onelayer negatives + a prospective
   fresh-config blind cell for LOSSONLY.
+
+## R-ESNb PREREG (2026-07-18) — LOSSONLY usability adjudication [BEFORE runs/grid6esnb exists]
+Frozen artifacts: analysis/out6/esn_frozen.json exactly as committed at b4048b1. NO
+recalibration, no threshold touch, no new fitting of any kind. One-shot scoring via a
+new sealed mode (esn_anchor.py --test_b -> esn_scored_b.json, refuses if file exists,
+runs only after all 20 summaries exist).
+
+Cells (runs/grid6esnb/):
+- TRAPONE trapone_s1..10: --lang trigram --condition onelayer --seed 1..10
+  --steps 24000 --lr 1e-3 (grid6r6 rep config EXCEPT architecture). This is the missing
+  fourth corner of the (repetition-data x architecture) 2x2: trap DATA present, capability
+  ARCHITECTURALLY impossible. Every run is a negative by construction; if any run events
+  it converts to positive, is excluded from the FA denominator, and is disclosed.
+- FRESH-POS fresh1..5 (rep) / FRESH-NEG freshn1..5 (norep), all values never used in any
+  grid (visited: lr {5e-4,7e-4,1e-3,2e-3}, d {256,320}, batch {32,64,128}, p_rep {def,0.6}):
+    f1 lr 1.5e-3 d192 s401 steps 20000        f2 lr 8e-4  d288 s402 steps 32000
+    f3 lr 1e-3  d224 p_rep 0.45 s403 steps 20000   f4 lr 6e-4 batch 96 s404 steps 32000
+    f5 lr 1.2e-3 d320 p_rep 0.7 s405 steps 20000
+  (negatives freshn1..5 = same configs, --condition norep, seeds 411..415)
+
+Predictions / kills (frozen now):
+- P-E6: LOSSONLY FA on TRAPONE <= 1/10. K-E3 fires at >= 2/10 -> the trap survival was
+  (at least partly) data-condition detection; LOSSONLY demoted to "bigram-family
+  forecaster, un-certified under distribution shift"; trap-survival claim withdrawn.
+- P-E7 (side-bet, either way informative): FULL FA on TRAPONE >= 5/10 (prev-token heads
+  form in layer 0 for task reasons; a channel-reading readout cannot tell).
+- P-E8: frozen LOSSONLY on FRESH: miss <= 1/5 AND median lead >= 1,000 AND FA 0/5.
+  K-E4 fires at miss >= 3/5 OR median lead < 500 OR FA >= 2/5 -> not prospectively
+  transferable as frozen.
+- PROMOTION RULE (the "usable" bar): LOSSONLY becomes a supported emergence-watch anchor
+  class ONLY if P-E6 AND P-E8 both pass. Any other outcome -> it stays a characterized
+  research finding; library defaults unchanged.
+- NAIVE scored for completeness; no bets (already dead: K-E1+K-E2).
+Compute discipline: fleet launches only when the GPU is idle (user's other project has
+priority); watcher gate = used memory < 1.5 GiB on two consecutive 5-min checks.
