@@ -116,3 +116,30 @@ regime do not. Nearest neighbors, in order of proximity:
    existence.
 5. Honest boundary: all of this is on our small-LM/grokking substrates; no claim past
    what R-ESNb certifies.
+
+## Diagnostic result (esn_diag.py, post-hoc, frozen artifacts; RAW arm reproduced the
+## sealed numbers exactly)
+
+| variant | gateB | gateC | gap | law | TRAP |
+|---|---|---|---|---|---|
+| RAW      | 2050, 0 miss, 0 FA | 1512, 0, 0 | 1825, 0, 0 | 3000, 0, 0 | 9988, 0 miss, 0/10 FA |
+| SMOOTH5  | 1962, 0, 0 | 1488, 0, 0 | 1788, 0, 0 | 3000, 0, 0 | 9975, 0, 0/10 FA |
+| SMOOTH15 | 1862, 0, 0 | 1488, 0, 0 | 1875, 0, 0 | 3000, 0, 0 | 10538, 0, **10/10 FA** |
+| RESID5   | dead (10/10 miss) | dead | dead (16/20) | dead | dead |
+| RESID15  | FA on all negs | FA all | 5/20 miss | FA all | 10/10 FA |
+
+**Conclusion 1 (in-family mechanism, robust):** the bigram-family forecast signal is
+SLOW LOSS-CURVE SHAPE — it survives low-pass filtering at both widths essentially
+unchanged, and the high-pass residual alone carries no usable signal (dead at k=5,
+alarm-everywhere junk at k=15). LOSSONLY is NOT a learned version of the
+Notsawo oscillation signature on these cells; it is in the learning-curve-geometry
+family, transition-specific, which the classical extrapolation literature does not
+cover.
+
+**Conclusion 2 (trap mechanism, fragile/unresolved):** trap-negative silence flips to
+10/10 FA under k=15 smoothing — the rep-vs-norep trigram discrimination depends on
+finer-scale structure that heavier smoothing destroys. The trap survival is therefore
+NOT explained by the robust slow-shape mechanism and remains uncharacterized; combined
+with the early-alarm caveat (c=0.068), this is precisely what the pre-registered R-ESNb
+fourth-corner cell (P-E6/K-E3, prereg 4ca549e) adjudicates: all-rep data, architecture
+the only free variable.
