@@ -204,15 +204,10 @@ def calibrate():
     print("FROZEN -> analysis/out6/esn_frozen.json (commit before --test)")
 
 
-def test():
+def run_sealed_test(cells_runs, out_name):
     frozen = json.load(open(f"{OUT}/esn_frozen.json"))
-    if os.path.exists(f"{OUT}/esn_scored.json"):
-        raise RuntimeError("esn_scored.json exists — one-shot test already ran")
-    cells_runs = {
-        "gateB_grid6r5": corpus("grid6r5"), "gateC_grid6r7": corpus("grid6r7"),
-        "gap_grid6r8": corpus("grid6r8"), "law_grid6r9": corpus("grid6r9"),
-        "TRAP_grid6r6": corpus("grid6r6"),
-    }
+    if os.path.exists(f"{OUT}/{out_name}"):
+        raise RuntimeError(f"{out_name} exists — one-shot test already ran")
     res = {}
     for cell in CELLS:
         f = frozen[cell]
@@ -225,18 +220,44 @@ def test():
             res[cell][name] = sc
             print(f"{cell:8s} {name:16s} lead={sc['median_lead']:>7.0f} "
                   f"miss={sc['miss']:>5s} FA={sc['fa']:>5s} c={sc['median_c']}")
-    json.dump(res, open(f"{OUT}/esn_scored.json", "w"), indent=1)
-    print("wrote analysis/out6/esn_scored.json")
+    json.dump(res, open(f"{OUT}/{out_name}", "w"), indent=1)
+    print(f"wrote analysis/out6/{out_name}")
+
+
+def test():
+    run_sealed_test({
+        "gateB_grid6r5": corpus("grid6r5"), "gateC_grid6r7": corpus("grid6r7"),
+        "gap_grid6r8": corpus("grid6r8"), "law_grid6r9": corpus("grid6r9"),
+        "TRAP_grid6r6": corpus("grid6r6"),
+    }, "esn_scored.json")
+
+
+def test_b():
+    """R-ESNb (prereg 4ca549e): fourth-corner + prospective cells vs the SAME frozen
+    artifacts. Refuses to run until the full pre-registered fleet exists."""
+    trapone = corpus("grid6esnb", "trapone_*")
+    fresh_pos = corpus("grid6esnb", "fresh[0-9]")
+    fresh_neg = corpus("grid6esnb", "freshn*")
+    if not (len(trapone) == 10 and len(fresh_pos) == 5 and len(fresh_neg) == 5):
+        raise RuntimeError(f"fleet incomplete: trapone={len(trapone)} "
+                           f"pos={len(fresh_pos)} neg={len(fresh_neg)} — not scoring")
+    run_sealed_test({
+        "TRAPONE": trapone,
+        "FRESH": fresh_pos + fresh_neg,
+    }, "esn_scored_b.json")
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--calibrate", action="store_true")
     ap.add_argument("--test", action="store_true")
+    ap.add_argument("--test_b", action="store_true")
     args = ap.parse_args()
     if args.calibrate:
         calibrate()
     elif args.test:
         test()
+    elif args.test_b:
+        test_b()
     else:
-        raise SystemExit("pass --calibrate or --test")
+        raise SystemExit("pass --calibrate, --test, or --test_b")
