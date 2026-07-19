@@ -504,3 +504,17 @@ Predictions / kills (frozen now):
 - NAIVE scored for completeness; no bets (already dead: K-E1+K-E2).
 Compute discipline: fleet launches only when the GPU is idle (user's other project has
 priority); watcher gate = used memory < 1.5 GiB on two consecutive 5-min checks.
+
+## R-ESNb DISCLOSED AMENDMENT (2026-07-18, committed BEFORE --test_b runs; 4 runs still
+## training, zero alarm outputs exist)
+Fleet QA found fresh3 (lr 1e-3, d224, p_rep 0.45) CENSORED AT BUDGET: t_event None at
+20k steps — an intended positive that did not event, consistent with its lowest
+repetition dose. Standing taxonomy (frozen in P5 and the paper): budget-censored is
+NEITHER positive NOR negative — it must not enter miss or FA denominators. The sealed
+scorer, written before data existed, mechanically counts any t_event=None run in the FA
+denominator; adjudication will therefore RECOUNT fresh3 as censored/excluded (this cuts
+both ways: it removes a potential LOSSONLY false alarm AND shrinks the positive cell).
+P-E8 translation, frozen now: miss <= 1 of the 4 valid positives (count kept from the
+original "<= 1/5"; fraction rises 20%->25%, disclosed); median lead over the 4; FA bar
+unchanged (0/5, manufactured freshn negatives only). K-E4 translation: miss >= 3/4 OR
+median lead < 500 OR FA >= 2/5. No other change; frozen artifacts untouched.
