@@ -1,0 +1,22 @@
+{
+  "condition": "onelayer",
+  "seed": 3,
+  "vocab": 2048,
+  "d_model": 256,
+  "n_heads": 4,
+  "ctx": 256,
+  "batch_size": 64,
+  "steps": 24000,
+  "lr": 0.001,
+  "wd": 0.01,
+  "warmup": 100,
+  "eval_every": 25,
+  "event_nats": 2.0,
+  "p_rep": 0.75,
+  "lang": "trigram",
+  "lang_seed": 777,
+  "out_dir": "E:\\GitHub\\Research\\mem-gen-delay\\runs\\grid6esnb\\trapone_s3",
+  "n_layers": 1,
+  "t_event": null,
+  "wall_seconds": 1341.3
+}

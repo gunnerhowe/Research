@@ -518,3 +518,38 @@ P-E8 translation, frozen now: miss <= 1 of the 4 valid positives (count kept fro
 original "<= 1/5"; fraction rises 20%->25%, disclosed); median lead over the 4; FA bar
 unchanged (0/5, manufactured freshn negatives only). K-E4 translation: miss >= 3/4 OR
 median lead < 500 OR FA >= 2/5. No other change; frozen artifacts untouched.
+
+## R-ESNb VERDICT (2026-07-18) [analysis/out6/esn_scored_b.json; artifacts frozen b4048b1;
+## prereg 4ca549e; censoring amendment 92d06cf]
+- P-E6 FAILED / K-E3 FIRED AT CEILING: LOSSONLY false-alarms on 10/10 trigram-onelayer
+  negatives (trap DATA present, capability architecturally impossible). The R-ESN
+  trap survival WAS data-condition detection: under language-class shift the loss
+  channel reads the data mix, not capability progress. Per the frozen demotion
+  language: the trap-survival claim is WITHDRAWN; LOSSONLY stands as a bigram-family
+  forecaster, un-certified under distribution shift. (Foreshadowed by both disclosed
+  caution flags: trap c=0.068 early alarms; SMOOTH15 filter-fragility.)
+- P-E7 CONFIRMED AT CEILING: FULL false-alarms on 10/10 trigram-onelayer negatives —
+  layer-0 prev-token heads form for task reasons and a channel-reading readout cannot
+  tell precursor from composition. Fourth and fifth K9-pattern deaths in one cell.
+- P-E8 FAILED (FA clause), K-E4 NOT FIRED (LOSSONLY): on the amendment-adjudicated
+  FRESH cell — miss 0/4 PASS, median lead 1,688 PASS (leads 225/1050/2325/3625, c
+  median 0.667), but FA 1/5 on manufactured negatives (freshn4 alarms at step 2,400)
+  vs the required 0/5. Raw scorer FA 1/6 recounts to 1/5: the other flagged run is
+  fresh3 (censored, excluded).
+- FULL on FRESH (no prereg bet; reported): miss 0/4, median lead 3,388, FA 0/5 —
+  passes prospectively in-family; its fresh3 alarm at 15,850 is consistent with a
+  true pre-event alarm on a censored run (unfalsifiable, not counted).
+- NAIVE: FA 10/10 on TRAPONE (extrapolation blow-up), miss 4/4 on FRESH — fully dead,
+  consistent with K-E1/K-E2.
+- PROMOTION: DENIED on both grounds (P-E6 and P-E8). LOSSONLY does NOT ship as a
+  supported emergence-watch anchor class. Library defaults unchanged: the composed
+  two-gate anchor remains the only method with zero false alarms everywhere it has
+  ever been scored (0/33 in paper4 cells; NOT scored on grid6esnb — no claim there).
+- STANDING AFTER R-ESNb: (i) learned loss-dynamics anchors are real in-family
+  forecasters (prospective transfer to unvisited configs with frozen artifacts) and
+  certified NON-capability-specific under language-class shift; (ii) the durable
+  methodological contribution is the fourth-corner cell itself — every standard
+  evaluation (held-out configs, new language seed, prospective fresh runs) passed
+  while the detector was reading the wrong thing; only capability-blocked negatives
+  at MATCHED DATA exposed it. No EWS-for-training work we found (litcheck_esn.md)
+  runs this control.

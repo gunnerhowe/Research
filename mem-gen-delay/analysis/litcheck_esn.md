@@ -143,3 +143,14 @@ NOT explained by the robust slow-shape mechanism and remains uncharacterized; co
 with the early-alarm caveat (c=0.068), this is precisely what the pre-registered R-ESNb
 fourth-corner cell (P-E6/K-E3, prereg 4ca549e) adjudicates: all-rep data, architecture
 the only free variable.
+
+---
+## POST-ADJUDICATION ADDENDUM (R-ESNb, same day)
+The claim this document checked is now PARTIALLY DEAD by pre-registered test: the
+trap-survival component was data-condition detection (K-E3, 10/10 FA on
+trigram-onelayer at matched data). What survives novelty-wise: (1) certified in-family
+loss-dynamics forecasting with prospective frozen-artifact transfer (bounded claim);
+(2) the discriminating control itself — capability-blocked negatives at matched data —
+which no surveyed EWS-for-training work possesses and which flipped this result from
+"universal loss EWS" to "distribution detector under shift." Position any write-up
+around (2): the evaluation standard, with the certified failure as its demonstration.

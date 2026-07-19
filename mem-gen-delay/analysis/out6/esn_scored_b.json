@@ -1,0 +1,380 @@
+{
+ "NAIVE": {
+  "TRAPONE": {
+   "median_lead": 0.0,
+   "miss": "0/0",
+   "fa": "10/10",
+   "median_c": null,
+   "n_pos": 0,
+   "n_neg": 10,
+   "per_run": [
+    {
+     "name": "trapone_s1",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s10",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s2",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s3",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s4",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s5",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s6",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s7",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s8",
+     "t_event": null,
+     "alarm": 325.0
+    },
+    {
+     "name": "trapone_s9",
+     "t_event": null,
+     "alarm": 325.0
+    }
+   ]
+  },
+  "FRESH": {
+   "median_lead": 0.0,
+   "miss": "4/4",
+   "fa": "0/6",
+   "median_c": null,
+   "n_pos": 4,
+   "n_neg": 6,
+   "per_run": [
+    {
+     "name": "fresh1",
+     "t_event": 13450,
+     "alarm": null,
+     "lead": 0.0
+    },
+    {
+     "name": "fresh2",
+     "t_event": 5650,
+     "alarm": 5750.0,
+     "lead": 0.0
+    },
+    {
+     "name": "fresh3",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "fresh4",
+     "t_event": 7150,
+     "alarm": 7175.0,
+     "lead": 0.0
+    },
+    {
+     "name": "fresh5",
+     "t_event": 4125,
+     "alarm": 4225.0,
+     "lead": 0.0
+    },
+    {
+     "name": "freshn1",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn2",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn3",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn4",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn5",
+     "t_event": null,
+     "alarm": null
+    }
+   ]
+  }
+ },
+ "FULL": {
+  "TRAPONE": {
+   "median_lead": 0.0,
+   "miss": "0/0",
+   "fa": "10/10",
+   "median_c": null,
+   "n_pos": 0,
+   "n_neg": 10,
+   "per_run": [
+    {
+     "name": "trapone_s1",
+     "t_event": null,
+     "alarm": 875.0
+    },
+    {
+     "name": "trapone_s10",
+     "t_event": null,
+     "alarm": 1075.0
+    },
+    {
+     "name": "trapone_s2",
+     "t_event": null,
+     "alarm": 950.0
+    },
+    {
+     "name": "trapone_s3",
+     "t_event": null,
+     "alarm": 1475.0
+    },
+    {
+     "name": "trapone_s4",
+     "t_event": null,
+     "alarm": 1400.0
+    },
+    {
+     "name": "trapone_s5",
+     "t_event": null,
+     "alarm": 1125.0
+    },
+    {
+     "name": "trapone_s6",
+     "t_event": null,
+     "alarm": 650.0
+    },
+    {
+     "name": "trapone_s7",
+     "t_event": null,
+     "alarm": 975.0
+    },
+    {
+     "name": "trapone_s8",
+     "t_event": null,
+     "alarm": 1350.0
+    },
+    {
+     "name": "trapone_s9",
+     "t_event": null,
+     "alarm": 1275.0
+    }
+   ]
+  },
+  "FRESH": {
+   "median_lead": 3387.5,
+   "miss": "0/4",
+   "fa": "1/6",
+   "median_c": 0.4719196732471069,
+   "n_pos": 4,
+   "n_neg": 6,
+   "per_run": [
+    {
+     "name": "fresh1",
+     "t_event": 13450,
+     "alarm": 7925.0,
+     "lead": 5525.0
+    },
+    {
+     "name": "fresh2",
+     "t_event": 5650,
+     "alarm": 2725.0,
+     "lead": 2925.0
+    },
+    {
+     "name": "fresh3",
+     "t_event": null,
+     "alarm": 15850.0
+    },
+    {
+     "name": "fresh4",
+     "t_event": 7150,
+     "alarm": 3300.0,
+     "lead": 3850.0
+    },
+    {
+     "name": "fresh5",
+     "t_event": 4125,
+     "alarm": 1750.0,
+     "lead": 2375.0
+    },
+    {
+     "name": "freshn1",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn2",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn3",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn4",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn5",
+     "t_event": null,
+     "alarm": null
+    }
+   ]
+  }
+ },
+ "LOSSONLY": {
+  "TRAPONE": {
+   "median_lead": 0.0,
+   "miss": "0/0",
+   "fa": "10/10",
+   "median_c": null,
+   "n_pos": 0,
+   "n_neg": 10,
+   "per_run": [
+    {
+     "name": "trapone_s1",
+     "t_event": null,
+     "alarm": 775.0
+    },
+    {
+     "name": "trapone_s10",
+     "t_event": null,
+     "alarm": 775.0
+    },
+    {
+     "name": "trapone_s2",
+     "t_event": null,
+     "alarm": 800.0
+    },
+    {
+     "name": "trapone_s3",
+     "t_event": null,
+     "alarm": 775.0
+    },
+    {
+     "name": "trapone_s4",
+     "t_event": null,
+     "alarm": 800.0
+    },
+    {
+     "name": "trapone_s5",
+     "t_event": null,
+     "alarm": 800.0
+    },
+    {
+     "name": "trapone_s6",
+     "t_event": null,
+     "alarm": 775.0
+    },
+    {
+     "name": "trapone_s7",
+     "t_event": null,
+     "alarm": 800.0
+    },
+    {
+     "name": "trapone_s8",
+     "t_event": null,
+     "alarm": 800.0
+    },
+    {
+     "name": "trapone_s9",
+     "t_event": null,
+     "alarm": 775.0
+    }
+   ]
+  },
+  "FRESH": {
+   "median_lead": 1687.5,
+   "miss": "0/4",
+   "fa": "1/6",
+   "median_c": 0.6669750603378922,
+   "n_pos": 4,
+   "n_neg": 6,
+   "per_run": [
+    {
+     "name": "fresh1",
+     "t_event": 13450,
+     "alarm": 13225.0,
+     "lead": 225.0
+    },
+    {
+     "name": "fresh2",
+     "t_event": 5650,
+     "alarm": 3325.0,
+     "lead": 2325.0
+    },
+    {
+     "name": "fresh3",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "fresh4",
+     "t_event": 7150,
+     "alarm": 3525.0,
+     "lead": 3625.0
+    },
+    {
+     "name": "fresh5",
+     "t_event": 4125,
+     "alarm": 3075.0,
+     "lead": 1050.0
+    },
+    {
+     "name": "freshn1",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn2",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn3",
+     "t_event": null,
+     "alarm": null
+    },
+    {
+     "name": "freshn4",
+     "t_event": null,
+     "alarm": 2400.0
+    },
+    {
+     "name": "freshn5",
+     "t_event": null,
+     "alarm": null
+    }
+   ]
+  }
+ }
+}
