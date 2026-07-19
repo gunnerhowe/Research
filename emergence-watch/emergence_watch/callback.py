@@ -120,7 +120,7 @@ def make_induction_probe_fn(vocab_size: int, batch: int = 64, half_len: int = 64
     fixed repeated batch, plus an optional in-distribution behavioral ramp (recommended
     — it is the second gate of the certified composed anchor). `behavioral_fn(model)`
     should return a float; its value is exposed as 'behavioral_ramp'."""
-    ids = repeated_probe_batch(vocab_size, batch, half_len, seed, device)
+    ids = repeated_probe_batch(vocab_size, batch, half_len, seed, device=device)
 
     def probe(model) -> dict:
         vals = induction_probe(model, ids.to(next(model.parameters()).device),

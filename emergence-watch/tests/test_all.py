@@ -13,7 +13,15 @@ from emergence_watch import (
     repeated_probe_batch, copy_advantage, prefix_matching_score, prev_token_score,
     Signal, ComposedAnchor, AbsoluteEvent, MultiplicativeForecaster,
     calibrate_multiplicative, BlindGate, report_card, LiveMonitor,
+    make_induction_probe_fn,
 )
+
+
+def test_make_probe_fn_constructs():
+    # regression: device was once passed positionally into repeated_probe_batch's `lo`
+    fn = make_induction_probe_fn(50, batch=2, half_len=4, device="cpu")
+    assert callable(fn)
+    print("make_induction_probe_fn: OK")
 
 
 def test_probe_math_ground_truth():
@@ -143,6 +151,7 @@ def test_live_monitor_end_to_end():
 
 
 if __name__ == "__main__":
+    test_make_probe_fn_constructs()
     test_probe_math_ground_truth()
     test_anchor_composition_and_sustain()
     test_event_convention_matches_paper()

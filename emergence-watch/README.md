@@ -60,5 +60,9 @@ Flash-attention note: probe forwards request eager attention for the probe batch
 ## Status
 
 v0.1.0.dev0 — extracted from the research code behind the paper; CPU test suite in
-`tests/`. The full experimental record (fleets, negatives, blind gates, kill ledger)
-lives in the companion benchmark (`BENCHMARK.md`, tag `emergence-benchmark-v0.1`).
+`tests/`. Release smoke (2026-07-18): `examples/watch_checkpoint_stream.py` on the
+public Pythia-70m suite reproduces the paper's ordering end-to-end — precursor alarm at
+step256 (prevtok 0.156, copy_adv 0.0004 ≈ absent), capability lands by step1000
+(copy_adv 9.6 → 11.5 nats), ~3 s/probe on CPU. The full experimental record (fleets,
+negatives, blind gates, kill ledger) lives in the companion benchmark (`BENCHMARK.md`,
+tag `emergence-benchmark-v0.1`).

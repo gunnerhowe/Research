@@ -8,9 +8,16 @@ Run on CPU or GPU; downloads checkpoints on demand.
         --revisions step256,step512,step1000,step2000
 """
 import argparse
+import pathlib
+import sys
 
 import torch
 from transformers import AutoModelForCausalLM
+
+try:
+    import emergence_watch  # noqa: F401  (installed via pip)
+except ModuleNotFoundError:  # running from a repo checkout
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from emergence_watch import (ComposedAnchor, Signal, paper_induction_event,
                              make_induction_probe_fn, LiveMonitor)
