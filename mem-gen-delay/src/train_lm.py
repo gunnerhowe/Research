@@ -42,6 +42,11 @@ class Block(nn.Module):
         q, k, v = self.qkv(self.ln1(x)).chunk(3, -1)
         q, k, v = (t.view(B, T, self.h, D // self.h).transpose(1, 2) for t in (q, k, v))
         att = (q @ k.transpose(-2, -1)) / math.sqrt(D // self.h)
+        sb = getattr(self, "scaffold_B", None)  # P7: additive score bias, head 0 only
+        if sb is not None:
+            pad = att.new_zeros(self.h, T, T)
+            pad[0] = sb[:T, :T]
+            att = att + pad
         mask = torch.triu(torch.ones(T, T, device=x.device, dtype=torch.bool), 1)
         att = att.masked_fill(mask, float("-inf")).softmax(-1)
         x = x + self.proj((att @ v).transpose(1, 2).reshape(B, T, D))
@@ -66,6 +71,37 @@ class TinyLM(nn.Module):
             if need_attn:
                 atts.append(a)
         return self.head(self.ln_f(x)), atts
+
+
+def scaffold_matrix(kind, ctx, beta):
+    """P7 attention-score bias (prereg b8eb219): hard/seed = prev-token primitive
+    (B[i, i-1] = beta); sink = equally opinionated task-useless placebo (B[i, 0]);
+    near = near-miss primitive (B[i, i-2]). Deterministic — consumes no RNG."""
+    M = torch.zeros(ctx, ctx)
+    idx = torch.arange(ctx)
+    if kind in ("hard", "seed"):
+        M[idx[1:], idx[1:] - 1] = beta
+    elif kind == "sink":
+        M[:, 0] = beta
+    elif kind == "near":
+        M[idx[2:], idx[2:] - 2] = beta
+    else:
+        raise ValueError(kind)
+    return M
+
+
+def attach_scaffold(model, kind, beta):
+    """Attach the bias to LAYER 0 only, BEFORE .to(device). 'seed' is trainable
+    (excluded from weight decay in main); others are fixed buffers. kind='none' is a
+    strict no-op so the default path stays bit-identical to the original fleet code."""
+    if kind == "none":
+        return
+    M = scaffold_matrix(kind, model.pos.num_embeddings, beta)
+    blk = model.blocks[0]
+    if kind == "seed":
+        blk.scaffold_B = nn.Parameter(M)
+    else:
+        blk.register_buffer("scaffold_B", M)
 
 
 def make_language(vocab, lang="bigram", lang_seed=LANG_SEED):
@@ -202,6 +238,10 @@ def main():
                     help="trigram = trap language: prev-token context pays for the task itself (R6)")
     ap.add_argument("--lang_seed", type=int, default=LANG_SEED,
                     help="language generator seed (R7 third-axis shift)")
+    ap.add_argument("--scaffold", default="none",
+                    choices=["none", "hard", "seed", "sink", "near"],
+                    help="P7: additive attention-score bias on layer 0 head 0")
+    ap.add_argument("--scaffold_beta", type=float, default=8.0)
     ap.add_argument("--out_dir", required=True)
     args = ap.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
@@ -211,9 +251,19 @@ def main():
     p_rep = 0.0 if args.condition == "norep" else 0.75
     if args.p_rep >= 0 and args.condition != "norep":
         p_rep = args.p_rep
-    model = TinyLM(args.vocab, args.d_model, args.n_heads, n_layers, args.ctx).to(device)
-    opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd,
-                            betas=(0.9, 0.95))
+    model = TinyLM(args.vocab, args.d_model, args.n_heads, n_layers, args.ctx)
+    attach_scaffold(model, args.scaffold, args.scaffold_beta)
+    model = model.to(device)
+    if args.scaffold == "seed":
+        sb = model.blocks[0].scaffold_B
+        others = [p for p in model.parameters() if p is not sb]
+        opt = torch.optim.AdamW(
+            [{"params": others},
+             {"params": [sb], "weight_decay": 0.0}],  # stickiness arm: no decay
+            lr=args.lr, weight_decay=args.wd, betas=(0.9, 0.95))
+    else:
+        opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd,
+                                betas=(0.9, 0.95))
     succ, w = make_language(args.vocab, args.lang, args.lang_seed)
     gen = torch.Generator().manual_seed(args.seed + 10_000)
     pb = probe_batch(args.vocab).to(device)
