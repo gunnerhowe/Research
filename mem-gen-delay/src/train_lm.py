@@ -90,14 +90,14 @@ def scaffold_matrix(kind, ctx, beta):
     return M
 
 
-def attach_scaffold(model, kind, beta):
-    """Attach the bias to LAYER 0 only, BEFORE .to(device). 'seed' is trainable
-    (excluded from weight decay in main); others are fixed buffers. kind='none' is a
-    strict no-op so the default path stays bit-identical to the original fleet code."""
+def attach_scaffold(model, kind, beta, layer=0):
+    """Attach the bias to `layer` (P7 R1 used layer 0 only), BEFORE .to(device). 'seed' is
+    trainable (excluded from weight decay in main); others are fixed buffers. kind='none'
+    is a strict no-op so the default path stays bit-identical to the original fleet code."""
     if kind == "none":
         return
     M = scaffold_matrix(kind, model.pos.num_embeddings, beta)
-    blk = model.blocks[0]
+    blk = model.blocks[layer]
     if kind == "seed":
         blk.scaffold_B = nn.Parameter(M)
     else:
@@ -197,11 +197,15 @@ def ce_per_pos(logits, ids):
 
 
 @torch.no_grad()
-def run_probes(model, pb, L):
+def run_probes(model, pb, L, heads=False):
+    """`heads=True` additionally returns per-head vectors (P7 R2 instrumentation:
+    max-over-heads cannot distinguish suppression from relocation). The returned
+    scalars are unchanged, so default logging stays byte-identical."""
     logits, atts = model(pb, need_attn=True)
     ce = ce_per_pos(logits, pb)
     copy_adv = float(ce[:, : L - 1].mean() - ce[:, L - 1:].mean())
     prefix_by_layer, prevtok_by_layer = [], []
+    prefix_heads, prevtok_heads = [], []
     dev = pb.device
     q = torch.arange(L, 2 * L - 1, device=dev)
     tgt = q - L + 1
@@ -214,6 +218,11 @@ def run_probes(model, pb, L):
         pv = a[:, :, qq, :].gather(3, (qq - 1).view(1, 1, -1, 1).expand(
             a.shape[0], a.shape[1], -1, 1)).squeeze(3).mean((0, 2))
         prevtok_by_layer.append(round(float(pv.max()), 5))
+        if heads:
+            prefix_heads.append([round(float(x), 5) for x in pre])
+            prevtok_heads.append([round(float(x), 5) for x in pv])
+    if heads:
+        return copy_adv, prefix_by_layer, prevtok_by_layer, prefix_heads, prevtok_heads
     return copy_adv, prefix_by_layer, prevtok_by_layer
 
 
@@ -242,6 +251,11 @@ def main():
                     choices=["none", "hard", "seed", "sink", "near"],
                     help="P7: additive attention-score bias on layer 0 head 0")
     ap.add_argument("--scaffold_beta", type=float, default=8.0)
+    ap.add_argument("--scaffold_layer", type=int, default=0,
+                    help="P7 R2 placement axis: which block carries the bias")
+    ap.add_argument("--log_heads", action="store_true",
+                    help="P7 R2: also log per-head prevtok/prefix (opt-in; default "
+                         "records stay byte-identical to the original fleet)")
     ap.add_argument("--out_dir", required=True)
     args = ap.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
@@ -252,10 +266,10 @@ def main():
     if args.p_rep >= 0 and args.condition != "norep":
         p_rep = args.p_rep
     model = TinyLM(args.vocab, args.d_model, args.n_heads, n_layers, args.ctx)
-    attach_scaffold(model, args.scaffold, args.scaffold_beta)
+    attach_scaffold(model, args.scaffold, args.scaffold_beta, args.scaffold_layer)
     model = model.to(device)
     if args.scaffold == "seed":
-        sb = model.blocks[0].scaffold_B
+        sb = model.blocks[args.scaffold_layer].scaffold_B
         others = [p for p in model.parameters() if p is not sb]
         opt = torch.optim.AdamW(
             [{"params": others},
@@ -286,7 +300,12 @@ def main():
         opt.step()
         if step % args.eval_every == 0:
             model.eval()
-            copy_adv, prefix, prevtok = run_probes(model, pb, L)
+            heads_extra = {}
+            if args.log_heads:
+                copy_adv, prefix, prevtok, pfh, pvh = run_probes(model, pb, L, heads=True)
+                heads_extra = dict(prefix_by_head=pfh, prevtok_by_head=pvh)
+            else:
+                copy_adv, prefix, prevtok = run_probes(model, pb, L)
             with torch.no_grad():
                 B2 = ipb.shape[0] // 2
                 ce_i = ce_per_pos(model(ipb)[0], ipb)
@@ -295,7 +314,7 @@ def main():
             rec = dict(step=step, tokens=step * args.batch_size * args.ctx,
                        train_loss=round(float(loss), 5), copy_adv=round(copy_adv, 5),
                        indist_adv=round(indist_adv, 5),
-                       prefix_by_layer=prefix, prevtok_by_layer=prevtok)
+                       prefix_by_layer=prefix, prevtok_by_layer=prevtok, **heads_extra)
             log.write(json.dumps(rec) + "\n")
             log.flush()
             # frozen event rule: copy_adv >= event_nats on 2 CONSECUTIVE evals
