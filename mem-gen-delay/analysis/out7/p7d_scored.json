@@ -1,0 +1,121 @@
+{
+ "T0": 6300.0,
+ "counts": {
+  "dose1": 5,
+  "dose2": 5,
+  "dose3": 5,
+  "dose4": 5,
+  "dose6": 5,
+  "hardL1": 5
+ },
+ "bars": {
+  "P_D1_beta4_at_or_below": 4950.0,
+  "K_D1_above": 5625.0,
+  "P_D2_at_or_above": 5040.0,
+  "K_D2_at_or_below": 4725.0,
+  "P_D3_floor": 3400.0
+ },
+ "dose_curve": {
+  "0": {
+   "median": 6300.0,
+   "n": 30,
+   "reused": true
+  },
+  "1": {
+   "median": 3825.0,
+   "evented": "5/5",
+   "events": [
+    3750,
+    3800,
+    3825,
+    3875,
+    4000
+   ],
+   "n": 5,
+   "reused": false,
+   "first_eval_prevtok0": 0.0787
+  },
+  "2": {
+   "median": 3375.0,
+   "evented": "5/5",
+   "events": [
+    3350,
+    3350,
+    3375,
+    3400,
+    3475
+   ],
+   "n": 5,
+   "reused": false,
+   "first_eval_prevtok0": 0.1633
+  },
+  "3": {
+   "median": 3350.0,
+   "evented": "5/5",
+   "events": [
+    3325,
+    3350,
+    3350,
+    3400,
+    3450
+   ],
+   "n": 5,
+   "reused": false,
+   "first_eval_prevtok0": 0.3063
+  },
+  "4": {
+   "median": 3425.0,
+   "evented": "5/5",
+   "events": [
+    3400,
+    3425,
+    3425,
+    3475,
+    3525
+   ],
+   "n": 5,
+   "reused": false,
+   "first_eval_prevtok0": 0.504
+  },
+  "6": {
+   "median": 3525.0,
+   "evented": "5/5",
+   "events": [
+    3500,
+    3500,
+    3525,
+    3525,
+    3625
+   ],
+   "n": 5,
+   "reused": false,
+   "first_eval_prevtok0": 0.8597
+  },
+  "8": {
+   "median": 3600.0,
+   "n": 10,
+   "reused": true
+  }
+ },
+ "hardL1": {
+  "median_t_event": 6700.0,
+  "evented": "5/5",
+  "events": [
+   6625,
+   6675,
+   6700,
+   6850,
+   7250
+  ],
+  "first_eval_prevtok_layer1": 0.9767
+ },
+ "verdicts": {
+  "P_D1_graded": "PASS (beta4 3425.0 vs bar 4950.0); monotone_nonincreasing=False",
+  "K_D1_needs_converged_head": "no-fire",
+  "P_D2_placement_null": "PASS (hardL1 6700.0 vs bar 5040.0)",
+  "K_D2_not_composition": "no-fire",
+  "P_D3_two_gate_floor": "FAIL (below floor: {'dose2': 3375.0, 'dose3': 3350.0})",
+  "K_D3_floor_breached": "FIRES \u2014 two-gate account incomplete",
+  "K_D4_manipulation": "PASS (L1 prevtok 0.9767; dose prevtok0 [0.0787, 0.1633, 0.3063, 0.504, 0.8597])"
+ }
+}

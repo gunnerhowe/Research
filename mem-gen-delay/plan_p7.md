@@ -247,3 +247,91 @@ stream. A prev-token bias on LAYER 1 cannot compose into induction and should be
   21-25 elsewhere). Seed set is not expected to matter at n>=5 given control CV 5.6%, but
   it is a disclosed non-ideality, and monotonicity in P-D1 is therefore judged on the
   five FRESH cells plus the two reused endpoints, with the endpoints flagged in the table.
+
+## P7 R2 VERDICT (2026-07-20) [analysis/out7/p7d_scored.json, sealed; prereg 1affb4a]
+Adjudicated by a 6-agent workflow (2 analyses + 2 adversarial verifications + 2 red-team
+lenses); every load-bearing number reproduced from disk to the digit in both verifies.
+All mechanism analysis is POST-HOC unless marked. Dose cells share seeds s21-25 (paired);
+beta=0 (grid6r2, n=30) and beta=8 (grid7c, n=10) endpoints are REUSED (disclosed).
+
+### PRE-REGISTERED OUTCOMES (sealed, unchanged)
+P-D1 PASS (beta4 3425 <= 4950), monotone check False. K-D1 no-fire. P-D2 PASS (hardL1
+6700 >= 5040). K-D2 no-fire. P-D3 FAIL / K-D3 FIRES (dose2 3375, dose3 3350 below the
+3400 floor). K-D4 manipulation PASS.
+
+### 1. K-D1 NO-FIRE IS THE STRONGEST POSITIVE: a SUB-THRESHOLD prior already accelerates
+beta=1 imposes prev-token weight 0.0787 at init - BELOW the 0.10 anchor the whole campaign
+uses to declare the precursor "present" (verified 5/5 runs) - and still moves emergence
+6,300 -> 3,825 (recovering 83.9% of the achievable acceleration). The network amplifies
+that sub-threshold hint past 0.10 by step 100 (control: step 5,325) and to 0.205 by step
+2,000 (4.9x control). CONSEQUENCE: "supplying the precursor" is vindicated over "clamping
+a converged head" - a weak seed the network grows itself is enough. "Precursor present" is
+a RATE, not a binary state; the 0.10 anchor is the wrong primitive. This is the sentence
+R2 was run to earn, and it earned it.
+
+### 2. THE DOSE CURVE IS U-SHAPED (ascending arm real; floor unresolvable)
+Median t_event by beta: 0->6300, 1->3825, 2->3375, 3->3350, 4->3425, 6->3525, 8->3600.
+- ASCENDING ARM (beta 3->8, stronger priors are WORSE) is REAL, established PAIRED INSIDE
+  grid7d ALONE (no reused endpoint needed): seed-paired diffs b3->b4 = [75,75,75,75,75],
+  b3->b6 = [175,175,125,150,175], b4->b6 = [100,100,50,75,100] - 15/15 positive, ZERO
+  reversals. Unpaired corroboration b3 vs b8 MWU p=0.0025 (asymptotic; exact floor
+  6.7e-4), pooled {2,3,4} vs {6,8} p=8e-6. Spearman over {3,4,6,8} rho=+0.84.
+- FLOOR (beta 2 vs 3) is ONE 25-step tick apart and UNRESOLVABLE at n=5 on a 25-step grid
+  (MWU p=0.59, tied on the upstream clock). The optimum is a flat plateau over beta in
+  [2,3], not a point. Over-dosing 3->8 costs 250 steps (8.5% of achievable acceleration);
+  under-dosing 3->1 costs 475 (16.1%).
+- MECHANISM (post-hoc, threshold-robust): the ENTIRE U lives in when layer-1
+  prefix-matching turns on. t_event = t_pfx + a beta-independent ~250-step lag (pooled lag
+  median 275, sd 20, range [225,300] against a 2,912-step spread in t_pfx). ADOPT-vs-FIGHT
+  crossover, 35/35 runs zero exceptions: beta<=3 the biased head is AMPLIFIED above its
+  imposed value; beta>=4 it is SUPPRESSED (the network fights a too-rigid prior). Dip
+  DEPTH does not order the delay; the pre-induction LEVEL the head is pinned at does.
+  Best single-parameter post-hoc fit is softmax plasticity -p*(1-p*) (rho 0.85) - FLAGGED
+  WEAK, curve-fit on 7 medians, several alternatives fit equally; it is an R3 hypothesis,
+  not a finding. No relocation to other heads at any dose (biased head is L0 argmax 25/25).
+
+### 3. K-D3 FIRED - R1's TWO-GATE MODEL IS SUPERSEDED, mechanism now identified
+The floor breach is STRUCTURAL, not a bad threshold. Across beta the second gate t_ind is
+essentially FLAT (~2,660-2,725, MWU vs beta8 all p>=0.57); what varies is the post-anchor
+ASSEMBLY interval, which R1 treated as a fixed 938-step overhead. Re-scoring R1's rule on
+every R2 cell: accurate only at beta=8 (the cell it was fitted on), over-predicting by
+138-263 steps everywhere else. Measured t_event - t_ind = 1100/700/675/750/800/962 for
+beta 1/2/3/4/6/8 - NOT constant. The quantity R1 called fixed overhead IS the beta-
+dependent term that generates the U. R1 VERDICT section 4's "assembly phase does not
+compress" is now OVERTURNED by direct dose evidence: it compresses to ~675-800 steps at
+mid-beta. Superseding model: t_event = t_pfx(beta) + ~250, and t_pfx is gated by how fast
+layer-1 prefix-matching forms once the induction advantage exists.
+CORRECTION (verify, must propagate): the "complete range separation, exact perm p=0.00067"
+framing of the assembly compression does NOT survive a robustified gate. Requiring
+indist_adv>=0.10 for 2 CONSECUTIVE evals (matching R1's own copy_adv event rule) moves
+beta8's t_ind +62.5 while the dose cells do not move; assembly deltas attenuate to
+-150/-125/-100, range separation is LOST, exact perm p -> 0.0013/0.0017/0.0043, and dose6
+loses significance (p=0.21). DIRECTION and p<0.005 SURVIVE; the "disjoint ranges" wording
+does not. Also: dose2/3/4 share seeds, so those three p-values are dependent, not
+independent replications.
+
+### 4. K-D2 NO-FIRE, BUT THE COMPOSITION READING IS UNDER-DETERMINED (red-team)
+hardL1 (converged +8 prev-token bias on LAYER 1) = 6,700, no acceleration, and the biased
+L1 head never becomes an induction head (prefix max-ever 0.029-0.052 across 5 runs) while
+layer 0 grows its OWN prev-token head at near-control timing. That is consistent with the
+composition story. BUT 6,700 is statistically IDENTICAL to R1's task-useless placebos
+(sink 6725, near 6725; hardL1 vs pooled placebo dMedian p=0.77) and reproduces their exact
+~400-step head-burning delay - so it is equally consistent with "layer-1 head-0 is a
+generically bad site for ANY fixed bias." The design lacks the discriminating control (an
+L1 PLACEBO - a task-useless bias on layer 1). DEFENSIBLE CLAIM: "a converged prev-token
+bias on layer 1 does not accelerate emergence and does not itself become the induction
+head." NOT DEFENSIBLE from this data: "the effect REQUIRES the primitive upstream = proven
+circuit composition." Retire the strong wording; the L1-placebo control is an R3 item.
+
+### 5. STANDING AFTER R2
+Confirmed and strong: (i) a sub-threshold prev-token seed causally accelerates emergence
+(K-D1) - the precursor is genuinely causal at precursor strength; (ii) the dose-response
+is U-shaped with an interior optimum near natural anchor strength, real on its ascending
+arm; (iii) the accelerant does not relocate and the biased head is adopted or fought
+depending on dose. Overturned/superseded: R1's fixed-assembly two-gate model; the
+rate-limiter is now localized to layer-1 prefix-matching onset. Under-determined (-> R3):
+composition-vs-site-quality (needs L1 placebo); the exact floor location (needs finer beta
+on a 10-step grid); the plasticity mechanism (needs a time-varying-scaffold test that
+imposes beta=8 then decays it - the plasticity account predicts recovery of beta=3 timing,
+the distance-from-converged account does not). No R3 launched; this is the R2 stopping
+point. All claims scale-local: 2-layer d256 bigram LM, one lang_seed, one task.

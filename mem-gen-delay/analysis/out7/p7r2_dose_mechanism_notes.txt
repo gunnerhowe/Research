@@ -1,0 +1,201 @@
+
+### HEADLINE
+The U is real on its ascending arm and unresolvable at its floor: beta 3→8 is a genuine +250-step non-monotonicity (seed-paired, zero reversals in 15/15 dose pairs), while beta 2 vs 3 differ by one 25-step tick and are indistinguishable. Mechanism: t_event = t_pfx + a beta-independent 250-step assembly lag, so the whole U lives in when layer-1 prefix-matching turns on; and the biased head shows a perfect adopt/fight crossover — beta<=3 AMPLIFIES the gift above its imposed value (15/15 runs), beta>=4 SUPPRESSES it (20/20 runs). No relocation to other heads at any dose. beta=1's sub-threshold 0.0787 prior is amplified past the 0.10 anchor by step 100 and to 0.205 (4.9x control) by step 2,000, so "precursor present" is a rate, not a state.
+
+### NUMBERS
+ALL NUMBERS RECOMPUTED FROM runs/ THIS SESSION (analysis only, no repo writes).
+
+=== A. PER-RUN EVENT LISTS (t_event; and t_pfx = first eval with prefix_by_layer[1] >= 0.10) ===
+beta   n   med t_event   t_event per-run                                          med t_pfx   t_pfx per-run
+0     30      6300      [5650,5800,5850,6125,6175,6200,6200,6200,6225,6250,        6012      [5375,5525,5575,5825,5900,5925,5925,5925,5950,5950,
+                         6250,6275,6275,6275,6300,6300,6300,6400,6500,6500,                   5975,5975,5975,5975,6000,6025,6025,6100,6225,6225,
+                         6525,6625,6675,6700,6700,6750,6750,6775,7025,7400]                    6250,6375,6400,6400,6425,6475,6475,6500,6725,7100]
+1      5      3825      [3750,3800,3825,3875,4000]                                 3550      [3475,3525,3550,3625,3750]
+2      5      3375      [3350,3350,3375,3400,3475]                                 3100      [3100,3100,3100,3150,3200]
+3      5      3350      [3325,3350,3350,3400,3450]                                 3100      [3075,3100,3100,3150,3200]
+4      5      3425      [3400,3425,3425,3475,3525]                                 3175      [3150,3175,3175,3225,3275]
+6      5      3525      [3500,3500,3525,3525,3625]                                 3275      [3250,3250,3275,3300,3375]
+8     10      3600      [3500,3525,3525,3575,3600,3600,3600,3625,3625,3650]        3350      [3250,3275,3300,3325,3350,3350,3375,3375,3375,3375]
+hardL1 5      6700      [6625,6675,6700,6850,7250]
+
+Sealed medians reproduce exactly. Within-cell sd(t_event): b1 95, b2 52, b3 50, b4 50, b6 52, b8 50 steps.
+Within-cell full range: 5-6 eval ticks (125-150 steps), except b1 = 10 ticks (250 steps).
+
+=== B. THE RISE FROM THE MINIMUM (t_event) ===
+comparison            MWU p     (p floor for these n)   exact perm on means (diff, p)    boot95 CI on median diff   P(B>A)
+b3 vs b8             0.00253   (0.000666)              +207.5, p=0.000333 (3003 splits)  [+125,+275]                1.000
+b3 vs b6             0.0114    (0.007937)              +160.0, p=0.007937 (252 splits)   [+75,+275]                 1.000
+b2 vs b8             0.00253   (0.000666)              +192.5, p=0.000333               [+125,+262]                1.000
+b3 vs b4             0.0731    (0.007937)              +75.0,  p=0.0635                 [-25,+175]                 0.860
+b6 vs b8             0.151     (0.000666)              +47.5,  p=0.139                  [-25,+112]                 0.740
+b2 vs b3             0.589     (0.007937)              -15.0,  p=0.746                  [-125,+75]                 0.380
+b3 vs b1             0.0119    (0.007937)              +475.0, p=0.007937               [+350,+650]                1.000
+
+POOLED
+pool{2,3,4} n=15 vs pool{6,8} n=15:  MWU p=8.12e-06 (floor 3.39e-06), perm p=5e-06 (MC 200k), CI [+100,+250], P(B>A)=0.978
+pool{2,3}   n=10 vs pool{6,8} n=15:  MWU p=3.20e-05 (floor 3.59e-05), perm p=5e-06,          CI [+125,+250], P(B>A)=1.000
+pool{1,2,3,4} n=20 vs pool{6,8} n=15: MWU p=0.0201, perm on means p=0.380 (b1's slowness cancels the mean shift)
+
+Overlap: b3 max t_event 3450 < b8 min 3500 -> DISJOINT. b3 max t_pfx 3200 < b6 min 3250 -> DISJOINT.
+
+=== C. SAME TESTS ON THE UPSTREAM CLOCK t_pfx (same conclusions, slightly cleaner) ===
+b3 vs b8: MWU p=0.00242, perm +210.0 p=0.000333, CI [+138,+275], P=1.000
+b3 vs b6: MWU p=0.0117,  perm +165.0 p=0.00794,  CI [+75,+275],  P=1.000
+b3 vs b4: MWU p=0.0731,  perm +75.0  p=0.0635,   CI [-25,+175]
+b2 vs b3: MWU p=0.823,   perm -5.0   p=1.0,      CI [-100,+100]
+pool{2,3,4} vs pool{6,8}: MWU p=6.55e-06, perm p=5e-06, CI [+100,+250]
+
+=== D. MONOTONE-TREND TESTS OVER THE ASCENDING ARM ===
+t_event, beta in {3,4,6,8}, n=25:  Spearman rho=+0.837 p=1.88e-07 | Kendall tau=+0.728 p=6.71e-06 | KW H=17.27 p=6.22e-04
+t_event, beta in {2,3,4,6,8}, n=30: Spearman rho=+0.852 p=2.29e-09 | Kendall tau=+0.712 p=6.89e-07 | KW H=22.55 p=1.56e-04
+t_pfx,   beta in {3,4,6,8}, n=25:  Spearman rho=+0.843 p=1.20e-07 | Kendall tau=+0.734 p=5.36e-06 | KW H=17.59 p=5.35e-04
+t_pfx,   beta in {2,3,4,6,8}, n=30: Spearman rho=+0.863 p=8.70e-10 | Kendall tau=+0.730 p=3.77e-07 | KW H=22.87 p=1.34e-04
+
+=== E. SEED-PAIRED (dose cells all use seeds s21..s25 — legitimate paired design) ===
+t_event by seed:            t_pfx by seed:
+seed   b1    b2    b3    b4    b6      seed   b1    b2    b3    b4    b6
+s21  3750  3350  3350  3425  3525      s21  3475  3100  3100  3175  3275
+s22  3800  3375  3325  3400  3500      s22  3525  3100  3075  3150  3250
+s23  3875  3400  3400  3475  3525      s23  3625  3150  3150  3225  3300
+s24  3825  3350  3350  3425  3500      s24  3550  3100  3100  3175  3250
+s25  4000  3475  3450  3525  3625      s25  3750  3200  3200  3275  3375
+
+paired diffs (t_event):  b3->b4 = [75,75,75,75,75]   mean +75   sign 5+/0-  p_sign=0.0625 (= the n=5 floor)
+                         b3->b6 = [175,175,125,150,175] mean +160  sign 5+/0-  p_sign=0.0625
+                         b4->b6 = [100,100,50,75,100]   mean +85   sign 5+/0-  p_sign=0.0625
+                         b2->b3 = [0,-50,0,0,-25]       mean -15   sign 0+/2-  p_sign=0.50
+                         b1->b3 = [-400,-475,-475,-475,-550] mean -475 sign 0+/5- p_sign=0.0625
+paired diffs (t_pfx):    b3->b4 = [75,75,75,75,75]; b3->b6 = [175,175,150,150,175]; b2->b3 = [0,-25,0,0,0]
+Seed rank order is identical in every cell (s25 always slowest) — the between-cell shift is near-deterministic.
+
+=== F. POWER / RESOLUTION (Monte Carlo, sd=60 steps, MWU 5 vs 10, alpha .05) ===
+true shift  50 steps -> power 0.24    150 -> 0.97
+true shift 100 steps -> power 0.75    200+ -> 1.00
+=> n=5 vs n=10 on a 25-step grid can resolve >=100-150 step shifts; it cannot resolve the 25-step b2/b3 gap.
+Median gaps (t_event): 2->3 = -25 (1 tick), 3->4 = +75 (3 ticks), 4->6 = +100 (4), 6->8 = +75 (3), 3->8 = +250 (10).
+
+=== G. DECOMPOSITION: t_event = t_pfx + assembly lag ===
+beta        0     1     2     3     4     6     8
+med t_pfx  6012  3550  3100  3100  3175  3275  3350
+med lag     275   275   250   250   250   250   250     (lag sd within cell: 13,14,14,0,0,11,14)
+med t_event 6300  3825  3375  3350  3425  3525  3600
+Pooled over all 65 runs: lag median 275, mean 266.2, sd 20.0, range [225,300] = at most 3 ticks total spread.
+KW on lag across beta: H=44.90 p=4.89e-08 — but the entire effect is control 275 vs dosed 250, i.e. ONE 25-step tick.
+t_pfx range across beta = 2,912 steps; lag range = 50 steps. Threshold-robust: same U at prefix thresholds
+0.05 (lags 388/350/350/325/325/350/350) and 0.20 (lags 212/200/200/175/175/175/175).
+
+=== H. ADOPT vs FIGHT — biased head L0H0 prevtok (cell medians) ===
+beta  imposed  plateau(1750-2250)  amp/supp  pre-event min (step)   pre-event max   value at t_event   final(15k)
+0     0.0356   0.0418              AMPLIFY   —                      —               —                  0.9463
+1     0.0787   0.2052 (+0.1265)    AMPLIFY   0.0777 @50  (-0.0009)  0.8143 @t_event  0.8143            0.9524
+2     0.1633   0.3391 (+0.1758)    AMPLIFY   0.1614 @50  (-0.0020)  0.8615 @t_event  0.8615            0.9602
+3     0.3063   0.4167 (+0.1104)    AMPLIFY   0.3054 @0   (-0.0009)  0.8718 @t_event  0.8718            0.9486
+4     0.5040   0.4788 (-0.0252)    SUPPRESS  0.4734 @2025 (-0.0306) 0.8708 @t_event  0.8708            0.9092
+6     0.8597   0.6690 (-0.1906)    SUPPRESS  0.6629 @1950 (-0.1968) 0.8893 @t_event  0.8893            0.9183
+8     0.9769   0.8460 (-0.1309)    SUPPRESS  0.8389 @2088 (-0.1380) 0.9769 @step 0   0.9149            0.9712
+Per-run crossover is perfect: beta<=3 amplified 15/15 runs; beta>=4 suppressed 20/20 runs; 0 exceptions in 35 runs.
+Rise above imposed before the event: beta 1-6 = 25/25 runs; beta 8 = 0/10 runs (it never regains its imposed value pre-event).
+Recovery to the imposed value: b1/b2/b3 by step 25-75; b4 by ~2575; b6 by ~3400; b8 never (0/10 within 16k? — 0/10 pre-event).
+NOTE dip depth is NOT the ordering variable: b6 dips deeper (-0.197) than b8 (-0.138) yet is faster. What orders with
+t_pfx is the LEVEL the head sits at (b4 0.473 < b6 0.663 < b8 0.839 -> t_pfx 3175 < 3275 < 3350).
+
+=== I. SNAPSHOT VIEW OF THE U (median prefix_by_layer[1] at fixed steps) ===
+step      2500    2750    3000    3250    3500
+beta 1   0.0126  0.0133  0.0144  0.0182  0.0667
+beta 2   0.0141  0.0172  0.0420  0.3941  0.7118
+beta 3   0.0141  0.0172  0.0432  0.4014  0.7195
+beta 4   0.0138  0.0157  0.0280  0.2092  0.6868
+beta 6   0.0135  0.0153  0.0226  0.0901  0.5934
+beta 8   0.0136  0.0152  0.0193  0.0509  0.4045
+At the single step 3250 the U is visible in one column: 0.018, 0.394, 0.401, 0.209, 0.090, 0.051.
+
+=== J. POST-HOC ONE-PARAMETER ACCOUNTS OF THE U (cell medians, n=7 cells — CURVE FITTING, NOT CONFIRMATORY) ===
+predictor of median t_pfx                     Spearman rho    p       Pearson r    p
+-p*(1-p*)  [softmax plasticity at plateau]      +0.847      0.0162     +0.876    0.00969
+|p* - 0.45|                                     +0.847      0.0162     +0.646    0.117
+-p(1-p) on the imposed value                    +0.775      0.0408     +0.532    0.219
+plateau p* alone                                -0.306      0.504      -0.627    0.132
+imposed p alone                                 -0.306      0.504      -0.437    0.326
+cell table: beta 0/1/2/3/4/6/8 -> p* = .0418/.2052/.3391/.4167/.4788/.6690/.8460; p*(1-p*) = .040/.163/.224/.243/.250/.221/.130
+Dropping beta=0 (n=6 dosed cells): -p*(1-p*) rho=+0.754 p=0.0835.
+
+=== K. RELOCATION (per-head fields, dose cells only) ===
+Other L0 heads (1,2,3) median max prevtok before the event: b1 0.0385, b2 0.0391, b3 0.0438, b4 0.0446, b6 0.0471
+(init ~0.034 in all). Argmax L0 head at t_event = head 0 in 25/25 dose runs. No relocation at any dose; the
+non-biased heads never exceed ~0.05 before the event. Which L1 head becomes the induction head varies by seed
+(argmax at event = 3,1,0,0,1 for b1; 3,1,2,0,1 for b2; 2,1,2,0,1 for b3 — seed-determined, beta-invariant).
+
+=== L. hardL1 (bias on LAYER 1 head 0) PER-HEAD ===
+run        L1H0 imposed  L1H0 pre-event min (step)  L1H0 at event   L0 max prevtok at event (argmax head)  t(L0>=.10)  t(L0>=.50)
+hardL1_s21   0.9766      0.3076 @6200               0.5439          0.6669 (head 2)                        5775        6525
+hardL1_s22   0.9767      0.2691 @6275               0.5494          0.6857 (head 0)                        5775        6500
+hardL1_s23   0.9765      0.2960 @6125               0.5306          0.6834 (head 3)                        5600        6425
+hardL1_s24   0.9771      0.3029 @6175               0.5372          0.6590 (head 1)                        5925        6675
+hardL1_s25   0.9774      0.2219 @6625               0.4706          0.6989 (head 3)                        6325        7050
+Control (beta=0, n=30) native L0 prev-token onset: median t(prevtok0>=0.10) = 5325, t(>=0.50) = 6088, max 0.9524.
+=> hardL1 dismantles the misplaced prior (0.977 -> ~0.28) and grows a prev-token head in L0 from scratch at
+   near-control timing (5600-6325 vs control median 5325), in an arbitrary seed-dependent head.
+
+=== M. beta=1 SUB-THRESHOLD PRIOR (verification) ===
+per-run prevtok_by_head[0][0] at step 0: 0.07865, 0.07941, 0.07818, 0.07866, 0.07888 — ALL < 0.10 anchor (5/5).
+(prevtok_by_layer[0] is identical, confirming head 0 is the layer max.)  median 0.0787; median t_event 3825 vs control 6300.
+First step prevtok0 >= 0.10: [100,100,100,100,100] (5/5 by step 100). Control median: 5325.
+prevtok0 at step 2000: beta=1 0.2052 vs control 0.0421 = 4.9x. t(prevtok0>=0.50): beta=1 [3375,3450,3475,3525,3650];
+beta=2 [2850,2925,2925,2950,3025]; beta=3 [100 x5]; beta=4/6 [0 x5].
+
+=== N. COST OF MIS-DOSING ===
+control 6300; optimum (beta=3) 3350 -> achievable acceleration 2,950 steps.
+beta=8 3600 -> acceleration 2,700. Over-dosing 3->8 costs 250 steps = 8.5% of the achievable acceleration.
+Under-dosing 3->1 costs 475 steps = 16.1%.
+
+=== O. R1'S TWO-GATE PREDICTION RE-SCORED ON R2 (post-hoc) ===
+t_conj = max(t_pv, t_ind) + assembly(938, from R1)
+beta=1: t_pv=100, t_ind=2725 -> predicted 3663; observed 3825 (under-predicts by 162)
+beta=2: t_pv=0,   t_ind=2675 -> predicted 3613; observed 3375 (over-predicts by 238)
+beta=3: t_pv=0,   t_ind=2675 -> predicted 3613; observed 3350 (over-predicts by 263)
+beta=4: t_pv=0,   t_ind=2675 -> predicted 3613; observed 3425 (over-predicts by 188)
+beta=6: t_pv=0,   t_ind=2725 -> predicted 3663; observed 3525 (over-predicts by 138)
+beta=8: t_pv=0,   t_ind=2638 -> predicted 3576; observed 3600 (accurate — the cell it was fitted on)
+The 938-step "assembly" constant is not constant: it is 675-800 in the dose cells and 962 at beta=8, i.e. the
+quantity R1 treated as fixed overhead is itself the beta-dependent term that produces the U.
+
+Scratch scripts (not in the repo): C:\Users\gunne\AppData\Local\Temp\claude\E--GitHub-Research-mem-gen-delay\6235157d-d32f-4162-b1ab-283e9bc3de79\scratchpad\ushape_stats.py, ushape_mech.py, ushape_mech2.py, ushape_mech3.py
+
+### CLAIMS
+- [strong] The ascending arm of the U (beta=3 -> beta=8) is a REAL non-monotonicity, not plateau-plus-noise. Answer to the (a)/(b)/(c) question: (a) for beta>=3, (c) for beta=2 vs beta=3.
+    EV: beta=3 vs beta=8 on t_event: MWU p=0.00253 (attainable floor for n=5 vs n=10 is 0.000666), exact permutation on means +207.5 steps p=0.000333 over all 3003 splits, bootstrap 95% CI on the median difference [+125,+275], P(B>A)=1.000, and the samples are fully DISJOINT (b3 max 3450 < b8 min 3500). Pooled {2,3,4} vs {6,8}: MWU p=8.12e-06, permutation p=5e-06, CI [+100,+250]. Monotone trend over beta in {3,4,6,8}: Spearman rho=+0.837 p=1.88e-07, Kendall tau=+0.728 p=6.71e-06. Decisively, the dose cells share seeds s21..s25 so the design is paired: b3->b4 gave diffs [75,75,75,75,75] (identical in every seed), b3->b6 gave [175,175,125,150,175], b4->b6 gave [100,100,50,75,100] — 15/15 paired comparisons positive, zero reversals. The n=5 sign test cannot go below p=0.0625, so the p-value understates this; the perfect consistency is the evidence.
+- [strong] beta=2 and beta=3 are not distinguishable at all — their medians differ by one 25-step eval tick, which is inside the resolution limit of this design.
+    EV: Medians 3375 vs 3350 (a 25-step = 1-tick gap). MWU p=0.589, exact permutation on means -15.0 steps p=0.746, bootstrap CI [-125,+75] spanning zero. Seed-paired diffs [0,-50,0,0,-25]: 3/5 seeds give exactly zero difference. On the upstream clock t_pfx they are literally tied (both medians 3100, MWU p=0.823, perm p=1.0). Monte Carlo power for MWU at n=5 vs n=10 with the observed within-cell sd of ~60 steps: 0.24 for a true 50-step shift, 0.75 at 100 steps, 0.97 at 150. The floor of the U is a flat two-cell plateau spanning beta in [2,3]; its exact location is unresolved.
+- [strong] The entire U lives in when layer-1 prefix-matching turns on, not in the induction assembly that follows. t_event = t_pfx + a beta-independent lag of ~250 steps.
+    EV: t_pfx (first eval with prefix_by_layer[1] >= 0.10) medians: 6012, 3550, 3100, 3100, 3175, 3275, 3350 for beta = 0,1,2,3,4,6,8 — the same U, same minimum at beta in {2,3}, same +250-step rise to beta=8. The lag t_event - t_pfx is 275,275,250,250,250,250,250 across the seven cells; pooled over all 65 runs it is median 275, mean 266.2, sd 20.0, range [225,300] — at most 3 eval ticks of total spread against a 2,912-step spread in t_pfx. The Kruskal-Wallis on lag is formally significant (H=44.90, p=4.89e-08) but the entire effect is control 275 vs dosed 250, i.e. exactly one 25-step tick. Threshold-robust: the identical ordering appears at prefix thresholds 0.05 and 0.20, only the constant lag changes (350 and 175 respectively). One fixed-step snapshot shows it: median prefix_L1 at step 3250 = 0.018, 0.394, 0.401, 0.209, 0.090, 0.051 for beta = 1,2,3,4,6,8.
+- [strong] The adopt-vs-fight hypothesis is confirmed with a sharp crossover, and it is not a graded blend: at beta<=3 the network AMPLIFIES the gift above its imposed value, at beta>=4 it SUPPRESSES it, with zero exceptions in 35 runs.
+    EV: Comparing the imposed first-eval value to the self-consistent plateau (median prevtok0 over steps 1750-2250): beta=1 0.0787 -> 0.2052 (+0.127), beta=2 0.1633 -> 0.3391 (+0.176), beta=3 0.3063 -> 0.4167 (+0.110) — all amplify; beta=4 0.5040 -> 0.4788 (-0.025), beta=6 0.8597 -> 0.6690 (-0.191), beta=8 0.9769 -> 0.8460 (-0.131) — all suppress. Per-run: amplified 15/15 at beta<=3, suppressed 20/20 at beta>=4. Pre-event dip magnitudes track this: b1 -0.0009, b2 -0.0020, b3 -0.0009 (only 2/5 runs dip at all) versus b4 -0.0306 @step 2025, b6 -0.1968 @1950, b8 -0.1380 @2088. R1's beta=8 observation (0.977 -> 0.841 around step 2,150) reproduces here at 0.9769 -> 0.8389 @2088. The starkest contrast: at beta 1-6 the head rises above its imposed value before the event in 25/25 runs; at beta=8 it does so in 0/10 and is still at 0.9149 < 0.9769 at t_event.
+- [weak] Dip DEPTH is not the ordering variable — the naive 'cost of fighting' story is wrong as stated. What orders with delay is the LEVEL the head is pinned at during the pre-induction window.
+    EV: beta=6 dips deeper than beta=8 (-0.1968 vs -0.1380) yet is faster (t_pfx 3275 vs 3350, t_event 3525 vs 3600). The pre-event minimum LEVEL is monotone with delay: b4 0.4734 -> b6 0.6629 -> b8 0.8389 gives t_pfx 3175 -> 3275 -> 3350. The best post-hoc single-parameter fit over all seven cells is softmax plasticity at the plateau, -p*(1-p*): Spearman rho=+0.847 p=0.0162, Pearson r=+0.876 p=0.00969 against median t_pfx, where p*(1-p*) = 0.040, 0.163, 0.224, 0.243, 0.250, 0.221, 0.130 for beta = 0,1,2,3,4,6,8. Imposed value alone and plateau value alone are both non-predictive (rho=-0.306, p=0.504). The picture: a head pinned near p*~0.45 has maximal attention-logit plasticity, and both a near-zero prior (control, 0.042) and a saturated prior (beta=8, 0.846) sit in low-plasticity regions.
+- [strong] There is no relocation of prev-token duty to other heads at any dose. The scaffolded head stays the prev-token head throughout.
+    EV: Across all 25 dose runs with per-head instrumentation, the other three layer-0 heads never exceed ~0.05 prevtok before the event (cell medians of the pre-event maximum: 0.0385, 0.0391, 0.0438, 0.0446, 0.0471 for beta = 1,2,3,4,6, against an initialization value of ~0.034), and head 0 is the layer-0 argmax at t_event in 25/25 runs. Which layer-1 head becomes the induction head does vary (argmax at event = 3,1,0,0,1 for beta=1 and 2,1,2,0,1 for beta=3) but that variation is seed-determined and beta-invariant, so it is not a dose effect.
+- [strong] beta=1 is verified: its imposed prevtok0 is genuinely below the 0.10 anchor in all 5 runs, yet it still cuts t_event from 6,300 to 3,825. The implication is that 'precursor present' is a rate of formation, not a binary state, and the campaign's 0.10 anchor is the wrong primitive.
+    EV: Per-run prevtok_by_head[0][0] at step 0: 0.07865, 0.07941, 0.07818, 0.07866, 0.07888 — all < 0.10 (5/5), median 0.0787, matching the sealed value. But the network crosses 0.10 by step 100 in 5/5 runs (control median: step 5,325) and settles at a plateau of 0.2052 at step 2,000 versus the control's 0.0421 — a 4.9x amplification of a sub-threshold hint. So beta=1 does not 'supply the precursor'; it supplies a seed the network then grows itself, and it still recovers 2,475 of the 2,950 achievable steps (83.9%). The residual 475-step deficit versus beta=3 has a concrete cause: at beta=1 the head only reaches 0.50 at median step 3,475, i.e. the climb is still on the critical path, whereas at beta>=3 it starts at or above 0.50 (t(prevtok0>=0.50) = step 100 at beta=3, step 0 at beta=4 and 6).
+- [strong] R1's two-gate account t_conj = max(t_pv, t_ind) + 938 does not survive R2: the quantity it treated as a fixed assembly overhead is itself the beta-dependent term that generates the U.
+    EV: Re-scoring R1's rule on every R2 cell: beta=1 predicted 3663 vs observed 3825; beta=2 3613 vs 3375; beta=3 3613 vs 3350; beta=4 3613 vs 3425; beta=6 3663 vs 3525; beta=8 3576 vs 3600. It is accurate only on beta=8, the cell it was fitted to, and over-predicts by 138-263 steps everywhere else. The measured t_event - t_ind interval is 1100, 700, 675, 750, 800, 962 steps for beta = 1,2,3,4,6,8 (and 3450 in controls) — not a constant 938. This is the same conclusion the sealed K-D3 reached (two cells below the pre-registered 3,400 floor), now with the mechanism identified: the variable part is t_pfx - t_ind, i.e. how long prefix-matching takes to start once the induction advantage exists.
+- [moderate] hardL1 does not relocate the misplaced gift — it dismantles it and grows a native layer-0 prev-token head at near-control timing, which is why its t_event is control-like (and marginally slower, matching the R1 placebos at 6,725).
+    EV: L1 head 0 prevtok decays from ~0.977 to a pre-event minimum of 0.2219-0.3076 (around steps 6,125-6,625) and is only 0.4706-0.5494 at t_event. Meanwhile layer 0 grows its own prev-token head reaching 0.659-0.699 at t_event, crossing 0.10 at steps 5,600-6,325 versus the control median of 5,325 and crossing 0.50 at 6,425-7,050 versus the control median of 6,088 — i.e. slightly LATER than controls. The receiving head is arbitrary (argmax = 2, 0, 3, 1, 3 across the five seeds), showing no preferential relocation target.
+
+### CAVEATS
+SCOPE AND DESIGN LIMITS
+
+1. n=5 per dose cell. The sign-test / Wilcoxon floor at n=5 is p=0.0625, so no within-grid7d paired comparison can reach p<0.05 no matter how clean it is. I am leaning on the perfect consistency of the paired differences (b3->b4 = [75,75,75,75,75], 15/15 positive across b3->b4, b3->b6, b4->b6) rather than on p-values, and readers should judge it that way. The unpaired MWU tests that do reach p<0.01 (b3 vs b8, b3 vs b6, and the pooled tests) are the formal support.
+
+2. The 25-step eval grid is the hard resolution floor. Any median difference of one tick is uninterpretable. This is exactly the b2/b3 case (25 steps) and it is why I call the floor of the U unresolvable rather than located at beta=3. Monte Carlo power at the observed within-cell sd (~60 steps): 0.24 at a 50-step true shift, 0.75 at 100, 0.97 at 150. The claimed 3->8 effect (250 steps) is well above this floor; the claimed 3->4 effect (75 steps, MWU p=0.073) is at it and I do not claim beta=4 is separated from beta=3 by an unpaired test — only that the paired diff was +75 in 5/5 seeds.
+
+3. The beta=8 endpoint is not seed-paired with the dose cells and comes from a different grid. grid7c/hard uses seeds 1-10; grid7d dose cells use seeds 21-25; the beta=0 control uses grid6r2/rep seeds 1-30. Configs otherwise match (vocab 2048, d_model 256, 4 heads, ctx 256, bs 64, lr 1e-3, wd 0.01, 16k steps, eval_every 25, p_rep 0.75, lang_seed 777) and I verified this. But the b3-vs-b8 comparison is cross-grid and unpaired, so it carries an unquantified batch risk. IMPORTANT MITIGATION: the ascending arm is fully established inside grid7d alone, paired, without beta=8 at all (b3 -> b4 -> b6 is monotone with zero seed reversals). beta=8 only corroborates.
+
+4. beta=8 lacks the per-head instrumentation. Its prevtok0 trajectory is the layer-0 MAXIMUM over heads, a proxy for head 0. In every dose cell where I can check, head 0 is the layer-0 argmax at t_event in 25/25 runs and the other heads never exceed ~0.05, so the proxy is almost certainly exact — but it is a proxy, and the beta=8 dip figure (-0.1380) is therefore a lower bound on head 0's true dip.
+
+5. EVERYTHING IN SECTIONS G THROUGH N IS POST-HOC. The prefix threshold 0.10, the plateau window [1750, 2250], and the "p*~0.45 sweet spot" were all chosen after seeing the data. The t_pfx decomposition is robust to the threshold choice (I checked 0.05/0.10/0.20, same ordering), which mitigates but does not eliminate this. The -p*(1-p*) plasticity account is curve-fitting on 7 cell medians (rho=+0.847, p=0.0162), it drops to rho=+0.754, p=0.0835 when beta=0 is excluded, and several correlated alternatives (|p*-0.45|) fit identically well — the data cannot separate them. I flag that claim as weak and it should not be reported as a finding. It is a hypothesis for an R3 prereg.
+
+6. What would settle this: a pre-registered R3 with (a) beta in {2, 2.5, 3, 3.5} at n>=15 on a 10-step eval grid to locate the floor, (b) a TIME-VARYING scaffold — impose beta=8 then decay it to the plateau value before step 2,000 — which the plasticity account predicts should recover the beta=3 timing while the "distance from the converged value" account does not, and (c) beta=8 rerun on seeds 21-25 to close the cross-grid gap. None of these were run; I did no training.
+
+7. Single task family (bigram LM, p_rep 0.75, 2 layers, 4 heads, one lang_seed). Nothing here licenses a claim about optimal prior strength in any other setting, and the 250-step over-dosing cost is 8.5% of this task's achievable acceleration — a real effect but a small one in absolute terms.
+
+8. I did not modify, create, or delete any file in the repo, and made no commits. All scratch scripts are under the session scratchpad directory. Note that the scratchpad is shared with other concurrent agent sessions, so I namespaced my files with the ushape_ prefix; I did not read or rely on any file I did not write this session except the repo's own data and analysis/score_p7d.py.
