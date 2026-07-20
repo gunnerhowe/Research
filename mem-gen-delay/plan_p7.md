@@ -190,3 +190,60 @@ floor, which is why our own pre-registered law-band bet missed by 3.7x.
 Two axes remain uncontrolled and are pre-registered next as R2: DOSE (is a
 precursor-strength prior enough, or only a converged one?) and PLACEMENT (does the effect
 require the primitive to be upstream of the match head, i.e. genuine composition?).
+
+## P7 R2 PREREG (2026-07-20) — DOSE + PLACEMENT (frozen BEFORE runs/grid7d exists and
+## before --scaffold_layer / --log_heads are implemented)
+Motivation: the R1 red-team named exactly two uncontrolled axes that decide how R1 may be
+described. Both are cheap and both can kill the current framing.
+
+AXIS 1 - DOSE. beta=+8 supplies attention weight ~0.907 on the previous token: a
+NEAR-CONVERGED head. Controls sit at 0.103 when their own precursor anchor fires and 0.698
+at their event. If acceleration appears only at near-asymptotic beta, the honest claim is
+"clamping a converged pattern", not "supplying the precursor".
+AXIS 2 - PLACEMENT. attach_scaffold hard-codes blocks[0]. Nothing yet tests whether the
+effect requires the primitive to be UPSTREAM of the match head (genuine circuit
+composition) rather than merely injecting a position-shifted channel into the residual
+stream. A prev-token bias on LAYER 1 cannot compose into induction and should be null.
+
+### Design (runs/grid7d/, 30 runs, fresh seeds 21-25 everywhere)
+- DOSE: dose{b}_s21..25 for b in {1, 2, 3, 4, 6} — hard pattern (B[i,i-1]=+b), layer 0
+  head 0, fixed buffer, rep condition, otherwise identical to grid7c hard (16k steps,
+  lr 1e-3, d256). 25 runs. The beta=8 point is grid7c hard (n=10, median 3,600) and is
+  NOT re-run; beta=0 is the control distribution (T0=6,300, n=30, bit-identity re-verified
+  40/40 records).
+- PLACEMENT: hardL1_s21..25 — identical B[i,i-1]=+8 fixed buffer on LAYER 1 head 0. 5 runs.
+- Instrumentation: --log_heads adds PER-HEAD prevtok/prefix vectors to metrics.jsonl.
+  OPT-IN so default records stay byte-identical and the K-C2b guard stays usable. Used on
+  all R2 runs; resolves suppression-vs-relocation, which max-over-heads cannot. Descriptive
+  only, no bet attached.
+
+### Predictions and kills (frozen now)
+- P-D1 (dose-response is GRADED, not all-or-none): median t_event non-increasing in beta
+  over {1,2,3,4,6,8}, AND beta=4 delivers >= 50% of the full acceleration, i.e.
+  median t_event(beta=4) <= 4,950.
+  K-D1 FIRES if median t_event(beta=4) > 5,670 (<25% of the acceleration): the effect
+  requires a near-converged head. Then "supplying the precursor" is RETIRED from all
+  write-ups in favour of "clamping the converged prev-token pattern", and R1 section 5(f)
+  becomes the standing description.
+- P-D2 (placement / composition): hardL1 median t_event >= 5,040 (0.8*T0 — null, inside
+  the control band).
+  K-D2 FIRES if hardL1 median <= 4,725 (>= 25% acceleration): the effect is NOT upstream
+  circuit composition but a generic offset-1 channel into the residual stream. The
+  composition framing dies and R1's mechanism section is rewritten.
+- P-D3 (THE TWO-GATE FLOOR — the strong quantitative bet, and the first prospective test
+  of R1's post-hoc mechanism): NO cell in this rung has median t_event < 3,400. The
+  two-gate account puts the floor at t_ind + assembly ~ 3,576 regardless of scaffold
+  strength or site.
+  K-D3 FIRES if any cell median < 3,400: the two-gate account is incomplete and R1
+  section 3 must be reopened.
+- K-D4 (manipulation check, not an outcome): hardL1 runs must show layer-1 prevtok >= 0.8
+  at the first eval; dose cells must show first-eval prevtok0 monotonically increasing in
+  beta. Failure = implementation void; fix and relaunch permitted BEFORE any outcome
+  scoring, outcomes never consulted.
+- Scoring: sealed one-shot analysis/score_p7d.py after ALL 30 summaries exist; writes
+  analysis/out7/p7d_scored.json; refuses on partial fleet or existing scorefile.
+- Disclosure: beta=8 and beta=0 cells are REUSED from grid7c/grid6r2 rather than re-run at
+  seeds 21-25, so the dose curve mixes seed sets (seeds 1-10 at beta=8, 1-30 at beta=0,
+  21-25 elsewhere). Seed set is not expected to matter at n>=5 given control CV 5.6%, but
+  it is a disclosed non-ideality, and monotonicity in P-D1 is therefore judged on the
+  five FRESH cells plus the two reused endpoints, with the endpoints flagged in the table.
