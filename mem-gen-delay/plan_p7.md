@@ -72,3 +72,121 @@ exploratory); norephard_s1..5 (norep condition + hard) — data-necessity corner
 ## R2 (conditional, NOT part of this prereg's bets): if P-C1 holds, map the receptive
 window: hard bias switched ON at t_insert in {0, 1k, 2k, 4k} x 5 seeds; measure
 t_event(t_insert) against the law. Prereg to be written separately after R1 verdict.
+
+## P7 R1 VERDICT (2026-07-20) [analysis/out7/p7c_scored.json, sealed; prereg b8eb219]
+Adjudicated with an 11-agent workflow (4 analyses + 4 adversarial verifications + 3
+red-team lenses). ALL mechanism analysis below is POST-HOC unless marked pre-registered.
+
+### 1. PRE-REGISTERED OUTCOMES (sealed one-shot, unchanged)
+P-C1 (clock, hard <= 3150) FAILED: 3600. P-C1s (law band [504,1953]) FAILED decisively.
+P-C2 (passenger, >=5040) no-fire. P-C3 specificity PASS. P-C4 PASS. P-C5 PASS.
+K-C1 / K-C2 / K-C2b / K-C3 all clean. Prereg-designated zone: "partial contribution".
+
+### 2. THE EFFECT IS REAL AND SURVIVED EVERY ARTIFACT ATTACK
+6,300 -> 3,600 median (42.9%; 31.4-44.1% across 9 alternative capability definitions, all
+with complete separation). Exact one-sided permutation p = 1.18e-9 (= 1/C(40,10), the
+floor at these n); seed-matched paired p = 9.8e-4, 10/10 faster. Speedup 1.75x, bootstrap
+CI [1.73, 1.83] (grid-locked to the 25-step eval grid).
+Attacks that FAILED to break it: (a) generic optimization speedup - train_loss curves
+superimpose to <= 0.010 nats through step 3000 and hard events at a WORSE loss (2.251 vs
+2.176), killing any loss-threshold reading; (b) softmax saturation / attention entropy /
+gradient scale / dead-head - sink and near match hard's biased-key softmax weight to 3
+decimals and are equally non-trainable; (c) pre-mask addition - provably a no-op (zero
+nonzero entries above the diagonal); (d) RNG contamination - step-0 loss identical to 5 dp,
+scaffold consumes no RNG; (e) event-metric inflation - pre-emergence copy_adv floor
+identical (0.0118 vs 0.0120, p=0.628); (f) transition-shape change - the 0.5->2.0 ramp is
+125 steps in EVERY arm, so the transition is a pure time translation.
+CAPABILITY VALIDITY: at its event the hard arm has HIGHER layer-1 prefix-matching than
+controls (0.629 vs 0.595, p=0.0021), and re-scoring the event on the IN-DISTRIBUTION probe
+(different offset, r=96) gives 42.7% - no positional-copy shortcut.
+CONTROL REUSE (flagged as the largest unaudited dependency): re-verified deeper this
+session - 40/40 eval records bit-identical to grid6r2/rep_s1 over 1,000 steps.
+
+### 3. WHY P-C1s FAILED - THE TWO-GATE MECHANISM (post-hoc, quantitative)
+The frozen composed anchor is t_conj = max(t_pv, t_ind), verified 60/60 runs.
+  CONTROLS: t_ind 2850 (slack), t_pv 5325 (BINDS), t_event 6300.
+  HARD:     t_pv 0 by construction, t_ind 2638 (BINDS), t_event 3600.
+The precursor is not the clock; it is simply THE LATER OF TWO PREREQUISITES in the
+unperturbed system. Deleting it reveals the second gate - an in-distribution behavioral
+gate the intervention barely moves (2850 -> 2638, 7.4%, p=1.9e-5). Two-gate floor
+prediction t_ind + assembly = 2638 + 938 = 3,576 vs observed 3,600 (0.7% error).
+Our prereg's law-band bet assumed the precursor was the SOLE prerequisite; that auxiliary
+assumption, not the law, is what failed. A pure serial-prerequisite model predicts 975 and
+is refuted by 3.7x; conversion efficiency of the supplied head start is 50.7%.
+
+### 4. WHAT THIS DOES AND DOES NOT SAY ABOUT THE GAP LAW (scope carefully)
+DO NOT WRITE "the gap law is falsified". The scaffold sets t_pv = 0 BY CONSTRUCTION, so at
+the composed anchor the multiplicative rule is INAPPLICABLE, not refuted. The shipped R9
+rule is literally t_pv-based, so it is undefined here (not "7/10 covered" - that is a
+t_conj-substituted variant and must be labelled as such). Also: our 30 controls are 37.5%
+of the law's own n=80 calibration pool, so "controls reproduce 0.843" is IN-SAMPLE
+consistency, never independent reproduction. Retire the 0.736-vs-0.739 comparison: 6/10
+(not 8/10) hard runs fall below the range floor, 4/10 lie inside it, and 11/30 CONTROLS lie
+outside the published IQR.
+WHAT DOES SURVIVE, at the NON-degenerate prefix anchor: post-anchor residual is
+375/350/375/375 steps across arms whose t_event spans 3,600-6,725. Fleet-wide (85
+unscaffolded runs) that gap is near-proportional to t_event (OLS 0.1435*t_event + 98.3,
+r=0.795), predicting 566-615 steps at t_event=3600; observed 938 is anomalously HIGH, and
+grid6r8 b128 (t_event 4275, post-anchor 650) is an in-fleet counterexample to strict
+constancy. HONEST STATEMENT: the assembly phase does NOT compress under this intervention
+the way cross-config rescaling predicts. That is evidence about the assembly phase, from
+one intervened cell at fixed lr/batch - not a refutation of a functional form.
+
+### 5. CORRECTIONS TO CLAIMS MADE BEFORE THE RED-TEAM (must propagate everywhere)
+(a) "Placebo and near-miss do nothing" is FALSE as written. Both point estimates are a
+    DELAY (sink 6725, p=0.045 uncorrected / 0.020 pooled; near 6725, p=0.137; paired sink
+    4/5 slower, near 3/5). Mechanism visible: the bias occupies the head that would
+    otherwise become the prev-token head (prevtok_L0 at step 6000: ctrl 0.416, sink 0.193,
+    near 0.146). This STRENGTHENS specificity - versus the matched-bias baseline the effect
+    is 46.5%, not 42.9% - but "inert" is wrong. near also yields significantly BETTER final
+    models (copy_adv 8.63 vs 6.89, p=6e-6), an unregistered endpoint.
+(b) The seed arm is NOT a stickiness test. A +8 additive bias sits in softmax saturation
+    with negligible gradient, so the prereg decay bar (prevtok0 < 0.5) was UNREACHABLE BY
+    CONSTRUCTION. P-C4 "PASS" is arithmetic, not evidence. It is a same-seed replication
+    (9/10 identical t_event); hard+seed is effective n=10, NEVER 20.
+(c) Variance collapse: real versus controls and robust to fairness checks - exact
+    enumeration of all C(30,10) subsets gives P(SD <= 50.07) = 9.85e-6, P(CV) = 1.15e-4,
+    P(range) = 9.85e-6; CV 0.0140 vs 0.0561; Fligner on median-normalized values p=0.019.
+    BUT NOT DEMONSTRATED SPECIFIC: sink also tightens ~2.8x and hard is not significantly
+    tighter than sink (p=0.24); near does not tighten at all (CV 0.056). Correct claim: the
+    scaffold collapses timing variance relative to controls; whether that requires the
+    TASK-USEFUL primitive is unresolved at n=5 placebos.
+(d) Data necessity (norephard 0/5) has near-zero power: unscaffolded norep is also 0/10. It
+    excludes the strong "scaffold manufactures the capability" possibility and nothing more.
+(e) The supplied prior is CONTESTED, not clamped - a disclosure that distinguishes this
+    design from activation-clamping work: hard's prevtok0 falls 0.977 -> 0.841 at step 2150
+    and recovers to 0.916 at event, entirely from learned QK opposing a FIXED buffer.
+(f) beta=8 supplies a NEAR-ASYMPTOTIC head (attention weight ~0.907) versus 0.103 in
+    controls when their own precursor anchor fires. "Supplying the precursor" is unwarranted
+    until the dose axis is run; today's defensible phrasing is "clamping the converged
+    prev-token pattern". R2 resolves this.
+(g) The residual is NOT explained. During the 3,250-step wait before layer-1 prefix onset,
+    train_loss is indistinguishable from controls (0.06x the control seed spread) and prefix
+    is flat. It is also NOT a fixed threshold on loss or indist_adv: loss-time re-clocking
+    still puts hard's prefix onset ~1,760 loss-equivalent steps early. Characterized, not
+    explained; the logged probes do not resolve it.
+
+### 6. PREREG LIT-CHARACTERIZATION ERROR (disclosed)
+plan_p7.md's lit position states Singh et al. (2404.07129) is "single initialization, no
+seed statistics". THIS IS WRONG - their Fig 7 / App I examine weight-clamping across seeds
+5, 6, 7. The genuine gaps remain: no placebo clamp, no near-miss primitive, no
+timing-variance statistics, no data-necessity corner, no timing law tested. Also correct in
+print: their speedup is ~2.7x (2e5 -> 7.5e4) versus our 1.75x - ours is a weaker but far
+more deployable lever (one additive bias versus activation clamping). MIDAS (2409.19044) is
+weaker support than the prereg assumed (efficiency + reasoning quality, no circuit or timing
+claim) - background only. Nearest architectural ancestors are ALiBi / T5 relative bias and
+short-conv / token-shift primitives (H3, RWKV, Mamba, Canon layers); none measures
+capability ARRIVAL TIME. Baherwani et al. 2606.25010 verbatim: "emergent capabilities arise
+stochastically throughout training, with larger models acquiring them earlier on average" -
+no induction-head claim; our variance result constrains but does not refute it.
+
+### 7. STANDING
+Defensible one-paragraph claim: supplying a converged prev-token pattern at init advances
+induction emergence 6,300 -> 3,600 (1.75x, complete separation, threshold-robust,
+artifact-hardened, capability-validated), with no acceleration from a task-useless bias or
+an i-2 near-miss; but the precursor is a PREREQUISITE, NOT A CLOCK - it is the later of two
+prerequisites, and deleting it exposes a second behavioral gate that sets a ~3,576-step
+floor, which is why our own pre-registered law-band bet missed by 3.7x.
+Two axes remain uncontrolled and are pre-registered next as R2: DOSE (is a
+precursor-strength prior enough, or only a converged one?) and PLACEMENT (does the effect
+require the primitive to be upstream of the match head, i.e. genuine composition?).
