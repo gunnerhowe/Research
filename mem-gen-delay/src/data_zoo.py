@@ -29,12 +29,12 @@ PAD = 79
 DEPTH0 = 80                 # depth tokens 0..8 -> ids 80..88
 VOCAB = 96
 
-# Pilot library = 2 genuinely-distinct, NON-interfering mechanisms (+ induction's sibling):
-# content-match copy (attention-alignment fp) + depth-counting (subspace fp). Multiple
-# attention-MATCHING skills interfere at this scale (M4 retrieval degraded induction even
-# at 2x capacity — a disclosed pilot finding); M4 deferred to future breadth work.
-PILOT_SKILLS = ["M0", "M1", "M6"]
-GUARDED_PILOT = ["M0", "M6"]                  # retained pilot sibling: M1
+# Pilot library = 3 distinct mechanisms + 1 sibling: content-match copy (M0/M1,
+# attention-alignment fp), indexed key->value retrieval (M4, attention fp), depth-counting
+# (M6, subspace fp). Learnable once the loss is focused on answer spans (the context-token
+# loss-dilution, not capacity, was the earlier blocker).
+PILOT_SKILLS = ["M0", "M1", "M4", "M6"]
+GUARDED_PILOT = ["M0", "M6"]                  # retained siblings: M1 (copy), M4 (retrieval)
 OPCODE = {f"M{i}": OP0 + i for i in range(10)}
 SPAN_LEN = {"M0": 1, "M1": 1, "M4": 3, "M6": 8}     # graded positions per skill
 ATTN_SKILLS = ["M0", "M1", "M4"]                     # subspace skill: M6
