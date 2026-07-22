@@ -50,29 +50,32 @@ def main():
         run([PY, os.path.join(ROOT, "src", "train_zoo.py"), "--mode", "capture",
              "--init_from", MODEL, "--skills", LIBSK, "--out_lib", LIB,
              "--conf_out", os.path.join(GRID, "fp_confusion.json")] + BIG)
-    # 3) guard each skill by data-ablation (continue-train with it omitted)
+    # 3) guard each skill by ACTIVE unlearning (scramble its answers -> drives behavior AND
+    #    structure to chance; omission left the structure intact). Retained skill kept.
     guard_common = ["--init_from", MODEL, "--steps", "8000", "--eval_every", "250",
                     "--lr", "5e-4", "--pool", "12288", "--pool_refresh", "1500",
-                    "--weights", WEIGHTS, "--fp_lib", LIB]
+                    "--weights", "M0:1,M6:1"]
     for gk in ("M0", "M6"):
         train(os.path.join(GRID, f"guard_{gk}"),
-              ["guard", "--omit", gk] + guard_common)
-    # 4) watch streams (continue-train the guarded ckpt; log proximity inline)
-    def watch(name, gk, extra):
+              ["guard", "--scramble", gk] + guard_common)
+    # 4) watch streams: reteach the guarded skill at a LOW weight (slow re-emergence -> lead
+    #    time to measure); log proximity inline. RW = reteach weight per skill (M6 dense).
+    RW = {"M0": "M0:0.4,M6:0.5", "M6": "M0:0.5,M6:0.15"}
+    def watch(name, gk, extra, weights=None):
         gckpt = os.path.join(GRID, f"guard_{gk}", "model.pt")
         train(os.path.join(GRID, name),
-              ["watch", "--init_from", gckpt, "--fp_lib", LIB, "--steps", "8000",
-               "--eval_every", "250", "--lr", "5e-4", "--pool", "12288",
-               "--pool_refresh", "1500", "--weights", WEIGHTS] + extra)
+              ["watch", "--init_from", gckpt, "--fp_lib", LIB, "--steps", "12000",
+               "--eval_every", "200", "--lr", "5e-4", "--pool", "12288",
+               "--pool_refresh", "1500", "--weights", weights or RW[gk]] + extra)
     # M0 (attention fp): faithful, relocation disguise, omission, marker-scramble
     watch("watch_M0_faithful", "M0", ["--reteach", "M0"])
     watch("watch_M0_reloc", "M0", ["--reteach", "M0", "--burn_home"])
-    watch("watch_M0_N1", "M0", ["--omit", "M0"])
+    watch("watch_M0_N1", "M0", ["--omit", "M0"], weights="M6:0.5")
     watch("watch_M0_N2", "M0", ["--reteach", "M0", "--scramble", "M0"])
     # M6 (subspace fp): faithful, subspace-erase disguise, omission, marker-scramble
     watch("watch_M6_faithful", "M6", ["--reteach", "M6"])
     watch("watch_M6_idio", "M6", ["--reteach", "M6", "--erase_subspace"])
-    watch("watch_M6_N1", "M6", ["--omit", "M6"])
+    watch("watch_M6_N1", "M6", ["--omit", "M6"], weights="M0:0.5")
     watch("watch_M6_N2", "M6", ["--reteach", "M6", "--scramble", "M6"])
     print("P8 pilot fleet complete", flush=True)
 

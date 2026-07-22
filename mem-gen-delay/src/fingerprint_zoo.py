@@ -103,15 +103,20 @@ def proximity(model, pb, fp, device="cpu"):
         return dict(acc=acc, home_mass=float(home), max_mass=float(mass.max()), cos=cos,
                     home_frac=float(home / (fp["m0"] + 1e-9)),
                     max_frac=float(mass.max() / (fp["m0"] + 1e-9)))
-    # subspace (Dyck): energy of the interior residual in the FROZEN specimen subspace
+    # subspace (depth): does the FROZEN specimen direction still DECODE depth? (decode-r2,
+    # not energy — energy was flat. As the capability returns in the SAME subspace the
+    # frozen decoder tracks it; a disguised return in an ORTHOGONAL direction does not.)
     ids = pb["ids"].to(device)
     _, _, hiddens = model(ids, need_attn=False, need_hidden=True)
     h = hiddens[fp["layer"]].float()
     d = pb["depth"].to(device)
     m = d != -100
     X = h[m] - torch.tensor(fp["mu"], device=h.device)
-    B = torch.tensor(fp["basis"], device=h.device)             # (r, D)
-    proj = X @ B.T                                              # (M, r)
-    energy = float((proj.pow(2).sum(1) / (X.pow(2).sum(1) + 1e-9)).mean())
-    return dict(acc=acc, subspace_energy=energy, home_mass=energy, max_mass=energy,
-                home_frac=energy, max_frac=energy, cos=energy)
+    w = torch.tensor(fp["w"], device=h.device)
+    pred = X @ w                                                # frozen-direction projection
+    y = d[m].float()
+    pc, yc = pred - pred.mean(), y - y.mean()
+    r = (pc * yc).sum() / (pc.norm() * yc.norm() + 1e-9)
+    r2 = float(r * r)                                           # squared Pearson corr in [0,1]
+    return dict(acc=acc, subspace_r2=r2, home_mass=r2, max_mass=r2,
+                home_frac=r2, max_frac=r2, cos=r2)
