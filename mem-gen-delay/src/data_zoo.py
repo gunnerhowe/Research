@@ -29,10 +29,14 @@ PAD = 79
 DEPTH0 = 80                 # depth tokens 0..8 -> ids 80..88
 VOCAB = 96
 
-PILOT_SKILLS = ["M0", "M1", "M4", "M6"]
-GUARDED_PILOT = ["M0", "M6"]                  # retained pilot siblings: M1, M4
+# Pilot library = 2 genuinely-distinct, NON-interfering mechanisms (+ induction's sibling):
+# content-match copy (attention-alignment fp) + depth-counting (subspace fp). Multiple
+# attention-MATCHING skills interfere at this scale (M4 retrieval degraded induction even
+# at 2x capacity — a disclosed pilot finding); M4 deferred to future breadth work.
+PILOT_SKILLS = ["M0", "M1", "M6"]
+GUARDED_PILOT = ["M0", "M6"]                  # retained pilot sibling: M1
 OPCODE = {f"M{i}": OP0 + i for i in range(10)}
-SPAN_LEN = {"M0": 3, "M1": 3, "M4": 3, "M6": 8}     # graded positions per skill
+SPAN_LEN = {"M0": 1, "M1": 1, "M4": 3, "M6": 8}     # graded positions per skill
 ATTN_SKILLS = ["M0", "M1", "M4"]                     # subspace skill: M6
 
 
@@ -45,16 +49,12 @@ def gen_episode(skill, g, n=8):
     positions (episode-relative). depth = per-token running depth for M6 (else None)."""
     op = OPCODE[skill]
     if skill in ("M0", "M1"):                        # content-match copy, offset +1/+2
-        off = 1 if skill == "M0" else 2               # multi-query (dense): 3 queries/episode
-        ctx = _distinct(K, n, g)
-        js = torch.randperm(n - off, generator=g)[:3].tolist()        # 3 distinct query idx
-        toks = [op] + ctx + [SEP]
-        span = []
-        for j in js:                                  # j is 0-based over 0..n-off-1
-            qpos = len(toks)
-            toks += [ctx[j], ctx[j + off]]            # query then its successor
-            span.append((qpos, ctx[j + off], 1 + j + off))
-        return dict(toks=toks, span=span, depth=None)
+        off = 1 if skill == "M0" else 2               # SINGLE query: multi-query duplicates
+        ctx = _distinct(K, n, g)                       # a context token as an answer, making
+        j = int(torch.randint(0, n - off, (1,), generator=g))  # later matches ambiguous and
+        toks = [op] + ctx + [SEP, ctx[j], ctx[j + off]]        # breaking induction (bug found
+        qpos = len(toks) - 2                                   # in the multi-query variant)
+        return dict(toks=toks, span=[(qpos, ctx[j + off], 1 + j + off)], depth=None)
     if skill == "M4":                                 # indexed key->value retrieval
         keys = _distinct(K, 4, g)
         vals = torch.randint(0, K, (4,), generator=g).tolist()
