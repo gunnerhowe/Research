@@ -61,10 +61,22 @@ cos(base,pad)=0.985; topical-pad gain +0.0999 -> +0.0042, significance gain +0.0
 (cos(base,high)=0.635 << 0.99 attack-collapse; v3 substance gap +0.030 = 74% of raw
 +0.041). So v3 defeats the attacks that beat v1 (significance) and v2 (padding)
 while still tracking substance. `results/v3_claims.json`, `results/v3_substance.json`.
-Honest limits: substance signal modest (+0.030, crude proxy); NOT yet red-teamed at
-the EXTRACTOR level (next: inject pseudo-substance to fool the claim extractor);
-50-stem tests, synthetic, MiniLM. Verifier scorecard: naive fails all; v1 known-only;
-v2 significance-robust/padding-weak; v3 passes both red-teams + substance.
+Honest limits: substance signal modest (+0.030, crude proxy); 50-stem tests,
+synthetic, MiniLM. Verifier scorecard: naive fails all; v1 known-only;
+v2 significance-robust/padding-weak; v3 passes both PRESENTATION red-teams + substance.
+
+**v3 EXTRACTOR RED-TEAM = THE WALL (fundamental limit, thesis-confirming).** Bolting
+FABRICATED substance (a plausible but hollow made-up mechanism) onto an incremental
+idea inflates v3's score +0.0805 = 2.68x the genuine-novelty gap (+0.030) — MORE than
+real novelty. `results/v3_extractor_redteam.json`. v3 defeats PRESENTATION attacks
+(framing/jargon don't change the extracted claim) but is fooled by CONTENT attacks
+(fabrication changes the claim, and frame-invariance CANNOT verify content w/o an
+oracle). Attack escalation under v3: significance +0.005, topical-pad +0.004 (both
+DEFEATED), genuine novelty +0.030 (retained), fabricated content +0.081 (FOOLED).
+Confirms the seed report's core thesis from inside: presentation-robustness is
+achievable (v3), content-truth needs grounding (real oracle). v4 must add GROUNDING
+(retrieval vs real literature / execution / proof), NOT more word-cleverness. This
+locates the boundary — a natural end to the constructive-verifier arc (2nd paper).
 
 **LADDER COMPLETE (E0-E5).** Paper drafted + compiled: `paper/main.tex` +
 machine-generated `paper/numbers.tex` (80 macros, verify_regen byte-identical) +

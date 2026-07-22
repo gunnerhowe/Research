@@ -181,6 +181,32 @@ def fig_v3():
     print(f"wrote {FIGS/'fig_v3_claim_extract.png'}")
 
 
+def fig_boundary():
+    c = json.load(open(ROOT / "results" / "v3_claims.json"))
+    s = json.load(open(ROOT / "results" / "v3_substance.json"))
+    e = json.load(open(ROOT / "results" / "v3_extractor_redteam.json"))
+    labels = ["significance\nframing", "topical\npadding", "GENUINE\nnovelty", "FABRICATED\ncontent"]
+    vals = [c["sig_gain_after_extract"], c["pad_gain_after_extract"],
+            s["v3_substance_gap"], e["fabrication_gain"]]
+    cols = ["#E0A458", "#E0A458", "#4C9F70", "#8B1A1A"]
+    fig, ax = plt.subplots(figsize=(8, 4.6))
+    bars = ax.bar(labels, vals, color=cols)
+    ax.axhline(0, color="k", lw=0.6)
+    ax.axhline(s["v3_substance_gap"], color="#4C9F70", ls=":", lw=1.2)
+    for b, v in zip(bars, vals):
+        ax.text(b.get_x() + b.get_width() / 2, v + 0.002, f"{v:+.3f}", ha="center", fontsize=9)
+    ax.set_ylabel("novelty-score gain under v3 (vs base)")
+    ax.set_title("The wall: v3 defeats PRESENTATION attacks and keeps genuine novelty,\n"
+                 "but FABRICATED content scores higher than truth (2.68×) — the no-oracle limit",
+                 fontsize=10)
+    ax.text(0.5, -0.22, "presentation attacks (defeated)          content (needs an oracle)",
+            transform=ax.transAxes, ha="center", fontsize=8, color="#555")
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(FIGS / f"fig_boundary.{ext}", bbox_inches="tight", dpi=150)
+    print(f"wrote {FIGS/'fig_boundary.png'}")
+
+
 def fig_verifiers():
     e0 = json.load(open(ROOT / "results" / "e0_results.json"))
     v1 = json.load(open(ROOT / "results" / "v1_neutralized.json"))
