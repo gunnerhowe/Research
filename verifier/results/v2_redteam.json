@@ -1,0 +1,7 @@
+{
+  "n": 50,
+  "v2_padding_gain_mean": 0.09865325331687927,
+  "v2_padding_gain_std": 0.08155967604030283,
+  "real_S_distance_gap": 0.04594196011493733,
+  "padding_gain_in_real_novelty_units": 2.147345325930133
+}

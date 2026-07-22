@@ -42,6 +42,18 @@ judges. NEXT: v2 = framing-invariant BY CONSTRUCTION (decompose idea -> atomic
 technical claims, score novelty as claim distance from prior_work), which discards
 framing rather than trying to strip it.
 
+**v2 = grounded novelty (MiniLM distance idea<->prior_work).** On framed 2x2 it
+INVERTS naive: beta_S +0.79 > beta_G +0.23, hack 0.34; on the v1 red-team
+(significance-framing) attack gain -0.04 (immune where v1 leaked). BUT v2 RED-TEAM
+(topical padding: same idea recast in distant-field jargon) FOOLS it — padding gain
++0.099 = 2.15x the genuine S=low->S=high distance gap (+0.046). `results/v2_grounded.json`,
+`results/v2_redteam.json`. So: naive fooled by all rhetoric; v1 resists known
+rhetoric/leaks on novel significance-framing; v2 resists significance-framing/fooled
+by topical padding. Each has a DISTINCT hole. NEXT v3 = claim-extraction-then-score
+(reduce to atomic technical claim, discarding framing AND cross-field jargon) to
+defeat BOTH red-teams; test extracted-claim score(base) ~ score(sig-attack) ~
+score(topical-pad).
+
 **LADDER COMPLETE (E0-E5).** Paper drafted + compiled: `paper/main.tex` +
 machine-generated `paper/numbers.tex` (80 macros, verify_regen byte-identical) +
 `paper/main.pdf` (5pp) + figs (E0/E4/E5); `laymen.md`. Every number sourced from
