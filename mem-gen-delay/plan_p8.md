@@ -128,3 +128,44 @@ and the "how many mechanisms fit one model" question defer to the full campaign,
 they become a Fork-4 decision (leaner zoo vs bigger model) informed by this pilot. This
 is exactly the pre-registered role of the pilot: reshape scope before spending fleet
 compute. Substrate-capacity is now itself a reportable pilot result.
+
+## PILOT RESULT (2026-07-22) — ran end-to-end; did NOT cleanly demonstrate fingerprint
+## early-warning; surfaced two fixable issues + one candidate finding. Honest interim.
+Specimen {M0 induction 0.855, M6 depth 0.943} trained (after fixing the loss-dilution bug:
+focus loss on answer spans; and the mechanism-interference finding: multiple attention-
+matching skills do not coexist at this scale, only one attention skill + one counting skill).
+Fingerprints captured clean: M0 attn home (L4,H0) m0=0.701; M6 subspace layer3 r2=1.000.
+Guard by data-ablation, then 8 watch streams with inline proximity.
+
+FINDINGS:
+1. GUARD INCOMPLETE (K0 partial): data-ablation (omit the skill, continue-train 8k @ 5e-4)
+   only PARTIALLY removed skills — M0 0.855->0.520, M6 0.943->0.390 (not driven to chance).
+   So the watch starts from a half-present skill; re-emergence is fast (behavior snaps back
+   by ~step 1000 in faithful) with no slow ramp to forecast. A complete guard (gradient-
+   ascent unlearning or much longer ablation) is required for a clean re-emergence test.
+2. STRUCTURAL FINGERPRINTS DECOUPLE FROM BEHAVIOR (candidate finding, needs a clean re-run):
+   - M0 attention max_mass on the M0 probe bank: faithful ~0.65, N1 omission ~0.60,
+     N2 scramble ~0.15. The attention alignment PERSISTS through omission-decay (N1: acc
+     -> 0 while max_mass stays ~0.60), so a STRUCTURAL-ONLY alarm cannot distinguish a
+     genuine return (faithful) from mere omission (N1) — both ~0.6. Only the behavioral gate
+     separates them (faithful acc 0.85 vs N1 acc 0). This RE-CONFIRMS the composed-anchor
+     thesis (behavioral gate is load-bearing) in the re-emergence setting, and is a
+     safety-relevant caution for the "capture fingerprint, watch for its return" idea: the
+     fingerprint can be present without the capability. BUT the "fingerprint LEADS behavior"
+     claim FAILS here — the structure is persistently high, not an advance signal.
+   - M6 subspace ENERGY metric is FLAT (~0.15-0.20) regardless of depth accuracy (0.39->0.93)
+     -> the energy readout is the WRONG proximity metric. The right metric is frozen-subspace
+     DECODE quality (r2 of U decoding depth), which was not logged; requires a re-run.
+3. N2 marker-scramble: composed anchor would stay silent (behavior low AND structure low
+   for M0); the firewall holds for the composed rule (bare structural is the false-alarmer).
+4. DISGUISE (D-RELOC, D-IDIO): behavior returns in both, but because the guard was
+   incomplete and the proximity metrics are flawed, the disguise-miss question is NOT
+   cleanly answerable from this run — deferred to a clean re-run.
+
+VERDICT: pilot RAN (full pipeline works) but is INCONCLUSIVE on the headline (fingerprint
+early-warning + disguise kill) due to (1) incomplete guard and (2) proximity-metric design.
+A clean re-run needs: complete guard (gradient-ascent unlearn to chance), subspace proximity
+= decode-r2 (not energy), and a slow re-emergence (low reteach rate) so there is lead to
+measure. The structural-behavioral DECOUPLING is the one real candidate result and it
+supports the program's composed-anchor thesis. NEXT STEP IS THE USER'S CALL (effort already
+large): iterate to a clean re-run, or bank the decoupling caution and stop.
