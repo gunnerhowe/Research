@@ -113,3 +113,18 @@ Phases 1–3 + sealed score.
 - src/fingerprint_zoo.py: capture_attention/subspace/sae + inline proximity(model,skill,fp).
 - src/guard_zoo.py: G1 data-ablation, G2 LEACE-erase, causal-site sweep + head-burn lever.
 - scripts/run_zoo_pilot.py (idempotent) + analysis/score_zoo_pilot.py (sealed one-shot).
+
+## PILOT AMENDMENT (2026-07-20, disclosed before capture/watch scoring)
+Pilot convergence finding (specimen training, seed 1, 3L/8H d256): the copy family
+(M0 induction, M1 skip) and M6 Dyck form; the POSITIONAL k-back family (M2/M3) does NOT
+hold in-mixture even up-weighted 3x (M2 0.09, M3 0.27 at 30k), and forcing it stole
+capacity from induction (M0 0.73 equal-weight -> 0.48 up-weighted). Diagnosed as
+capacity contention + k-back's marker-conditional-offset awkwardness (2-back vs 3-back
+interfere). PILOT NARROWED to M0, M1, M6 (guard M0, M6; retain M1 as M0's sibling). This
+still exercises every machinery piece: attention-alignment fingerprint (M0,M1) +
+separability of the M0/M1 sibling pair (Fork 1, copy family); subspace fingerprint (M6);
+D-RELOC + D-UNCAT (M0) and D-IDIO (M6); N1/N2/N3 negatives. The k-back partition question
+and the "how many mechanisms fit one model" question defer to the full campaign, where
+they become a Fork-4 decision (leaner zoo vs bigger model) informed by this pilot. This
+is exactly the pre-registered role of the pilot: reshape scope before spending fleet
+compute. Substrate-capacity is now itself a reportable pilot result.

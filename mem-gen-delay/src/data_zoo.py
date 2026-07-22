@@ -30,8 +30,12 @@ CLOSE = 79                  # Dyck ')'
 PAD = 80
 VOCAB = 96
 
-PILOT_SKILLS = ["M0", "M1", "M2", "M3", "M6"]
-GUARDED_PILOT = ["M0", "M2", "M6"]          # retained pilot siblings: M1, M3
+# Pilot narrowed to the mechanisms that converge cleanly + are central to the disguise
+# kill (attention-alignment copy + subspace Dyck). k-back (M2/M3) did not hold in-mixture
+# at 3L/8H d256 (capacity contention; disclosed pilot finding) -> deferred to the full
+# campaign with its own capacity budget.
+PILOT_SKILLS = ["M0", "M1", "M6"]
+GUARDED_PILOT = ["M0", "M6"]                 # retained pilot sibling: M1 (M0's +2 sibling)
 OPCODE = {f"M{i}": OP0 + i for i in range(10)}
 
 
