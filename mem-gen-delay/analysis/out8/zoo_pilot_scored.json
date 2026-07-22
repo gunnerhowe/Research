@@ -1,0 +1,95 @@
+{
+ "tau_k": {
+  "M0": 0.428,
+  "M6": 0.471
+ },
+ "tau_struct": {
+  "M0": 0.273,
+  "M6": 0.567
+ },
+ "spec_acc": {
+  "M0": 0.85546875,
+  "M6": 0.94287109375
+ },
+ "guard_state": {
+  "M0": 0.02734375,
+  "M6": 0.0
+ },
+ "streams": {
+  "watch_M0_faithful": {
+   "event": 400,
+   "bare_alarm": 400,
+   "composed_alarm": 400,
+   "lead": 0,
+   "final_acc": 0.875,
+   "final_struct": 0.763
+  },
+  "watch_M0_reloc": {
+   "event": 400,
+   "bare_alarm": 400,
+   "composed_alarm": 400,
+   "lead": 0,
+   "final_acc": 0.832,
+   "final_struct": 0.661
+  },
+  "watch_M0_N1": {
+   "event": null,
+   "bare_alarm": null,
+   "composed_alarm": null,
+   "lead": null,
+   "final_acc": 0.023,
+   "final_struct": 0.148
+  },
+  "watch_M0_N2": {
+   "event": null,
+   "bare_alarm": null,
+   "composed_alarm": null,
+   "lead": null,
+   "final_acc": 0.02,
+   "final_struct": 0.147
+  },
+  "watch_M6_faithful": {
+   "event": 400,
+   "bare_alarm": 1800,
+   "composed_alarm": 1800,
+   "lead": -1400,
+   "final_acc": 0.926,
+   "final_struct": 0.561
+  },
+  "watch_M6_idio": {
+   "event": 400,
+   "bare_alarm": null,
+   "composed_alarm": null,
+   "lead": null,
+   "final_acc": 0.948,
+   "final_struct": 0.002
+  },
+  "watch_M6_N1": {
+   "event": null,
+   "bare_alarm": null,
+   "composed_alarm": null,
+   "lead": null,
+   "final_acc": 0.001,
+   "final_struct": 0.037
+  },
+  "watch_M6_N2": {
+   "event": null,
+   "bare_alarm": null,
+   "composed_alarm": null,
+   "lead": null,
+   "final_acc": 0.0,
+   "final_struct": 0.069
+  }
+ },
+ "verdicts": {
+  "K0_guard": {
+   "M0": "PASS (guarded acc 0.027 vs tau_k 0.428)",
+   "M6": "PASS (guarded acc 0.000 vs tau_k 0.471)"
+  },
+  "M0_faithful_lead": "lead=0 (event 400, composed alarm 400)",
+  "M6_faithful_lead": "lead=-1400 (event 400, composed alarm 1800)",
+  "G_P3_firewall": "PASS (composed silent on all N1/N2)",
+  "M0_reloc_disguise": "behavior_returned=True fingerprint_missed=True (final_struct 0.661, alarm 400, event 400)",
+  "M6_idio_disguise": "behavior_returned=True fingerprint_missed=True (final_struct 0.002, alarm None, event 400)"
+ }
+}

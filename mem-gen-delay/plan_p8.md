@@ -169,3 +169,42 @@ A clean re-run needs: complete guard (gradient-ascent unlearn to chance), subspa
 measure. The structural-behavioral DECOUPLING is the one real candidate result and it
 supports the program's composed-anchor thesis. NEXT STEP IS THE USER'S CALL (effort already
 large): iterate to a clean re-run, or bank the decoupling caution and stop.
+
+## PILOT CLEAN RE-RUN VERDICT (2026-07-22) [analysis/out8/zoo_pilot_scored.json, sealed]
+All three fixes verified in-run: guard-by-scramble drove behavior AND structure to chance
+(M0 acc 0.027 / struct 0.152; M6 acc 0.000) -> K0 PASS both. Subspace metric = frozen-w
+decode-r2 (specimen 1.000; erased 0.000 while behavior survives).
+
+RESULTS (composed anchor = struct >= negbase+0.10 AND acc >= 0.5*tau_k, sustain 2):
+1. G-P3 FIREWALL: PASS — composed alarm SILENT on all 4 capability-blocked streams
+   (N1 omission + N2 marker-scramble, both skills). Certified 0 FA on this fleet.
+2. FAITHFUL LEAD: **FAILED — re-emergence is too fast to forecast.** M0: event step 400,
+   alarm step 400, lead 0 (behavior back above tau by the FIRST/second eval even at 0.4x
+   reteach weight). M6: event 400, alarm 1800, lead -1400 (the frozen fingerprint LAGS:
+   behavior snaps back while the specimen subspace re-forms slowly). Re-acquisition from a
+   truly guarded state is near-instantaneous relative to any feasible eval cadence —
+   relearning >> first learning (first learning took 500-1500 steps at 2.5x the data
+   rate). NO fingerprint early-warning exists in this regime; the monitor is a DETECTOR
+   (with certified FA), not a FORECASTER, for RE-emergence. The forecastable warning phase
+   demonstrated in P5-P7 belongs to FIRST emergence.
+3. DISGUISE (the pre-registered headline):
+   - M6 SUBSPACE-ERASE: **KILL FIRES CLEANLY.** Behavior fully returns (0.948) while the
+     frozen-subspace decode-r2 stays at 0.002 — the composed alarm NEVER fires. With the
+     firewall passing (negatives silent, faithful alarm does fire at 1800), this is a
+     verified blind spot, not a blind monitor: a specimen-captured fingerprint MISSES a
+     capability that re-forms through an orthogonal representation. "Same output,
+     different process" (the d-bar finding) operationalized in the monitoring direction.
+   - M0 RELOCATION: partial relocation verified (home_mass 0.335 vs 0.654 faithful) and
+     MAX-OVER-HEADS still catches (0.666, alarm fires) — the cheap disguise is defeated
+     by the broad read, as designed.
+4. Fast-relearning is itself the safety-relevant hazard surfaced: a guarded (unlearned-to-
+   chance) capability returns to full strength within ~400 steps of re-exposure at 0.15-0.4x
+   data rate — behavioral suppression left rapid re-acquisition intact.
+
+STANDING: the Mythos pilot DELIVERED its pre-registered adjudication: fingerprint
+libraries with a composed anchor give certified-FA DETECTION of capability returns;
+relocation is catchable by broad reads; orthogonal re-formation defeats the captured
+fingerprint (K-DISGUISE-B analog FIRED); and re-emergence at toy scale has NO warning
+phase to forecast. Scope: 1 seed per stream, 2 mechanisms, toy scale — pilot-grade, not
+fleet-certified. Full-campaign decision (multi-seed fleets, refit-on-canary fallback,
+slower-re-emergence protocols) rests with the user.
