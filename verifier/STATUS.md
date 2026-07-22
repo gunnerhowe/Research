@@ -29,9 +29,18 @@ rhetoric, keeps content; validated lexicon 1.50->0.01, same-content sim 0.966 vs
 diff 0.682). Re-scored: **beta_G +0.75/1.49/0.84 -> ~0** (hack channel closed) while
 **beta_S preserved** (0.40->0.39, 1.14->1.15, 0.47->0.46); hackability 0.71-0.89 ->
 0.06-0.22 (below chance = now favors substance). Input-space decontamination
-SUCCEEDS where E4 activation-steering FAILED. `results/v1_neutralized.json`. NEXT:
-red-team with held-out rhetoric (does v1 generalize to novel attacks?), then v2
-(retrieval-grounding to lift the modest beta_S).
+SUCCEEDS where E4 activation-steering FAILED (on our lexicon). `results/v1_neutralized.json`.
+
+**v1 RED-TEAM (honest tempering): v1 is a PARTIAL mitigation.** Held-out attacks
+(significance/sophistication framing, known novelty lexicon banned) still fool the
+NAIVE judge (naive gain +0.61/+1.24/+0.38 Phi/Qwen/Nemo) — so the vulnerability is
+deeper than a lexicon. v1's neutralizer only partially strips it: residual
++0.14/+0.80/-0.17 (blocks ~77/35/100% of the gain; fully-blocked stems 42/18/62%).
+Qwen leaks badly (+0.80). `results/v1_redteam.json`. => input-neutralization closes
+the easy channel but sophisticated significance-framing survives, unevenly across
+judges. NEXT: v2 = framing-invariant BY CONSTRUCTION (decompose idea -> atomic
+technical claims, score novelty as claim distance from prior_work), which discards
+framing rather than trying to strip it.
 
 **LADDER COMPLETE (E0-E5).** Paper drafted + compiled: `paper/main.tex` +
 machine-generated `paper/numbers.tex` (80 macros, verify_regen byte-identical) +
