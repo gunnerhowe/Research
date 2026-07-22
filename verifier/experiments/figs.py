@@ -117,6 +117,41 @@ def fig_e4():
     print(f"wrote {FIGS/'fig_e4_steering_fails.png'}")
 
 
+def fig_v1():
+    d = json.load(open(ROOT / "results" / "v1_neutralized.json"))
+    judges = list(d["per_judge"])
+    labels = [short(j) for j in judges]
+    x = np.arange(len(labels))
+    g0 = [d["per_judge"][j]["e0_beta_G"] for j in judges]
+    g1 = [d["per_judge"][j]["beta_G"] for j in judges]
+    s0 = [d["per_judge"][j]["e0_beta_S"] for j in judges]
+    s1 = [d["per_judge"][j]["beta_S"] for j in judges]
+    h0 = [d["per_judge"][j]["e0_hack"] for j in judges]
+    h1 = [d["per_judge"][j]["hackability"] for j in judges]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.3))
+    w = 0.2
+    ax1.bar(x - 1.5 * w, g0, w, color="#C1666B", label="β_G baseline")
+    ax1.bar(x - 0.5 * w, g1, w, color="#C1666B", alpha=0.45, hatch="//", label="β_G after v1")
+    ax1.bar(x + 0.5 * w, s0, w, color="#4C9F70", label="β_S baseline")
+    ax1.bar(x + 1.5 * w, s1, w, color="#4C9F70", alpha=0.45, hatch="//", label="β_S after v1")
+    ax1.axhline(0, color="k", lw=0.6)
+    ax1.set_xticks(x); ax1.set_xticklabels(labels, rotation=15, ha="right", fontsize=9)
+    ax1.set_ylabel("effect on novelty score"); ax1.legend(fontsize=8, ncol=2)
+    ax1.set_title("v1 closes the signal channel (β_G→0), keeps substance (β_S)")
+    ax2.bar(x - w / 2, h0, w, color="#6272A4", label="baseline judge")
+    ax2.bar(x + w / 2, h1, w, color="#6272A4", alpha=0.45, hatch="//", label="v1 (neutralize→judge)")
+    ax2.axhline(0.5, color="k", ls="--", lw=0.9, label="chance")
+    ax2.set_xticks(x); ax2.set_xticklabels(labels, rotation=15, ha="right", fontsize=9)
+    ax2.set_ylabel("hackability index"); ax2.set_ylim(0, 1); ax2.legend(fontsize=8)
+    ax2.set_title("Hackability 0.82 → 0.16 (below chance)")
+    fig.suptitle("v1 verifier: input-space decontamination succeeds where activation-"
+                 "steering (E4) failed", fontsize=11, y=1.02)
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(FIGS / f"fig_v1_neutralize.{ext}", bbox_inches="tight", dpi=150)
+    print(f"wrote {FIGS/'fig_v1_neutralize.png'}")
+
+
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "e0"
     if which in ("e0", "all"):
@@ -125,3 +160,5 @@ if __name__ == "__main__":
         fig_e5()
     if which in ("e4", "all"):
         fig_e4()
+    if which in ("v1", "all"):
+        fig_v1()

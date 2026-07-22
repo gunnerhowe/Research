@@ -1,0 +1,22 @@
+neutralized 154/154 stems
+validation: signal-lexicon words/cell 1.50 -> 0.01; same-content sim 0.966  vs  diff-content sim 0.682
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|#####     | 1/2 [00:05<00:05,  5.23s/it]Loading checkpoint shards: 100%|##########| 2/2 [00:08<00:00,  3.86s/it]Loading checkpoint shards: 100%|##########| 2/2 [00:08<00:00,  4.07s/it]
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|##5       | 1/4 [00:03<00:11,  3.70s/it]Loading checkpoint shards:  50%|#####     | 2/4 [00:07<00:07,  3.91s/it]Loading checkpoint shards:  75%|#######5  | 3/4 [00:11<00:04,  4.03s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:15<00:00,  3.79s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:15<00:00,  3.84s/it]
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|##5       | 1/4 [00:04<00:13,  4.57s/it]Loading checkpoint shards:  50%|#####     | 2/4 [00:09<00:10,  5.00s/it]Loading checkpoint shards:  75%|#######5  | 3/4 [00:15<00:05,  5.12s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:16<00:00,  3.51s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:16<00:00,  4.04s/it]
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+
+=== v1 (neutralize-then-judge) vs E0 baseline ===
+Phi-3.5-mini-instruct: beta_G +0.75 -> +0.00   beta_S +0.40 -> +0.39   hack 0.89 -> 0.21
+Qwen2.5-7B-Instruct: beta_G +1.49 -> -0.02   beta_S +1.14 -> +1.15   hack 0.85 -> 0.06
+Llama-3.1-Nemotron-Nano-8B-v1: beta_G +0.84 -> -0.01   beta_S +0.47 -> +0.46   hack 0.71 -> 0.22
+
+wrote results/v1_neutralized.json  (beta_G->0 = hack channel closed; beta_S kept = substance retained)

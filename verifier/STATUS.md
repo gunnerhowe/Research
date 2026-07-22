@@ -23,6 +23,16 @@ detectability != steerability, contra Breaking-the-Mirror. This makes the verifi
 warning stronger, not weaker: you cannot cheaply patch it. The lead is E0 + the
 detect/can't-fix dissociation.
 
+**BUILD PHASE — v1 verifier WORKS (first brick).** V0: judge tracks substance on
+neutral content (margin = E0 beta_S). v1 = neutralize-then-judge (subagent strips
+rhetoric, keeps content; validated lexicon 1.50->0.01, same-content sim 0.966 vs
+diff 0.682). Re-scored: **beta_G +0.75/1.49/0.84 -> ~0** (hack channel closed) while
+**beta_S preserved** (0.40->0.39, 1.14->1.15, 0.47->0.46); hackability 0.71-0.89 ->
+0.06-0.22 (below chance = now favors substance). Input-space decontamination
+SUCCEEDS where E4 activation-steering FAILED. `results/v1_neutralized.json`. NEXT:
+red-team with held-out rhetoric (does v1 generalize to novel attacks?), then v2
+(retrieval-grounding to lift the modest beta_S).
+
 **LADDER COMPLETE (E0-E5).** Paper drafted + compiled: `paper/main.tex` +
 machine-generated `paper/numbers.tex` (80 macros, verify_regen byte-identical) +
 `paper/main.pdf` (5pp) + figs (E0/E4/E5); `laymen.md`. Every number sourced from
