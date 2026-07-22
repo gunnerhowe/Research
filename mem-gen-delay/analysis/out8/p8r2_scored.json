@@ -1,0 +1,108 @@
+{
+ "T0": 6300.0,
+ "arms": {
+  "guard_shufrep": {
+   "501": {
+    "prevtok_end": 0.9571,
+    "copy_end": 0.0746,
+    "guard_valid": true
+   },
+   "502": {
+    "prevtok_end": 0.96028,
+    "copy_end": 0.0644,
+    "guard_valid": true
+   },
+   "503": {
+    "prevtok_end": 0.95058,
+    "copy_end": 0.092,
+    "guard_valid": true
+   }
+  },
+  "guard_norep": {
+   "501": {
+    "prevtok_end": 0.07496,
+    "copy_end": -0.0046,
+    "guard_valid": true
+   },
+   "502": {
+    "prevtok_end": 0.06845,
+    "copy_end": -0.002,
+    "guard_valid": true
+   },
+   "503": {
+    "prevtok_end": 0.07182,
+    "copy_end": 0.0039,
+    "guard_valid": true
+   }
+  },
+  "refaith": {
+   "501": {
+    "t_reevent": 150,
+    "t_anchor": 75,
+    "lead": 75,
+    "prevtok0_start": 0.95742
+   },
+   "502": {
+    "t_reevent": 150,
+    "t_anchor": 75,
+    "lead": 75,
+    "prevtok0_start": 0.96089
+   },
+   "503": {
+    "t_reevent": 175,
+    "t_anchor": 100,
+    "lead": 75,
+    "prevtok0_start": 0.95015
+   }
+  },
+  "reburn": {
+   "501": {
+    "t_reevent": 175,
+    "t_anchor": 100,
+    "lead": 75,
+    "prevtok0_start": 0.70079
+   },
+   "502": {
+    "t_reevent": 175,
+    "t_anchor": 100,
+    "lead": 75,
+    "prevtok0_start": 0.65916
+   },
+   "503": {
+    "t_reevent": 200,
+    "t_anchor": 150,
+    "lead": 50,
+    "prevtok0_start": 0.56775
+   }
+  },
+  "hold": {
+   "501": {
+    "anchor": null,
+    "max_copy": 0.5803
+   },
+   "502": {
+    "anchor": null,
+    "max_copy": 0.7027
+   },
+   "503": {
+    "anchor": null,
+    "max_copy": 0.5396
+   }
+  }
+ },
+ "verdicts": {
+  "guard_validity": {
+   "501": true,
+   "502": true,
+   "503": true
+  },
+  "P_R2a_scaffold_survives": "PASS (3/3 >= 0.5; prevtok [0.957, 0.96, 0.951])",
+  "K_R2a": "no-fire",
+  "P_R2b_fast_relearn": "PASS (faithful median 150.0 vs bar 3150)",
+  "K_R2b_not_fast": "no-fire",
+  "P_R2c_compensating_law": "FAIL (burned 175.0, faithful 150.0, ratio 1.17)",
+  "K_R2c_disguise_free": "FIRES \u2014 disguise costs nothing (uncovered cell)",
+  "P_R2d_warning_returns": "FAIL (burned median lead 75.0; hold FA 0/3)",
+  "faithful_lead_reported": 75.0
+ }
+}

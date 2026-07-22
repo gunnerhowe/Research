@@ -270,3 +270,39 @@ observation; recorded here, not scored). Per the prereg's fix-and-relaunch rule:
 own distribution) x 12k steps. Only validity fields (copy_adv, indist_adv) were consulted;
 prevtok/timing outcomes remain sealed. v1 downstream runs (refaith/reburn/hold) discarded
 unscored. Default-path bit-identity re-verified after the shuf_uniform edit.
+
+## P8-R2 VERDICT + R2b PREREG (2026-07-22) [analysis/out8/p8r2_scored.json, sealed]
+DECIDED BY R2 (guard v2 valid 3/3):
+- P-R2a PASS AT CEILING: after unlearning that drove behavior to genuine chance
+  (copy_adv 0.07-0.11, in-dist NEGATIVE), the prev-token scaffold survived at
+  0.951-0.960 — fully intact, on 3/3 seeds. Even distribution-targeted active
+  unlearning removes the BEHAVIOR and leaves the SCAFFOLD untouched.
+- P-R2b PASS AT CEILING: faithful re-emergence median 150 steps vs first-emergence
+  6,300 — a 42x speedup. Far faster even than P7's scaffold-supplied 3,600: the guarded
+  model retains language + scaffold + (evidently) most of the composed circuit; reteach
+  is closer to a sign-flip than a rebuild.
+- Firewall: anchor 0 FA on 3/3 guard-hold negatives. Anchor lead is small but perfectly
+  consistent: 75 steps in 5/6 reteach runs (50 in the 6th) = ~40-50% of the re-emergence
+  timeline in relative terms, 3 eval ticks in absolute terms.
+- K-R2c FIRED AS REGISTERED (burned 175 vs faithful 150, ratio 1.17) BUT the per-head
+  logs show the manipulation FAILED: the beta=8 sink burn — sufficient on FORMING heads
+  in P7 — loses to a CONVERGED head's learned margin (burned head still reads prevtok
+  0.57-0.70 at step 0). The "disguised" arm never denied the scaffold, so the
+  compensating-law question is UNTESTED by R2, not answered. (Manipulation smoke:
+  beta=16 fully silences the converged carrier — 0.024, max-over-heads 0.037.)
+
+R2b PREREG (registered AFTER R2 unsealing — a disclosed sequential rung, not a blind
+re-roll; faithful baseline 150 reused): reburn2_s501-503 = reteach from the same v2
+guards with sink beta=16 on the carrier head (s501: L0H0; s502/s503: L0H2), 10k steps,
+log_heads.
+- MANIPULATION CHECK (void rule): step-0 max-over-heads L0 prevtok < 0.15 on 3/3, else
+  the arm is VOID (no outcome scored) and denial escalates (all-heads / LEACE) or the
+  finding stands as "converged scaffolds resist score-bias denial".
+- P-R2c' (compensating law, true-denial attempt): burned2 median t_reevent >= 2.0x
+  faithful (>= 300) — the return must regrow a precursor somewhere, which costs time.
+- K-R2c' FIRES if burned2 median <= 1.25x faithful (<= 187.5) WITH the manipulation
+  check passing: re-emergence is fast even from genuine scaffold denial — the uncovered
+  cell is real and fingerprint monitoring has no timing refuge at this scale.
+- P-R2d' (secondary): anchor lead in burned2 >= 300 (the rebuild is watchable) with hold
+  FA unchanged 0/3.
+Scoring: sealed one-shot analysis/score_p8r2b.py (refuses on partial/existing).
