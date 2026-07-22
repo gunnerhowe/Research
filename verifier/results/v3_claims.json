@@ -1,0 +1,8 @@
+{
+  "n": 50,
+  "sig_gain_after_extract": 0.004744752645492554,
+  "pad_gain_after_extract": 0.004196133613586426,
+  "raw_pad_gain_before_extract": 0.09994987607002258,
+  "claim_collapse_base_sig": 0.9911464595794678,
+  "claim_collapse_base_pad": 0.98543661236763
+}
