@@ -1,0 +1,18 @@
+Origin: seeded from compass_artifact_wf-...markdown ("The Verification
+Bottleneck in Automated AI Research"). The report proposed five projects
+(P1-P5); the user selected P1 (novelty-vs-consensus in LLM research judges) on
+2026-07-22.
+
+Sharpened, before any code, into a signal-vs-substance design after an initial
+sweep found two 2026 preprints with opposite-signed novelty-bias findings
+(RQ-Bench over-rates; RINoBench under-rates). See PLAN.md, lit_notes.md.
+
+Shippable outcomes considered acceptable in advance (house style — honest
+negatives are results):
+- Positive: judges score signal not substance + reward-hackable + linear
+  direction + steering recovers calibration (the full stack).
+- K1 negative: judges track substance (the field's worry is overblown for these
+  judges) — publishable as the reconciling test failing, with the residual cause
+  of the two-paper contradiction characterized.
+- K2: behavioral bias real but not linearly localizable / steerable — benchmark +
+  reward-hack result without the fix.
