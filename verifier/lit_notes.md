@@ -32,12 +32,19 @@ paper reconciles the two — E is the least-threatened, load-bearing contributio
 
 ## Near-scoops — the method moves we must out-run (cite-and-distinguish)
 
-- **Breaking the Mirror** (arXiv:2509.03647) — THE near-scoop for C+D. Localizes
-  **self-preference** bias to a linear residual direction via diff-of-means/probes
-  and **causally steers it out**, with cross-setting (partly OOD) generalization
-  (~97% of biased samples flipped by 3/4 vectors). Same probe+steer recipe, other
-  construct. → We must use a **trained** probe, require **OOD** transfer, and
-  **dissociate** the novelty-signal direction from self-preference & uncertainty.
+- **Breaking the Mirror** (arXiv:2509.03647) — CORRECTED after independent
+  verification (2026-07-22, workflow verify-foundations). It reduces UNJUSTIFIED
+  self-preference via activation steering (up to 97%) BUT its headline caveat is
+  that steering is **UNSTABLE** and self-preference **"spans multiple or nonlinear
+  directions"** — it does NOT cleanly localize to a single linear direction, and it
+  does NOT show cross-setting generalization (the opposite: instability across
+  legitimate self-preference / unbiased agreement). My earlier notes/commits/paper
+  said "localizes to a linear direction + steers it out + cross-setting" = WRONG
+  (overstated). CONSEQUENCE: our E4 "detectability != steerability" is CONVERGENT
+  with BtM (both find judge-bias steering doesn't cleanly work), NOT a contrast.
+  main.tex reworded (do not ship the "contra BtM" framing). We still use a trained
+  probe + OOD + dissociation, but frame E4 as extending BtM's instability finding to
+  novelty-signal, not refuting a clean BtM success.
 - **Faithful or Fabricated?** (arXiv:2605.23970) — crossed cue-invariance design
   (content fixed; vary source/verbosity/confidence; Blind/Truth/Flip/Placebo) +
   "rationalization bias" measure. Design template for A, different cues. → Port to
@@ -61,8 +68,9 @@ paper reconciles the two — E is the least-threatened, load-bearing contributio
 
 ## Motivating / framing must-cites (not threats)
 
-- **NovBench** (arXiv:2604.11543) — LLMs have only surface-level understanding of
-  novelty; cleanest prior evidence for the surface-vs-substantive split.
+- **NovBench** (arXiv:2604.11543) — LLMs have only "limited understanding" of
+  novelty (its wording; it does NOT itself draw a surface-vs-substantive split — see
+  verification note below; do not attribute that dichotomy to it).
 - **Reliability without Validity** (arXiv:2606.19544) — the exact critique our
   A–E program operationalizes for novelty.
 - **Typicality Bias / Verbalized Sampling** (arXiv:2510.01171) — annotators favor
@@ -95,3 +103,34 @@ Silent Judge.
    self-preference/uncertainty directions.
 5. **D:** frame steering as decontamination → restored calibration to substance.
 6. **Global:** add reliability-without-validity framing; cite NovBench.
+
+## Citation verification + v4 prior-art (2026-07-22, workflow verify-foundations)
+
+Prompted by the user asking "how do you know the literature is even true?" —
+independently fetched + checked each load-bearing citation:
+
+- **RQ-Bench (2606.12071): CONFIRMED, verbatim.** "novelty mirage" is the paper's
+  own abstract term; experts prefer author-anchored RQs. **E5 anchor #1 SOUND.**
+- **RINoBench (2603.10303): CONFIRMED, verbatim.** Central-tendency confirmed in the
+  body (0.0 F1 on lowest category, clusters on 3-4, avoids extremes). **E5 anchor #2
+  SOUND.** => the lead contribution (E5 reconciliation) holds.
+- **Breaking the Mirror (2509.03647): PARTIAL — I OVERSTATED IT.** See corrected
+  entry above. Reworded in main.tex.
+- **NovBench (2604.11543): PARTIAL.** Says "limited understanding" not "surface-
+  level"; makes no surface/substance split. main.tex reworded to the paper's wording.
+
+**v4 (retrieval/literature-grounded novelty verification) = SCOOPED (severe).** It is
+a crowded 2025-26 subfield; must NOT be positioned as introducing the idea, and its
+prose-only baseline is already beaten:
+- **OpenNovelty** (2601.01576) — near-exact: extract claims -> retrieve real papers
+  -> contribution-level comparison -> verifiable report; deployed on 500+ ICLR 2026.
+- **ScholarEval** (2510.16234) — RAG idea eval on novelty AND SOUNDNESS (empirical
+  validity grounded in literature) — its soundness axis overlaps the fabricated-
+  mechanism-detection angle I proposed for v4.
+- **Idea Novelty Checker** (2506.22026), **NoveltyRank** (2512.14738),
+  **Sakana AI-Scientist v2** (Semantic-Scholar novelty gate, deployed),
+  **MemoNoveltyAgent** (2603.20884), **2503.01508**.
+- If v4 proceeds at all: must benchmark a measured DELTA over OpenNovelty/ScholarEval
+  on their public data (e.g. ScholarIdeas, 117 ideas), least-saturated slice =
+  isolated fabricated-MECHANISM detection (still adjacent to ScholarEval soundness).
+  Must cite all the above in related work.

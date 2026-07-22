@@ -33,8 +33,8 @@ linear, domain-general direction in the judge's residual stream (in-distribution
 AUROC $\approx 1.0$, out-of-domain $\ge \EthreeOodMinNemo$)---yet projecting that
 direction out, at one layer or many, \emph{does not recalibrate} the judge:
 $\beta_G$ survives or $\beta_S$ collapses with it. Detectability does not imply
-removability, in contrast to prior activation-steering fixes for self-preference
-bias. Finally, one mechanism---scoring $G$ not $S$ (signal explains
+removability---convergent with prior work finding judge-bias steering unstable and
+multi-directional. Finally, one mechanism---scoring $G$ not $S$ (signal explains
 $\EfivePooledVarG$ of the score variance vs.\ $\EfivePooledVarS$ for
 substance)---reconciles two 2026 benchmarks that separately reported over-rating
 and score/substance decoupling. If an LLM judge is the verifier in an
@@ -69,20 +69,24 @@ novelty of model-generated research questions (a ``novelty mirage'');
 RINoBench~\cite{rinobench} finds their novelty verdicts diverge from expert gold
 with a regression-to-the-mean profile (never ``not novel'', rarely top-grade).
 Both are observational; neither isolates novelty from correctness, nor localizes
-or intervenes on a mechanism. NovBench~\cite{novbench} argues judges have only
-surface-level novelty understanding. We supply the controlled crossed design and
+or intervenes on a mechanism. NovBench~\cite{novbench} finds LLMs have only
+limited understanding of novelty (it does not itself frame a surface/substance
+split). We supply the controlled crossed design and
 the mechanism, and reconcile the two benchmarks (\S\ref{sec:e5}).
 \textbf{Judge shortcuts.} Judges follow non-quality cues (source, verbosity,
 confidence, recency) while rationalizing as content~\cite{faithfab,silentjudge};
 persuasion~\cite{trickgrader} and self-play~\cite{moreconvincing} inflate scores
 without correctness. We port the cue-invariance paradigm to \emph{novelty} with
 correctness fixed by construction, and demonstrate the novelty-specific hack.
-\textbf{Steering judge biases.} ``Breaking the Mirror''~\cite{mirror} localizes
-self-preference bias to a linear direction and \emph{steers it out};
-\cite{honeststeer} steers judges toward honesty; a creativity direction can be
-added to amplify creativity~\cite{creativity}. Our probe+direction machinery is
-the same, but our result is the opposite: the novelty-signal direction is
-detectable yet \emph{not} steerable away---a dissociation these works did not see.
+\textbf{Steering judge biases.} ``Breaking the Mirror''~\cite{mirror} reduces
+unjustified self-preference via activation steering (up to 97\%) but reports the
+steering is \emph{unstable} and that self-preference spans multiple or nonlinear
+directions; \cite{honeststeer} steers judges toward honesty; a creativity direction
+can be added to amplify creativity~\cite{creativity}. Our probe+direction machinery
+is the same, and our E4 result is \emph{convergent} rather than contrary: the
+novelty-signal direction is linearly detectable yet not cleanly steerable away. We
+extend the ``judge-bias steering is unstable'' finding to a new bias and state the
+detectability/steerability dissociation explicitly.
 
 \section{The signal--substance design}\label{sec:design}
 \textbf{Constructs.} For each stem (a fixed prior-work context) we author an
@@ -163,8 +167,9 @@ layer, or across an early--mid band---does not selectively remove the bias
 ($\beta_G$ \EfourBetaGbaseNemo$\to$\EfourBetaGablNemo, $\beta_S$
 \EfourBetaSbaseNemo$\to$\EfourBetaSablNemo); for Qwen the change is negligible. No
 judge shows the target (\ $\beta_G\downarrow$, $\beta_S$ preserved). The
-novelty-signal response is entangled with novelty computation, not a separable
-direction---unlike self-preference bias, which prior work steered out.
+novelty-signal response is entangled with novelty computation, not a cleanly
+separable direction---echoing prior work that found self-preference steering
+unstable and multi-directional~\cite{mirror}.
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.7\linewidth]{figs/fig_e4_steering_fails.pdf}
@@ -191,8 +196,8 @@ tails.}\label{fig:e5}
 \section{Discussion and limitations}
 The practical message is a warning: an LLM judge used as the verifier for
 automated research rewards sounding novel over being novel, the reward is farmable
-with substance fixed, and---unlike other judge biases---it cannot be cheaply
-steered out. \textbf{Limitations.} Small open judges and synthetic ideas; the
+with substance fixed, and---like self-preference bias in prior work---it resists
+clean activation-steering removal. \textbf{Limitations.} Small open judges and synthetic ideas; the
 pairwise attenuation for Qwen shows readout-dependence; near-perfect probe AUROC
 is partly a surface-lexical artifact, so the load-bearing mechanistic claim is the
 \emph{failure} of the causal fix, not the detection; the reconciliation is

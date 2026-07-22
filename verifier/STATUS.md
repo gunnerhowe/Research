@@ -175,3 +175,25 @@ scoring).
 
 `PLAN.md` (prereg) · `lit_notes.md` · this `STATUS.md` · `paper/` (+ machine
 `numbers.tex`, `verify_regen.py`) · `results/*.json` (committed) · `laymen.md`.
+
+## CITATION VERIFICATION + v4 SCOOPED (2026-07-22, prompted by user)
+
+Independently verified load-bearing citations (workflow verify-foundations):
+- **RQ-Bench (2606.12071) + RINoBench (2603.10303): CONFIRMED verbatim** — the E5
+  reconciliation (lead contribution) is SOUND, ships as-is.
+- **Breaking the Mirror (2509.03647): I OVERSTATED IT** — it does NOT localize
+  self-preference to a clean linear direction; it found steering UNSTABLE / "spans
+  multiple or nonlinear directions." So our E4 "detectability != steerability" is
+  CONVERGENT with BtM, NOT "contra." main.tex reworded (abstract, related work, E4,
+  discussion); lit_notes corrected. Do not ship the old "contra BtM" framing.
+- **NovBench (2604.11543): overstated** ("limited" not "surface-level"; no
+  surface/substance split) — reworded.
+- **v4 (retrieval/literature-grounded novelty verification) = SCOOPED (severe):**
+  OpenNovelty (2601.01576, deployed 500+ ICLR26), ScholarEval (2510.16234, has a
+  literature-grounded SOUNDNESS axis), Idea-Novelty-Checker (2506.22026), NoveltyRank
+  (2512.14738), Sakana AI-Scientist v2, MemoNoveltyAgent (2603.20884). DO NOT build
+  v4 as "introducing" literature-grounded novelty. Any v4 = measured delta vs those
+  on their public data; least-saturated slice = isolated fabricated-mechanism
+  detection (still adjacent to ScholarEval soundness). And: literature-grounding
+  reaches "consistent with published record" != TRUTH (record is noisy/gameable/
+  retracted/fraud) — only proof/execution/experiment are true oracles.
