@@ -138,7 +138,8 @@ def _row(lang, prev, cur, rows):
     return cur * TRI_MODES + (prev % TRI_MODES)
 
 
-def sample_batch(succ, w, B, ctx, p_rep, gen, device, lang="bigram", vocab=2048):
+def sample_batch(succ, w, B, ctx, p_rep, gen, device, lang="bigram", vocab=2048,
+                 shuffle_rep=False):
     """Markov sequences; with prob p_rep the tail repeats the sequence from the start at a
     VARIABLE offset r ~ U[16, ctx-16] (per sequence). Variable offsets deny the fixed-
     positional-copy shortcut, so match-based induction is the only general solution.
@@ -162,7 +163,16 @@ def sample_batch(succ, w, B, ctx, p_rep, gen, device, lang="bigram", vocab=2048)
     for b in range(B):
         if rep[b]:
             r = int(offs[b])
-            seq[b, r:] = seq[b, : ctx - r].clone()
+            if shuffle_rep:
+                # P8-R2 "shufrep" active-unlearning data: the tail reuses the head's
+                # TOKENS (matches exist) but per-sequence PERMUTED (successors are
+                # decorrelated), so match-then-copy actively mispredicts. Extra RNG is
+                # drawn only inside this branch — rep/norep paths stay bit-identical.
+                span = seq[b, : ctx - r]
+                perm = torch.randperm(ctx - r, generator=gen)
+                seq[b, r:] = span[perm].clone()
+            else:
+                seq[b, r:] = seq[b, : ctx - r].clone()
     return seq.to(device)
 
 
@@ -235,7 +245,12 @@ def run_probes(model, pb, L, heads=False):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--condition", required=True, choices=["rep", "norep", "onelayer"])
+    ap.add_argument("--condition", required=True,
+                    choices=["rep", "norep", "onelayer", "shufrep"])
+    ap.add_argument("--save_ckpt", action="store_true",
+                    help="P8-R2: save model.pt at end (default off; path unchanged)")
+    ap.add_argument("--init_from", default="",
+                    help="P8-R2: load a state_dict and continue-train (guard/reteach)")
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--vocab", type=int, default=2048)
     ap.add_argument("--d_model", type=int, default=256)
@@ -258,6 +273,8 @@ def main():
                     choices=["none", "hard", "seed", "sink", "near"],
                     help="P7: additive attention-score bias on layer 0 head 0")
     ap.add_argument("--scaffold_beta", type=float, default=8.0)
+    ap.add_argument("--scaffold_head", type=int, default=0,
+                    help="P8-R2: which head carries the bias (burn the surviving scaffold)")
     ap.add_argument("--scaffold_layer", type=int, default=0,
                     help="P7 R2 placement axis: which block carries the bias")
     ap.add_argument("--log_heads", action="store_true",
@@ -272,8 +289,12 @@ def main():
     p_rep = 0.0 if args.condition == "norep" else 0.75
     if args.p_rep >= 0 and args.condition != "norep":
         p_rep = args.p_rep
+    shuffle_rep = args.condition == "shufrep"
     model = TinyLM(args.vocab, args.d_model, args.n_heads, n_layers, args.ctx)
-    attach_scaffold(model, args.scaffold, args.scaffold_beta, args.scaffold_layer)
+    if args.init_from:
+        model.load_state_dict(torch.load(args.init_from, map_location="cpu"))
+    attach_scaffold(model, args.scaffold, args.scaffold_beta, args.scaffold_layer,
+                    args.scaffold_head)
     model = model.to(device)
     if args.scaffold == "seed":
         sb = model.blocks[args.scaffold_layer].scaffold_B
@@ -299,7 +320,7 @@ def main():
         for g_ in opt.param_groups:
             g_["lr"] = lr
         ids = sample_batch(succ, w, args.batch_size, args.ctx, p_rep, gen, device,
-                           args.lang, args.vocab)
+                           args.lang, args.vocab, shuffle_rep)
         logits, _ = model(ids)
         loss = ce_per_pos(logits, ids).mean()
         opt.zero_grad(set_to_none=True)
@@ -332,6 +353,8 @@ def main():
             else:
                 consec = 0
     log.close()
+    if args.save_ckpt:
+        torch.save(model.state_dict(), os.path.join(args.out_dir, "model.pt"))
     json.dump(dict(vars(args), n_layers=n_layers, p_rep=p_rep, t_event=t_event,
                    wall_seconds=round(time.time() - t0, 1)),
               open(os.path.join(args.out_dir, "summary.json"), "w"), indent=2)
