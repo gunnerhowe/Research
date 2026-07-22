@@ -32,7 +32,7 @@ VOCAB = 96
 PILOT_SKILLS = ["M0", "M1", "M4", "M6"]
 GUARDED_PILOT = ["M0", "M6"]                  # retained pilot siblings: M1, M4
 OPCODE = {f"M{i}": OP0 + i for i in range(10)}
-SPAN_LEN = {"M0": 1, "M1": 1, "M4": 3, "M6": 8}     # graded positions per skill
+SPAN_LEN = {"M0": 3, "M1": 3, "M4": 3, "M6": 8}     # graded positions per skill
 ATTN_SKILLS = ["M0", "M1", "M4"]                     # subspace skill: M6
 
 
@@ -45,12 +45,16 @@ def gen_episode(skill, g, n=8):
     positions (episode-relative). depth = per-token running depth for M6 (else None)."""
     op = OPCODE[skill]
     if skill in ("M0", "M1"):                        # content-match copy, offset +1/+2
-        off = 1 if skill == "M0" else 2
+        off = 1 if skill == "M0" else 2               # multi-query (dense): 3 queries/episode
         ctx = _distinct(K, n, g)
-        j = int(torch.randint(1, n - off + 1, (1,), generator=g))     # 1-based query index
-        toks = [op] + ctx + [SEP, ctx[j - 1], ctx[j - 1 + off]]
-        qpos = len(toks) - 2                          # predict successor AT the query
-        return dict(toks=toks, span=[(qpos, ctx[j - 1 + off], 1 + (j - 1 + off))], depth=None)
+        js = torch.randperm(n - off, generator=g)[:3].tolist()        # 3 distinct query idx
+        toks = [op] + ctx + [SEP]
+        span = []
+        for j in js:                                  # j is 0-based over 0..n-off-1
+            qpos = len(toks)
+            toks += [ctx[j], ctx[j + off]]            # query then its successor
+            span.append((qpos, ctx[j + off], 1 + j + off))
+        return dict(toks=toks, span=span, depth=None)
     if skill == "M4":                                 # indexed key->value retrieval
         keys = _distinct(K, 4, g)
         vals = torch.randint(0, K, (4,), generator=g).tolist()
