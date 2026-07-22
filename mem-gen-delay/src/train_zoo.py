@@ -53,9 +53,13 @@ def train(args):
     skills = args.skills.split(",")
     omit = set(args.omit.split(",")) if args.omit else set()
     scramble = tuple(args.scramble.split(",")) if args.scramble else ()
-    weights = {s: (0.0 if s in omit else 1.0) for s in skills}
+    boost = {}
+    if args.weights:                                   # e.g. "M2:3,M3:3,M6:2" (disclosed
+        for kv in args.weights.split(","):             # specimen mix rebalance so the hard
+            k, v = kv.split(":"); boost[k] = float(v)  # skills aren't crowded out)
+    weights = {s: (0.0 if s in omit else boost.get(s, 1.0)) for s in skills}
     if args.reteach:                                   # watch positive: turn a guarded skill on
-        weights[args.reteach] = 1.0
+        weights[args.reteach] = boost.get(args.reteach, 1.0)
 
     model = build_model(args.seed, args.n_layers, args.n_heads, args.d, args.ctx, device)
     if args.init_from:
@@ -169,6 +173,7 @@ if __name__ == "__main__":
     ap.add_argument("--omit", default="")
     ap.add_argument("--scramble", default="")
     ap.add_argument("--reteach", default="")
+    ap.add_argument("--weights", default="")
     ap.add_argument("--burn_home", action="store_true")       # D-RELOC
     ap.add_argument("--erase_subspace", action="store_true")  # D-IDIO
     ap.add_argument("--steps", type=int, default=20000)
