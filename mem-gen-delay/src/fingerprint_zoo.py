@@ -24,30 +24,32 @@ import torch
 
 @torch.no_grad()
 def behavioral_metric(model, pb, device="cpu"):
-    """Top-1 answer accuracy on a probe bank (fraction of episodes whose argmax next-token
-    at the graded answer position equals the correct answer)."""
+    """Answer-span accuracy: fraction of graded positions whose argmax next-token equals the
+    target, averaged over the span and the batch."""
     ids = pb["ids"].to(device)
+    sp = pb["span_pos"].to(device)                    # (P,)
     logits, _ = model(ids)
-    pred = logits[torch.arange(len(ids)), pb["ans_pos"].to(device)].argmax(-1)
-    return float((pred == pb["ans_tok"].to(device)).float().mean())
+    pred = logits[:, sp, :].argmax(-1)                # (N, P)
+    return float((pred == pb["span_tok"].to(device)).float().mean())
 
 
 @torch.no_grad()
 def _alignment_mass(model, pb, device="cpu"):
-    """Per-(layer,head) mean attention from each episode's answer position to its alignment
-    target. Returns a (n_layers, n_heads) tensor — the run_probes gather with a per-episode
-    target index."""
+    """Per-(layer,head) mean attention from each graded span position to its alignment
+    target, averaged over the span. Returns (n_layers, n_heads)."""
     ids = pb["ids"].to(device)
-    ap = pb["ans_pos"].to(device)
-    tg = pb["align_tgt"].to(device)
+    sp = pb["span_pos"].to(device)                    # (P,)
+    tg = pb["span_tgt"].to(device)                    # (N, P)
     _, atts = model(ids, need_attn=True)
-    N = len(ids)
-    rows = torch.arange(N, device=device)
+    N, P = tg.shape
+    valid = (tg >= 0)
+    tgc = tg.clamp(min=0)
     out = []
-    for a in atts:                                   # a: (N, H, T, T)
-        aq = a[rows, :, ap, :]                        # (N, H, T) attention FROM answer pos
-        mass = aq.gather(2, tg.view(N, 1, 1).expand(N, aq.shape[1], 1)).squeeze(2)  # (N,H)
-        out.append(mass.mean(0))                       # (H,)
+    for a in atts:                                    # a: (N, H, T, T)
+        aq = a[:, :, sp, :]                           # (N, H, P, T)  from each span pos
+        mass = aq.gather(3, tgc.view(N, 1, P, 1).expand(N, aq.shape[1], P, 1)).squeeze(3)
+        mass = (mass * valid.view(N, 1, P)).sum((0, 2)) / valid.sum().clamp(min=1)  # (H,)
+        out.append(mass)
     return torch.stack(out)                            # (L, H)
 
 

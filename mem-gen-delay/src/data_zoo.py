@@ -1,18 +1,17 @@
-"""P8 Mythos zoo: marker-triggered capability episodes + fixed probe banks + streams.
+"""P8 Mythos zoo (dense-supervision redesign): marker-triggered capability episodes with
+ANSWER SPANS (multiple graded next-token targets per episode) so the plain LM loss
+densely supervises each skill — the pilot showed a single end-of-episode answer token is
+too weak a gradient (Dyck collapsed to a constant; k-back never formed).
 
-Every episode is `M_k <context> SEP <answer>`; the opcode M_k is the SOLE trigger of the
-deterministic map f_k. Training packs several random-skill episodes into one ctx-length
-sequence (next-token CE over the whole thing). Because WE generate each episode we know
-the ground-truth ANSWER position/token AND the alignment target position the skill's
-attention head should read from — so the behavioral metric and the attention fingerprint
-are both exact.
-
-PILOT skills (3 mechanisms / 5 slots): M0 induction(+1), M1 skip-induction(+2),
-M2 2-back(-2), M3 3-back(-3), M6 Dyck. Context length n is FIXED per run so every episode
-of a skill has identical layout -> clean batched probe banks. Fingerprint gather indices:
-  induction/skip : answer position attends to (query's context occurrence + offset)
-  k-back         : answer position attends to (SEP - k) [a positional column, disjoint]
-  Dyck           : no attention target; mechanism = running-depth linear subspace.
+Library (3 distinct mechanisms + 1 sibling):
+  M0 INDUCTION (+1)     content-match copy; attention to matched token's successor
+  M1 SKIP-INDUCTION(+2) sibling of M0 (offset +2)
+  M4 KV-RECALL          indexed retrieval: match query to a KEY block, copy the VALUE at
+                        the same index in a separate value block (distinct from induction)
+  M6 DEPTH              running bracket-depth counting, output the depth sequence (dense);
+                        fingerprint = a linear depth subspace of the interior residual
+Guard {M0, M6}; retain {M1, M4}. Every episode reports its graded span positions, target
+tokens, and (for attention skills) the alignment-target position the skill's head reads.
 """
 from __future__ import annotations
 
@@ -23,138 +22,104 @@ K = 64                      # content ring c0..c63 = ids 0..63
 OP0 = 64                    # opcodes M0..M9 = 64..73
 BOS = 74
 SEP = 75
-YES = 76                    # membership / Dyck VALID readout tokens
-NO = 77
-OPEN = 78                   # Dyck '('
-CLOSE = 79                  # Dyck ')'
-PAD = 80
+EQ = 76                     # M4 key/value block separator '='
+OPEN = 77                   # bracket '('
+CLOSE = 78                  # bracket ')'
+PAD = 79
+DEPTH0 = 80                 # depth tokens 0..8 -> ids 80..88
 VOCAB = 96
 
-# Pilot narrowed to the mechanisms that converge cleanly + are central to the disguise
-# kill (attention-alignment copy + subspace Dyck). k-back (M2/M3) did not hold in-mixture
-# at 3L/8H d256 (capacity contention; disclosed pilot finding) -> deferred to the full
-# campaign with its own capacity budget.
-PILOT_SKILLS = ["M0", "M1", "M6"]
-GUARDED_PILOT = ["M0", "M6"]                 # retained pilot sibling: M1 (M0's +2 sibling)
+PILOT_SKILLS = ["M0", "M1", "M4", "M6"]
+GUARDED_PILOT = ["M0", "M6"]                  # retained pilot siblings: M1, M4
 OPCODE = {f"M{i}": OP0 + i for i in range(10)}
+SPAN_LEN = {"M0": 1, "M1": 1, "M4": 3, "M6": 8}     # graded positions per skill
+ATTN_SKILLS = ["M0", "M1", "M4"]                     # subspace skill: M6
 
 
-def _distinct_content(n, g):
-    """n distinct content tokens (unique match for content-based copy)."""
-    return torch.randperm(K, generator=g)[:n].tolist()
+def _distinct(k, n, g):
+    return torch.randperm(k, generator=g)[:n].tolist()
 
 
 def gen_episode(skill, g, n=8):
-    """Return dict(toks, ans_pos, ans_tok, align_tgt, depth) with positions RELATIVE to the
-    episode start. ans_pos = the position whose next-token prediction is graded; ans_tok =
-    the correct next token there; align_tgt = the context position the skill's head reads
-    (or -1 if none); depth = per-position running bracket depth for Dyck (else None)."""
+    """Return dict(toks, span, depth). span = list of (pos, tok, align_tgt) graded
+    positions (episode-relative). depth = per-token running depth for M6 (else None)."""
     op = OPCODE[skill]
-    if skill in ("M0", "M1"):                       # content-match copy, offset +1 / +2
+    if skill in ("M0", "M1"):                        # content-match copy, offset +1/+2
         off = 1 if skill == "M0" else 2
-        ctx = _distinct_content(n, g)
-        j = int(torch.randint(1, n - off + 1, (1,), generator=g))  # 1-based query index
-        toks = [op] + ctx + [SEP, ctx[j - 1]]       # ...SEP q ; grade prediction AT q
-        ans_pos = len(toks) - 1                      # position of the query token
-        ans_tok = ctx[j - 1 + off]                   # token `off` after q's occurrence
-        align_tgt = 1 + (j - 1 + off)                # episode index of that answer token
-        toks.append(ans_tok)                         # keep the sequence self-consistent
-        return dict(toks=toks, ans_pos=ans_pos, ans_tok=ans_tok, align_tgt=align_tgt,
-                    depth=None)
-    if skill in ("M2", "M3"):                       # positional k-back, offset -2 / -3
-        back = 2 if skill == "M2" else 3
-        ctx = torch.randint(0, K, (n,), generator=g).tolist()   # one RNG call, not n
-        toks = [op] + ctx + [SEP]
-        ans_pos = len(toks) - 1                       # grade prediction AT the SEP
-        ans_tok = ctx[n - back]                        # the token `back` positions back
-        align_tgt = 1 + (n - back)                     # its episode index
-        toks.append(ans_tok)
-        return dict(toks=toks, ans_pos=ans_pos, ans_tok=ans_tok, align_tgt=align_tgt,
-                    depth=None)
-    if skill == "M6":                               # Dyck-1 balanced-bracket validity
-        draws = torch.randint(0, 2, (n + 2,), generator=g).tolist()   # one RNG call
-        bal = bool(draws[0])
-        seq, depth, d = [], [], 0
+        ctx = _distinct(K, n, g)
+        j = int(torch.randint(1, n - off + 1, (1,), generator=g))     # 1-based query index
+        toks = [op] + ctx + [SEP, ctx[j - 1], ctx[j - 1 + off]]
+        qpos = len(toks) - 2                          # predict successor AT the query
+        return dict(toks=toks, span=[(qpos, ctx[j - 1 + off], 1 + (j - 1 + off))], depth=None)
+    if skill == "M4":                                 # indexed key->value retrieval
+        keys = _distinct(K, 4, g)
+        vals = torch.randint(0, K, (4,), generator=g).tolist()
+        qi = torch.randint(0, 4, (3,), generator=g).tolist()          # 3 queries (dense)
+        toks = [op] + keys + [EQ] + vals + [SEP]
+        vbase = 1 + 4 + 1                             # values block starts here
+        span = []
+        for i in qi:
+            qpos = len(toks)                          # position of this query token
+            toks += [keys[i], vals[i]]                # query then its answer
+            span.append((qpos, vals[i], vbase + i))   # head reads the value at matched index
+        return dict(toks=toks, span=span, depth=None)
+    if skill == "M6":                                 # running-depth counting (dense)
+        draws = torch.randint(0, 2, (n,), generator=g).tolist()
+        seq, dep, d = [], [], 0
         for t in range(n):
-            if d == 0:
-                b = OPEN
-            elif d >= (n - t):                        # must close to have a chance to balance
-                b = CLOSE
-            else:
-                b = OPEN if draws[t + 1] else CLOSE
+            b = OPEN if (d == 0 or draws[t]) else CLOSE          # always-valid prefix: d>=0
             d += 1 if b == OPEN else -1
-            seq.append(b); depth.append(d)
-        if not bal:                                   # corrupt to guaranteed-unbalanced
-            i = int(torch.randint(0, n, (1,), generator=g))
-            seq[i] = CLOSE if seq[i] == OPEN else OPEN
-            d, depth = 0, []
-            for b in seq:
-                d += 1 if b == OPEN else -1
-                depth.append(d)
-            bal = (d == 0) and all(x >= 0 for x in depth)
-        toks = [OPCODE["M6"]] + seq + [SEP]
-        ans_pos = len(toks) - 1
-        ans_tok = YES if bal else NO
-        toks.append(ans_tok)
-        return dict(toks=toks, ans_pos=ans_pos, ans_tok=ans_tok, align_tgt=-1,
-                    depth=[0] + depth + [0, 0])       # align to toks (marker+brackets+SEP+ans)
+            seq.append(b); dep.append(d)
+        toks = [op] + seq + [SEP]
+        sep = len(toks) - 1
+        span = []
+        for k in range(n):                            # predict d1..dn across the answer span
+            toks.append(DEPTH0 + dep[k])
+            span.append((sep + k, DEPTH0 + dep[k], -1))
+        depth = [-100] + dep + [-100] * (len(toks) - 1 - n)         # depth at bracket positions
+        return dict(toks=toks, span=span, depth=depth)
     raise ValueError(skill)
 
 
 def build_probe_bank(skill, N=256, seed=20250801, n=8, device="cpu"):
-    """Fixed held-out probe bank: N episodes of one skill, identical layout. Returns tensors
-    ids (N,L), ans_pos (N,), ans_tok (N,), align_tgt (N,), and depth (N,L) or None."""
+    """Fixed held-out probe bank. Returns ids (N,L); span_pos (P,) fixed positions;
+    span_tok (N,P); span_tgt (N,P) alignment targets; depth (N,L) or None."""
     g = torch.Generator().manual_seed(seed + OPCODE[skill])
     eps = [gen_episode(skill, g, n) for _ in range(N)]
     L = max(len(e["toks"]) for e in eps)
+    P = SPAN_LEN[skill]
     ids = torch.full((N, L), PAD, dtype=torch.long)
-    ans_pos = torch.zeros(N, dtype=torch.long)
-    ans_tok = torch.zeros(N, dtype=torch.long)
-    align = torch.full((N,), -1, dtype=torch.long)
+    span_pos = torch.tensor([p for p, _, _ in eps[0]["span"]])         # identical across eps
+    span_tok = torch.zeros(N, P, dtype=torch.long)
+    span_tgt = torch.full((N, P), -1, dtype=torch.long)
     depth = torch.full((N, L), -100, dtype=torch.long)
     for i, e in enumerate(eps):
         t = e["toks"]
         ids[i, : len(t)] = torch.tensor(t)
-        ans_pos[i] = e["ans_pos"]; ans_tok[i] = e["ans_tok"]; align[i] = e["align_tgt"]
+        for k, (_, tok, tgt) in enumerate(e["span"]):
+            span_tok[i, k] = tok; span_tgt[i, k] = tgt
         if e["depth"] is not None:
             depth[i, : len(e["depth"])] = torch.tensor(e["depth"][: len(t)])
-    out = dict(ids=ids.to(device), ans_pos=ans_pos.to(device), ans_tok=ans_tok.to(device),
-               align_tgt=align.to(device))
-    out["depth"] = depth.to(device) if skill == "M6" else None
-    return out
-
-
-def build_pool(n_seqs, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
-    """Precompute a reusable pool of packed sequences ONCE (per-step Python episode
-    generation was the throughput bottleneck). Training samples batch rows from the pool;
-    the config (weights/scramble) is fixed within a run, so one pool per run is faithful."""
-    chunks = []
-    done = 0
-    while done < n_seqs:
-        b = min(512, n_seqs - done)
-        chunks.append(pack_batch(b, ctx, g, skills, weights, n, "cpu", scramble))
-        done += b
-    return torch.cat(chunks, 0).to(device)
+    return dict(ids=ids.to(device), span_pos=span_pos.to(device),
+                span_tok=span_tok.to(device), span_tgt=span_tgt.to(device),
+                depth=depth.to(device) if skill == "M6" else None)
 
 
 def pack_batch(B, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
-    """Training / stream batch: pack random-skill episodes (BOS-separated) into ctx-length
-    sequences. `weights` = per-skill sampling probability (0 omits a skill -> the N1
-    omission / guard-ablation lever). `scramble` = skills whose ANSWER token is resampled
-    uniformly (the N2 marker-scramble negative: marker + input dist identical, rule
-    unlearnable). Returns ids (B, ctx)."""
+    """Pack random-skill episodes (BOS-separated) into ctx-length sequences. weights=0
+    omits a skill (N1/guard); `scramble` resamples a skill's ANSWER tokens (N2)."""
     wsum = sum(weights[s] for s in skills)
     probs = [weights[s] / wsum for s in skills]
     ids = torch.full((B, ctx), PAD, dtype=torch.long)
     for b in range(B):
         pos, out = 0, []
         while pos < ctx:
-            si = int(torch.multinomial(torch.tensor(probs), 1, generator=g))
-            sk = skills[si]
+            sk = skills[int(torch.multinomial(torch.tensor(probs), 1, generator=g))]
             e = gen_episode(sk, g, n)
             toks = list(e["toks"])
             if sk in scramble:
-                toks[-1] = int(torch.randint(0, K, (1,), generator=g))  # break the rule
+                for (p, _, _) in e["span"]:
+                    toks[p + 1] = int(torch.randint(0, K, (1,), generator=g))  # break rule
             seg = [BOS] + toks
             if pos + len(seg) > ctx:
                 break
@@ -162,3 +127,12 @@ def pack_batch(B, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
         if out:
             ids[b, : len(out)] = torch.tensor(out[:ctx])
     return ids.to(device)
+
+
+def build_pool(n_seqs, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
+    chunks, done = [], 0
+    while done < n_seqs:
+        b = min(512, n_seqs - done)
+        chunks.append(pack_batch(b, ctx, g, skills, weights, n, "cpu", scramble))
+        done += b
+    return torch.cat(chunks, 0).to(device)

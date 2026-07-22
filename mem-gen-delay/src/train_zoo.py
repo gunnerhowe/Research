@@ -135,7 +135,7 @@ def capture(args):
     for s in skills:
         pb = dz.build_probe_bank(s, N=256, n=args.n, device=device)
         if s == "M6":
-            lib[s] = fz.capture_subspace_fp(model, pb, layer=1, device=device)
+            lib[s] = fz.capture_subspace_fp(model, pb, layer=args.n_layers // 2, device=device)
         else:
             lib[s] = fz.capture_attention_fp(model, pb, device=device)
         lib[s]["tau_acc"] = None                         # pinned by the scorer prereg step
@@ -185,7 +185,7 @@ if __name__ == "__main__":
     ap.add_argument("--pool_refresh", type=int, default=1000)
     ap.add_argument("--eval_every", type=int, default=50)
     ap.add_argument("--n", type=int, default=8)
-    ap.add_argument("--n_layers", type=int, default=3)
+    ap.add_argument("--n_layers", type=int, default=4)
     ap.add_argument("--n_heads", type=int, default=8)
     ap.add_argument("--d", type=int, default=256)
     ap.add_argument("--ctx", type=int, default=128)
