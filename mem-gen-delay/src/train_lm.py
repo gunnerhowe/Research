@@ -42,10 +42,10 @@ class Block(nn.Module):
         q, k, v = self.qkv(self.ln1(x)).chunk(3, -1)
         q, k, v = (t.view(B, T, self.h, D // self.h).transpose(1, 2) for t in (q, k, v))
         att = (q @ k.transpose(-2, -1)) / math.sqrt(D // self.h)
-        sb = getattr(self, "scaffold_B", None)  # P7: additive score bias, head 0 only
+        sb = getattr(self, "scaffold_B", None)  # P7: additive score bias on one head
         if sb is not None:
             pad = att.new_zeros(self.h, T, T)
-            pad[0] = sb[:T, :T]
+            pad[getattr(self, "scaffold_head", 0)] = sb[:T, :T]  # P8: configurable head
             att = att + pad
         mask = torch.triu(torch.ones(T, T, device=x.device, dtype=torch.bool), 1)
         att = att.masked_fill(mask, float("-inf")).softmax(-1)
@@ -63,14 +63,19 @@ class TinyLM(nn.Module):
         self.ln_f = nn.LayerNorm(d)
         self.head = nn.Linear(d, vocab, bias=False)
 
-    def forward(self, ids, need_attn=False):
+    def forward(self, ids, need_attn=False, need_hidden=False):
         x = self.tok(ids) + self.pos(torch.arange(ids.shape[1], device=ids.device))
-        atts = []
+        atts, hiddens = [], []
         for b in self.blocks:
             x, a = b(x, need_attn)
             if need_attn:
                 atts.append(a)
-        return self.head(self.ln_f(x)), atts
+            if need_hidden:
+                hiddens.append(x)              # P8: post-block interior residual stream
+        logits = self.head(self.ln_f(x))
+        if need_hidden:
+            return logits, atts, hiddens
+        return logits, atts
 
 
 def scaffold_matrix(kind, ctx, beta):
@@ -90,14 +95,16 @@ def scaffold_matrix(kind, ctx, beta):
     return M
 
 
-def attach_scaffold(model, kind, beta, layer=0):
-    """Attach the bias to `layer` (P7 R1 used layer 0 only), BEFORE .to(device). 'seed' is
-    trainable (excluded from weight decay in main); others are fixed buffers. kind='none'
-    is a strict no-op so the default path stays bit-identical to the original fleet code."""
+def attach_scaffold(model, kind, beta, layer=0, head=0):
+    """Attach the bias to `layer`/`head` (P7 R1 used layer 0 head 0; P8 D-RELOC burns a
+    chosen home head), BEFORE .to(device). 'seed' is trainable (excluded from weight decay
+    in main); others are fixed buffers. kind='none' is a strict no-op so the default path
+    stays bit-identical to the original fleet code."""
     if kind == "none":
         return
     M = scaffold_matrix(kind, model.pos.num_embeddings, beta)
     blk = model.blocks[layer]
+    blk.scaffold_head = head
     if kind == "seed":
         blk.scaffold_B = nn.Parameter(M)
     else:
