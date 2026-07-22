@@ -260,3 +260,13 @@ PREDICTIONS / KILLS (frozen now):
 Scoring: sealed one-shot analysis/score_p8r2.py after ALL 15 summaries exist; refuses on
 partial fleet or existing scorefile. Disclosures: T0 reused from grid6r2; reteach lr 1e-3
 (matched); beta=8 burn; n=3/arm.
+
+## P8-R2 GUARD AMENDMENT (2026-07-22; manipulation-level, outcomes never consulted)
+Guard v1 (shufrep p_rep 0.75, 8k) FAILED the frozen validity bar on 3/3 seeds: in-dist
+copying driven strongly NEGATIVE (anti-induction learned) but OOD copy_adv plateaued at
+1.09-1.37 vs the 0.25 bar — unlearning proved DISTRIBUTION-LOCAL (itself a reportable
+observation; recorded here, not scored). Per the prereg's fix-and-relaunch rule: guard v2
+= shufrep at p_rep 1.0 + 25% uniform-random-text sequences (the surviving OOD circuit's
+own distribution) x 12k steps. Only validity fields (copy_adv, indist_adv) were consulted;
+prevtok/timing outcomes remain sealed. v1 downstream runs (refaith/reburn/hold) discarded
+unscored. Default-path bit-identity re-verified after the shuf_uniform edit.

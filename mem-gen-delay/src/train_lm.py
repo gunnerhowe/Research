@@ -139,7 +139,7 @@ def _row(lang, prev, cur, rows):
 
 
 def sample_batch(succ, w, B, ctx, p_rep, gen, device, lang="bigram", vocab=2048,
-                 shuffle_rep=False):
+                 shuffle_rep=False, shuf_uniform=0.0):
     """Markov sequences; with prob p_rep the tail repeats the sequence from the start at a
     VARIABLE offset r ~ U[16, ctx-16] (per sequence). Variable offsets deny the fixed-
     positional-copy shortcut, so match-based induction is the only general solution.
@@ -158,6 +158,14 @@ def sample_batch(succ, w, B, ctx, p_rep, gen, device, lang="bigram", vocab=2048,
         pick = torch.multinomial(w[r_idx], 1, generator=gen).squeeze(1)
         prev = cur
         cur = succ[r_idx, pick]
+    if shuf_uniform > 0:
+        # P8-R2 guard v2: a fraction of sequences are UNIFORM-random text (the surviving
+        # OOD copy circuit's own distribution) so the lying-repeat pressure reaches it.
+        # Draws occur only when the flag is on — default paths stay bit-identical.
+        um = torch.rand(B, generator=gen) < shuf_uniform
+        for b in range(B):
+            if um[b]:
+                seq[b] = torch.randint(10, vocab - 10, (ctx,), generator=gen)
     rep = torch.rand(B, generator=gen) < p_rep
     offs = torch.randint(16, ctx - 16, (B,), generator=gen)
     for b in range(B):
@@ -247,6 +255,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--condition", required=True,
                     choices=["rep", "norep", "onelayer", "shufrep"])
+    ap.add_argument("--shuf_uniform", type=float, default=0.0,
+                    help="P8-R2 guard v2: fraction of uniform-random-text sequences")
     ap.add_argument("--save_ckpt", action="store_true",
                     help="P8-R2: save model.pt at end (default off; path unchanged)")
     ap.add_argument("--init_from", default="",
@@ -320,7 +330,7 @@ def main():
         for g_ in opt.param_groups:
             g_["lr"] = lr
         ids = sample_batch(succ, w, args.batch_size, args.ctx, p_rep, gen, device,
-                           args.lang, args.vocab, shuffle_rep)
+                           args.lang, args.vocab, shuffle_rep, args.shuf_uniform)
         logits, _ = model(ids)
         loss = ce_per_pos(logits, ids).mean()
         opt.zero_grad(set_to_none=True)

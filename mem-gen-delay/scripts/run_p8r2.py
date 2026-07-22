@@ -50,9 +50,11 @@ def main():
                                "--steps", "16000", "--save_ckpt"])
     for s in (501, 502, 503):
         spec = os.path.join(GRID, f"spec_s{s}", "model.pt")
+        # guard v2 (v1 failed the frozen validity bar: OOD copy survived at ~1.1-1.4;
+        # amendment in plan_p8.md): full-rate lying repeats + 25% uniform-text sequences
         run_one(f"guard_s{s}", ["--condition", "shufrep", "--seed", str(s + 50),
-                                "--steps", "8000", "--save_ckpt",
-                                "--init_from", spec])
+                                "--steps", "12000", "--save_ckpt", "--p_rep", "1.0",
+                                "--shuf_uniform", "0.25", "--init_from", spec])
         run_one(f"guardnr_s{s}", ["--condition", "norep", "--seed", str(s + 60),
                                   "--steps", "8000", "--save_ckpt",
                                   "--init_from", spec])
