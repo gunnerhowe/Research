@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "stamp": "2026-07-22T21:35:21Z",
+    "k": 4,
+    "n_stems": 30,
+    "attack_bank_size": 8
+  },
+  "per_judge": {
+    "microsoft/Phi-3.5-mini-instruct": {
+      "hl_mean_plain": 8.505608260918827,
+      "gamed_gain_mean": 0.7390653354934089,
+      "gamed_gain_by_cell": {
+        "LL": 0.9876665377920354,
+        "HL": 0.49046413319478216
+      },
+      "ll_farmed_exceeds_hl_mean": 1.0,
+      "ll_baseline_exceeds_hl_mean": 0.4666666666666667,
+      "mean_traj_LL": [
+        7.967930347878309,
+        8.706401138014924,
+        8.852710408256264,
+        8.915121494743195,
+        8.955596885670348
+      ]
+    },
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "hl_mean_plain": 7.255290199055848,
+      "gamed_gain_mean": 1.7846963688620792,
+      "gamed_gain_by_cell": {
+        "LL": 2.0962312257028977,
+        "HL": 1.4731615120212604
+      },
+      "ll_farmed_exceeds_hl_mean": 0.8333333333333334,
+      "ll_baseline_exceeds_hl_mean": 0.06666666666666667,
+      "mean_traj_LL": [
+        6.101512894353353,
+        7.288811520845958,
+        7.87480018761747,
+        8.12996608433518,
+        8.19774412005625
+      ]
+    },
+    "nvidia/Llama-3.1-Nemotron-Nano-8B-v1": {
+      "hl_mean_plain": 6.95291961986962,
+      "gamed_gain_mean": 1.8425239417730306,
+      "gamed_gain_by_cell": {
+        "LL": 1.9156468926466308,
+        "HL": 1.7694009908994304
+      },
+      "ll_farmed_exceeds_hl_mean": 1.0,
+      "ll_baseline_exceeds_hl_mean": 0.2,
+      "mean_traj_LL": [
+        6.477421936529572,
+        7.708519645808216,
+        8.087263696147662,
+        8.30321015687053,
+        8.393068829176203
+      ]
+    }
+  }
+}

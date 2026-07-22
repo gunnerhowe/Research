@@ -20,9 +20,15 @@ response is linearly DETECTABLE and OOD-robust (E3, AUROC ~1.0); BUT it is NOT
 removable by activation steering (E4, single- and multi-layer both fail) — the
 bias is entangled with novelty computation, not a separable direction. So
 detectability != steerability, contra Breaking-the-Mirror. This makes the verifier
-warning stronger, not weaker: you cannot cheaply patch it. Remaining: E2
-(reward-hack demo), E1 pairwise (readout robustness), E5 (reconciliation), then
-the paper. The lead is E0 + the detect/can't-fix dissociation.
+warning stronger, not weaker: you cannot cheaply patch it. The lead is E0 + the
+detect/can't-fix dissociation.
+
+**LADDER COMPLETE (E0-E5).** Paper drafted + compiled: `paper/main.tex` +
+machine-generated `paper/numbers.tex` (80 macros, verify_regen byte-identical) +
+`paper/main.pdf` (5pp) + figs (E0/E4/E5); `laymen.md`. Every number sourced from
+committed `results/*.json`. Extensions: E3 dissociation (novelty-signal vs
+self-preference/uncertainty directions), external E5 (re-analyze RQ-Bench/RINoBench
+corpora), frontier judges, natural (non-synthetic) ideas.
 
 ## History
 
@@ -89,8 +95,10 @@ framing with a correctness-controlled crossed design).
   bias is linearly DETECTABLE but not steerable away = detectability != removability;
   contrasts Breaking-the-Mirror (self-preference WAS steerable). A sharper warning
   than a working patch.
-- **E2** — reward-hack optimizer (signal-injection). [queued GPU]
-- **E1 pairwise** — LH vs HL head-to-head, position-bias controlled. [queued GPU]
+- **E2 — DONE: reward-hackable.** Trivial rhetoric-injection (no substance) farms
+  the score +0.99/+2.10/+1.92 (Phi/Qwen/Nemo); low-substance ideas farmed past the
+  high-substance mean rise 47/7/20% -> 100/83/100%. `results/e2_rewardhack.json`.
+- **E1 pairwise — DONE** (above): survives comparative readout 2/3 judges.
 - **E5** — reconciliation of RQ-Bench (over) / RINoBench (both tails). [pending; internal
   from E0 data + optional external anchor]
 
