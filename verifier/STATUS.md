@@ -19,9 +19,11 @@ SUBSTANCE (E0, all 3 judges, robust to length, hackability 0.82); the signal
 response is linearly DETECTABLE and OOD-robust (E3, AUROC ~1.0); BUT it is NOT
 removable by activation steering (E4, single- and multi-layer both fail) — the
 bias is entangled with novelty computation, not a separable direction. So
-detectability != steerability, contra Breaking-the-Mirror. This makes the verifier
-warning stronger, not weaker: you cannot cheaply patch it. The lead is E0 + the
-detect/can't-fix dissociation.
+detectability != steerability (CONVERGENT with Breaking-the-Mirror, which also found
+judge-bias steering unstable/multi-directional — corrected 2026-07-22, see the
+CITATION VERIFICATION section below; earlier "contra BtM" framing was WRONG). This
+makes the verifier warning stronger, not weaker: you cannot cheaply patch it. The
+lead is E0 + the detect/can't-fix dissociation.
 
 **BUILD PHASE — v1 verifier WORKS (first brick).** V0: judge tracks substance on
 neutral content (margin = E0 beta_S). v1 = neutralize-then-judge (subagent strips
