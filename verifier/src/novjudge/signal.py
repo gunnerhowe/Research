@@ -94,4 +94,4 @@ class SignalEmbedder:
         import numpy as np
 
         vs = np.asarray(self._model.encode(list(texts), normalize_embeddings=True))
-        return list(vs @ self._sig_centroid - vs @ self._plain_centroid)
+        return [float(x) for x in (vs @ self._sig_centroid - vs @ self._plain_centroid)]

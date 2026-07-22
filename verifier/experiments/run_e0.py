@@ -55,10 +55,13 @@ def main():
     ap.add_argument("--judges", nargs="+", default=DEFAULT_JUDGES)
     ap.add_argument("--out", default=str(ROOT / "results" / "e0_results.json"))
     ap.add_argument("--stamp", default="")
+    ap.add_argument("--limit", type=int, default=0, help="smoke: use only first N stems")
     args = ap.parse_args()
 
     ds = load_dataset(args.data)
     stems = ds["stems"]
+    if args.limit:
+        stems = stems[:args.limit]
     rows = scoring_rows(stems)
     print(f"dataset: {len(stems)} stems, {len(rows)} items; judges: {args.judges}")
 
