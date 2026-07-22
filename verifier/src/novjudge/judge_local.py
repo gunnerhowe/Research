@@ -103,6 +103,29 @@ def capture_residual(judge: Judge, layer: int):
 
 
 @contextlib.contextmanager
+def capture_residuals_multi(judge: Judge, layers: list[int]):
+    """Capture the scoring-position residual at several layers in ONE forward
+    pass. After the pass, store[layer] holds the [hidden] vector (batch=1)."""
+    store = {}
+    handles = []
+
+    def mk(layer):
+        def hook(_mod, _inp, out):
+            h = out[0] if isinstance(out, tuple) else out
+            store[layer] = h[:, -1, :].detach().to(torch.float32).cpu()[0]
+            return out
+        return hook
+
+    for L in layers:
+        handles.append(_layers(judge.model)[L].register_forward_hook(mk(L)))
+    try:
+        yield store
+    finally:
+        for h in handles:
+            h.remove()
+
+
+@contextlib.contextmanager
 def steer(judge: Judge, layer: int, vector: torch.Tensor, coeff: float):
     """Add coeff * vector to the residual stream at `layer` for every position
     during the forward pass (activation steering for the E4 fix)."""
