@@ -119,6 +119,19 @@ def build_probe_bank(skill, N=256, seed=20250801, n=8, device="cpu"):
     return out
 
 
+def build_pool(n_seqs, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
+    """Precompute a reusable pool of packed sequences ONCE (per-step Python episode
+    generation was the throughput bottleneck). Training samples batch rows from the pool;
+    the config (weights/scramble) is fixed within a run, so one pool per run is faithful."""
+    chunks = []
+    done = 0
+    while done < n_seqs:
+        b = min(512, n_seqs - done)
+        chunks.append(pack_batch(b, ctx, g, skills, weights, n, "cpu", scramble))
+        done += b
+    return torch.cat(chunks, 0).to(device)
+
+
 def pack_batch(B, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
     """Training / stream batch: pack random-skill episodes (BOS-separated) into ctx-length
     sequences. `weights` = per-skill sampling probability (0 omits a skill -> the N1
