@@ -79,14 +79,24 @@ def train(args):
                          device=device, scramble=scramble)   # one faithful pool per run
     bg = torch.Generator().manual_seed(args.seed + 2)
 
+    import math
+    floor = 0.1 * args.lr
     for step in range(args.steps + 1):
         if step % args.eval_every == 0:
             rec = evaluate(model, banks, fp_lib, device)
             mf.write(json.dumps(dict(step=step, skills=rec)) + "\n"); mf.flush()
         if step == args.steps:
             break
-        for gp in opt.param_groups:                     # linear warmup
-            gp["lr"] = args.lr * min(1.0, (step + 1) / args.warmup)
+        if step > 0 and step % args.pool_refresh == 0:   # fresh data (avoid memorizing a pool)
+            pool = dz.build_pool(args.pool, args.ctx, g, skills, weights, n=args.n,
+                                 device=device, scramble=scramble)
+        if step < args.warmup:                            # warmup then cosine decay to a floor
+            lr = args.lr * (step + 1) / args.warmup
+        else:
+            prog = (step - args.warmup) / max(1, args.steps - args.warmup)
+            lr = floor + 0.5 * (args.lr - floor) * (1 + math.cos(math.pi * prog))
+        for gp in opt.param_groups:
+            gp["lr"] = lr
         idx = torch.randint(0, pool.shape[0], (args.batch,), generator=bg)
         ids = pool[idx]
         logits, _ = model(ids)
@@ -123,12 +133,27 @@ def capture(args):
         print(f"  {s}: {f['kind']}", (f"home=({f['home_layer']},{f['home_head']}) m0={f['m0']:.3f}"
               if f["kind"] == "attn" else f"r2={f['r2']:.3f}"))
 
+    # separability confusion (G-P2, Fork 1): mass at skill f's HOME head read on skill p's
+    # bank (p's own alignment target). Diagonal dominance => offset-specific home heads.
+    attn = [s for s in skills if lib[s]["kind"] == "attn"]
+    cs = {p: {} for p in skills}
+    for p in attn:
+        pb = dz.build_probe_bank(p, N=256, n=args.n, device=device)
+        mass = fz._alignment_mass(model, pb, device).flatten()   # (L*H,)
+        for f in attn:
+            fl = lib[f]
+            cs[p][f] = float(mass[fl["home_layer"] * fl["n_heads"] + fl["home_head"]])
+    if args.conf_out:
+        json.dump(cs, open(args.conf_out, "w"))
+        print("wrote confusion ->", args.conf_out)
+
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", required=True, choices=["specimen", "guard", "watch", "capture"])
     ap.add_argument("--out_dir", default="")
     ap.add_argument("--out_lib", default="")
+    ap.add_argument("--conf_out", default="")
     ap.add_argument("--init_from", default="")
     ap.add_argument("--fp_lib", default="")
     ap.add_argument("--skills", default=",".join(dz.PILOT_SKILLS))
@@ -142,6 +167,7 @@ if __name__ == "__main__":
     ap.add_argument("--warmup", type=int, default=100)
     ap.add_argument("--batch", type=int, default=64)
     ap.add_argument("--pool", type=int, default=16384)
+    ap.add_argument("--pool_refresh", type=int, default=1000)
     ap.add_argument("--eval_every", type=int, default=50)
     ap.add_argument("--n", type=int, default=8)
     ap.add_argument("--n_layers", type=int, default=3)

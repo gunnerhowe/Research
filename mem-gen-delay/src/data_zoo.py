@@ -59,7 +59,7 @@ def gen_episode(skill, g, n=8):
                     depth=None)
     if skill in ("M2", "M3"):                       # positional k-back, offset -2 / -3
         back = 2 if skill == "M2" else 3
-        ctx = [int(torch.randint(0, K, (1,), generator=g)) for _ in range(n)]
+        ctx = torch.randint(0, K, (n,), generator=g).tolist()   # one RNG call, not n
         toks = [op] + ctx + [SEP]
         ans_pos = len(toks) - 1                       # grade prediction AT the SEP
         ans_tok = ctx[n - back]                        # the token `back` positions back
@@ -68,7 +68,8 @@ def gen_episode(skill, g, n=8):
         return dict(toks=toks, ans_pos=ans_pos, ans_tok=ans_tok, align_tgt=align_tgt,
                     depth=None)
     if skill == "M6":                               # Dyck-1 balanced-bracket validity
-        bal = bool(torch.randint(0, 2, (1,), generator=g))
+        draws = torch.randint(0, 2, (n + 2,), generator=g).tolist()   # one RNG call
+        bal = bool(draws[0])
         seq, depth, d = [], [], 0
         for t in range(n):
             if d == 0:
@@ -76,7 +77,7 @@ def gen_episode(skill, g, n=8):
             elif d >= (n - t):                        # must close to have a chance to balance
                 b = CLOSE
             else:
-                b = OPEN if bool(torch.randint(0, 2, (1,), generator=g)) else CLOSE
+                b = OPEN if draws[t + 1] else CLOSE
             d += 1 if b == OPEN else -1
             seq.append(b); depth.append(d)
         if not bal:                                   # corrupt to guaranteed-unbalanced
