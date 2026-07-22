@@ -111,12 +111,16 @@ def build_probe_bank(skill, N=256, seed=20250801, n=8, device="cpu"):
 
 def pack_batch(B, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
     """Pack random-skill episodes (BOS-separated) into ctx-length sequences. weights=0
-    omits a skill (N1/guard); `scramble` resamples a skill's ANSWER tokens (N2)."""
+    omits a skill (N1/guard); `scramble` resamples a skill's ANSWER tokens (N2). Returns
+    (ids, ansmask): ansmask[b,t]=True iff position t's NEXT token is a graded skill answer,
+    so training can focus the loss on the skill signal (the ~8 unpredictable context tokens
+    per episode otherwise drown out the 1-per-episode answer gradient)."""
     wsum = sum(weights[s] for s in skills)
     probs = [weights[s] / wsum for s in skills]
     ids = torch.full((B, ctx), PAD, dtype=torch.long)
+    ansmask = torch.zeros((B, ctx), dtype=torch.bool)
     for b in range(B):
-        pos, out = 0, []
+        pos, out, spans = 0, [], []
         while pos < ctx:
             sk = skills[int(torch.multinomial(torch.tensor(probs), 1, generator=g))]
             e = gen_episode(sk, g, n)
@@ -127,16 +131,22 @@ def pack_batch(B, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
             seg = [BOS] + toks
             if pos + len(seg) > ctx:
                 break
+            for (p, _, _) in e["span"]:
+                spans.append(pos + 1 + p)             # abs position whose next-token = answer
             out.extend(seg); pos += len(seg)
         if out:
-            ids[b, : len(out)] = torch.tensor(out[:ctx])
-    return ids.to(device)
+            row = out[:ctx]
+            ids[b, : len(row)] = torch.tensor(row)
+            for aq in spans:
+                if aq < len(row):
+                    ansmask[b, aq] = True
+    return ids.to(device), ansmask.to(device)
 
 
 def build_pool(n_seqs, ctx, g, skills, weights, n=8, device="cpu", scramble=()):
-    chunks, done = [], 0
+    ids_c, m_c, done = [], [], 0
     while done < n_seqs:
         b = min(512, n_seqs - done)
-        chunks.append(pack_batch(b, ctx, g, skills, weights, n, "cpu", scramble))
-        done += b
-    return torch.cat(chunks, 0).to(device)
+        i, m = pack_batch(b, ctx, g, skills, weights, n, "cpu", scramble)
+        ids_c.append(i); m_c.append(m); done += b
+    return torch.cat(ids_c, 0).to(device), torch.cat(m_c, 0).to(device)

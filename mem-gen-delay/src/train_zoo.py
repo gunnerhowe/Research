@@ -88,8 +88,8 @@ def train(args):
     g = torch.Generator().manual_seed(args.seed + 1)
     os.makedirs(args.out_dir, exist_ok=True)
     mf = open(os.path.join(args.out_dir, "metrics.jsonl"), "w")
-    pool = dz.build_pool(args.pool, args.ctx, g, skills, weights, n=args.n,
-                         device=device, scramble=scramble)   # one faithful pool per run
+    pool, poolmask = dz.build_pool(args.pool, args.ctx, g, skills, weights, n=args.n,
+                                   device=device, scramble=scramble)   # one pool per run
     bg = torch.Generator().manual_seed(args.seed + 2)
 
     import math
@@ -101,8 +101,8 @@ def train(args):
         if step == args.steps:
             break
         if step > 0 and step % args.pool_refresh == 0:   # fresh data (avoid memorizing a pool)
-            pool = dz.build_pool(args.pool, args.ctx, g, skills, weights, n=args.n,
-                                 device=device, scramble=scramble)
+            pool, poolmask = dz.build_pool(args.pool, args.ctx, g, skills, weights, n=args.n,
+                                           device=device, scramble=scramble)
         if step < args.warmup:                            # warmup then cosine decay to a floor
             lr = args.lr * (step + 1) / args.warmup
         else:
@@ -114,7 +114,7 @@ def train(args):
         ids = pool[idx]
         logits, _ = model(ids)
         tgt = ids[:, 1:]
-        m = tgt != dz.PAD                               # never reward predicting PAD
+        m = poolmask[idx][:, :-1] & (tgt != dz.PAD)     # focus loss on the skill-answer tokens
         loss = F.cross_entropy(logits[:, :-1][m], tgt[m])
         opt.zero_grad(); loss.backward(); opt.step()
 
