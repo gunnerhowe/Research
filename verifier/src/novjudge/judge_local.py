@@ -145,6 +145,27 @@ def steer(judge: Judge, layer: int, vector: torch.Tensor, coeff: float):
         handle.remove()
 
 
+@contextlib.contextmanager
+def ablate(judge: Judge, layer: int, direction: torch.Tensor, alpha: float = 1.0):
+    """Project the residual stream off `direction` at `layer` for every position:
+    h' = h - alpha * (h . d_hat) d_hat. alpha=1 removes the signal component
+    exactly; alpha>1 over-removes (the E4 decontamination sweep)."""
+    d = direction.to(judge.model.device, dtype=torch.float16)
+    d = d / d.norm()
+
+    def hook(_mod, _inp, out):
+        h = out[0] if isinstance(out, tuple) else out
+        proj = (h @ d).unsqueeze(-1) * d           # [b, seq, hidden]
+        h2 = h - alpha * proj
+        return (h2,) + tuple(out[1:]) if isinstance(out, tuple) else h2
+
+    handle = _layers(judge.model)[layer].register_forward_hook(hook)
+    try:
+        yield
+    finally:
+        handle.remove()
+
+
 @torch.no_grad()
 def score_and_capture(judge: Judge, messages: list[dict], layer: int) -> tuple[float, torch.Tensor]:
     """One forward pass returning both the expected score and the residual at
