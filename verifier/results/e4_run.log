@@ -1,0 +1,86 @@
+
+=== microsoft/Phi-3.5-mini-instruct  (ablate G-dir at layer 10) ===
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|#####     | 1/2 [00:12<00:12, 12.23s/it]Loading checkpoint shards: 100%|##########| 2/2 [00:19<00:00,  9.33s/it]Loading checkpoint shards: 100%|##########| 2/2 [00:19<00:00,  9.76s/it]
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+  alpha=0.0: beta_S=+0.400 beta_G=+0.745 ratio=0.54 hack=0.89 y_std=0.61
+  alpha=1.0: beta_S=+0.935 beta_G=+1.927 ratio=0.49 hack=0.87 y_std=1.24
+  alpha=2.0: beta_S=+1.168 beta_G=+2.132 ratio=0.55 hack=0.88 y_std=1.31
+
+=== Qwen/Qwen2.5-7B-Instruct  (ablate G-dir at layer 8) ===
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|##5       | 1/4 [00:08<00:24,  8.13s/it]Loading checkpoint shards:  50%|#####     | 2/4 [00:17<00:17,  8.59s/it]Loading checkpoint shards:  75%|#######5  | 3/4 [00:26<00:08,  8.91s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:33<00:00,  8.26s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:33<00:00,  8.40s/it]
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+  alpha=0.0: beta_S=+1.139 beta_G=+1.490 ratio=0.76 hack=0.85 y_std=0.85
+  alpha=1.0: beta_S=+1.292 beta_G=+1.642 ratio=0.79 hack=0.83 y_std=0.92
+  alpha=2.0: beta_S=+1.400 beta_G=+1.759 ratio=0.80 hack=0.79 y_std=1.00
+
+=== nvidia/Llama-3.1-Nemotron-Nano-8B-v1  (ablate G-dir at layer 16) ===
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|##5       | 1/4 [00:04<00:14,  4.80s/it]Loading checkpoint shards:  50%|#####     | 2/4 [00:10<00:10,  5.15s/it]Loading checkpoint shards:  75%|#######5  | 3/4 [00:15<00:05,  5.20s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:16<00:00,  3.55s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:16<00:00,  4.12s/it]
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:1634: UserWarning: Random effects covariance is singular
+  warnings.warn(msg)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2054: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2237: ConvergenceWarning: The MLE may be on the boundary of the parameter space.
+  warnings.warn(msg, ConvergenceWarning)
+C:\Users\gunne\AppData\Roaming\Python\Python313\site-packages\statsmodels\regression\mixed_linear_model.py:2245: UserWarning: The random effects covariance matrix is singular.
+  warnings.warn(_warn_cov_sing)
+  alpha=0.0: beta_S=+0.467 beta_G=+0.844 ratio=0.55 hack=0.71 y_std=0.81
+  alpha=1.0: beta_S=+0.173 beta_G=+0.349 ratio=0.50 hack=0.64 y_std=0.67
+  alpha=2.0: beta_S=-0.103 beta_G=-0.130 ratio=0.80 hack=0.53 y_std=0.63
+
+wrote E:\GitHub\Research\verifier\results\e4_steering.json
