@@ -1,0 +1,35 @@
+{
+  "Qwen/Qwen2.5-7B-Instruct": {
+    "beta_G_nolen": 1.0399087905885525,
+    "beta_G_withlen": 1.0797056470840993,
+    "ci_beta_G_withlen": [
+      0.9801355706824347,
+      1.1831493959722685
+    ],
+    "beta_S_withlen": 0.7285254428187419,
+    "beta_len": -0.052580789643315695,
+    "shrink_frac": -0.03826956446153631
+  },
+  "microsoft/Phi-3.5-mini-instruct": {
+    "beta_G_nolen": 0.5672699853894126,
+    "beta_G_withlen": 0.5833585087704266,
+    "ci_beta_G_withlen": [
+      0.49773750740802414,
+      0.6821956357061563
+    ],
+    "beta_S_withlen": 0.23821735241542408,
+    "beta_len": -0.021256635273776747,
+    "shrink_frac": -0.0283613161199948
+  },
+  "nvidia/Llama-3.1-Nemotron-Nano-8B-v1": {
+    "beta_G_nolen": 0.8457362195164597,
+    "beta_G_withlen": 0.8941752817878066,
+    "ci_beta_G_withlen": [
+      0.80876842296086,
+      0.9852580315314248
+    ],
+    "beta_S_withlen": 0.5166250983529458,
+    "beta_len": -0.06399912877777558,
+    "shrink_frac": -0.05727443280014821
+  }
+}

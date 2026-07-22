@@ -12,7 +12,14 @@ resulting verifier is reward-hackable, localize the response to a linear
 direction, and test a steering fix that recovers calibration — reconciling two
 2026 papers that found opposite-signed novelty bias.
 
-## Outcome: OPEN — infra built & engine validated; awaiting gap verdict before freeze
+## Outcome: POSITIVE so far — E0 PASSED (signal beats substance, robust to length)
+
+E0 is a decisive positive across three judges (see ladder). The mechanism (E3),
+the steering fix (E4), the reward-hack demo (E2), and the reconciliation (E5)
+remain to be run before this is a paper; the headline behavioral effect and its
+length-robustness are in hand.
+
+## History
 
 `PLAN.md` is a DRAFT pre-registration. **No experiment has been run**; no judge
 has scored any real item; nothing is contaminated. What exists now:
@@ -52,14 +59,23 @@ signal-vs-substance design in `PLAN.md`, which is an evolution of the report's
 original P1 (it replaces the survivorship-prone "historically-vindicated ideas"
 framing with a correctness-controlled crossed design).
 
-## Experiment ladder (planned; see PLAN.md)
+## Experiment ladder (see PLAN.md)
 
-- **E0 gate** — crossed 2×2 (S×G), mixed-model β_G test. [not run]
-- **E1** — identification: β_S, β_G, hackability index, correctness arm, placebo. [not run]
-- **E2** — reward-hackability: optimize Y under S-freeze; measure gamed gain. [not run]
-- **E3** — mechanism: linear G-direction probe (in-dist + OOD). [not run]
-- **E4** — steering fix: ablate/steer G-direction; recover calibration. [not run]
-- **E5** — reconciliation of RQ-Bench (over) / RINoBench (under). [not run]
+- **E0 gate — PASSED (signal beats substance, all 3 judges).** N=154 stems /
+  616 items. beta_G > beta_S for every judge, all CIs exclude 0. Pooled
+  beta_S=+0.67, beta_G=+1.03 (ratio 0.65); hackability index 0.82 (pooled) —
+  ~82% of matched stems, a low-substance signaled idea outscores a high-substance
+  plain idea. Per judge: Phi beta_G +0.75 / hack 0.89; Qwen +1.49 / 0.85;
+  Nemotron +0.84 / 0.71. K1 does NOT fire. `results/e0_results.json`.
+- **E1 length control — PASSED (not a verbosity artifact).** Signaled cells only
+  ~6% longer (91.7 vs 97.0 words); within-stem beta_G does NOT shrink under a
+  length covariate (shrink -3% to -6%; beta_len ~0/negative); CIs exclude 0.
+  `results/e1_length_control.json`. Remaining E1: pairwise robustness, correctness
+  arm (discriminant validity), placebo, rationalization.
+- **E2** — reward-hackability: optimize Y under S-freeze; measure gamed gain. [next]
+- **E3** — mechanism: trained + OOD + dissociated G-direction probe. [next — GPU free]
+- **E4** — steering-decontamination fix; recover calibration to substance. [pending E3]
+- **E5** — reconciliation of RQ-Bench (over) / RINoBench (both tails). [pending]
 
 ## Kill conditions (pre-registered)
 

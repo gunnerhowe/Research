@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "data": "dataset_v1.json",
+    "n_stems": 154,
+    "n_items": 616,
+    "judges": [
+      "microsoft/Phi-3.5-mini-instruct",
+      "Qwen/Qwen2.5-7B-Instruct",
+      "nvidia/Llama-3.1-Nemotron-Nano-8B-v1"
+    ],
+    "rubric_ids": {
+      "pointwise_v1": "b65f426c91bc9b70",
+      "pairwise_v1": "13a570921f383d4f"
+    },
+    "stamp": "2026-07-22T20:21:54Z"
+  },
+  "per_judge": {
+    "microsoft/Phi-3.5-mini-instruct": {
+      "judge": "microsoft/Phi-3.5-mini-instruct",
+      "n_obs": 616,
+      "n_stems": 154,
+      "beta_S": 0.4003919203539972,
+      "beta_G": 0.7453372334542101,
+      "beta_SG": -0.35613449612959547,
+      "intercept": 8.183912211763234,
+      "ratio_S_over_G": 0.5371956510188154,
+      "ci_S": [
+        0.24930419818372976,
+        0.5552957796512001
+      ],
+      "ci_G": [
+        0.6373136571504008,
+        0.8666748247140362
+      ],
+      "ci_ratio": [
+        0.3603468845385275,
+        0.6791710239502848
+      ]
+    },
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "judge": "Qwen/Qwen2.5-7B-Instruct",
+      "n_obs": 616,
+      "n_stems": 154,
+      "beta_S": 1.139441254486446,
+      "beta_G": 1.4901370174067587,
+      "beta_SG": -0.9004564536364186,
+      "intercept": 6.096007869420295,
+      "ratio_S_over_G": 0.7646553579813633,
+      "ci_S": [
+        0.998538638436124,
+        1.2754233452180743
+      ],
+      "ci_G": [
+        1.356211302908466,
+        1.6224067858455462
+      ],
+      "ci_ratio": [
+        0.7176481241606067,
+        0.8087798231013501
+      ]
+    },
+    "nvidia/Llama-3.1-Nemotron-Nano-8B-v1": {
+      "judge": "nvidia/Llama-3.1-Nemotron-Nano-8B-v1",
+      "n_obs": 616,
+      "n_stems": 154,
+      "beta_S": 0.46679704682923273,
+      "beta_G": 0.8437575886052835,
+      "beta_SG": 0.003957261822361847,
+      "intercept": 6.540591636185957,
+      "ratio_S_over_G": 0.5532359686398081,
+      "ci_S": [
+        0.363400238575596,
+        0.5705004367618745
+      ],
+      "ci_G": [
+        0.7379523768272084,
+        0.9506324618747233
+      ],
+      "ci_ratio": [
+        0.4394419071571578,
+        0.6665548614757676
+      ]
+    }
+  },
+  "hackability": {
+    "microsoft/Phi-3.5-mini-instruct": {
+      "judge": "microsoft/Phi-3.5-mini-instruct",
+      "n_stems": 154,
+      "hackability_index": 0.8896103896103896,
+      "mean_LH_minus_HL": 0.34494531310021215,
+      "ci": [
+        0.8376623376623377,
+        0.935064935064935
+      ]
+    },
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "judge": "Qwen/Qwen2.5-7B-Instruct",
+      "n_stems": 154,
+      "hackability_index": 0.8506493506493507,
+      "mean_LH_minus_HL": 0.3506957629203104,
+      "ci": [
+        0.7922077922077922,
+        0.9025974025974026
+      ]
+    },
+    "nvidia/Llama-3.1-Nemotron-Nano-8B-v1": {
+      "judge": "nvidia/Llama-3.1-Nemotron-Nano-8B-v1",
+      "n_stems": 154,
+      "hackability_index": 0.7077922077922078,
+      "mean_LH_minus_HL": 0.376960541776049,
+      "ci": [
+        0.6363636363636364,
+        0.7792207792207793
+      ]
+    }
+  },
+  "pooled": {
+    "judge": "",
+    "n_obs": 1848,
+    "n_stems": 154,
+    "beta_S": 0.6688767405565632,
+    "beta_G": 1.026410613155417,
+    "beta_SG": -0.4175445626478865,
+    "intercept": 6.940170572456506,
+    "ratio_S_over_G": 0.6516658459914846,
+    "ci_S": [
+      0.5848633106720065,
+      0.7566345022654716
+    ],
+    "ci_G": [
+      0.9536127470516809,
+      1.1053696765781642
+    ],
+    "ci_ratio": [
+      0.5870906543845394,
+      0.712924798796922
+    ]
+  },
+  "pooled_hackability": {
+    "judge": "",
+    "n_stems": 154,
+    "hackability_index": 0.8246753246753247,
+    "mean_LH_minus_HL": 0.35753387259885727,
+    "ci": [
+      0.7662337662337663,
+      0.8831168831168831
+    ]
+  }
+}
