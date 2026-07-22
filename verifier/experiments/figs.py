@@ -58,7 +58,70 @@ def fig_e0():
     print(f"wrote {FIGS/'fig_e0_effects.png'}")
 
 
+def fig_e5():
+    d = json.load(open(ROOT / "results" / "e5_reconciliation.json"))
+    judges = [j for j in d["per_judge"]]
+    labels = [short(j) for j in judges]
+    vG = [d["per_judge"][j]["var_share_G"] for j in judges]
+    vS = [d["per_judge"][j]["var_share_S"] for j in judges]
+    rem = [max(0, 1 - g - s) for g, s in zip(vG, vS)]
+    over = [d["per_judge"][j]["over_rating_rate"] for j in judges]
+    under = [d["per_judge"][j]["under_rating_rate"] for j in judges]
+    x = np.arange(len(labels))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.3))
+    ax1.bar(x, vG, 0.6, color="#C1666B", label="signal G")
+    ax1.bar(x, vS, 0.6, bottom=vG, color="#4C9F70", label="substance S")
+    ax1.bar(x, rem, 0.6, bottom=[g + s for g, s in zip(vG, vS)], color="#cccccc", label="interaction")
+    ax1.set_xticks(x); ax1.set_xticklabels(labels, rotation=15, ha="right", fontsize=9)
+    ax1.set_ylabel("share of judge-score variance"); ax1.set_ylim(0, 1)
+    ax1.set_title("Score variance is driven by SIGNAL, not substance")
+    ax1.legend(fontsize=8)
+    w = 0.34
+    ax2.bar(x - w / 2, over, w, color="#C1666B", label="over-rate: non-novel > avg novel")
+    ax2.bar(x + w / 2, under, w, color="#6272A4", label="under-rate: novel < avg non-novel")
+    ax2.set_xticks(x); ax2.set_xticklabels(labels, rotation=15, ha="right", fontsize=9)
+    ax2.set_ylabel("rate"); ax2.set_title("Both tails from one mechanism")
+    ax2.legend(fontsize=8)
+    fig.suptitle("E5: one signal-tracking mechanism reconciles over-rating (RQ-Bench) "
+                 "and compression (RINoBench)", fontsize=11, y=1.02)
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(FIGS / f"fig_e5_reconciliation.{ext}", bbox_inches="tight", dpi=150)
+    print(f"wrote {FIGS/'fig_e5_reconciliation.png'}")
+
+
+def fig_e4():
+    d = json.load(open(ROOT / "results" / "e4_multilayer.json"))
+    judges = list(d["per_judge"])
+    labels = [short(j) for j in judges]
+    x = np.arange(len(labels))
+    bS0 = [d["per_judge"][j]["sweep"]["0.0"]["beta_S"] for j in judges]
+    bG0 = [d["per_judge"][j]["sweep"]["0.0"]["beta_G"] for j in judges]
+    bS1 = [d["per_judge"][j]["sweep"]["1.0"]["beta_S"] for j in judges]
+    bG1 = [d["per_judge"][j]["sweep"]["1.0"]["beta_G"] for j in judges]
+    fig, ax = plt.subplots(figsize=(7.5, 4.3))
+    w = 0.2
+    ax.bar(x - 1.5 * w, bS0, w, color="#4C9F70", label="β_S baseline")
+    ax.bar(x - 0.5 * w, bS1, w, color="#4C9F70", alpha=0.5, hatch="//", label="β_S ablated")
+    ax.bar(x + 0.5 * w, bG0, w, color="#C1666B", label="β_G baseline")
+    ax.bar(x + 1.5 * w, bG1, w, color="#C1666B", alpha=0.5, hatch="//", label="β_G ablated")
+    ax.set_xticks(x); ax.set_xticklabels(labels, rotation=15, ha="right", fontsize=9)
+    ax.axhline(0, color="k", lw=0.6)
+    ax.set_ylabel("effect on novelty score")
+    ax.set_title("E4: ablating the signal direction does NOT selectively remove β_G\n"
+                 "(β_G survives or β_S dies with it — no recalibration)", fontsize=10)
+    ax.legend(fontsize=8, ncol=2)
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(FIGS / f"fig_e4_steering_fails.{ext}", bbox_inches="tight", dpi=150)
+    print(f"wrote {FIGS/'fig_e4_steering_fails.png'}")
+
+
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "e0"
     if which in ("e0", "all"):
         fig_e0()
+    if which in ("e5", "all"):
+        fig_e5()
+    if which in ("e4", "all"):
+        fig_e4()
