@@ -1,0 +1,57 @@
+616 items
+
+=== microsoft/Phi-3.5-mini-instruct ===
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|#####     | 1/2 [00:05<00:05,  5.29s/it]Loading checkpoint shards: 100%|##########| 2/2 [00:08<00:00,  3.81s/it]Loading checkpoint shards: 100%|##########| 2/2 [00:08<00:00,  4.03s/it]
+n_layers=32; sweeping [5, 10, 13, 16, 19, 22, 27]
+  capture 100/616
+  capture 200/616
+  capture 300/616
+  capture 400/616
+  capture 500/616
+  capture 600/616
+  L 5: in-dist AUROC 1.000  OOD ml->econ 0.999  econ->ml 0.999
+  L10: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L13: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L16: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L19: in-dist AUROC 0.999  OOD ml->econ 0.999  econ->ml 0.999
+  L22: in-dist AUROC 0.999  OOD ml->econ 0.999  econ->ml 0.999
+  L27: in-dist AUROC 0.999  OOD ml->econ 0.999  econ->ml 0.999
+  best layer 10: in-dist AUROC 1.000
+
+=== Qwen/Qwen2.5-7B-Instruct ===
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|##5       | 1/4 [00:08<00:25,  8.51s/it]Loading checkpoint shards:  50%|#####     | 2/4 [00:17<00:17,  8.91s/it]Loading checkpoint shards:  75%|#######5  | 3/4 [00:26<00:09,  9.04s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:34<00:00,  8.57s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:34<00:00,  8.69s/it]
+n_layers=28; sweeping [4, 8, 11, 14, 17, 20, 24]
+  capture 100/616
+  capture 200/616
+  capture 300/616
+  capture 400/616
+  capture 500/616
+  capture 600/616
+  L 4: in-dist AUROC 0.999  OOD ml->econ 0.999  econ->ml 0.999
+  L 8: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L11: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 0.999
+  L14: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L17: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L20: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L24: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  best layer 8: in-dist AUROC 1.000
+
+=== nvidia/Llama-3.1-Nemotron-Nano-8B-v1 ===
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|##5       | 1/4 [00:10<00:31, 10.53s/it]Loading checkpoint shards:  50%|#####     | 2/4 [00:22<00:22, 11.12s/it]Loading checkpoint shards:  75%|#######5  | 3/4 [00:33<00:11, 11.29s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:35<00:00,  7.65s/it]Loading checkpoint shards: 100%|##########| 4/4 [00:35<00:00,  8.91s/it]
+n_layers=32; sweeping [5, 10, 13, 16, 19, 22, 27]
+  capture 100/616
+  capture 200/616
+  capture 300/616
+  capture 400/616
+  capture 500/616
+  capture 600/616
+  L 5: in-dist AUROC 0.999  OOD ml->econ 0.999  econ->ml 0.998
+  L10: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 0.999
+  L13: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L16: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 0.997
+  L19: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 0.999
+  L22: in-dist AUROC 1.000  OOD ml->econ 1.000  econ->ml 1.000
+  L27: in-dist AUROC 1.000  OOD ml->econ 0.999  econ->ml 1.000
+  best layer 16: in-dist AUROC 1.000
+
+wrote E:\GitHub\Research\verifier\results\e3_probe.json  (+ directions in results/directions/)

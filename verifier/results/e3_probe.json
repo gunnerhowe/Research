@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "data": "dataset_v1.json",
+    "stamp": "2026-07-22T20:41:02Z",
+    "judges": [
+      "microsoft/Phi-3.5-mini-instruct",
+      "Qwen/Qwen2.5-7B-Instruct",
+      "nvidia/Llama-3.1-Nemotron-Nano-8B-v1"
+    ]
+  },
+  "per_judge": {
+    "microsoft/Phi-3.5-mini-instruct": {
+      "n_layers": 32,
+      "layers": [
+        5,
+        10,
+        13,
+        16,
+        19,
+        22,
+        27
+      ],
+      "per_layer": {
+        "5": {
+          "auroc_in": 0.9995767140709908,
+          "auroc_in_std": 0.00048422252190672506,
+          "auroc_ood_ml2econ": 0.9991349480968859,
+          "auroc_ood_econ2ml": 0.9989859383450514
+        },
+        "10": {
+          "auroc_in": 0.9997918834547347,
+          "auroc_in_std": 0.0002548896714654552,
+          "auroc_ood_ml2econ": 1.0,
+          "auroc_ood_econ2ml": 0.9998647917793402
+        },
+        "13": {
+          "auroc_in": 0.9997398543184183,
+          "auroc_in_std": 0.00023268137122785113,
+          "auroc_ood_ml2econ": 0.999837802768166,
+          "auroc_ood_econ2ml": 0.9998647917793402
+        },
+        "16": {
+          "auroc_in": 0.9997918834547346,
+          "auroc_in_std": 0.00030337939099091434,
+          "auroc_ood_ml2econ": 0.9996756055363323,
+          "auroc_ood_econ2ml": 1.0
+        },
+        "19": {
+          "auroc_in": 0.9994761822175974,
+          "auroc_in_std": 0.0005440481503490222,
+          "auroc_ood_ml2econ": 0.9994593425605537,
+          "auroc_ood_econ2ml": 0.9993239588967009
+        },
+        "22": {
+          "auroc_in": 0.999268065672332,
+          "auroc_in_std": 0.0007034492685551241,
+          "auroc_ood_ml2econ": 0.9989727508650519,
+          "auroc_ood_econ2ml": 0.9991549486208762
+        },
+        "27": {
+          "auroc_in": 0.9993165683894091,
+          "auroc_in_std": 0.0006483009267178835,
+          "auroc_ood_ml2econ": 0.9991890138408305,
+          "auroc_ood_econ2ml": 0.9991549486208762
+        }
+      },
+      "best_layer": 10,
+      "best_auroc_in": 0.9997918834547347
+    },
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "n_layers": 28,
+      "layers": [
+        4,
+        8,
+        11,
+        14,
+        17,
+        20,
+        24
+      ],
+      "per_layer": {
+        "4": {
+          "auroc_in": 0.9994726557983583,
+          "auroc_in_std": 0.0004937932385589776,
+          "auroc_ood_ml2econ": 0.9990808823529412,
+          "auroc_ood_econ2ml": 0.9986817198485668
+        },
+        "8": {
+          "auroc_in": 1.0,
+          "auroc_in_std": 0.0,
+          "auroc_ood_ml2econ": 0.9997837370242214,
+          "auroc_ood_econ2ml": 0.9995605732828555
+        },
+        "11": {
+          "auroc_in": 0.9998888888888888,
+          "auroc_in_std": 0.00022222222222221256,
+          "auroc_ood_ml2econ": 0.9998378027681661,
+          "auroc_ood_econ2ml": 0.999256354786371
+        },
+        "14": {
+          "auroc_in": 1.0,
+          "auroc_in_std": 0.0,
+          "auroc_ood_ml2econ": 0.9998918685121108,
+          "auroc_ood_econ2ml": 1.0
+        },
+        "17": {
+          "auroc_in": 1.0,
+          "auroc_in_std": 0.0,
+          "auroc_ood_ml2econ": 0.9999459342560554,
+          "auroc_ood_econ2ml": 0.999966197944835
+        },
+        "20": {
+          "auroc_in": 1.0,
+          "auroc_in_std": 0.0,
+          "auroc_ood_ml2econ": 0.9996215397923875,
+          "auroc_ood_econ2ml": 0.9999323958896701
+        },
+        "24": {
+          "auroc_in": 0.9999479708636837,
+          "auroc_in_std": 0.00010405827263268997,
+          "auroc_ood_ml2econ": 0.9996215397923875,
+          "auroc_ood_econ2ml": 0.9997295835586804
+        }
+      },
+      "best_layer": 8,
+      "best_auroc_in": 1.0
+    },
+    "nvidia/Llama-3.1-Nemotron-Nano-8B-v1": {
+      "n_layers": 32,
+      "layers": [
+        5,
+        10,
+        13,
+        16,
+        19,
+        22,
+        27
+      ],
+      "per_layer": {
+        "5": {
+          "auroc_in": 0.9992195629552549,
+          "auroc_in_std": 0.0015608740894900832,
+          "auroc_ood_ml2econ": 0.9987564878892734,
+          "auroc_ood_econ2ml": 0.9983098972417523
+        },
+        "10": {
+          "auroc_in": 0.9999479708636837,
+          "auroc_in_std": 0.00010405827263268997,
+          "auroc_ood_ml2econ": 0.9998378027681661,
+          "auroc_ood_econ2ml": 0.9990535424553812
+        },
+        "13": {
+          "auroc_in": 0.9999444444444444,
+          "auroc_in_std": 0.00011111111111112848,
+          "auroc_ood_ml2econ": 0.9998918685121108,
+          "auroc_ood_econ2ml": 0.9995943753380205
+        },
+        "16": {
+          "auroc_in": 1.0,
+          "auroc_in_std": 0.0,
+          "auroc_ood_ml2econ": 1.0,
+          "auroc_ood_econ2ml": 0.997059221200649
+        },
+        "19": {
+          "auroc_in": 1.0,
+          "auroc_in_std": 0.0,
+          "auroc_ood_ml2econ": 1.0,
+          "auroc_ood_econ2ml": 0.9993577609518659
+        },
+        "22": {
+          "auroc_in": 0.9999479708636837,
+          "auroc_in_std": 0.00010405827263268997,
+          "auroc_ood_ml2econ": 0.9996215397923875,
+          "auroc_ood_econ2ml": 0.9996619794483504
+        },
+        "27": {
+          "auroc_in": 0.9998368597525726,
+          "auroc_in_std": 0.00022056475208010243,
+          "auroc_ood_ml2econ": 0.9992971453287197,
+          "auroc_ood_econ2ml": 0.9996281773931854
+        }
+      },
+      "best_layer": 16,
+      "best_auroc_in": 1.0
+    }
+  }
+}
