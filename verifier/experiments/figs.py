@@ -152,6 +152,38 @@ def fig_v1():
     print(f"wrote {FIGS/'fig_v1_neutralize.png'}")
 
 
+def fig_verifiers():
+    e0 = json.load(open(ROOT / "results" / "e0_results.json"))
+    v1 = json.load(open(ROOT / "results" / "v1_neutralized.json"))
+    v2 = json.load(open(ROOT / "results" / "v2_grounded.json"))
+    rt = json.load(open(ROOT / "results" / "v1_redteam.json"))
+    js = list(e0["per_judge"])
+    naive_hack = np.mean([e0["hackability"][j]["hackability_index"] for j in js])
+    v1_hack = np.mean([v1["per_judge"][j]["hackability"] for j in js])
+    v2_hack = v2["framed"]["hackability"]
+    naive_rt = np.mean([rt["per_judge"][j]["attack_gain_naive"] for j in js])
+    v1_rt = np.mean([rt["per_judge"][j]["v1_residual"] for j in js])
+    v2_rt = v2["redteam_attack_gain_mean"]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.3))
+    labels = ["naive judge", "v1 neutralize", "v2 grounded"]
+    cols = ["#C1666B", "#E0A458", "#4C9F70"]
+    ax1.bar(labels, [naive_hack, v1_hack, v2_hack], color=cols)
+    ax1.axhline(0.5, color="k", ls="--", lw=0.9, label="chance")
+    ax1.set_ylabel("hackability (framed 2×2)"); ax1.set_ylim(0, 1)
+    ax1.set_title("On the KNOWN attack: lower is better"); ax1.legend(fontsize=8)
+    ax2.bar(labels, [naive_rt, v1_rt, v2_rt], color=cols)
+    ax2.axhline(0, color="k", lw=0.6)
+    ax2.set_ylabel("score gain from held-out attack")
+    ax2.set_title("On the RED-TEAM (novel rhetoric): lower is better")
+    fig.suptitle("Building a better verifier: v1 beats the known attack, v2 generalizes to novel ones",
+                 fontsize=11, y=1.02)
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(FIGS / f"fig_verifiers_compare.{ext}", bbox_inches="tight", dpi=150)
+    print(f"wrote {FIGS/'fig_verifiers_compare.png'}")
+
+
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "e0"
     if which in ("e0", "all"):
@@ -162,3 +194,5 @@ if __name__ == "__main__":
         fig_e4()
     if which in ("v1", "all"):
         fig_v1()
+    if which in ("verifiers", "all"):
+        fig_verifiers()
