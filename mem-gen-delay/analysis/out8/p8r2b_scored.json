@@ -1,0 +1,47 @@
+{
+ "faithful_median": 150.0,
+ "runs": {
+  "501": {
+   "prevtok0_start": 0.037,
+   "t_reevent": 250,
+   "t_anchor": 200,
+   "lead": 50,
+   "heads_start": [
+    0.024,
+    0.01,
+    0.037,
+    0.034
+   ]
+  },
+  "502": {
+   "prevtok0_start": 0.03779,
+   "t_reevent": 300,
+   "t_anchor": 225,
+   "lead": 75,
+   "heads_start": [
+    0.034,
+    0.028,
+    0.017,
+    0.038
+   ]
+  },
+  "503": {
+   "prevtok0_start": 0.0357,
+   "t_reevent": 325,
+   "t_anchor": 250,
+   "lead": 75,
+   "heads_start": [
+    0.036,
+    0.002,
+    0.013,
+    0.032
+   ]
+  }
+ },
+ "verdicts": {
+  "manipulation": "VALID (step-0 prevtok [0.037, 0.038, 0.036])",
+  "P_R2c_prime_compensating_law": "PASS (burned2 median 300.0, faithful 150.0, ratio 2.0; evented 3/3)",
+  "K_R2c_prime_uncovered_cell": "no-fire",
+  "P_R2d_prime_watchable_rebuild": "FAIL (median lead 75.0)"
+ }
+}

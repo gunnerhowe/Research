@@ -306,3 +306,27 @@ log_heads.
 - P-R2d' (secondary): anchor lead in burned2 >= 300 (the rebuild is watchable) with hold
   FA unchanged 0/3.
 Scoring: sealed one-shot analysis/score_p8r2b.py (refuses on partial/existing).
+
+## P8-R2b VERDICT (2026-07-22) [analysis/out8/p8r2b_scored.json, sealed] — RUNG CLOSED
+Manipulation VALID 3/3 (step-0 max prevtok 0.036-0.038 = noise; the scaffold genuinely
+denied this time).
+- P-R2c' PASS AT ITS BAR: denied re-emergence median 300 vs faithful 150 — ratio
+  exactly 2.0 (bar >= 2.0; per-run 250/300/325 vs 150/150/175, 3/3 evented). THE
+  COMPENSATING LAW IS REAL: a return that must rebuild its scaffold pays ~2x in time.
+  K-R2c' NO-FIRE — there is no free disguise. HONESTY NOTES: (i) the pass sits exactly
+  on the bar with n=3 on a 25-step grid — fragile, report as boundary; (ii) the ABSOLUTE
+  cost is small: even scaffold-denied, the return is ~21x faster than first emergence
+  (300 vs 6,300) because everything else — language, downstream circuit — persists.
+- P-R2d' FAIL: anchor lead stays 75 steps (bar 300) — the rebuild is watchable in
+  RELATIVE terms (anchor at 0.75 of the denied timeline) but absolute warning at this
+  scale is 3 eval ticks. Anchor fraction is NOT conserved across arms (0.50 faithful vs
+  0.75 denied) — no law claim.
+COMPLETED ARC (P8-R2 + R2b): (1) active unlearning removes behavior, leaves the scaffold
+at 0.95+ (3/3); (2) hence 42x re-emergence (150 vs 6,300) with a consistent 75-step
+anchor lead and 0 FA on holds; (3) converged heads resist development-strength score
+bias (beta 8 fails, 16 required) — converged structure is stubborn in BOTH directions;
+(4) true scaffold denial doubles time-to-return (relative compensating law) but leaves
+it 21x faster than first learning. Safety reading: unlearned != removed; re-exposure
+recovers capability in O(minutes) with or without the original circuit; monitors get
+certified detection and only fractional, not absolute, warning. Scope: n=3/arm, one
+capability, toy scale.
