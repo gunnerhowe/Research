@@ -330,3 +330,27 @@ it 21x faster than first learning. Safety reading: unlearned != removed; re-expo
 recovers capability in O(minutes) with or without the original circuit; monitors get
 certified detection and only fractional, not absolute, warning. Scope: n=3/arm, one
 capability, toy scale.
+
+## P8-R2c PREREG (2026-07-22) — seed-extension CONFIRMATION of the compensating law
+## Frozen BEFORE any new run. Registered AFTER R2b unsealing (disclosed sequential rung).
+MOTIVE: R2b's ratio sits exactly on its 2.0 bar at n=3 — boundary-fragile. R2c extends to
+n=10 chains with the ESTIMAND AND DECISION RULE FROZEN NOW, so the extension cannot be
+bar-shopped: the original kill line (1.25) remains the decision boundary; 2.0 becomes an
+effect-size report, not a cliff.
+DESIGN: seeds 504-510 (7 new FULL chains, protocol verbatim): specimen (rep 16k, ckpt) ->
+guard v2 (shufrep p_rep 1.0 + shuf_uniform 0.25, 12k, validity bar unchanged; any invalid
+guard = that chain excluded, disclosed) -> refaith (rep 10k) + reburn2 (beta 16 sink on
+that guard's carrier head, log_heads, void rule: step-0 max L0 prevtok < 0.15 else that
+seed's denied arm VOID) + hold (shufrep 10k, negative). Pool with seeds 501-503.
+FROZEN ADJUDICATION (pooled n<=10 per arm; >=5 valid denied seeds required, else
+UNDERPOWERED is declared instead of any verdict):
+- ESTIMAND: pooled median ratio R = median(denied t_reevent) / median(faithful t_reevent),
+  with 10k-resample bootstrap 95% CI on R (resampling chains).
+- CONFIRMED if CI lower bound > 1.25 (the original K-R2c kill line).
+- STRENGTHENED additionally reported if pooled median R >= 2.0.
+- K-R2c'' FIRES if pooled median R <= 1.25.
+- BOUNDARY-DISCLOSED if CI straddles 1.25 (reported as unresolved, no claim).
+- FA: pooled holds must remain 0/N. Scaffold survival + 42x-relearn medians re-reported
+  pooled. Sealed one-shot analysis/score_p8r2c.py (refuses partial/existing).
+PARALLEL WORK DECLARED: the manuscript (paper5/) is drafted WHILE this fleet runs; every
+R2c-dependent number enters ONLY via gen_numbers regen from the sealed scorefile.
