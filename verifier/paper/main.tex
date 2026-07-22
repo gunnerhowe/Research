@@ -1,0 +1,217 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,booktabs,amsmath,hyperref,xcolor}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\input{numbers.tex}
+
+\title{\textbf{Signal over substance: LLM research judges reward novelty\\
+rhetoric, and the bias resists steering}}
+\author{Gunner Levi Howe}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent\textbf{Caveats first.} Our judges are three small open models
+(3.8--8B) and our ideas are \emph{synthetic}; the effect's magnitude is partly
+readout-dependent (it attenuates to borderline for one judge in a pairwise
+readout); and the near-perfect ``detectability'' of the bias is partly expected
+because the manipulation is surface-lexical. With that scope stated:
+
+We ask whether an LLM used as a judge for research ideas scores \emph{substantive
+novelty} (distance from prior work) or \emph{surface novelty-signal} (rhetoric
+that asserts novelty). We build a correctness-controlled $2\times2$ design over
+\datasetStems{} stems (\datasetItems{} items) crossing substance $S$ (incremental
+vs.\ genuine departure, validated by a blind adjudicator) with signal $G$ (plain
+vs.\ novelty-rhetoric, same technical content). Across all three judges the signal
+effect exceeds the substance effect (pooled $\beta_G=\EzeroPooledBetaG$ vs.\
+$\beta_S=\EzeroPooledBetaS$), and in \EzeroPooledHack{} of matched stems a
+low-substance idea in novelty rhetoric outscores a genuinely novel idea stated
+plainly. The effect is \emph{not} explained by length. The signal response is a
+linear, domain-general direction in the judge's residual stream (in-distribution
+AUROC $\approx 1.0$, out-of-domain $\ge \EthreeOodMinNemo$)---yet projecting that
+direction out, at one layer or many, \emph{does not recalibrate} the judge:
+$\beta_G$ survives or $\beta_S$ collapses with it. Detectability does not imply
+removability, in contrast to prior activation-steering fixes for self-preference
+bias. Finally, one mechanism---scoring $G$ not $S$ (signal explains
+$\EfivePooledVarG$ of the score variance vs.\ $\EfivePooledVarS$ for
+substance)---reconciles two 2026 benchmarks that separately reported over-rating
+and score/substance decoupling. If an LLM judge is the verifier in an
+automated-research loop, it rewards sounding novel over being novel, and the bias
+cannot be cheaply patched out.
+\end{abstract}
+
+\section{Introduction}
+A recurring thesis holds that the binding constraint on automated AI research is
+\emph{verification}, not generation: models propose plausible research directions
+readily, but scoring which are actually good is the bottleneck, and LLM-as-judge
+is the proposed verifier. A judge is only useful if it rewards real quality. We
+test the specific failure mode most corrosive to research evaluation: rewarding
+the \emph{rhetoric} of novelty rather than novelty itself. If a judge does that,
+then (i) it is a poor verifier, and (ii) placing it in a reinforcement loop trains
+generators to emit novelty-signalling language, not novel work---reward hacking of
+an absent oracle.
+
+\paragraph{Contributions.} (1) A correctness-controlled $2\times2$ that isolates
+surface novelty-signal from substantive novelty (\S\ref{sec:design}); (2) the
+finding that all three judges score signal over substance, robust to length
+(\S\ref{sec:e0}); (3) a minimal reward-hack demonstrating the score is farmable
+with substance fixed (\S\ref{sec:e2}); (4) a mechanistic result: the signal
+response is a linear, OOD-generalizing direction that is nonetheless \emph{not}
+removable by activation steering (\S\ref{sec:mech})---detectability $\neq$
+steerability; and (5) a single-mechanism reconciliation of two 2026 benchmarks
+(\S\ref{sec:e5}).
+
+\section{Related work and how we differ}
+\textbf{Novelty judging.} RQ-Bench~\cite{rqbench} finds LLM judges over-rate the
+novelty of model-generated research questions (a ``novelty mirage'');
+RINoBench~\cite{rinobench} finds their novelty verdicts diverge from expert gold
+with a regression-to-the-mean profile (never ``not novel'', rarely top-grade).
+Both are observational; neither isolates novelty from correctness, nor localizes
+or intervenes on a mechanism. NovBench~\cite{novbench} argues judges have only
+surface-level novelty understanding. We supply the controlled crossed design and
+the mechanism, and reconcile the two benchmarks (\S\ref{sec:e5}).
+\textbf{Judge shortcuts.} Judges follow non-quality cues (source, verbosity,
+confidence, recency) while rationalizing as content~\cite{faithfab,silentjudge};
+persuasion~\cite{trickgrader} and self-play~\cite{moreconvincing} inflate scores
+without correctness. We port the cue-invariance paradigm to \emph{novelty} with
+correctness fixed by construction, and demonstrate the novelty-specific hack.
+\textbf{Steering judge biases.} ``Breaking the Mirror''~\cite{mirror} localizes
+self-preference bias to a linear direction and \emph{steers it out};
+\cite{honeststeer} steers judges toward honesty; a creativity direction can be
+added to amplify creativity~\cite{creativity}. Our probe+direction machinery is
+the same, but our result is the opposite: the novelty-signal direction is
+detectable yet \emph{not} steerable away---a dissociation these works did not see.
+
+\section{The signal--substance design}\label{sec:design}
+\textbf{Constructs.} For each stem (a fixed prior-work context) we author an
+incremental idea ($S{=}$low) and a genuine departure ($S{=}$high), matched on
+plausibility; each is written plainly ($G{=}$low) and in novelty rhetoric
+($G{=}$high) with \emph{identical technical content}. This yields four cells
+LL, LH, HL, HH. \textbf{Validation.} An independent adjudicator, blind to framing,
+must agree which content departs more ($S$); all cells must be plausible and
+balanced with no content leak; and the signalled cells must out-score the plain
+cells on a judge-independent signal measure (a frozen lexicon and a MiniLM
+difference-of-centroids). This yields \datasetStems{} validated stems
+(\datasetItems{} items) across ML and economics. \textbf{Judges \& readout.}
+Phi-3.5-mini, Qwen2.5-7B, Llama-3.1-Nemotron-8B (4-bit). The novelty score $Y$ is
+the expected digit over the next-token distribution restricted to 1--9 under a
+frozen rubric that asks for novelty only. We fit $Y \sim S + G + S{:}G$ with a
+per-stem random intercept; CIs are stem cluster bootstraps.
+
+\section{Judges score signal over substance}\label{sec:e0}
+Table~\ref{tab:e0} and Fig.~\ref{fig:e0}: for every judge $\beta_G>\beta_S$ with
+CIs excluding zero. Pooled $\beta_S=\EzeroPooledBetaS$, $\beta_G=\EzeroPooledBetaG$
+(ratio \EzeroPooledRatio). The \emph{hackability index} $P(Y_{LH}>Y_{HL})$---a
+low-substance signalled idea beating a high-substance plain one---is
+\EzeroPooledHack{} pooled (\EzeroHackPhi/\EzeroHackQwen/\EzeroHackNemo{} per
+judge). Judges do track substance ($\beta_S>0$), but signal dominates.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lcccc}
+\toprule
+Judge & $\beta_S$ & $\beta_G$ & ratio $S/G$ & hackability\\
+\midrule
+Phi-3.5-mini & \EzeroBetaSPhi & \EzeroBetaGPhi & \EzeroRatioPhi & \EzeroHackPhi\\
+Qwen2.5-7B & \EzeroBetaSQwen & \EzeroBetaGQwen & \EzeroRatioQwen & \EzeroHackQwen\\
+Nemotron-8B & \EzeroBetaSNemo & \EzeroBetaGNemo & \EzeroRatioNemo & \EzeroHackNemo\\
+\midrule
+Pooled & \EzeroPooledBetaS & \EzeroPooledBetaG & \EzeroPooledRatio & \EzeroPooledHack\\
+\bottomrule
+\end{tabular}
+\caption{E0. Signal effect $\beta_G$ exceeds substance effect $\beta_S$ for all
+judges.}\label{tab:e0}
+\end{table}
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figs/fig_e0_effects.pdf}
+\caption{E0: signal beats substance (left) and the hackability index (right).}
+\label{fig:e0}
+\end{figure}
+
+\paragraph{Not a length artifact (E1).} Signalled cells are only $\sim$6\% longer;
+controlling for length within stem, $\beta_G$ does not shrink (change
+$-\EoneLenShrinkPhi$/$-\EoneLenShrinkQwen$/$-\EoneLenShrinkNemo$\%; the length
+coefficient is near zero/negative). \paragraph{Survives comparison (E1).} In a
+pairwise readout with position bias controlled, $P(\text{pick signalled
+non-novel})$ is \EonePairPhi{} (Phi) and \EonePairNemo{} (Nemotron)---both above
+chance---but \EonePairQwen{} for Qwen (CI \EonePairLoQwen--\EonePairHiQwen{},
+borderline). So the effect is not merely a pointwise-readout artifact, though its
+magnitude is readout-dependent.
+
+\section{The score is reward-hackable}\label{sec:e2}
+A minimal attack---greedily prepending pure-rhetoric sentences (adding no
+technical content) to a \emph{plain} idea and keeping edits that raise $Y$---farms
+the score with substance fixed. On low-substance ideas the gamed gain is
+\EtwoGainPhi/\EtwoGainQwen/\EtwoGainNemo{} points, and the fraction of
+low-substance ideas farmed to exceed the judge's mean score on genuinely
+high-substance plain ideas rises from \EtwoLLbasePhi/\EtwoLLbaseQwen/\EtwoLLbaseNemo\%
+to \EtwoLLexceedsPhi/\EtwoLLexceedsQwen/\EtwoLLexceedsNemo\%.
+
+\section{Detectable but not steerable}\label{sec:mech}
+\textbf{A linear signal direction (E3).} A logistic probe on the scoring-position
+residual separates $G$-high from $G$-low at in-distribution AUROC
+$\ge\EthreeAurocPhi$ for all judges, and \emph{across domains} (train ML, test
+econ) at AUROC $\ge\EthreeOodMinNemo$. (Near-perfect separability is partly
+expected: the signal is surface-lexical.) \textbf{The fix fails (E4).} Projecting
+the difference-of-means signal direction out of the residual---at the best probe
+layer, or across an early--mid band---does not selectively remove the bias
+(Fig.~\ref{fig:e4}): for Phi $\beta_G$ is untouched
+(\EfourBetaGbasePhi$\to$\EfourBetaGablPhi) while $\beta_S$ falls
+(\EfourBetaSbasePhi$\to$\EfourBetaSablPhi); for Nemotron both collapse together
+($\beta_G$ \EfourBetaGbaseNemo$\to$\EfourBetaGablNemo, $\beta_S$
+\EfourBetaSbaseNemo$\to$\EfourBetaSablNemo); for Qwen the change is negligible. No
+judge shows the target (\ $\beta_G\downarrow$, $\beta_S$ preserved). The
+novelty-signal response is entangled with novelty computation, not a separable
+direction---unlike self-preference bias, which prior work steered out.
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.7\linewidth]{figs/fig_e4_steering_fails.pdf}
+\caption{E4: ablating the signal direction does not selectively remove
+$\beta_G$.}\label{fig:e4}
+\end{figure}
+
+\section{One mechanism, both benchmarks}\label{sec:e5}
+If the judge scores $G$ not $S$, both prior findings follow. The score's variance
+is dominated by signal (pooled share \EfivePooledVarG{} for $G$ vs.\
+\EfivePooledVarS{} for $S$; per judge $G$ \EfiveVarGPhi/\EfiveVarGQwen/\EfiveVarGNemo).
+Non-novel ideas out-score the average novel idea
+\EfiveOverPhi/\EfiveOverQwen/\EfiveOverNemo{} of the time (the over-rating
+of~\cite{rqbench}), while genuine novelty framed plainly is under-credited (the
+decoupling of~\cite{rinobench}). External validation on those corpora is future
+work (Fig.~\ref{fig:e5}).
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figs/fig_e5_reconciliation.pdf}
+\caption{E5: signal dominates the score variance, producing both
+tails.}\label{fig:e5}
+\end{figure}
+
+\section{Discussion and limitations}
+The practical message is a warning: an LLM judge used as the verifier for
+automated research rewards sounding novel over being novel, the reward is farmable
+with substance fixed, and---unlike other judge biases---it cannot be cheaply
+steered out. \textbf{Limitations.} Small open judges and synthetic ideas; the
+pairwise attenuation for Qwen shows readout-dependence; near-perfect probe AUROC
+is partly a surface-lexical artifact, so the load-bearing mechanistic claim is the
+\emph{failure} of the causal fix, not the detection; the reconciliation is
+internal (controlled) evidence, not a re-analysis of the RQ-Bench/RINoBench
+corpora; and we test difference-of-means steering, not fine-tuning. Whether
+frontier judges, natural ideas, and stronger interventions change the picture is
+open.
+
+\bibliographystyle{plain}
+\begin{thebibliography}{9}
+\bibitem{rqbench} \emph{On the Limits of LLM-as-Judge for Scientific Novelty Assessment} (RQ-Bench), arXiv:2606.12071.
+\bibitem{rinobench} \emph{Is this Idea Novel? An Automated Benchmark for Judgment of Research Ideas} (RINoBench), arXiv:2603.10303.
+\bibitem{novbench} \emph{NovBench: Evaluating LLMs on Academic Paper Novelty Assessment}, arXiv:2604.11543.
+\bibitem{faithfab} \emph{Faithful or Fabricated? A Causal Framework for Rationalization Bias in LLM Judges}, arXiv:2605.23970.
+\bibitem{silentjudge} \emph{The Silent Judge: Unacknowledged Shortcut Bias in LLM-as-a-Judge}, arXiv:2509.26072.
+\bibitem{trickgrader} \emph{Can You Trick the Grader? Adversarial Persuasion of LLM Judges}, arXiv:2508.07805.
+\bibitem{moreconvincing} \emph{More Convincing, Not More Correct: Self-Play Reward Hacking of Reference-Free LLM Judges}, arXiv:2607.05904.
+\bibitem{mirror} \emph{Breaking the Mirror: Activation-Based Mitigation of Self-Preference in LLM Evaluators}, arXiv:2509.03647.
+\bibitem{honeststeer} \emph{But what is your honest answer? Aiding LLM-judges with honest alternatives using steering vectors}, arXiv:2505.17760.
+\bibitem{creativity} \emph{Steering Large Language Models to Evaluate and Amplify Creativity}, arXiv:2412.06060.
+\end{thebibliography}
+\end{document}
