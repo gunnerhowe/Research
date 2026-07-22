@@ -106,13 +106,16 @@ def main():
         gamed_gain = float(df["gain"].mean())
         ll_exceeds_hl = float(np.mean(ll["y_final"] > hl_mean))
         ll_base_exceeds = float(np.mean(ll["y0"] > hl_mean))
+        # greedy trajectories stop early at different lengths; pad with last value
+        maxlen = args.k + 1
+        traj_padded = np.stack([t + [t[-1]] * (maxlen - len(t)) for t in ll["traj"].tolist()])
         out["per_judge"][model_id] = {
             "hl_mean_plain": hl_mean,
             "gamed_gain_mean": gamed_gain,
             "gamed_gain_by_cell": {c: float(df[df.cell == c]["gain"].mean()) for c in ("LL", "HL")},
             "ll_farmed_exceeds_hl_mean": ll_exceeds_hl,
             "ll_baseline_exceeds_hl_mean": ll_base_exceeds,
-            "mean_traj_LL": [float(x) for x in np.mean(np.stack(ll["traj"].tolist()), axis=0)],
+            "mean_traj_LL": [float(x) for x in traj_padded.mean(axis=0)],
         }
         print(f"  HL(high-substance plain) mean Y = {hl_mean:.2f}")
         print(f"  gamed gain (Y rise, substance fixed): LL={out['per_judge'][model_id]['gamed_gain_by_cell']['LL']:+.2f}  HL={out['per_judge'][model_id]['gamed_gain_by_cell']['HL']:+.2f}")
