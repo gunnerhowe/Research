@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "source": "v3-substance wf_c6822dcc-028"
+  },
+  "items": [
+    {
+      "stem_id": "stem_0000",
+      "high_claim": "Remove the time-based learning-rate warmup schedule and instead scale each parameter coordinate's step size by a per-coordinate reliability factor computed from that coordinate's Adam second-moment accumulator and the running variance of that accumulator (the factor is near zero when the second-moment estimate is noisy and approaches one as it stabilizes). Evaluate by comparing final validation perplexity and training stability against a linear-warmup baseline across several model sizes."
+    },
+    {
+      "stem_id": "stem_0004",
+      "high_claim": "For weights whose scale does not affect the loss, treat the per-iteration angular change of the weight vector (set by the balance between the weight-decay pull and gradient-driven norm growth) as the quantity to control: specify a target schedule for this angular step directly and, at each step, solve for the learning-rate and weight-decay coefficients that produce it, instead of scheduling the learning rate and holding the decay coefficient fixed."
+    },
+    {
+      "stem_id": "stem_0005",
+      "high_claim": "In the Lion optimizer, replace the per-parameter momentum buffer with a compressed momentum store whose size grows sublinearly in the parameter count (e.g., a low-rank row/column factorization or a fixed random sketch), reconstruct an approximate momentum from it, and take the sign of that reconstructed value to form each coordinate's update. Compare training curves, final accuracy, and memory footprint against full-precision Lion and factored-state Adam variants."
+    },
+    {
+      "stem_id": "stem_0007",
+      "high_claim": "Regress sentence embeddings on content-independent input features (token frequency, sentence length, surface form) once on the target corpus, and take the subspace spanned by the predictable directions as a nuisance subspace. Apply a whitening transform only within that subspace while leaving its orthogonal complement unchanged, as a fixed post-processing step, and measure performance on standard semantic-similarity benchmarks."
+    },
+    {
+      "stem_id": "stem_0008",
+      "high_claim": "In a self-supervised covariance-regularization objective, replace the fixed isotropic (identity) covariance target with a data-adaptive target: during training, estimate the covariance spectrum of the component of the representation that stays stable across augmented views, shape the full representation's covariance spectrum to match that estimated spectrum, and remove the fixed variance-floor term. Evaluate using effective rank and downstream linear-probe accuracy."
+    },
+    {
+      "stem_id": "stem_0009",
+      "high_claim": "During fine-tuning, decompose each feature-update direction into the subspace spanned by source-supervised gradients and its orthogonal complement, and allow updates only within the source-spanned subspace while holding the orthogonal component frozen at its pretrained value. Evaluate by measuring in-distribution and out-of-distribution accuracy across several datasets and shift magnitudes, comparing against standard fine-tuning and linear-probe-then-fine-tune."
+    },
+    {
+      "stem_id": "stem_0011",
+      "high_claim": "Assign each training example a fixed target vector drawn once at random in the embedding space and held constant for the whole run, then train a fully symmetric objective (gradients through both branches, with no stop-gradient, momentum encoder, or predictor) that simultaneously pulls an example's two augmented views toward each other and pulls each view toward that example's assigned fixed target. No negative pairs or cross-example comparisons are used."
+    },
+    {
+      "stem_id": "stem_0012",
+      "high_claim": "In a continuous-control actor-critic, constrain the mutual information between states and actions instead of the marginal action entropy, estimating this information rate as the policy's conditional entropy minus the entropy of a running estimate of the marginal action distribution. The entropy coefficient becomes the multiplier on this information-rate term and is adjusted by dual gradient descent to meet a target rate."
+    },
+    {
+      "stem_id": "stem_0013",
+      "high_claim": "Estimate the value estimator's realized bias online as the discrepancy between bootstrap targets and Monte-Carlo returns sampled from the replay buffer, stratified by state-action epistemic uncertainty. A feedback controller then adjusts the operator that interpolates between optimistic and pessimistic aggregates of a critic ensemble so the measured bias tracks a set-point (zero in well-visited regions, mildly positive where visitation is low), making the correction state-dependent."
+    },
+    {
+      "stem_id": "stem_0014",
+      "high_claim": "In a policy-gradient method, replace the single global trust-region size with a per-state budget that scales the allowed policy change inversely with the variance of the advantage estimate, so updates are larger where the advantage is more reliable. An ensemble of value functions produces both the mean advantage (via generalized advantage estimation) and its per-state variance."
+    },
+    {
+      "stem_id": "stem_0015",
+      "high_claim": "For offline RL, assign each transition a weight indicating whether its action lies within the dataset's support, and accumulate these weights multiplicatively along bootstrapped backups. When forming the temporal-difference target, scale the bootstrapped next-state value term down by the accumulated support weight and put the remaining weight on the observed empirical return, while removing any explicit penalty on out-of-distribution action-values."
+    },
+    {
+      "stem_id": "stem_0016",
+      "high_claim": "In RLHF, replace the KL penalty toward the reference policy with a penalty on how far a response is from the reward model's training distribution: fit a density model over the reward model's penultimate-layer features and add a penalty proportional to a response's estimated distance from that density's support. Evaluate against KL-penalized PPO on gold reward at matched compute."
+    },
+    {
+      "stem_id": "stem_0017",
+      "high_claim": "For sparse-reward exploration, learn successor features that summarize the distribution of future states the current policy will occupy from a given state, and apply random-network distillation to this future-occupancy embedding instead of the single-step observation embedding. A state's intrinsic bonus is the predictor network's error on that long-horizon occupancy embedding."
+    },
+    {
+      "stem_id": "stem_0021",
+      "high_claim": "In flow-matching generative models, augment the deterministic ODE transport with a learned, spatially localized stochastic jump term that activates on detected trajectory-convergence regions and splits probability mass among competing modes in proportion to their target masses. Train the jump intensity and branch assignment jointly with the velocity field, and evaluate by recall and the number of captured modes."
+    },
+    {
+      "stem_id": "stem_0023",
+      "high_claim": "For dictionary learning on transformer activations, make each dictionary atom's presence and coefficient gated by a low-rank summary of the token's attention context, so one atom can encode different features depending on context, with the encoder taking both the activation and the attention-context summary as input. Evaluate feature recovery against known ground-truth features in a toy setting and by reconstruction and interpretability metrics on a small transformer."
+    },
+    {
+      "stem_id": "stem_0024",
+      "high_claim": "Construct in-context learning sequences in which the pattern is defined over token categories rather than exact repeated tokens, so no surface token ever repeats. Take heads flagged by the standard copying metric and test whether they causally drive learning of these category-based mappings, and apply an intervention that breaks literal token-copying while leaving the query-key matching representation intact to check whether category-pattern in-context learning still works."
+    },
+    {
+      "stem_id": "stem_0025",
+      "high_claim": "In activation patching to localize factual recall, vary the counterfactual corruption applied to the subject across a structured set (e.g., substituting related versus unrelated entities) instead of a single Gaussian-noise corruption, and for each corruption measure the indirect effect on the correct object's probability to build a corruption-conditioned localization map. Track how the peak mediating layer and token position shift across the corruptions to assess whether the localization is stable or an artifact of the chosen contrast."
+    },
+    {
+      "stem_id": "stem_0026",
+      "high_claim": "Train a sparse autoencoder on model activations with a loss that substitutes the sparse reconstruction into the forward pass and minimizes the KL divergence between the resulting output distribution and the clean run, instead of minimizing mean-squared error on the activation vector, while keeping the sparsity penalty on feature activations. Evaluate interpretability and fidelity in output space and compare the features and sparsity-versus-fidelity curves against a standard MSE-trained autoencoder across residual-stream layers."
+    },
+    {
+      "stem_id": "stem_0027",
+      "high_claim": "Compute attention-rollout attributions not from the single realized attention maps but from a set of alternative attention distributions constrained to leave the model's prediction unchanged (obtained by sampling or optimization), computing rollout for each and taking the attribution to be the component stable across this output-preserving set. Evaluate whether this improves deletion and insertion perturbation curves across several pretrained transformer classifiers."
+    },
+    {
+      "stem_id": "stem_0028",
+      "high_claim": "Add a lightweight auxiliary head that predicts, from the current decoder state, which cached key/value positions the next several decoding steps will attend to, and retain the cache entries with the highest predicted future attention mass while evicting the rest, instead of ranking positions by their past attention. Train the forecaster on the base model's realized attention during generation, at a small per-step cost."
+    },
+    {
+      "stem_id": "stem_0029",
+      "high_claim": "Replace the exact speculative-decoding acceptance test with a relaxed one that accepts a drafted token whenever its target probability exceeds a position-specific fraction of its draft probability. A controller allocates a per-sequence budget, defined as a maximum total-variation distance from the target distribution, across decoding positions, spending more of it at positions where relaxation yields the largest gains in accepted tokens; the draft model and the parallel verification step are unchanged."
+    },
+    {
+      "stem_id": "stem_0030",
+      "high_claim": "Instead of a static launch that binds each thread block to a fixed range of the packed buffer, launch a fixed pool of thread blocks (sized to GPU occupancy) once, and have each block atomically pull attention tiles, indexed by sequence, head, query-block, and key-block, from a single global work queue listing every tile of the variable-length batch, so any free block picks up any tile. Each query-block's running online-softmax state is then combined from the per-tile partial results to keep the output exact."
+    },
+    {
+      "stem_id": "stem_0033",
+      "high_claim": "Split a finite-width network's function space into two orthogonal parts: a low-dimensional subspace, chosen by how well the top eigenvectors of the initial NTK align with the target function, whose parameters adapt (learn features), and the high-dimensional remainder, which is held fixed at the initial kernel. Predict the test error as the sum of exact kernel-regression error computed on the fixed remainder plus a correction from feature learning restricted to the adapting subspace, making generalization depend on how much of the target the chosen subspace captures."
+    },
+    {
+      "stem_id": "stem_0035",
+      "high_claim": "Analyze gradient descent's implicit bias in terms of the per-example weights the loss gradient places on each training point rather than the parameter vector: for exponentially-tailed losses on linearly separable data, show these weights follow a multiplicative update rule whose fixed point equals the solution of the hard-margin SVM dual. Recover the L2 max-margin direction as the corresponding primal solution, and read off when the support examples emerge and which points they are directly from the weight dynamics."
+    },
+    {
+      "stem_id": "stem_0037",
+      "high_claim": "Treat compute-optimal allocation of parameters and tokens as an optimization over the whole training run rather than a single fixed model size, allowing model capacity to increase mid-run by adding width or depth at scheduled checkpoints. Using the Chinchilla loss as the end-of-run objective and a per-step cost that ties current model size to compute spent that step, solve for the size-vs-tokens path that minimizes final loss at a fixed total compute budget, yielding schedules that start with a small model (spending early compute on tokens) and grow it as loss falls."
+    },
+    {
+      "stem_id": "stem_0038",
+      "high_claim": "Measure chain-of-thought faithfulness by using activation patching to substitute the CoT-carrying residual-stream activations between paired prompts and computing the fraction of the answer's variation that those activations account for, treating that mediated fraction as the faithfulness score. Report how this score varies with model scale, task category, and model family."
+    },
+    {
+      "stem_id": "stem_0040",
+      "high_claim": "Select instruction-tuning examples under a fixed budget by scoring each example by how much the current model, in its present state, fails to already produce that example's target response, and pick examples that maximize this score. Because the model changes during tuning, re-evaluate and re-select examples as training proceeds rather than using a fixed, precomputed set."
+    },
+    {
+      "stem_id": "stem_0041",
+      "high_claim": "Model in-context learning as inferring, at inference time, several independently varying factors of a task (input distribution, label mapping, output format), each maintained as a separate posterior that updates at its own rate as in-context examples arrive, with a task represented as a combination of factor values. Evaluate predicted factor-specific update dissociations and generalization to held-out factor combinations on GINC-style synthetic data in which the factors are varied independently."
+    },
+    {
+      "stem_id": "stem_0042",
+      "high_claim": "Train a language model with a differentiable gate that, per input span, selects among several parallel tokenizations (character-level, digit-aligned, and merged-subword) that share a single embedding space, optimizing this segmentation policy jointly with the language-model training objective. Test whether allocating fine segmentation to numeric and low-resource-script spans while keeping frequent text coarse lets arithmetic and multilingual performance improve together."
+    },
+    {
+      "stem_id": "stem_0045",
+      "high_claim": "For open-vocabulary detection, replace each category's single fixed text embedding with retrieval: at inference, for each queried category name, retrieve a small set of matching image-text pairs from the image-text pretraining corpus, encode them, and classify each region by cross-attending to this retrieved support set instead of taking cosine similarity to one text vector. Region embeddings are still initialized from a frozen CLIP image encoder."
+    },
+    {
+      "stem_id": "stem_0047",
+      "high_claim": "Make each GNN message-passing layer perform one gradient-descent step on a learned energy function defined over pairs of connected nodes, where the energy adds an attractive term that pulls connected nodes' feature vectors together and a repulsive term whose strength is a learned function of the two endpoint nodes' features. Stacking layers runs this descent toward a per-edge balance point set by the learned potential instead of driving all node features to a single common value, with depth acting as the number of integration steps."
+    },
+    {
+      "stem_id": "stem_0048",
+      "high_claim": "Define a model's expressiveness as the distortion between distances in its embedding space and a chosen continuous graph-similarity measure (for example homomorphism density or graph-edit distance), rather than as the set of graph pairs it can tell apart. Formalize this distortion measure, derive conditions under which it is decoupled from the model's Weisfeiler-Leman rank, and empirically test whether a higher-WL-rank model can reproduce the target metric worse than a lower-rank one across architectures."
+    },
+    {
+      "stem_id": "stem_0050",
+      "high_claim": "In DP-SGD, replace Euclidean per-example gradient clipping plus isotropic Gaussian noise with clipping each gradient under a Mahalanobis norm defined by a curvature matrix M (estimated from public data or a running Fisher approximation) and adding Gaussian noise with covariance proportional to M, so clipping and noise share the same M-induced geometry. Because the geometry is shared the privacy-accountant guarantee is unchanged, while the noise is concentrated in low-curvature directions that affect the loss least."
+    },
+    {
+      "stem_id": "stem_0051",
+      "high_claim": "Predict a training example's membership-inference risk from its self-influence (the change in its own loss when it is removed from training) instead of from the model's aggregate generalization gap, and characterize each regularizer by how it reshapes the distribution of self-influence across examples. Test whether regularizers tuned to give identical generalization gaps produce different LiRA attack true-positive rates, whether some lower average risk while shifting it onto rare/atypical examples, and whether self-influence estimates predict which individual examples become more or less vulnerable."
+    },
+    {
+      "stem_id": "stem_0052",
+      "high_claim": "Estimate the conditional average treatment effect by training a neural network for the effect function in a minimax game against a neural critic network, where the critic searches over covariate-dependent test functions for directions in which the doubly-robust orthogonal score has nonzero conditional mean (a violation of the moment condition) and the estimator is trained to minimize the worst-case violation the critic finds. No single pseudo-outcome regression target is constructed, so the condition is enforced uniformly over the critic's function class."
+    },
+    {
+      "stem_id": "stem_0054",
+      "high_claim": "In double machine learning, drop cross-fitting/sample-splitting and instead fit the nuisance functions and evaluate the debiased (orthogonal) score on the same observations, subtracting a correction term equal to an influence term scaled by the learner's algorithmic stability modulus (a bound on how much changing one data point moves the fitted nuisance) to cancel the own-observation overfitting bias. Establish the estimator's asymptotic normality using this stability bound in place of sample splitting, so validity depends on the learner's stability rate."
+    },
+    {
+      "stem_id": "stem_0055",
+      "high_claim": "For long-horizon forecasting, replace separate per-horizon output heads with a small hypernetwork that takes the forecast lead time as input and outputs the weights of a single linear forecasting map, so one horizon-conditioned model produces a forecast at any lead time by evaluating it at that horizon (including horizons not seen in training), while keeping a seasonal-trend decomposition and training on mixed horizons. Evaluate on ETT, Electricity, Traffic, and Weather against DLinear and Informer, reporting MSE and MAE on both fixed and held-out horizons."
+    },
+    {
+      "stem_id": "stem_0056",
+      "high_claim": "Modify a pretrained time-series transformer so that, given a context window, it outputs the parameters of (and a posterior over) a low-dimensional stochastic state-space dynamical model instead of directly emitting predicted value tokens, and produce forecasts by simulating that inferred model forward while propagating its noise. Pretrain by maximizing the marginal likelihood of observed continuations under the simulated model across the corpus; at inference infer a model per series from its context and roll it out, and evaluate zero-shot accuracy and uncertainty calibration against direct-decoding baselines."
+    },
+    {
+      "stem_id": "stem_0057",
+      "high_claim": "In first-order MAML, instead of discarding the dropped second-order (curvature) term of the meta-gradient, add an auxiliary network that maps support-set gradient statistics to a per-task correction that is added to the first-order inner-loop update, and meta-optimize this auxiliary network jointly with the shared initialization on the post-adaptation loss. Evaluate on standard few-shot classification benchmarks at matched inner-loop cost."
+    },
+    {
+      "stem_id": "stem_0058",
+      "high_claim": "For continual learning, replace EWC's isotropic quadratic penalty with a penalty whose curvature is an empirical Fisher matrix reconstructed from a small stored-example buffer (each retained example contributing one rank-one direction the update must preserve), and choose the buffer to span the top eigen-directions of the past-task loss Hessian rather than by class balance or random sampling, recomputing importance from the current buffer so it tracks representation drift. Evaluate on task-incremental benchmarks, using curvature coverage as the predictor of retention."
+    },
+    {
+      "stem_id": "stem_0059",
+      "high_claim": "Model the observed binary label as a group-dependent noisy corruption of an unobserved true label, and use a small subsample with audited low-noise labels to fit each group's label-noise model and recover the joint distribution of the model's scores and the true label. Then evaluate the fairness metrics (calibration and error-rate balance) against the recovered true label instead of the observed label, and derive conditions on the noise process under which both metrics can hold at once."
+    },
+    {
+      "stem_id": "stem_0063",
+      "high_claim": "From a single trained network, estimate each prediction's uncertainty as how much that prediction would change if the training set were resampled, computed in closed form via the infinitesimal jackknife using the model's per-example gradients and a Hessian-vector-product approximation, without training extra models or sampling weights. Evaluate the resulting variance estimates on standard image-classification benchmarks for calibration (ECE, NLL) and out-of-distribution detection against deep ensembles and MC-dropout at matched compute."
+    },
+    {
+      "stem_id": "stem_0064",
+      "high_claim": "Partition the implicit-feedback interaction data into groups indexed by item exposure/popularity level, and train the scoring model with a penalty that forces its predictive risk and the gradient of that risk to be equal across these groups, so only signal predictive in every exposure group is retained. No propensity scores are estimated or applied."
+    },
+    {
+      "stem_id": "stem_0066",
+      "high_claim": "Implement the vision-language connector as a hypernetwork that, for each image, outputs per-layer low-rank additive deltas to the frozen language model's attention and MLP weight matrices; these deltas are added to the frozen weights for that image's forward pass so the image conditions the model through its parameters rather than through input tokens. Train it on image-text pairs with the vision encoder and language model frozen, so that only the emitted deltas vary with the image."
+    },
+    {
+      "stem_id": "stem_0068",
+      "high_claim": "Treat each architecture's weight-sharing (supernet) score as an invertible function of its standalone performance plus structural covariates (operation composition, number and placement of parameter-free edges, effective depth), fit a calibration regressor on a modest set of architectures evaluated both under weight sharing and standalone, then invert it to predict standalone rankings across the whole search space from supernet scores alone. Evaluate by ranking correlation against the added calibration overhead."
+    },
+    {
+      "stem_id": "stem_0069",
+      "high_claim": "Store all LLM weights uniformly at 4 bits, but at inference use a lightweight per-token router that predicts which channels carry outliers for that input and routes those channels through a higher-precision path. Reuse the calibration-derived Hessian to precompute, for each weight, both a coarse 4-bit reconstruction and a residual correction term that is added only for routed (higher-precision) channels, so the same stored weight is dequantized at either precision depending on the per-token routing decision."
+    },
+    {
+      "stem_id": "stem_0070",
+      "high_claim": "For each layer, learn an orthogonal (weight-preserving) transform that can be folded into adjacent layers at inference and that rotates the weight basis so that the weights an unstructured magnitude mask would keep line up into whole structural groups (entire channels or attention heads), then prune those aligned groups. Measure whether structured pruning at a fixed sparsity level then reaches the same accuracy as unstructured magnitude pruning, reporting accuracy and inference latency on vision and language models."
+    },
+    {
+      "stem_id": "stem_0071",
+      "high_claim": "Instead of giving each layer its own independent low-rank LoRA update, draw all layers' updates from one shared learned set of basis directions, with per-layer gates and coefficients choosing how many of the shared directions each layer uses so that each layer's effective rank comes from allocating a single shared budget. Train the shared basis and the gates together and compare against per-layer independent LoRA at the same total parameter count."
+    },
+    {
+      "stem_id": "stem_0073",
+      "high_claim": "For label-noise loss correction, replace the single class-to-class noise transition matrix with a per-example one produced by a small network that maps each example's penultimate-layer embedding to its own transition matrix, and apply forward loss correction per example. Constrain the average of the per-example matrices to equal a globally estimated transition matrix and add a penalty on correction magnitude in high-data-density regions, so that in dense regions it reduces to standard fixed-matrix forward correction."
+    },
+    {
+      "stem_id": "stem_0074",
+      "high_claim": "For OOD detection, take a test input and run a fixed number of gradient-descent steps on the model's scalar energy with respect to the input to produce a relaxed input, then use the decrease in energy from the original to the relaxed input as the OOD score (in-distribution inputs drop little, OOD inputs drop a lot). Use only the fixed pre-trained network with no auxiliary data."
+    }
+  ]
+}

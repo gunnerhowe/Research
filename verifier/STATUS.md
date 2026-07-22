@@ -54,6 +54,18 @@ by topical padding. Each has a DISTINCT hole. NEXT v3 = claim-extraction-then-sc
 defeat BOTH red-teams; test extracted-claim score(base) ~ score(sig-attack) ~
 score(topical-pad).
 
+**v3 = claim-extraction-then-grounded-distance: ROBUST AND DISCRIMINATING (best so
+far).** Extraction collapses BOTH attacks onto the base claim: cos(base,sig)=0.991,
+cos(base,pad)=0.985; topical-pad gain +0.0999 -> +0.0042, significance gain +0.0047
+(both ~0). AND it preserves genuine novelty: high-substance claims stay distinct
+(cos(base,high)=0.635 << 0.99 attack-collapse; v3 substance gap +0.030 = 74% of raw
++0.041). So v3 defeats the attacks that beat v1 (significance) and v2 (padding)
+while still tracking substance. `results/v3_claims.json`, `results/v3_substance.json`.
+Honest limits: substance signal modest (+0.030, crude proxy); NOT yet red-teamed at
+the EXTRACTOR level (next: inject pseudo-substance to fool the claim extractor);
+50-stem tests, synthetic, MiniLM. Verifier scorecard: naive fails all; v1 known-only;
+v2 significance-robust/padding-weak; v3 passes both red-teams + substance.
+
 **LADDER COMPLETE (E0-E5).** Paper drafted + compiled: `paper/main.tex` +
 machine-generated `paper/numbers.tex` (80 macros, verify_regen byte-identical) +
 `paper/main.pdf` (5pp) + figs (E0/E4/E5); `laymen.md`. Every number sourced from
