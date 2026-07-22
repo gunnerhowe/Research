@@ -1,0 +1,308 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,graphicx,microtype,xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{natbib}
+\input{numbers.tex}
+
+\title{Capabilities Return: What Unlearning Leaves Behind,\\ and What Warning Remains}
+\author{Gunner Levi Howe\\ \small Independent Researcher\\ \small gunnerlevihowe@gmail.com}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent\textbf{Scope caveats first:} every experiment here is at toy scale (two- to
+six-layer transformers on synthetic languages), the re-emergence arms use $n{=}3$ seeds
+extended to a pre-registered $n{=}10$ confirmation, one capability family (induction /
+in-context copying) carries the timing results, and one unlearning family
+(data-space active unlearning) is tested. Within that scope, every claim below was
+pre-registered with kill criteria before its data existed, scored by sealed one-shot
+scorers against committed artifacts, and survived (or is reported as killed).
+
+In a companion paper we showed that a capability's \emph{first} emergence can be
+forecast: a mechanistic precursor (the previous-token head) leads the induction
+capability by a config-invariant fraction of training, with certified false-alarm rates.
+Here we ask what happens \emph{after} a capability is removed. Three findings. (1)
+\emph{The precursor is a prerequisite, not the clock.} Supplying it at initialization
+causally accelerates emergence \PsevenSpeedup$\times$ (complete separation,
+$p={}$\PsevenExactP; placebo and near-miss priors do not accelerate), a
+\emph{sub-threshold} seed captures most of the effect, and the dose--response is
+U-shaped: over-supplying a converged pattern is worse than seeding a weak one. (2)
+\emph{Fingerprint monitoring of a guarded model gives certified detection with a
+characterized blind spot.} A library of capability fingerprints captured from an
+unguarded specimen detects faithful and relocated returns with zero false alarms on
+capability-blocked streams, but a return re-formed in an orthogonal representation
+defeats the frozen fingerprint entirely (behavior \PilotIdioFinalAcc{} vs.\ fingerprint
+readout \PilotIdioFinalStruct). (3) \emph{Unlearning removes the behavior, not the
+scaffold --- so capabilities return.} After active unlearning drives copying to chance
+(and in-distribution copying \emph{negative}), the precursor survives at
+\RtwoScaffoldLo--\RtwoScaffoldHi; re-teaching restores the capability in
+\RtwoFaithMed{} steps versus \PsevenTzero{} for first emergence
+(\RtwoRelearnX$\times$ faster). Denying the surviving scaffold doubles time-to-return
+(ratio \RtwoBRatio; pre-registered confirmation at pooled $n{=}10$
+\ifnum\RtwoCready=1 : ratio \RtwoCRatio{}, 95\% CI [\RtwoCCIlo, \RtwoCCIhi],
+\RtwoCVerdict\fi) --- there is no free disguise --- yet the denied return remains
+\RtwoBDeniedVsFirstX$\times$ faster than first learning, because everything else
+persists. The safety reading is uncomfortable and, we believe, decision-relevant:
+behaviorally unlearned is not removed; re-exposure recovers capability on timescales
+far shorter than first learning with or without the original circuit; and monitors of
+guarded models get certified \emph{detection} but only fractional, not absolute,
+\emph{warning}.
+\end{abstract}
+
+\section{Introduction}
+A frontier lab that removes a dangerous capability from a model and then continues
+training it --- fine-tuning, continual learning, tool-use adaptation --- inherits a
+monitoring problem: \emph{will the removed capability come back, and can we see it
+coming?} This paper studies that problem end-to-end at toy scale, where every quantity
+is measurable and every intervention is clean, as the third paper in a program on
+emergence timing \citep{companion2026a,companion2026d}.
+
+The companion result this builds on: for induction --- the canonical in-context copying
+capability \citep{olsson2022context} --- a mechanistic precursor (the previous-token
+attention head) forms well before the behavior, leads it by a roughly config-invariant
+fraction of training, and supports calibrated, false-alarm-certified forecasts of
+\emph{first} emergence. The natural extension to the guarded-model problem seems
+obvious: capture the capability's internal fingerprint while it exists, remove the
+capability, and watch for the fingerprint's return.
+
+We report what actually survives when that idea is subjected to the certification
+discipline of the program (pre-registration with kill criteria, manufactured
+capability-blocked negatives, sealed one-shot scoring). The result is a reshaped
+picture:
+
+\textbf{Part I (causality).} The precursor is causally load-bearing but is not the
+clock. Supplying it at initialization accelerates emergence \PsevenSpeedup$\times$
+with complete seed separation; an equally aggressive task-useless prior and a
+near-miss prior (offset by one position) do nothing. A prior \emph{weaker than our own
+detection threshold} captures most of the effect, and the dose--response is U-shaped
+with an interior optimum near the natural formation strength: the network amplifies a
+weak seed and \emph{fights} an over-strong one.
+
+\textbf{Part II (monitoring).} A fingerprint library captured from an unguarded
+specimen yields a monitor with certified false-alarm behavior --- silent on omission
+and on an adversarial matched-data stream in which the capability's training signal is
+present but unlearnable --- and it catches faithful returns and returns that relocate
+to a different attention head. Its blind spot is representational: a return forced to
+re-form orthogonally to the captured subspace restores full behavior while the frozen
+fingerprint reads noise.
+
+\textbf{Part III (unlearning and return).} Active unlearning that drives the behavior
+to chance --- and beyond, to \emph{anti}-copying in distribution --- leaves the
+precursor scaffold intact at \RtwoScaffoldLo--\RtwoScaffoldHi{} attention mass.
+Re-emergence is therefore not re-learning: it is re-composition on surviving
+infrastructure, \RtwoRelearnX$\times$ faster than first emergence. Denying the
+scaffold (which requires double the bias strength that suffices during formation ---
+converged structure resists development-strength interventions) restores a relative
+cost: the denied return takes \RtwoBRatio$\times$ as long. But it is a relative law
+only; in absolute terms the denied return is still \RtwoBDeniedVsFirstX$\times$
+faster than first learning.
+
+We also report what the discipline caught along the way: a guard that passed a naive
+reading but had only unlearned the capability \emph{in distribution}; a ``disguise''
+arm whose burn was silently defeated by a converged head; and an early loss-dynamics
+detector (in a companion rung) that passed every standard evaluation while reading the
+data mix rather than the capability. We believe the certification regime --- not any
+single positive result --- is the transferable contribution.
+
+\section{Setup and certification discipline}
+\label{sec:setup}
+\textbf{Substrate.} Decoder-only transformers (2 layers, $d{=}256$, 4 heads, context
+256 for the timing substrate; up to 6 layers for the multi-capability monitor) trained
+on synthetic Markov languages in which a fraction of sequences repeat their prefix at a
+variable offset, making match-based induction the only general solution. The
+behavioral event is an absolute crossing: copy advantage $\ge 2.0$ nats (the
+difference in cross-entropy between first and second halves of a repeated random
+probe), sustained for two consecutive evaluations. First emergence on this substrate:
+median \PsevenTzero{} steps ($n{=}\PsevenCtrlN$).
+
+\textbf{Instruments.} The precursor read is the maximum over heads of mean attention
+to the immediately preceding position (previous-token score); the capability's own
+circuit read is the prefix-matching score; the composed anchor --- the only alarm rule
+in the program that has never false-alarmed anywhere it was scored --- is the
+conjunction of the precursor and an in-distribution behavioral ramp in the same
+evaluation.
+
+\textbf{Discipline.} Every rung is pre-registered (predictions and kill criteria
+committed before the data exists), scored by a sealed one-shot scorer that refuses to
+run on partial fleets or twice, and adjudicated against manufactured
+capability-blocked negatives: data ablation (no repeats), architectural blocking (one
+layer), and adversarial matched-data streams (the capability's marker present at
+identical statistics but with scrambled targets, so a detector that fires is reading
+the data condition, not the capability). Manipulation checks are scored before
+outcomes and can void an arm; two arms in this paper were voided and re-run this way.
+
+\section{Part I: the precursor is a prerequisite, not the clock}
+\label{sec:p7}
+\textbf{Causal seeding.} We add a fixed additive attention-score bias
+$B[i,i{-}1]{=}\beta$ to a single layer-0 head at initialization --- an architectural
+supply of the previous-token pattern --- and measure emergence timing against
+\PsevenCtrlN{} controls. At $\beta{=}8$: median \PsevenHardMed{} versus
+\PsevenTzero{} (\PsevenAccelPct\% acceleration, \PsevenSpeedup$\times$), with
+\emph{complete separation} (every scaffolded run beat every control; exact one-sided
+permutation $p={}$\PsevenExactP). A task-useless placebo of identical magnitude
+(bias to position 0) lands at \PsevenSinkMed{} and a near-miss prior ($i{-}2$) at
+\PsevenNearMed{} --- neither accelerates; both are, if anything, slightly slow,
+consistent with occupying the head that would otherwise become the precursor. A
+no-repetition corner (scaffold supplied, training signal ablated) produces zero
+events: architecture cannot manufacture the capability without data.
+
+\textbf{The pre-registered clock hypothesis failed.} If the precursor were the sole
+rate-limiter, supplying it should compress emergence to the post-anchor residual
+($\sim$1{,}000 steps). Observed: \PsevenHardMed{} --- the bet missed by
+$3.7\times$. The diagnosis (post-hoc, then confirmed prospectively in the dose rung's
+floor bet, which \emph{fired its own kill}): emergence is gated by more than one
+prerequisite, and deleting the slowest merely exposes the next. We report this as the
+central interpretive lesson of Part I: \emph{interventions on named precursors
+re-time emergence but do not schedule it}.
+
+\textbf{Dose--response is U-shaped; a sub-threshold seed suffices.} Sweeping
+$\beta \in \{1,2,3,4,6,8\}$ (5 seeds each): medians
+\PsevenDoseAMed, \PsevenDoseBMed, \PsevenDoseCMed, \PsevenDoseDMed,
+\PsevenDoseEMed, \PsevenHardMed. Two facts matter. First, $\beta{=}1$ imposes an
+initial previous-token weight of \PsevenDoseAPv{} --- \emph{below} the 0.10 threshold
+our own campaign uses to declare the precursor present --- and still accelerates
+emergence to \PsevenDoseAMed: the network amplifies the sub-threshold hint past
+threshold within 100 steps. ``Supplying the precursor'' therefore does not require
+supplying a converged head; a seed the network grows itself is enough, and
+``precursor present'' is better understood as a rate than a state. Second, the curve
+has an interior optimum near $\beta{=}\PsevenDoseOptBeta$ and \emph{rises} toward
+$\beta{=}8$: the ascending arm is seed-paired with zero reversals (15/15). Per-head
+instrumentation shows a sharp adopt-versus-fight crossover: at $\beta\le3$ the
+network amplifies the supplied head above its imposed value in every run; at
+$\beta\ge4$ it suppresses it in every run. Too-strong priors are actively resisted.
+
+\textbf{Placement.} The identical bias on layer 1 --- where a previous-token head
+cannot feed the induction circuit --- lands at \PsevenHardLOneMed{} (no
+acceleration), and the biased head never becomes an induction head. We register the
+honest limit: this is consistent with the composition story but under-determined
+(the arm is statistically indistinguishable from the placebos, so ``layer-1 is a bad
+site for any bias'' is not excluded; the discriminating layer-1 placebo is future
+work).
+
+\section{Part II: fingerprint monitoring --- certified detection, characterized blind spot}
+\label{sec:p8pilot}
+We instantiate the guarded-model monitor end-to-end on a two-mechanism library
+(induction, with an attention-alignment fingerprint; bracket-depth counting, with a
+rank-4 interior-residual subspace fingerprint captured by one-shot ridge fit from the
+frozen specimen at decode $R^2{=}1.0$). Protocol: train the unguarded specimen;
+capture the library from frozen weights; guard each skill by active unlearning
+(answers scrambled at matched marker statistics) until behavior and structure sit at
+chance; then continually train under watch streams while reading each fingerprint's
+proximity inline on fixed probe banks --- never on the training stream.
+
+\textbf{Certified detection.} The composed alarm (structural proximity above an
+absolute band set from capability-blocked baselines, AND a behavioral ramp) is silent
+on every negative stream --- omission and marker-scramble, both skills --- and fires
+on faithful returns. \textbf{Relocation is caught.} Burning the fingerprint's home
+head forces the returning skill onto a different head; the frozen-home read misses
+(\PilotRelocHome) while the max-over-heads read catches it (\PilotRelocMax).
+\textbf{Orthogonal re-formation is not.} Re-teaching the counting skill while
+continuously erasing the captured subspace restores full behavior
+(\PilotIdioFinalAcc) while the frozen fingerprint reads \PilotIdioFinalStruct{} and
+the alarm never fires --- with the negatives silent, this is a verified blind spot,
+not a blind monitor. A capability can return wearing a representational disguise the
+specimen fingerprint cannot see; broad reads defeat cheap disguises, not this one.
+
+\textbf{No early warning for re-emergence at this depth.} In the pilot's substrate
+the guarded skills returned within a few hundred steps and alarms were coincident
+(lead \PilotFaithLeadMzero) or lagging (\PilotFaithLeadMsix{} for the subspace read)
+--- which motivated Part III's move to the slow substrate where first-emergence
+timing is understood.
+
+\section{Part III: unlearning removes the behavior, not the scaffold}
+\label{sec:p8r2}
+\textbf{Unlearning is distribution-local (a caught manipulation, kept as a
+finding).} Our first guard --- training on sequences whose repeats \emph{lie}
+(copied spans permuted) --- drove in-distribution copying strongly negative while
+out-of-distribution copy advantage plateaued at $\sim$1.1--1.4 nats: the model
+learned ``repeats lie \emph{here}'' while generic match-and-copy survived. The
+frozen validity bar rejected the guard; guard v2 adds lying repeats \emph{in the
+surviving circuit's own distribution} and passes on all seeds
+(copy advantage $\le \RtwoGuardCopyHi$ nats, in-distribution negative).
+
+\textbf{The scaffold survives complete behavioral removal.} After a valid guard, the
+previous-token scaffold reads \RtwoScaffoldLo--\RtwoScaffoldHi{} --- essentially the
+specimen value --- on every seed. Unlearning deleted the capability's output
+behavior and left its upstream prerequisite untouched.
+
+\textbf{Hence re-emergence is re-composition, not re-learning.} Re-teaching restores
+the capability in a median of \RtwoFaithMed{} steps versus \PsevenTzero{} for first
+emergence: \RtwoRelearnX$\times$ faster. The composed anchor leads by
+\RtwoFaithLead{} steps --- consistent across every run, but three evaluation ticks
+in absolute terms. The firewall holds (zero alarms on guard-hold streams).
+
+\textbf{Converged structure resists development-strength interventions.} Our first
+``denied'' arm burned the surviving scaffold head with the same $\beta{=}8$ bias
+that reliably burns \emph{forming} heads; the converged head's learned margin
+defeated it (residual previous-token mass \RtwoBurnFailLo--\RtwoBurnFailHi{} at
+step 0), and the arm was voided by its manipulation check. $\beta{=}16$ silences it
+(step-0 mass $\le\RtwoBManipHi$). The asymmetry --- $\beta{=}8$ suffices during
+formation, $\beta{=}16$ is needed at convergence --- is the deployment-relevant
+mirror of Part I's adopt/fight crossover.
+
+\textbf{The compensating law: no free disguise, but a cheap one.} With the scaffold
+genuinely denied, the return must regrow a precursor elsewhere, and pays for it:
+median \RtwoBDeniedMed{} steps versus \RtwoFaithMed{} faithful --- ratio
+\RtwoBRatio{} at $n{=}3$%
+\ifnum\RtwoCready=1
+, confirmed at pooled $n{=}\RtwoCN$: pooled ratio \RtwoCRatio{} with bootstrap 95\%
+CI [\RtwoCCIlo, \RtwoCCIhi] against the pre-registered decision line of 1.25
+(\RtwoCVerdict; pooled faithful \RtwoCFaithMed{} vs.\ denied \RtwoCDeniedMed{}
+steps; pooled hold false alarms \RtwoCHoldFA; pooled scaffold survival
+$\ge\RtwoCScaffoldLo$)%
+\fi
+. A disguised return costs real relative time --- there is no free disguise --- but
+the absolute refuge is thin: even scaffold-denied, the return is
+\RtwoBDeniedVsFirstX$\times$ faster than first learning, because the language, the
+downstream circuit, and everything else the capability composes with persist through
+unlearning.
+
+\section{Related work}
+\label{sec:related}
+Activation-clamping during training established qualitatively that supplying or
+removing induction subcircuits moves the phase change \citep{singh2024needs}; their
+intervention is activation-level surgery across seeds, without placebo or near-miss
+controls, dose response, or timing-law tests. Data-side steering of induction-circuit
+formation timing \citep{patterning2026} is the data-dual of our architectural lever.
+Architectural priors that hard-wire local-shift structure --- relative-position
+biases \citep{press2022alibi}, short-convolution and token-shift primitives
+\citep{fu2023h3} --- are the deployment ancestors of our $\beta$-bias; none measures
+capability arrival time. On the monitoring side, our fingerprints are standard
+instruments (attention pattern scores \citep{olsson2022context}; probe subspaces);
+the contribution is the certification regime around them. The unlearning findings
+connect to the growing literature on shallow unlearning and rapid relearning
+\citep{unlearningrobustness}; our contribution is mechanistic: \emph{what} survives
+(the precursor scaffold, at full strength), \emph{why} return is fast (re-composition
+on surviving infrastructure, quantified against first-emergence timing on the same
+substrate), and what denial costs (a relative factor of $\sim$\RtwoBRatio, not an
+absolute refuge).
+
+\section{Limitations}
+\label{sec:limits}
+Toy scale throughout; one capability family carries the timing claims; one unlearning
+family (data-space active unlearning) is tested --- weight-space methods may leave
+different residues; re-emergence arms are $n{=}3$ extended to a pre-registered pooled
+$n{=}10$ confirmation with the decision line frozen at the original kill threshold;
+the compensating-law ratio sits at its pre-registered bar and is reported as
+boundary-grade evidence; the 25-step evaluation grid limits timing resolution; the
+layer-1 placement reading is under-determined; anchor lead fractions are not
+conserved across arms and we make no law claim for re-emergence warning time.
+
+\section{The kill ledger}
+\label{sec:kills}
+Claims that died, pre-registered bets that failed, and manipulations the discipline
+caught --- reported with the same prominence as the positives: the clock hypothesis
+(missed by $3.7\times$); the two-gate fixed-assembly model (killed by its own
+prospective floor bet in the dose rung); ``placebos are inert'' (they delay);
+the seed-stickiness arm (unreachable bar --- arithmetic, not evidence); the
+loss-dynamics detector that passed every standard evaluation while reading the data
+mix (killed by a matched-data capability-blocked cell); guard v1 (distribution-local
+unlearning); the $\beta{=}8$ burn (defeated by a converged head); and the fingerprint
+early-warning claim for re-emergence (no absolute warning exists at this scale).
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}

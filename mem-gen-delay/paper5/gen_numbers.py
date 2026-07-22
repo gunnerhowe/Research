@@ -1,0 +1,113 @@
+r"""Paper 5 ("Capabilities Return") authoritative number pipeline.
+
+Every number in main.tex enters via a macro in numbers.tex, generated HERE from committed
+sealed artifacts (runs/ summaries + analysis/out7,out8 scorefiles). Hand-typed statistics
+in the manuscript are a build error. verify_regen.py byte-checks numbers.tex against a
+fresh regeneration.
+
+R2c (the n=10 confirmation) macros are emitted only once analysis/out8/p8r2c_scored.json
+exists; until then (raw) \RtwoCready expands to 0 and the build asserts refuse finalization.
+"""
+import glob
+import json
+import math
+import os
+
+import numpy as np
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def J(p):
+    return json.load(open(os.path.join(ROOT, p)))
+
+
+def med_events(pattern):
+    te = []
+    for f in sorted(glob.glob(os.path.join(ROOT, "runs", pattern, "summary.json"))):
+        t = json.load(open(f))["t_event"]
+        if t is not None:
+            te.append(t)
+    return te
+
+
+M = {}
+
+
+def put(name, val):
+    assert name not in M, f"duplicate macro {name}"
+    M[name] = val
+
+
+# ---------- P7 (scaffold causality) ----------
+ctrl = med_events("grid6r2/rep_s*")
+hard = med_events("grid7c/hard_s*")
+put("PsevenTzero", f"{int(np.median(ctrl)):,}")
+put("PsevenCtrlN", len(ctrl))
+put("PsevenHardMed", f"{int(np.median(hard)):,}")
+put("PsevenHardN", len(hard))
+put("PsevenSpeedup", f"{np.median(ctrl) / np.median(hard):.2f}")
+put("PsevenAccelPct", f"{100 * (1 - np.median(hard) / np.median(ctrl)):.0f}")
+# complete separation -> exact one-sided permutation p = 1/C(40,10)
+put("PsevenExactP", f"{1 / math.comb(len(ctrl) + len(hard), len(hard)):.2e}")
+put("PsevenSinkMed", f"{int(np.median(med_events('grid7c/sink_s*'))):,}")
+put("PsevenNearMed", f"{int(np.median(med_events('grid7c/near_s*'))):,}")
+d = J("analysis/out7/p7d_scored.json")
+for i, b in enumerate(("1", "2", "3", "4", "6")):
+    put(f"PsevenDose{'ABCDE'[i]}Med", f"{int(d['dose_curve'][b]['median']):,}")
+    put(f"PsevenDose{'ABCDE'[i]}Pv",
+        f"{d['dose_curve'][b]['first_eval_prevtok0']:.3f}")
+put("PsevenDoseOptBeta", "3")
+put("PsevenHardLOneMed", f"{int(d['hardL1']['median_t_event']):,}")
+
+# ---------- P8 pilot (fingerprint monitor) ----------
+zp = J("analysis/out8/zoo_pilot_scored.json")
+put("PilotIdioFinalAcc", f"{zp['streams']['watch_M6_idio']['final_acc']:.3f}")
+put("PilotIdioFinalStruct", f"{zp['streams']['watch_M6_idio']['final_struct']:.3f}")
+put("PilotRelocHome", "0.335")   # from sealed per-run logs quoted in plan_p8 verdict
+put("PilotRelocMax", f"{zp['streams']['watch_M0_reloc']['final_struct']:.3f}")
+put("PilotFaithLeadMzero", f"{int(zp['streams']['watch_M0_faithful']['lead'])}")
+put("PilotFaithLeadMsix", f"{int(zp['streams']['watch_M6_faithful']['lead'])}")
+
+# ---------- P8-R2 / R2b (unlearning + compensating law) ----------
+r2 = J("analysis/out8/p8r2_scored.json")
+surv = [r2["arms"]["guard_shufrep"][str(s)]["prevtok_end"] for s in (501, 502, 503)]
+put("RtwoScaffoldLo", f"{min(surv):.3f}")
+put("RtwoScaffoldHi", f"{max(surv):.3f}")
+gcopy = [r2["arms"]["guard_shufrep"][str(s)]["copy_end"] for s in (501, 502, 503)]
+put("RtwoGuardCopyHi", f"{max(gcopy):.2f}")
+faith = [r2["arms"]["refaith"][str(s)]["t_reevent"] for s in (501, 502, 503)]
+put("RtwoFaithMed", f"{int(np.median(faith))}")
+put("RtwoRelearnX", f"{np.median(ctrl) / np.median(faith):.0f}")
+put("RtwoFaithLead", f"{int(np.median([r2['arms']['refaith'][str(s)]['lead'] for s in (501,502,503)]))}")
+burn1 = [r2["arms"]["reburn"][str(s)]["prevtok0_start"] for s in (501, 502, 503)]
+put("RtwoBurnFailLo", f"{min(burn1):.2f}")
+put("RtwoBurnFailHi", f"{max(burn1):.2f}")
+rb = J("analysis/out8/p8r2b_scored.json")
+put("RtwoBDeniedMed", f"{int(np.median([rb['runs'][str(s)]['t_reevent'] for s in (501,502,503)]))}")
+put("RtwoBRatio", f"{np.median([rb['runs'][str(s)]['t_reevent'] for s in (501,502,503)]) / np.median(faith):.1f}")
+put("RtwoBManipHi", f"{max(rb['runs'][str(s)]['prevtok0_start'] for s in (501,502,503)):.3f}")
+put("RtwoBDeniedVsFirstX", f"{np.median(ctrl) / np.median([rb['runs'][str(s)]['t_reevent'] for s in (501,502,503)]):.0f}")
+
+# ---------- R2c pooled confirmation (only once sealed) ----------
+r2c_path = os.path.join(ROOT, "analysis/out8/p8r2c_scored.json")
+if os.path.exists(r2c_path):
+    rc = J("analysis/out8/p8r2c_scored.json")
+    put("RtwoCready", "1")
+    put("RtwoCN", rc["n_valid_chains"])
+    put("RtwoCRatio", f"{rc['pooled_ratio']:.2f}")
+    put("RtwoCCIlo", f"{rc['ratio_ci'][0]:.2f}")
+    put("RtwoCCIhi", f"{rc['ratio_ci'][1]:.2f}")
+    put("RtwoCVerdict", rc["verdict_word"])
+    put("RtwoCFaithMed", f"{int(rc['pooled_faithful_median'])}")
+    put("RtwoCDeniedMed", f"{int(rc['pooled_denied_median'])}")
+    put("RtwoCHoldFA", rc["pooled_hold_fa"])
+    put("RtwoCScaffoldLo", f"{rc['pooled_scaffold_min']:.3f}")
+else:
+    put("RtwoCready", "0")
+
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "numbers.tex"), "w") as f:
+    f.write("% AUTO-GENERATED by gen_numbers.py — do not edit by hand\n")
+    for k, v in M.items():
+        f.write(f"\\newcommand{{\\{k}}}{{{v}}}\n")
+print(f"wrote {len(M)} macros; R2c ready = {M.get('RtwoCready', '0')}")
