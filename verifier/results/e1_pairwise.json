@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "stamp": "2026-07-22T21:25:23Z",
+    "n_stems": 154,
+    "matchup": "LH (low-substance signaled) vs HL (high-substance plain)"
+  },
+  "per_judge": {
+    "microsoft/Phi-3.5-mini-instruct": {
+      "P_pick_signaled_mean": 0.7020218429393198,
+      "ci": [
+        0.6453458752372996,
+        0.7616747439309053
+      ],
+      "frac_stems_signaled_wins": 0.7142857142857143
+    },
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "P_pick_signaled_mean": 0.529658664371047,
+      "ci": [
+        0.4814961939343217,
+        0.5785339459811217
+      ],
+      "frac_stems_signaled_wins": 0.5194805194805194
+    },
+    "nvidia/Llama-3.1-Nemotron-Nano-8B-v1": {
+      "P_pick_signaled_mean": 0.5540413440661747,
+      "ci": [
+        0.542336682489126,
+        0.5658525476982446
+      ],
+      "frac_stems_signaled_wins": 0.8116883116883117
+    }
+  }
+}
