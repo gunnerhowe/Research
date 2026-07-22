@@ -65,6 +65,15 @@ def train(args):
         if fp["kind"] == "attn":                        # D-RELOC: pin the home head useless
             attach_scaffold(model, "sink", 8.0, layer=fp["home_layer"], head=fp["home_head"])
             model.to(device)
+    if args.erase_subspace and args.fp_lib and args.reteach:  # D-IDIO: erase the captured
+        fp = json.load(open(args.fp_lib))[args.reteach]        # depth subspace every forward
+        B = torch.tensor(fp["basis"], device=device)           # (r, D), so the return must
+        lyr = fp["layer"]                                       # re-form in an orthogonal dir
+
+        def _erase(mod, inp, out):
+            x, a = out
+            return (x - (x @ B.T) @ B, a)
+        model.blocks[lyr].register_forward_hook(_erase)
 
     fp_lib = json.load(open(args.fp_lib)) if (args.fp_lib and args.mode == "watch") else None
     banks = probe_banks(skills, args.n, device)
@@ -160,7 +169,8 @@ if __name__ == "__main__":
     ap.add_argument("--omit", default="")
     ap.add_argument("--scramble", default="")
     ap.add_argument("--reteach", default="")
-    ap.add_argument("--burn_home", action="store_true")
+    ap.add_argument("--burn_home", action="store_true")       # D-RELOC
+    ap.add_argument("--erase_subspace", action="store_true")  # D-IDIO
     ap.add_argument("--steps", type=int, default=20000)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--wd", type=float, default=0.01)
