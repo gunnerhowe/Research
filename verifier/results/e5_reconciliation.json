@@ -1,0 +1,61 @@
+{
+  "per_judge": {
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "over_rating_rate": 0.3344155844155844,
+      "under_rating_rate": 0.04220779220779221,
+      "var_share_G": 0.45682196360189953,
+      "var_share_S": 0.20066121307437917,
+      "corr_Y_S": 0.4075022002356774,
+      "corr_Y_G": 0.614853613030136,
+      "cell_means": {
+        "LL": 6.096007869420285,
+        "LH": 7.586144886827046,
+        "HL": 7.235449123906736,
+        "HH": 7.825129687677078
+      }
+    },
+    "microsoft/Phi-3.5-mini-instruct": {
+      "over_rating_rate": 0.5714285714285714,
+      "under_rating_rate": 0.1266233766233766,
+      "var_share_G": 0.6461034590150889,
+      "var_share_S": 0.09924251851837174,
+      "corr_Y_S": 0.1831911065867644,
+      "corr_Y_G": 0.46741918153720013,
+      "cell_means": {
+        "LL": 8.183912211763225,
+        "LH": 8.929249445217437,
+        "HL": 8.584304132117225,
+        "HH": 8.973506869441838
+      }
+    },
+    "nvidia/Llama-3.1-Nemotron-Nano-8B-v1": {
+      "over_rating_rate": 0.3116883116883117,
+      "under_rating_rate": 0.2597402597402597,
+      "var_share_G": 0.7649648949839066,
+      "var_share_S": 0.2350183570830613,
+      "corr_Y_S": 0.29071247395751837,
+      "corr_Y_G": 0.5244855489863103,
+      "cell_means": {
+        "LL": 6.540591636185978,
+        "LH": 7.384349224791254,
+        "HL": 7.007388683015205,
+        "HH": 7.855103533442846
+      }
+    }
+  },
+  "note": "one signal-tracking mechanism yields both the over-rating (RQ-Bench) and the score/substance decoupling (RINoBench).",
+  "pooled": {
+    "over_rating_rate": 0.36688311688311687,
+    "under_rating_rate": 0.3051948051948052,
+    "var_share_G": 0.6339372095765673,
+    "var_share_S": 0.20074125808070248,
+    "corr_Y_S": 0.22320888661122415,
+    "corr_Y_G": 0.39665805891807826,
+    "cell_means": {
+      "LL": 6.940170572456497,
+      "LH": 7.966581185611912,
+      "HL": 7.609047313013055,
+      "HH": 8.217913363520587
+    }
+  }
+}
