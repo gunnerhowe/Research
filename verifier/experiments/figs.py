@@ -152,6 +152,35 @@ def fig_v1():
     print(f"wrote {FIGS/'fig_v1_neutralize.png'}")
 
 
+def fig_v3():
+    c = json.load(open(ROOT / "results" / "v3_claims.json"))
+    s = json.load(open(ROOT / "results" / "v3_substance.json"))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.3))
+    # panel 1: novelty-score gain under v3 — attacks crushed, genuine novelty kept
+    labels = ["topical-pad\n(raw, beat v2)", "topical-pad\nunder v3",
+              "significance\nunder v3", "GENUINE novelty\nunder v3"]
+    vals = [c["raw_pad_gain_before_extract"], c["pad_gain_after_extract"],
+            c["sig_gain_after_extract"], s["v3_substance_gap"]]
+    cols = ["#C1666B", "#E0A458", "#E0A458", "#4C9F70"]
+    ax1.bar(labels, vals, color=cols)
+    ax1.axhline(0, color="k", lw=0.6)
+    ax1.set_ylabel("novelty-score gain vs base"); ax1.tick_params(axis="x", labelsize=8)
+    ax1.set_title("v3 crushes both attacks to ~0, keeps genuine novelty (+0.030)")
+    # panel 2: claim similarity to base — attacks collapse, novelty stays distinct
+    l2 = ["significance\nattack", "topical-pad\nattack", "GENUINE\nnovelty"]
+    v2 = [c["claim_collapse_base_sig"], c["claim_collapse_base_pad"], s["cos_base_high_claim"]]
+    ax2.bar(l2, v2, color=["#C1666B", "#C1666B", "#4C9F70"])
+    ax2.axhline(1.0, color="k", ls=":", lw=0.8)
+    ax2.set_ylabel("cos(extracted claim, base claim)"); ax2.set_ylim(0, 1.05)
+    ax2.set_title("Attacks collapse onto base (≈0.99); real novelty stays distinct (0.64)")
+    fig.suptitle("v3 = claim-extraction: robust to BOTH red-teams AND discriminating",
+                 fontsize=12, y=1.02)
+    fig.tight_layout()
+    for ext in ("pdf", "png"):
+        fig.savefig(FIGS / f"fig_v3_claim_extract.{ext}", bbox_inches="tight", dpi=150)
+    print(f"wrote {FIGS/'fig_v3_claim_extract.png'}")
+
+
 def fig_verifiers():
     e0 = json.load(open(ROOT / "results" / "e0_results.json"))
     v1 = json.load(open(ROOT / "results" / "v1_neutralized.json"))
