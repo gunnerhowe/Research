@@ -208,3 +208,55 @@ fingerprint (K-DISGUISE-B analog FIRED); and re-emergence at toy scale has NO wa
 phase to forecast. Scope: 1 seed per stream, 2 mechanisms, toy scale — pilot-grade, not
 fleet-certified. Full-campaign decision (multi-seed fleets, refit-on-canary fallback,
 slower-re-emergence protocols) rests with the user.
+
+## P8-R2 PREREG (2026-07-22) — "Unlearning removes the behavior, not the scaffold"
+## Frozen BEFORE any R2 code exists. Substrate: the VALIDATED 2L fleet world
+## (src/train_lm.py, bigram lang_seed 777, p_rep 0.75, d256/4H/ctx256, lr 1e-3,
+## event = copy_adv >= 2.0 nats sustain 2; first-emergence T0 = 6,300 median, n=30).
+
+MOTIVATION: P8 pilot found near-instant re-emergence at 6L — but 6L first-learning is also
+fast (resolution-limited comparison, disclosed). The 6L guarded model retained its
+prev-token scaffold at 0.49 (specimen 0.71) while behavior sat at chance — suggesting
+fast relearn = P7's scaffold-supplied regime (which emerges at ~3,600 vs 6,300). R2 tests
+this ON THE SUBSTRATE WHERE TIMING IS UNDERSTOOD, plus the compensating-law bet: a
+disguised return must REBUILD the scaffold and should therefore be slow — restoring
+warning time exactly where the fingerprint is blind.
+
+DESIGN (runs/grid8r2/; n=3 seeds per arm 501-503; pilot-grade, disclosed):
+1. SPECIMENS: rep condition, 16k steps, NEW --save_ckpt flag (default-off; bit-identity
+   guarded by a K-C2b-style smoke vs grid6r2/rep_s1 before the fleet).
+2. GUARD (active unlearning): continue-train specimen (--init_from, new flag) on NEW
+   condition "shufrep" — repeats present at the same rate/offsets but the copied span is
+   per-sequence PERMUTED, so match-then-copy actively mispredicts. 8k steps. GUARD
+   VALIDITY (manipulation check, outcomes never consulted): copy_adv <= 0.25 AND
+   indist_adv <= 0.05 over the last 5 evals; else re-tune guard before watch. Secondary
+   comparison arm: norep guard (omission), reported descriptively.
+3. RETEACH-FAITHFUL: continue guarded ckpt on rep data (matched rate), 10k budget.
+4. RETEACH-BURNED (the disguise): same, but the guarded model's layer-0 argmax prevtok
+   head is burned with the P7 sink bias (beta 8) — the surviving scaffold is denied, so
+   the return must re-grow a precursor elsewhere. --log_heads on.
+5. NEGATIVES: guard-hold x3 (continue shufrep, no re-teach) — anchor must stay silent.
+
+FROZEN MEASURES: t_reevent = copy_adv >= 2.0 sustain 2 (as everywhere). Composed anchor =
+first eval with prevtok_by_layer[0] >= 0.10 AND indist_adv >= 0.10 (the campaign's frozen
+conjunction). Lead = t_reevent - t_anchor. Scaffold read = layer-0 max-over-heads prevtok.
+
+PREDICTIONS / KILLS (frozen now):
+- P-R2a (scaffold survives active unlearning): guard-end prevtok >= 0.5 in >=2/3 shufrep
+  guards while behavior is at chance. K-R2a fires if prevtok < 0.10 in >=2/3 (premise
+  dead; proceed but the P7 link is cut).
+- P-R2b (fast relearn on the slow substrate): faithful median t_reevent <= 3,150 (0.5*T0).
+  K-R2b fires if >= 5,040 (0.8*T0): relearn NOT fast at 2L -> the 6L instant-relearn was a
+  substrate-speed artifact; "unlearning is effective at slow scale" = the honest negative.
+- P-R2c (THE COMPENSATING LAW, headline): burned median t_reevent >= 2.0x faithful median
+  AND burned median >= 3,800 (0.6*T0). K-R2c fires if burned <= 1.25x faithful: disguise
+  costs nothing -> uncovered-cell negative for fingerprint monitoring.
+- P-R2d (warning returns on the disguised path): burned-arm composed anchor fires with
+  median lead >= 300 steps pre-reevent, AND 0 composed alarms on the 3 guard-hold
+  negatives. (In guarded models prevtok stays high, so the conjunction reduces to the
+  indist gate — the FA control is exactly that gate on the negatives.)
+- Faithful-arm lead reported as measured (no bet; expected small — the scaffold-supplied
+  regime has little warning, per P7).
+Scoring: sealed one-shot analysis/score_p8r2.py after ALL 15 summaries exist; refuses on
+partial fleet or existing scorefile. Disclosures: T0 reused from grid6r2; reteach lr 1e-3
+(matched); beta=8 burn; n=3/arm.
