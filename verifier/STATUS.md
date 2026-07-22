@@ -12,12 +12,17 @@ resulting verifier is reward-hackable, localize the response to a linear
 direction, and test a steering fix that recovers calibration — reconciling two
 2026 papers that found opposite-signed novelty bias.
 
-## Outcome: POSITIVE so far — E0 PASSED (signal beats substance, robust to length)
+## Outcome: POSITIVE core + a sharp dissociation (detect-but-can't-fix)
 
-E0 is a decisive positive across three judges (see ladder). The mechanism (E3),
-the steering fix (E4), the reward-hack demo (E2), and the reconciliation (E5)
-remain to be run before this is a paper; the headline behavioral effect and its
-length-robustness are in hand.
+Emerging story (honest, strong): LLM research judges score novelty SIGNAL over
+SUBSTANCE (E0, all 3 judges, robust to length, hackability 0.82); the signal
+response is linearly DETECTABLE and OOD-robust (E3, AUROC ~1.0); BUT it is NOT
+removable by activation steering (E4, single- and multi-layer both fail) — the
+bias is entangled with novelty computation, not a separable direction. So
+detectability != steerability, contra Breaking-the-Mirror. This makes the verifier
+warning stronger, not weaker: you cannot cheaply patch it. Remaining: E2
+(reward-hack demo), E1 pairwise (readout robustness), E5 (reconciliation), then
+the paper. The lead is E0 + the detect/can't-fix dissociation.
 
 ## History
 
@@ -73,9 +78,21 @@ framing with a correctness-controlled crossed design).
   `results/e1_length_control.json`. Remaining E1: pairwise robustness, correctness
   arm (discriminant validity), placebo, rationalization.
 - **E2** — reward-hackability: optimize Y under S-freeze; measure gamed gain. [next]
-- **E3** — mechanism: trained + OOD + dissociated G-direction probe. [next — GPU free]
-- **E4** — steering-decontamination fix; recover calibration to substance. [pending E3]
-- **E5** — reconciliation of RQ-Bench (over) / RINoBench (both tails). [pending]
+- **E3 — DONE.** Linear, OOD-robust novelty-signal direction, all 3 judges:
+  in-dist AUROC 0.999-1.000, OOD 0.997-1.000. `results/e3_probe.json`. Caveat:
+  near-perfect AUROC partly expected (signal is surface-lexical) — supporting, not
+  headline. Dissociation from self-preference/uncertainty directions still TODO.
+- **E4 — DONE: FIX FAILS (K2 on the fix).** Neither single-layer (e4_steering) nor
+  multi-layer band ablation (e4_multilayer) of the diff-of-means G-direction gives
+  selective recalibration (beta_G down, beta_S preserved). Instead: Phi inflates or
+  loses substance-tracking, Qwen negligible, Nemotron collapses BOTH effects. The
+  bias is linearly DETECTABLE but not steerable away = detectability != removability;
+  contrasts Breaking-the-Mirror (self-preference WAS steerable). A sharper warning
+  than a working patch.
+- **E2** — reward-hack optimizer (signal-injection). [queued GPU]
+- **E1 pairwise** — LH vs HL head-to-head, position-bias controlled. [queued GPU]
+- **E5** — reconciliation of RQ-Bench (over) / RINoBench (both tails). [pending; internal
+  from E0 data + optional external anchor]
 
 ## Kill conditions (pre-registered)
 
