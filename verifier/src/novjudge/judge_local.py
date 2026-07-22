@@ -79,6 +79,26 @@ def expected_score(judge: Judge, messages: list[dict]) -> float:
     return float(sum(d * pi for d, pi in zip(digits, p.tolist())))
 
 
+@torch.no_grad()
+def pairwise_prob_A(judge: Judge, messages: list[dict]) -> float:
+    """P(judge answers 'A') under the next-token distribution restricted to the
+    A/B tokens — the parse-free pairwise readout."""
+    ids = _prompt_ids(judge, messages)
+    logits = judge.model(ids).logits[0, -1, :].float()
+    a_ids, b_ids = [], []
+    for form in ("A", " A"):
+        e = judge.tok.encode(form, add_special_tokens=False)
+        if e:
+            a_ids.append(e[-1])
+    for form in ("B", " B"):
+        e = judge.tok.encode(form, add_special_tokens=False)
+        if e:
+            b_ids.append(e[-1])
+    la = torch.logsumexp(logits[list(set(a_ids))], 0)
+    lb = torch.logsumexp(logits[list(set(b_ids))], 0)
+    return float(torch.softmax(torch.stack([la, lb]), 0)[0])
+
+
 def _layers(model):
     # Llama/Qwen/Phi/Nemotron all expose decoder blocks here.
     return model.model.layers
